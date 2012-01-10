@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario id="null" name="null" schemaVersion="1.0.19">
+  <network name="New Network" ml_control="false" q_control="false" dt="5" id="-1">
+    <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
+    <position>
+      <point lat="37.85798547196296" lng="-122.30082788318396"/>
+    </position>
+    <MonitorList/>
+    <NetworkList/>
+    <NodeList>
+      <node name="Node -1" type="F" id="-1">
+        <outputs>
+          <output link_id="-1"/>
+        </outputs>
+        <inputs>
+          <input link_id="-7">
+            <weavingfactors>1</weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.84378311931073" lng="-122.2976052761078"/>
+        </position>
+      </node>
+      <node name="Node -2" type="F" id="-2">
+        <outputs>
+          <output link_id="-3"/>
+        </outputs>
+        <inputs>
+          <input link_id="-1">
+            <weavingfactors>1,1</weavingfactors>
+          </input>
+          <input link_id="-2">
+            <weavingfactors>1,1</weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.852407534617335" lng="-122.29957938194276"/>
+        </position>
+      </node>
+      <node name="Node -3" type="T" id="-3">
+        <outputs/>
+        <inputs/>
+        <position>
+          <point lat="37.84905277388344" lng="-122.29601740837096"/>
+        </position>
+      </node>
+      <node name="Node -4" type="F" id="-4">
+        <outputs>
+          <output link_id="-5"/>
+          <output link_id="-4"/>
+        </outputs>
+        <inputs>
+          <input link_id="-3">
+            <weavingfactors>1,1</weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.86390024493506" lng="-122.30284041166308"/>
+        </position>
+      </node>
+      <node name="Node -6" type="F" id="-6">
+        <outputs>
+          <output link_id="-6"/>
+        </outputs>
+        <inputs>
+          <input link_id="-5">
+            <weavingfactors>1</weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.8713302695572" lng="-122.30500817298888"/>
+        </position>
+      </node>
+      <node name="Node -7" type="T" id="-7">
+        <outputs/>
+        <inputs/>
+        <position>
+          <point lat="37.876445519281326" lng="-122.30666041374208"/>
+        </position>
+      </node>
+      <node name="Node -8" type="T" id="-8">
+        <outputs/>
+        <inputs/>
+        <position>
+          <point lat="37.83998737919421" lng="-122.2967255115509"/>
+        </position>
+      </node>
+      <node name="Node -5" type="T" id="-5">
+        <outputs/>
+        <inputs/>
+        <position>
+          <point lat="37.866976934924416" lng="-122.30218648910522"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList>
+      <link name="-1 -> -2" road_name="I-80 E" lanes="1" length="0.6064734822460434" type="FW" id="-1" record="false">
+        <description></description>
+        <begin node_id="-1"/>
+        <end node_id="-2"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="orig -> -2" road_name="null" lanes="1" length="0.3720884397164138" type="OR" id="-2" record="false">
+        <description></description>
+        <begin node_id="-3"/>
+        <end node_id="-2"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="-2 -> -4" road_name="I-80 E" lanes="1" length="0.8146692383136517" type="FW" id="-3" record="false">
+        <description></description>
+        <begin node_id="-2"/>
+        <end node_id="-4"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="-4 -> -6" road_name="I-80 E" lanes="1" length="0.5274943268132648" type="FW" id="-5" record="false">
+        <description></description>
+        <begin node_id="-4"/>
+        <end node_id="-6"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="-6 -> dest" road_name="I-80 E" lanes="1" length="0.3649011469661076" type="FW" id="-6" record="false">
+        <description></description>
+        <begin node_id="-6"/>
+        <end node_id="-7"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="orig -> -1" road_name="I-80 E" lanes="1" length="0.26674369278359156" type="FW" id="-7" record="false">
+        <description></description>
+        <begin node_id="-8"/>
+        <end node_id="-1"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+      <link name="-4 -> dest" road_name="University Ave" lanes="1" length="0.2391268772223581" type="FR" id="-4" record="false">
+        <description></description>
+        <begin node_id="-4"/>
+        <end node_id="-5"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+    </LinkList>
+    <SignalList/>
+    <ODList/>
+    <SensorList/>
+    <DirectionsCache/>
+  </network>
+  <settings>
+    <display timeMax="0.1" dt="5"/>
+    <units>US</units>
+  </settings>
+  <InitialDensityProfile/>
+  <SplitRatioProfileSet>
+    <splitratios node_id="-1" dt="300">	<srm>1</srm> 		</splitratios>
+    <splitratios node_id="-2" dt="300"> <srm>1;1</srm>		</splitratios>
+    <splitratios node_id="-3" dt="300"> <srm>1</srm>		</splitratios>
+    <splitratios node_id="-4" dt="300"> <srm>0.2,0.7</srm>	</splitratios>
+    <splitratios node_id="-6" dt="300"> <srm>1</srm>		</splitratios>
+    <splitratios node_id="-7" dt="300"> <srm>1</srm>		</splitratios>
+    <splitratios node_id="-8" dt="300"> <srm>1</srm>		</splitratios>
+    <splitratios node_id="-5" dt="300"> <srm>1</srm>		</splitratios>
+  </SplitRatioProfileSet>
+  <CapacityProfileSet>
+    <capacity link_id="-1" dt="1"></capacity>
+    <capacity link_id="-2" dt="1"></capacity>
+    <capacity link_id="-3" dt="1"></capacity>
+    <capacity link_id="-5" dt="1"></capacity>
+    <capacity link_id="-6" dt="1"></capacity>
+    <capacity link_id="-7" dt="1"></capacity>
+    <capacity link_id="-4" dt="1"></capacity>
+  </CapacityProfileSet>
+  <EventSet/>
+  <DemandProfileSet>
+    <demand knob="1" dt="1" link_id="-1"></demand>
+    <demand knob="1" dt="300" link_id="-2">100</demand>
+    <demand knob="1" dt="1" link_id="-3"></demand>
+    <demand knob="1" dt="1" link_id="-5"></demand>
+    <demand knob="1" dt="1" link_id="-6"></demand>
+    <demand knob="1" dt="300" link_id="-7">200</demand>
+    <demand knob="1" dt="1" link_id="-4"></demand>
+  </DemandProfileSet>
+  <ControllerSet/>
+</scenario>

@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Java\jaxb-ri-20110601\bin\xjc.bat" -p aurora.jaxb aurora.xsd -d ../../src
