@@ -6,24 +6,16 @@
 package com.relteq.sirius.sensor;
 
 import com.relteq.sirius.simulator.Types;
-import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Sensor;
 
 public class SensorLoopStation extends _Sensor {
-
-	_Link myLink;
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
 	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor c,Types.Sensor myType) {
-		super(c,myType);
-		
-		if(myLinks.size()!=1){
-			myLink = myLinks.get(0);
-		}
-		
+		super(c,myType);		
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -32,10 +24,8 @@ public class SensorLoopStation extends _Sensor {
 
 	@Override
 	public boolean validate() {
-		if(myLinks.size()!=1){
-			System.out.println("Loop sensor must reside on a single link");
+		if(myLink==null)
 			return false;
-		}
 		return true;
 	}
 

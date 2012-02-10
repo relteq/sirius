@@ -22,11 +22,11 @@ public class _Network extends com.relteq.sirius.jaxb.Network {
 	public ArrayList<_Sensor> getSensorWithLinkId(String linkid){
 		ArrayList<_Sensor> result = new ArrayList<_Sensor>();
 		for(_Sensor sensor : _sensorlist.get_Sensors()){
-			for(_Link link : sensor.myLinks){
-				if(link.getId().equals(linkid)){
+			if(sensor.getMyLink()!=null){
+				if(sensor.getMyLink().getId().equals(linkid)){
 					result.add(sensor);
 					break;
-				}
+				}	
 			}
 		}
 		return result;
@@ -34,8 +34,8 @@ public class _Network extends com.relteq.sirius.jaxb.Network {
 	
 	public _Sensor getFirstSensorWithLinkId(String linkid){
 		for(_Sensor sensor : _sensorlist.get_Sensors()){
-			for(_Link link : sensor.myLinks){
-				if(link.getId().equals(linkid)){
+			if(sensor.getMyLink()!=null){
+				if(sensor.getMyLink().getId().equals(linkid)){
 					return sensor;
 				}
 			}

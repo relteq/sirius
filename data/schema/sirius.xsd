@@ -237,7 +237,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="simple|onramp|offramp|signalized intersection|unsignalized intersection"/>
+						<xs:pattern value="simple|onramp|offramp|signalized intersection|unsignalized intersection|terminal"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -384,12 +384,13 @@
 					<xs:element ref="description" minOccurs="0" />
 					<xs:element ref="position" minOccurs="0" />
 					<xs:element ref="display_position" minOccurs="0" />
-					<xs:element ref="links" minOccurs="0" />
+					<xs:element ref="link_reference" minOccurs="0" />
 					<xs:element ref="parameters" minOccurs="0" />
 					<xs:element ref="data_sources" minOccurs="0" />
 				  </xs:all>
 				  
 				  <xs:attribute name="id" type="xs:string" use="required" />
+				  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
 
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
@@ -529,7 +530,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
-		  <xs:element name="density">
+		  <xs:element name="density">													<!-- content in veh/mile -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="network_id" type="xs:string" use="optional" />
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
@@ -655,6 +656,7 @@
 		      <xs:attribute name="reset_to_nominal" type="xs:boolean" use="optional" default="false" />
 			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
+			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -750,6 +752,7 @@
 				<xs:element ref="PlanList" minOccurs="0" />
 			  </xs:all>
 			  <xs:attribute name="name" type="xs:string" use="optional" />
+			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">

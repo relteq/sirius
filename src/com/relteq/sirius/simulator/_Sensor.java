@@ -5,15 +5,11 @@
 
 package com.relteq.sirius.simulator;
 
-import java.util.ArrayList;
-
-import com.relteq.sirius.jaxb.LinkReference;
-
 public abstract class _Sensor implements InterfaceSensor {
 
 	protected String id;
 	protected Types.Sensor myType;
-	protected ArrayList<_Link> myLinks = null;
+	protected _Link myLink = null;
 
 	// copy jaxb info in constructor instead of initialize
 	// because _Sensor does not inherit Sensor, so the data is not
@@ -23,15 +19,8 @@ public abstract class _Sensor implements InterfaceSensor {
 	public _Sensor(com.relteq.sirius.jaxb.Sensor s,Types.Sensor myType){
 		this.myType = myType;
 		this.id = s.getId();
-		if(s.getLinks()!=null){
-			myLinks = new ArrayList<_Link>();
-			for(LinkReference L : s.getLinks().getLinkReference()){
-				_Link alink = Utils.getLinkWithCompositeId(L.getNetworkId(),L.getId());
-				if(alink!=null){
-					myLinks.add(alink);
-				}
-			}
-		}
+		if(s.getLinkReference()!=null)
+			myLink = Utils.getLinkWithCompositeId(s.getLinkReference().getNetworkId(),s.getLinkReference().getId());
 	}
 
 
@@ -47,8 +36,8 @@ public abstract class _Sensor implements InterfaceSensor {
 		return myType;
 	}
 
-	public ArrayList<_Link> getMyLinks() {
-		return myLinks;
+	public _Link getMyLink() {
+		return myLink;
 	}
 	
 	

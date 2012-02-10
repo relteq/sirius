@@ -5,8 +5,6 @@
 
 package com.relteq.sirius.control;
 
-import java.util.ArrayList;
-
 import com.relteq.sirius.jaxb.Parameter;
 import com.relteq.sirius.jaxb.ScenarioElement;
 import com.relteq.sirius.simulator.Utils;
@@ -52,7 +50,7 @@ public class ControllerAlinea extends _Controller {
 			for(ScenarioElement s:c.getFeedbackElements().getScenarioElement()){
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
-				    s.getType().equalsIgnoreCase("link") && mainlinesensor==null){
+				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
 					mainlinesensor=Utils.getSensorWithCompositeId(s.getNetworkId(),s.getId());
 					hasmainlinesensor = true;
 				}
@@ -90,11 +88,11 @@ public class ControllerAlinea extends _Controller {
 		// normalize the gain and set target to critical density
 		double linklength;
 		if(usesensor){
-			 ArrayList<_Link> mylinks = mainlinesensor.getMyLinks();
-			 if(mylinks.size()!=1)
+			 _Link mylink = mainlinesensor.getMyLink();
+			 if(mylink==null)
 				 return;
-			 linklength = mylinks.get(0).getLengthInMiles();
-			 targetvehicles = mylinks.get(0).getDensityCriticalInVeh();
+			 linklength = mylink.getLengthInMiles();
+			 targetvehicles = mylink.getDensityCriticalInVeh();
 		}
 		else{
 			linklength = mainlinelink.getLengthInMiles();
@@ -129,8 +127,8 @@ public class ControllerAlinea extends _Controller {
 		if(mainlinelink==null && mainlinesensor==null)
 			return false;
 		
-		// sensor connected to multiple links
-		if(usesensor && mainlinesensor.getMyLinks().size()!=1)
+		// sensor is disconnected
+		if(usesensor && mainlinesensor.getMyLink()==null)
 			 return false;
 		
 		// no feedback
