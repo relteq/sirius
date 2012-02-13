@@ -114,8 +114,19 @@ public class Double2DMatrix {
 		return nVTypes;
 	}
 
-	public Double [] sampleAtTime(int k){
-		return data[k];
+	public Double [] sampleAtTime(int k,Integer [] vehicletypeindex){
+		Double [] x = new Double[Utils.numVehicleTypes];
+		if(vehicletypeindex==null){
+			for(int j=0;j<Utils.numVehicleTypes;j++){
+				x[j] = data[k][j];
+			}
+		}
+		else{
+			for(int j=0;j<Utils.numVehicleTypes;j++){
+				x[vehicletypeindex[j]] = data[k][j];
+			}
+		}
+		return x;
 	}
 
 	/////////////////////////////////////////////////////////////////////

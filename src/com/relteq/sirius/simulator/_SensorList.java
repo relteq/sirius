@@ -20,10 +20,10 @@ public class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize(_Network myNetwork) {
+	protected void populate(_Network myNetwork) {
 		if(myNetwork.getSensorList()!=null){
 			for(com.relteq.sirius.jaxb.Sensor sensor : myNetwork.getSensorList().getSensor()){
 	

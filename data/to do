@@ -1,0 +1,37 @@
++ DONE rename initialize to populate
++ test multiple vehicle types
+
+	SplitRatioProfileSet
+	splitratioEvent
+	decision_point
+	od_demandProfile
+
++ set output file name to run iteration
++ error messages
++ probabilistic profiles
++ NetworkConnections
++ javadoc
++ exception handling
++ WeavingFactorsProfile
+
++ ODList
++ PathSegements
++ DecisionPoints
++ ODDemandPofileSet
+
+
+Classes with matrices
+=====================
+CapacityProfile
+	1d vector								time
+DemandProfile
+	2d matrix								time x numVehicleTypes
+Event
+	3D matrix								nIn x nOut x numVehcielTypes
+InitialDensityProfile
+	1d matrix								space???
+Node
+	scalar 3d matrix						nIn x nOut x numVehcielTypes
+SplitRatiosProfile
+	matrix of 2d matrices					time x numVehicleTypes
+	3D matrix								nIn x nOut x numVehcielTypes

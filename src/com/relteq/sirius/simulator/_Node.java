@@ -109,7 +109,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
 			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,Utils.numVehicleTypes,0d);
-			_SplitRatiosProfile.normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+			_SplitRatioProfile.normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
 
@@ -142,11 +142,11 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
     
-	protected void initialize(_Network myNetwork) {
-    	// Note: It is assumed that this comes *before* SplitRatioProfile.initialize
+	protected void populate(_Network myNetwork) {
+    	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
     	try {
 			myType = Types.Node.valueOf(getType());
@@ -570,13 +570,13 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		
 		//////
 		splitratio = new Double3DMatrix(nIn,nOut,Utils.numVehicleTypes,0d);
-		_SplitRatiosProfile.normalizeSplitRatioMatrix(splitratio);
+		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
 		//////
     }
     
 	private void setSplitratio(Double3DMatrix x) {
 		splitratio.copydata(x);
-		_SplitRatiosProfile.normalizeSplitRatioMatrix(splitratio);
+		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
 	}
 
 	

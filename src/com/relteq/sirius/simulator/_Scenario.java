@@ -13,56 +13,50 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected boolean isreset=false;					// true if scenario passed reset.	
 	protected boolean isvalid=false;					// true if it has passed validation
 	
-	protected _Settings _settings = new _Settings();
 	protected _ControllerSet _controllerset = new _ControllerSet();
 	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	// initialize methods copy data from the jaxb state to extended objects. 
+	// populate methods copy data from the jaxb state to extended objects. 
 	// They do not throw exceptions or report mistakes. Data errors should be
 	// circumvented and left for the validation to report.
-	protected void initialize() {
+	protected void populate() {
 
 		if(isloadedandinitialized)
 			return;
 		
-		// settings
-		_settings.initialize();
-		
 		// network list
 		if(getNetworkList()!=null)
 			for( Network network : getNetworkList().getNetwork() )
-				((_Network) network).initialize();
-				
-		// split ratio profiles (must follow network)
+				((_Network) network).populate();
+	
+		// split ratio profile set (must follow network)
 		if(getSplitRatioProfileSet()!=null)
-			for( SplitratioProfile splitratioProfile : getSplitRatioProfileSet().getSplitratioProfile() )
-				((_SplitRatiosProfile) splitratioProfile).initialize();		
+			((_SplitRatioProfileSet) getSplitRatioProfileSet()).populate();
 		
 		// boundary capacities (must follow network)
 		if(getDownstreamBoundaryCapacitySet()!=null)
 			for( CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile() )
-				((_CapacityProfile) capacityProfile).initialize();
+				((_CapacityProfile) capacityProfile).populate();
 
 		if(getDemandProfileSet()!=null)
-			for( DemandProfile demandProfile : getDemandProfileSet().getDemandProfile() )
-				((_DemandProfile) demandProfile).initialize();
+			((_DemandProfileSet) getDemandProfileSet()).populate();
 		
 		// fundamental diagram profiles 
 		if(getFundamentalDiagramProfileSet()!=null)
 			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				((_FundamentalDiagramProfile) fd).initialize();
+				((_FundamentalDiagramProfile) fd).populate();
 		
 		// initial density profile 
 		if(getInitialDensityProfile()!=null)
-			((_InitialDensityProfile) getInitialDensityProfile()).initialize();
+			((_InitialDensityProfile) getInitialDensityProfile()).populate();
 		
 		// initialize controllers and events
-		_controllerset.initialize();
-		_eventset.initialize();
+		_controllerset.populate();
+		_eventset.populate();
 		
 		isloadedandinitialized = true;		
 	}
@@ -77,10 +71,6 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 
 		if(isvalid)
-			return;
-		
-		// validate settings
-		if(!_settings.validate())
 			return;
 		
 		// check that outdt is a multiple of simdt
@@ -101,7 +91,6 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate())
 				return;
 
-
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacitySet()!=null)
 			for(CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
@@ -110,15 +99,13 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
-			for(DemandProfile demandProfile : getDemandProfileSet().getDemandProfile())
-				if(!((_DemandProfile)demandProfile).validate())
-					return;
+			if(!((_DemandProfileSet)getDemandProfileSet()).validate())
+				return;
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
-			for(SplitratioProfile splitratioProfile : getSplitRatioProfileSet().getSplitratioProfile())
-				if(!((_SplitRatiosProfile)splitratioProfile).validate())
-					return;
+			if(!((_SplitRatioProfileSet)getSplitRatioProfileSet()).validate())
+				return;
 
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
@@ -159,8 +146,8 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((_Network)network).reset();
 		
 		// reset demand profiles
-		for(DemandProfile demandProfile : getDemandProfileSet().getDemandProfile())
-			((_DemandProfile)demandProfile).reset();
+		if(getDemandProfileSet()!=null)
+			((_DemandProfileSet)getDemandProfileSet()).reset();
 
 		// reset fundamental diagrams
 		for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
@@ -188,9 +175,7 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
         		((_DemandProfile) demandProfile).update();
 
     	if(getSplitRatioProfileSet()!=null)
-        	for(SplitratioProfile splitratioProfile : getSplitRatioProfileSet().getSplitratioProfile())
-        		((_SplitRatiosProfile) splitratioProfile).update();
-    	
+    		((_SplitRatioProfileSet) getSplitRatioProfileSet()).update();        		
 
     	if(getFundamentalDiagramProfileSet()!=null)
         	for(FundamentalDiagramProfile fdProfile : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())

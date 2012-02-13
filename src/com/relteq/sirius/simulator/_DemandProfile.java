@@ -24,10 +24,10 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 
 		isdone = false;
 		
@@ -124,12 +124,27 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			int step = Utils.floor((Utils.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
-				myLinkOrigin.setSourcedemandFromVeh( Utils.times( demand.sampleAtTime(step) , _knob) );
+				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
 			if(step>=n && !isdone){
-				myLinkOrigin.setSourcedemandFromVeh( Utils.times( demand.sampleAtTime(n) , _knob ) );
+				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(n) );
 				isdone = true;
 			}
 		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// private methods
+	/////////////////////////////////////////////////////////////////////
+	
+	private Double [] sampleAtTimeStep(int k){
+		
+		// get vehicle type order from SplitRatioProfileSet
+		Integer [] vehicletypeindex = null;
+		if(Utils.theScenario.getSplitRatioProfileSet()!=null)
+			vehicletypeindex = ((_DemandProfileSet)Utils.theScenario.getDemandProfileSet()).vehicletypeindex;
+		
+		Double [] x = Utils.times( demand.sampleAtTime(k,vehicletypeindex) , _knob);
+		return x;
 	}
 	
 }

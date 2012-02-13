@@ -176,7 +176,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 				for(_ScenarioElement s : targets){
 					_Node targetnode = (_Node) s.reference;
 					Double3DMatrix splitratio = new Double3DMatrix(0,0,0,0d);
-					if(_SplitRatiosProfile.validateSplitRatioMatrix(splitratio,targetnode))
+					if(_SplitRatioProfile.validateSplitRatioMatrix(splitratio,targetnode))
 						targetnode.setEventSplitratio(splitratio);
 				}
 			}

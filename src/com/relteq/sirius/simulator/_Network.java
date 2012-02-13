@@ -71,18 +71,18 @@ public class _Network extends com.relteq.sirius.jaxb.Network {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 		
 		if(getNodeList()!=null)
 			for (Node node : getNodeList().getNode())
-				((_Node) node).initialize(this);
+				((_Node) node).populate(this);
 		
 		if(getLinkList()!=null)
 			for (Link link : getLinkList().getLink())
-				((_Link) link).initialize(this);
+				((_Link) link).populate(this);
 		
 	}
 

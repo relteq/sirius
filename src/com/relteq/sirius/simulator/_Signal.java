@@ -8,10 +8,10 @@ package com.relteq.sirius.simulator;
 public class _Signal extends com.relteq.sirius.jaxb.Signal {
 
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 	}
 
 	protected boolean validate() {

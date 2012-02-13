@@ -34,10 +34,10 @@ public class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundament
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void initialize() {
+	protected void populate() {
 		
 		isdone = false;
 		

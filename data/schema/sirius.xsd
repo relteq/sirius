@@ -162,7 +162,7 @@
 			  <xs:element name="vehicleType">
 				<xs:complexType>
 				  <xs:attribute name="name" type="xs:string" use="required" />
-				  <xs:attribute name="weight" type="xs:decimal" use="required" />
+				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
 				</xs:complexType>
 			  </xs:element>
 		  

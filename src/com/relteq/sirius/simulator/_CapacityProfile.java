@@ -15,10 +15,10 @@ public class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 		myLink = Utils.getLinkWithCompositeId(getNetworkId(),getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
 		samplesteps = Utils.round(dtinseconds/Utils.simdtinseconds);

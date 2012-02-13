@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.Splitratio;
 
-public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
+public class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	public _Node myNode;
 	private double dtinseconds;				// not really necessary
@@ -25,15 +25,10 @@ public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfil
 	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
-	// public interface
-	/////////////////////////////////////////////////////////////////////
-
-
-	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 
 		isdone = false;
 		
@@ -127,10 +122,14 @@ public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfil
 		}
 		
 		// check split ratio dimensions and values
-//		for(Double2DMatrix X : profile){
-//			if(!validateSplitRatioMatrix(X,myNode))
-//				return false;
-//		}
+		for(in_index=0;in_index<profile.length;in_index++){
+			for(out_index=0;out_index<profile[in_index].length;out_index++){
+				if(profile[in_index][out_index].getnVTypes()!=Utils.numVehicleTypes){
+					System.out.println("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
+					return false;
+				}
+			}
+		}
 		
 		return true;
 	}
@@ -142,6 +141,10 @@ public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfil
 			int step = Utils.floor((Utils.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
+			
+System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + currentSplitRatio.toString());
+			
+			
 			normalizeSplitRatioMatrix(currentSplitRatio);
 			myNode.setSampledSRProfile(currentSplitRatio);
 			isdone = step>=laststep-1;
@@ -158,6 +161,12 @@ public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfil
 			return null;
 		Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
 				                              Utils.numVehicleTypes,Double.NaN);	// initialize all unknown
+		
+		// get vehicle type order from SplitRatioProfileSet
+		Integer [] vehicletypeindex = null;
+		if(Utils.theScenario.getSplitRatioProfileSet()!=null)
+			vehicletypeindex = ((_SplitRatioProfileSet)Utils.theScenario.getSplitRatioProfileSet()).vehicletypeindex;
+		
 		int i,j,lastk;
 		for(i=0;i<myNode.getnIn();i++){
 			for(j=0;j<myNode.getnOut();j++){
@@ -166,7 +175,7 @@ public class _SplitRatiosProfile extends com.relteq.sirius.jaxb.SplitratioProfil
 				if(profile[i][j].isEmpty())					// nan if no data
 					continue;
 				lastk = Math.min(k,profile[i][j].getnTime()-1);	// hold last value
-				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk));
+				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk,vehicletypeindex));
 			}
 		}
 		return X;

@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 
 import com.relteq.sirius.jaxb.Network;
 import com.relteq.sirius.jaxb.Scenario;
+import com.relteq.sirius.jaxb.VehicleType;
 
 public class Utils {
 	
@@ -61,7 +62,7 @@ public class Utils {
 	private static ArrayList<String> errormessage = new ArrayList<String>();
 
 	/////////////////////////////////////////////////////////////////////
-	// error messages
+	// error handling
 	/////////////////////////////////////////////////////////////////////
 	
 	protected static void clearErrorMessage(){
@@ -251,8 +252,8 @@ public class Utils {
         	if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
         		Utils.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
         
-        // initialize the scenario ...................................................
-        S.initialize();
+        // populate the scenario ....................................................
+        S.populate();
         
         return S;
 	}	
@@ -320,9 +321,14 @@ public class Utils {
 	// scenario interface
 	/////////////////////////////////////////////////////////////////////
 
-	public static _Settings getSettings() {
-		return (_Settings) theScenario._settings;
+//	public static _Settings getSettings() {
+//		return (_Settings) theScenario._settings;
+//	}
+	
+	public static com.relteq.sirius.jaxb.Settings getSettings() {
+		return theScenario.getSettings();
 	}
+	
 
 	public static _ControllerSet getControllerSet(){
 		return theScenario._controllerset;
@@ -386,8 +392,9 @@ public class Utils {
 	}
 	
 	public static int getVehicleTypeIndex(String name){
-		for(int i=0;i<Utils.getSettings().vehicleTypes.size();i++){
-			if(Utils.getSettings().vehicleTypes.get(i).getName().equals(name))
+		List<VehicleType> vt = Utils.getSettings().getVehicleTypes().getVehicleType();
+		for(int i=0;i<vt.size();i++){
+			if(vt.get(i).getName().equals(name))
 				return i;
 		}
 		return -1;

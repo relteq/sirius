@@ -154,18 +154,40 @@ public class Double3DMatrix {
 			sum += data[i][j][k];
 		return sum;
 	}
-
+    
+    @Override
+	public String toString() {
+		String str = new String();
+		str = "[";
+    	for(int i=0;i<nIn;i++){
+        	for(int j=0;j<nOut;j++){
+            	for(int k=0;k<nVTypes;k++){
+        			str += data[i][j][k];
+            		if(k<nVTypes-1)
+            			str += ":";
+            	}
+        		if(j<nOut-1)
+        			str += ",";
+        	}
+    		if(i<nIn-1)
+    			str += ";";
+    	}
+    	str += "]";
+		return str;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
-    
-    public void set(int i,int j,int k,Double f){
+
+	public void set(int i,int j,int k,Double f){
     	data[i][j][k] = f;
     }
     
-  public void setAllVehicleTypes(int i,int j,Double [] f){
-	data[i][j] = f;
-}
+	public void setAllVehicleTypes(int i,int j,Double [] f){
+		for(int k=0;k<Utils.numVehicleTypes;k++)
+			data[i][j][k] = f[k];
+	}
 	
     public void multiplyscalar(double value){
     	int i,j,k;

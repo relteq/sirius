@@ -9,6 +9,7 @@ import com.relteq.sirius.jaxb.*;
 
 public class _ObjectFactory extends ObjectFactory {
 	
+
 	@Override
 	public CapacityProfile createCapacityProfile() {
 		return new _CapacityProfile();
@@ -20,12 +21,16 @@ public class _ObjectFactory extends ObjectFactory {
 		return super.createControllerSet();
 	}
 	
-
 	@Override
 	public DemandProfile createDemandProfile() {
 		return new _DemandProfile();
 	}
 
+	@Override
+	public DemandProfileSet createDemandProfileSet() {
+		return new _DemandProfileSet();
+	}
+	
 	@Override
 	public Event createEvent() {
 		return new _Event();
@@ -80,18 +85,18 @@ public class _ObjectFactory extends ObjectFactory {
 	}
 
 	@Override
-	public Settings createSettings() {
-		return new _Settings();
-	}
-
-	@Override
 	public Signal createSignal() {
 		return new _Signal();
 	}
 
 	@Override
 	public SplitratioProfile createSplitratioProfile() {
-		return new _SplitRatiosProfile();
+		return new _SplitRatioProfile();
 	}
 
+	@Override
+	public SplitRatioProfileSet createSplitRatioProfileSet() {
+		return new _SplitRatioProfileSet();
+	}
+	
 }

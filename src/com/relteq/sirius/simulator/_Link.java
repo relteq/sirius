@@ -231,7 +231,7 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 	
 	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
-		this.sourcedemand = sourcedemand;
+		this.sourcedemand = sourcedemand;		
 	}
 
 	protected void setControl_maxflow(double control_maxflow) {
@@ -337,10 +337,10 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
     }
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////    
     
-	protected void initialize(_Network myNetwork) {
+	protected void populate(_Network myNetwork) {
 		
         iscontrolled = false;
         

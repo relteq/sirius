@@ -10,36 +10,15 @@ import com.relteq.sirius.jaxb.Density;
 public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
 	private Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	private _Link [] link;					// ordered array of pointers
+	private _Link [] link;					// ordered array of references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	private double timestamp;
-	
-	
-	/////////////////////////////////////////////////////////////////////
-	// interface
-	/////////////////////////////////////////////////////////////////////
-	
-	public Double [] getDensityForLinkIdInVeh(String linkid){
-		Double [] d = Utils.zeros(Utils.numVehicleTypes);
-		for(int i=0;i<link.length;i++){
-			if(link[i].getId().equals(linkid)){
-				for(int j=0;j<vehicletypeindex.length;j++)
-					d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
-				return d;
-			}
-		}
-		return d;
-	}
-
-	public double getTimestamp() {
-		return timestamp;
-	}
 
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-	
-	protected void initialize(){
+
+	protected void populate(){
 		
 		int i;
 		
@@ -49,6 +28,8 @@ public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensit
 		link = new _Link [numLinks];
 		
 		int numTypes;
+		
+		// use <VehicleTypesOrder> if it is there, otherwise assume order given in <settings>
 		if(getVehicleTypeOrder()!=null){
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
@@ -61,8 +42,8 @@ public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensit
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
 		}
-				
-		
+
+		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){
 			Density density = getDensity().get(i);
 			link[i] = Utils.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
@@ -77,10 +58,16 @@ public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensit
 			timestamp = 0.0;
 		
 	}
-	
+
 	protected boolean validate() {
 		
 		int i;
+		
+		// check that all vehicle types are accounted for
+		if(vehicletypeindex.length!=Utils.numVehicleTypes){
+			System.out.println("Demand profile list of vehicle types does not match that of settings.");
+			return false;
+		}
 		
 		// check that vehicle types are valid
 		for(i=0;i<vehicletypeindex.length;i++){
@@ -135,4 +122,24 @@ public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensit
 	protected void update() {
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////
+	
+	public Double [] getDensityForLinkIdInVeh(String linkid){
+		Double [] d = Utils.zeros(Utils.numVehicleTypes);
+		for(int i=0;i<link.length;i++){
+			if(link[i].getId().equals(linkid)){
+				for(int j=0;j<vehicletypeindex.length;j++)
+					d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
+				return d;
+			}
+		}
+		return d;
+	}
+
+	public double getTimestamp() {
+		return timestamp;
+	}
+	
 }

@@ -18,13 +18,13 @@ public class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 	private ArrayList<_Event> _sortedevents = new ArrayList<_Event>();
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unchecked")
-	protected void initialize() {
+	protected void populate() {
 		
-		// initialize the events
+		// populate the events
 		if(Utils.theScenario.getEventSet()!=null)
 			for(Event event : Utils.theScenario.getEventSet().getEvent() ){
 				

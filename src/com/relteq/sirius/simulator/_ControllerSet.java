@@ -22,10 +22,10 @@ public class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// initialize / reset / validate / update
+	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void initialize() {
+	protected void populate() {
 
 		if(Utils.theScenario.getControllerSet()!=null){
 			for(Controller controller : Utils.theScenario.getControllerSet().getController()){
