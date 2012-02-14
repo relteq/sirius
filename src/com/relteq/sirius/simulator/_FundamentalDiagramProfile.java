@@ -113,9 +113,9 @@ public class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundament
 
 	protected void reset() {
 		isdone = false;
-		// set lanes back to original values
-		for(int i=0;i<FD.size();i++)
-			FD.get(i).setLanes(myLink.get_Lanes());
+		
+		for(_FundamentalDiagram fd : FD)
+			fd.reset();
 		
 		// assign the fundamental diagram to the link
 		update();	

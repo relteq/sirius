@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,7 +45,8 @@ public class Utils {
 	protected static int numRepititions;		// [#] number of repititions of the simulation
 	
 	protected static Types.Mode simulationMode;
-
+	protected static Types.Uncertainty uncertaintyModel;
+	
 	// from configuration file
 	protected static double outdt;				// [sec] output sampling time
 	protected static double timestart;			// [sec] start of the simulation
@@ -61,6 +63,8 @@ public class Utils {
 	private static String errorheader = new String();
 	private static ArrayList<String> errormessage = new ArrayList<String>();
 
+	public static Random random = new Random();
+	
 	/////////////////////////////////////////////////////////////////////
 	// error handling
 	/////////////////////////////////////////////////////////////////////
@@ -246,6 +250,7 @@ public class Utils {
         Utils.theScenario = S;
         Utils.simdtinseconds = computeCommonSimulationTimeInSeconds();
         Utils.simdtinhours = Utils.simdtinseconds/3600.0;
+        Utils.uncertaintyModel = Types.Uncertainty.uniform;
         if(S.getSettings().getVehicleTypes()==null)
             Utils.numVehicleTypes = 1;
         else

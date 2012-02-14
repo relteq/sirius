@@ -714,13 +714,15 @@
 		</xs:complexType>
 	  </xs:element>
 			  
-		  <xs:element name="demandProfile">
+		  <xs:element name="demandProfile">															<!-- content in [veh/hr] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="knob" type="xs:decimal" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
 			  <xs:attribute name="network_id_origin" type="xs:string" use="optional" />
 			  <xs:attribute name="link_id_origin" type="xs:string" use="required" />
+			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
+			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
 			  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=",:" /> -->
 			  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:string" /> -->
 			</xs:complexType>
@@ -877,13 +879,14 @@
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
 			</xs:complexType>
 		  </xs:element>
-		  
+
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <xs:attribute name="densityCritical" type="xs:string" use="optional" />
-				  <xs:attribute name="capacity" type="xs:string" use="optional" />
-				  <xs:attribute name="densityJam" type="xs:string" use="optional" />
-				  <xs:attribute name="capacityDrop" type="xs:string" use="optional" default="0.0"/>
+				  <xs:attribute name="densityCritical" type="xs:decimal" use="optional" />					<!-- [veh/mile/lane] -->
+				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/hr/lane]   -->
+				  <xs:attribute name="densityJam" type="xs:decimal" use="optional" />						<!-- [veh/mile/lane] -->
+				  <xs:attribute name="capacityDrop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/hr/lane]   -->
+				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/hr/lane]   -->
 				</xs:complexType>
 			  </xs:element>  
 

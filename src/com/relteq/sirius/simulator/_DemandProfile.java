@@ -10,10 +10,13 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	private _Link myLinkOrigin;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
-	private Double2DMatrix demand;		// [veh]
+	private Double2DMatrix demand_nominal;	// [veh]
 	private boolean isdone; 
 	private int stepinitial;
 	private double _knob;
+	private Double std_dev_add;				// [veh]
+	private Double std_dev_mult;			// [veh]
+	private boolean isdeterministic;		// true if the profile is deterministic
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -35,16 +38,16 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		myLinkOrigin = Utils.getLinkWithCompositeId(getNetworkIdOrigin(),getLinkIdOrigin());
 
 		// sample demand distribution, convert to vehicle units
-		demand = new Double2DMatrix(getContent());
-		demand.multiplyscalar(Utils.simdtinhours);
-		
+		demand_nominal = new Double2DMatrix(getContent());
+		demand_nominal.multiplyscalar(Utils.simdtinhours);
+
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
 			samplesteps = Utils.round(dtinseconds/Utils.simdtinseconds);
 		}
 		else{ 	// allow only if it contains one time step
-			if(demand.getnTime()==1){
+			if(demand_nominal.getnTime()==1){
 				dtinseconds = Double.POSITIVE_INFINITY;
 				samplesteps = Integer.MAX_VALUE;
 			}
@@ -55,17 +58,26 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			}
 		}
 		
+		// optional uncertainty model
+		if(getStdDevAdd()!=null)
+			std_dev_add = getStdDevAdd().doubleValue()*Utils.simdtinhours;
+		else
+			std_dev_add = Double.POSITIVE_INFINITY;		// so that the other will always win the min
+		
+		if(getStdDevMult()!=null)
+			std_dev_mult = getStdDevMult().doubleValue()*Utils.simdtinhours;
+		else
+			std_dev_mult = Double.POSITIVE_INFINITY;	// so that the other will always win the min
+		
+		isdeterministic = (getStdDevAdd()==null || std_dev_add==0.0) && 
+						  (getStdDevMult()==null || std_dev_mult==0.0);
+		
 		_knob = getKnob().doubleValue();
 		
 		// read start time, convert to stepinitial
 		double starttime;	// [sec]
-		if( getStartTime()!=null){
+		if( getStartTime()!=null)
 			starttime = getStartTime().floatValue();
-//			if(starttime>0 && starttime<=24){
-//				System.out.println("Warning: Initial time given in hours. Changing to seconds.");
-//				starttime *= 3600f;
-//			}
-		}
 		else
 			starttime = 0f;
 
@@ -75,7 +87,7 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
 	protected boolean validate() {
 		
-		if(demand.isEmpty())
+		if(demand_nominal.isEmpty())
 			return true;
 		
 		if(myLinkOrigin==null){
@@ -95,13 +107,13 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		}
 		
 		// check dimensions
-		if(demand.getnVTypes()!=Utils.numVehicleTypes){
+		if(demand_nominal.getnVTypes()!=Utils.numVehicleTypes){
 			System.out.println("Incorrect dimensions for demand on link " + getLinkIdOrigin());
 			return false;
 		}
 		
 		// check non-negative
-		if(demand.hasNaN()){
+		if(demand_nominal.hasNaN()){
 			System.out.println("Illegal values in demand profile for link " + getLinkIdOrigin());
 			return false;
 		}
@@ -117,10 +129,10 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	}
 	
 	protected void update() {
-		if(isdone || demand.isEmpty())
+		if(isdone || demand_nominal.isEmpty())
 			return;
 		if(Utils.clock.istimetosample(samplesteps,stepinitial)){
-			int n = demand.getnTime()-1;
+			int n = demand_nominal.getnTime()-1;
 			int step = Utils.floor((Utils.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
@@ -143,8 +155,34 @@ public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		if(Utils.theScenario.getSplitRatioProfileSet()!=null)
 			vehicletypeindex = ((_DemandProfileSet)Utils.theScenario.getDemandProfileSet()).vehicletypeindex;
 		
-		Double [] x = Utils.times( demand.sampleAtTime(k,vehicletypeindex) , _knob);
-		return x;
+		Double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
+		
+		if(isdeterministic)
+			return demandvalue;
+			
+		// use smallest between multiplicative and additive standard deviations
+		Double [] std_dev_apply = new Double [Utils.numVehicleTypes];
+		for(int j=0;j<Utils.numVehicleTypes;j++)
+			std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
+		
+		// sample the distribution
+		switch(Utils.uncertaintyModel){
+		case uniform:
+			for(int j=0;j<Utils.numVehicleTypes;j++)
+				demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*Utils.random.nextDouble()-1);
+			break;
+
+		case gaussian:
+			for(int j=0;j<Utils.numVehicleTypes;j++)
+				demandvalue[j] += std_dev_apply[j]*Utils.random.nextGaussian();
+			break;
+		}
+		
+		// apply the knob and non-negativity
+		for(int j=0;j<Utils.numVehicleTypes;j++)
+			demandvalue[j] = Math.max(0.0, demandvalue[j]*_knob);
+		
+		return demandvalue;
 	}
 	
 }

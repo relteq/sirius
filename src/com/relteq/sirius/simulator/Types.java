@@ -63,4 +63,7 @@ public class Types {
 										   discrete_departure };
 	
 	public enum Mode 				{ normal, warmupFromZero , warmupFromIC };
+	
+	public enum Uncertainty			{ NULL, uniform, 
+											gaussian };
 }
