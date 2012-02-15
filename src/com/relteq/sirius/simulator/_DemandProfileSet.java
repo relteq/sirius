@@ -8,7 +8,7 @@ package com.relteq.sirius.simulator;
 import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.DemandProfileSet;
 
-public class _DemandProfileSet extends DemandProfileSet {
+final class _DemandProfileSet extends DemandProfileSet {
 
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 

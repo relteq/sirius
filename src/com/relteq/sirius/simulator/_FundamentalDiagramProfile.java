@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import com.relteq.sirius.jaxb.FundamentalDiagram;
 
-public class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.FundamentalDiagramProfile {
+final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.FundamentalDiagramProfile {
 
 	private _Link myLink;
 	private double dtinseconds;			// not really necessary
@@ -66,7 +66,8 @@ public class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundament
 		FD = new ArrayList<_FundamentalDiagram>();
 		for(FundamentalDiagram fd : getFundamentalDiagram()){
 			_FundamentalDiagram _fd = new _FundamentalDiagram(myLink);	// create empty fd
-			_fd.copyfrom(fd);											// copy and normalize
+	        _fd.settoDefault();					// set to default
+			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
 		}
 	
@@ -83,6 +84,12 @@ public class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundament
 			starttime = 0f;
 
 		stepinitial = Utils.round((starttime-Utils.timestart)/Utils.simdtinseconds);
+		
+		// update so that the link gets the first value of the parameters.
+		// this is need so that the initial density profile can validate. 
+		update();	
+		
+		
 	}
 	
 	protected boolean validate() {

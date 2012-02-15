@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.Density;
 
-public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
+final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
 	private Double [][] initial_density; 	// [veh/mile] indexed by link and type
 	private _Link [] link;					// ordered array of references
@@ -107,7 +107,7 @@ public class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensit
 				}
 				sum += x;
 			}
-			if(sum>link[i].getDensityJamInVehVPMPL()){
+			if(sum>link[i].getDensityJamInVPMPL()){
 				System.out.println("Initial density exceeds jam density.");
 				return false;
 			}

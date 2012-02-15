@@ -7,11 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.*;
 
-public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
-
-	protected boolean isloadedandinitialized=false;		// true if configuration file has been loaded
-	protected boolean isreset=false;					// true if scenario passed reset.	
-	protected boolean isvalid=false;					// true if it has passed validation
+public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	
 	protected _ControllerSet _controllerset = new _ControllerSet();
 	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
@@ -24,9 +20,6 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// They do not throw exceptions or report mistakes. Data errors should be
 	// circumvented and left for the validation to report.
 	protected void populate() {
-
-		if(isloadedandinitialized)
-			return;
 		
 		// network list
 		if(getNetworkList()!=null)
@@ -58,19 +51,23 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		_controllerset.populate();
 		_eventset.populate();
 		
-		isloadedandinitialized = true;		
 	}
 	
 	// validation methods check consistency of the input data. 
 	// They generate error messages.
 	protected void validate() {
 		
-		if(!isreset){
-			System.out.println("Reset scenario first.");
+//		if(!isreset){
+//			System.out.println("Reset scenario first.");
+//			return;
+//		}
+
+		if(!Utils.isloadedandinitialized){
+			System.out.println("Scenario has not been correctly loaded.");
 			return;
 		}
-
-		if(isvalid)
+		
+		if(Utils.isvalid)
 			return;
 		
 		// check that outdt is a multiple of simdt
@@ -121,7 +118,7 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(!_eventset.validate())
 			return;
 
-		isvalid = true;
+		Utils.isvalid = true;
 	}
 
 	// prepare scenario for simulation:
@@ -130,10 +127,10 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// open output files
 	protected void reset() {
 		
-		if(isreset)
+		if(Utils.isreset)
 			return;
 		
-		if(!isloadedandinitialized){
+		if(!Utils.isloadedandinitialized){
 			Utils.addErrorMessage("Load scenario first.");
 			return;
 		}
@@ -160,7 +157,7 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// reset events
 		_eventset.reset();
 		
-		isreset = true;
+		Utils.isreset = true;
 	}	
 	
 	protected void update() {	
@@ -201,7 +198,7 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// Run the scenario
 	protected void run(){
 		
-        if(!isreset){
+        if(!Utils.isreset){
 			System.out.println("Use reset().");
 			return;
         }
@@ -221,13 +218,13 @@ public class _Scenario extends com.relteq.sirius.jaxb.Scenario {
             // Utils.clock.advance();
         	
             // write output .............................
-            if(Utils.simulationMode==Types.Mode.normal)
+            if(Utils.simulationMode==Utils.ModeType.normal)
             	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
 	        	if((Utils.clock.getCurrentstep()==1) || ((Utils.clock.getCurrentstep()-1)%Utils.outputwriter.getOutsteps()==0))
 	                Utils.outputwriter.recordstate(Utils.clock.getT(),true);
         }
         
-        isreset = false;
+        Utils.isreset = false;
         
 	}
 

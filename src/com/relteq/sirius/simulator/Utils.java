@@ -23,29 +23,34 @@ import javax.xml.validation.SchemaFactory;
 
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Network;
 import com.relteq.sirius.jaxb.Scenario;
 import com.relteq.sirius.jaxb.VehicleType;
 
-public class Utils {
+public final class Utils {
 	
 	/////////////////////////////////////////////////////////////////////
 	// static data
 	/////////////////////////////////////////////////////////////////////
 	
-	public static final double EPSILON = (double) 1e-4;
+	protected static final double EPSILON = (double) 1e-4;
 	
-	public static Clock clock;
+	protected static boolean isloadedandinitialized=false;	// true if configuration file has been loaded
+	protected static boolean isreset=false;					// true if scenario passed reset.	
+	protected static boolean isvalid=false;					// true if it has passed validation
 	
-	public static _Scenario theScenario; 
-	public static int numVehicleTypes;			// number of vehicle types
-	public static boolean controlon;			// global control switch
+	protected static Clock clock;
+	
+	protected static _Scenario theScenario; 
+	protected static int numVehicleTypes;		// number of vehicle types
+	protected static boolean controlon;			// global control switch
 	protected static double simdtinseconds;		// [sec] simulation time step 
 	protected static double simdtinhours;		// [hr]  simulation time step 	
 	protected static int numRepititions;		// [#] number of repititions of the simulation
 	
-	protected static Types.Mode simulationMode;
-	protected static Types.Uncertainty uncertaintyModel;
+	protected static Utils.ModeType simulationMode;
+	protected static Utils.UncertaintyType uncertaintyModel;
 	
 	// from configuration file
 	protected static double outdt;				// [sec] output sampling time
@@ -58,13 +63,19 @@ public class Utils {
 	protected static String outputfile_inflow;
 	protected static OutputWriter outputwriter = null;
 
-	private static String schemafile = "data/schema/sirius.xsd";
+	protected static Random random = new Random();
 
+	private static String schemafile = "data/schema/sirius.xsd";
 	private static String errorheader = new String();
 	private static ArrayList<String> errormessage = new ArrayList<String>();
-
-	public static Random random = new Random();
 	
+	protected static enum ModeType {NULL, normal, 
+									      warmupFromZero , 
+									      warmupFromIC };
+
+	protected static enum UncertaintyType { NULL, uniform, 
+										          gaussian };
+		   
 	/////////////////////////////////////////////////////////////////////
 	// error handling
 	/////////////////////////////////////////////////////////////////////
@@ -206,7 +217,7 @@ public class Utils {
 	////////////////////////////////////////////////////////////////////////////
 
 	public static _Scenario load(String filename){
-        
+		
 		JAXBContext context;
 		Unmarshaller u;
     	
@@ -250,16 +261,25 @@ public class Utils {
         Utils.theScenario = S;
         Utils.simdtinseconds = computeCommonSimulationTimeInSeconds();
         Utils.simdtinhours = Utils.simdtinseconds/3600.0;
-        Utils.uncertaintyModel = Types.Uncertainty.uniform;
+        Utils.uncertaintyModel = Utils.UncertaintyType.uniform;
         if(S.getSettings().getVehicleTypes()==null)
             Utils.numVehicleTypes = 1;
         else
         	if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
         		Utils.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
         
+        // simulation mode
+        Utils.setSimulationMode();
+
+		// create the clock
+        Utils.clock = new Clock(Utils.timestart,Utils.timeend,Utils.simdtinseconds);
+
         // populate the scenario ....................................................
         S.populate();
         
+        // check that load was successful
+        Utils.isloadedandinitialized = Utils.checkLoad(S);
+		
         return S;
 	}	
 	
@@ -322,19 +342,59 @@ public class Utils {
     	return ((double)tengcd)/10.0;
 	}
 	
+	// Simulation mode is normal <=> start time == initial profile time stamp
+	private static void setSimulationMode(){
+
+		Utils.simulationMode = Utils.ModeType.NULL;
+		
+		if(Utils.theScenario==null)
+			return;
+		
+        double time_ic = ((_InitialDensityProfile)Utils.theScenario.getInitialDensityProfile()).getTimestamp();
+		if(Utils.timestart==time_ic){
+			Utils.simulationMode = Utils.ModeType.normal;
+		}
+		else{
+			// it is a warmup. we need to decide on start and end times
+			Utils.timeend = Utils.timestart;
+			if(time_ic<Utils.timestart){	// go from ic to timestart
+				Utils.timestart = time_ic;
+				Utils.simulationMode = Utils.ModeType.warmupFromIC;
+			}
+			else{							// start at earliest demand profile
+				Utils.timestart = Double.POSITIVE_INFINITY;
+				for(DemandProfile D : Utils.theScenario.getDemandProfileSet().getDemandProfile())
+					Utils.timestart = Math.min(Utils.timestart,D.getStartTime().doubleValue());
+				Utils.simulationMode = Utils.ModeType.warmupFromZero;
+			}		
+		}
+	}
+	
+	private static boolean checkLoad(_Scenario S){
+		
+		if(S==null){
+			Utils.setErrorHeader("Load failed.");
+			return false;
+		}
+	
+		// check timestart < timeend (depends on simulation mode)
+		if(Utils.timestart>=Utils.timeend){
+			Utils.setErrorHeader("Empty simulation period.");
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// scenario interface
 	/////////////////////////////////////////////////////////////////////
-
-//	public static _Settings getSettings() {
-//		return (_Settings) theScenario._settings;
-//	}
 	
 	public static com.relteq.sirius.jaxb.Settings getSettings() {
 		return theScenario.getSettings();
 	}
 	
-
 	public static _ControllerSet getControllerSet(){
 		return theScenario._controllerset;
 	}
@@ -408,6 +468,7 @@ public class Utils {
 	/////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////
+	
 	
 	public static double getTimeMaxInSeconds() {
     	return timeend;

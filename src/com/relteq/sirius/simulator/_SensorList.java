@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-public class _SensorList extends com.relteq.sirius.jaxb.SensorList {
+final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 
 	private ArrayList<_Sensor> _sensors = new ArrayList<_Sensor>();
 
@@ -28,11 +28,11 @@ public class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 			for(com.relteq.sirius.jaxb.Sensor sensor : myNetwork.getSensorList().getSensor()){
 	
 				// assign type
-				Types.Sensor myType;
+				_Sensor.Type myType;
 		    	try {
-					myType = Types.Sensor.valueOf(sensor.getType());
+					myType = _Sensor.Type.valueOf(sensor.getType());
 				} catch (IllegalArgumentException e) {
-					myType = Types.Sensor.NULL;
+					myType = _Sensor.Type.NULL;
 					return;
 				}	
 				// generate controller
@@ -42,7 +42,7 @@ public class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 						S = new com.relteq.sirius.sensor.SensorLoopStation(sensor,myType);
 					break;
 				}
-				if(myType!=Types.Sensor.NULL)
+				if(myType!=_Sensor.Type.NULL)
 					_sensors.add(S);
 			}
 		}

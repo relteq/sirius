@@ -9,7 +9,13 @@ import java.util.ArrayList;
 
 public final class _Node extends com.relteq.sirius.jaxb.Node {
 
-	private Types.Node myType;
+	protected static enum Type	{NULL, simple,
+								       onramp,
+								       offramp,
+								       signalized_intersection,
+								       unsignalized_intersection };
+		   
+	private _Node.Type myType;
 
 	// network references
 	private _Link [] output_link;
@@ -47,7 +53,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 
-	public Types.Node getMyType() {
+	public _Node.Type getMyType() {
 		return myType;
 	}
     
@@ -149,7 +155,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
     	try {
-			myType = Types.Node.valueOf(getType());
+			myType = _Node.Type.valueOf(getType());
 		} catch (IllegalArgumentException e) {
 			myType = null;
 			return;

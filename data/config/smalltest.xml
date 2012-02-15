@@ -172,7 +172,7 @@
         <fd densityCritical="20.0" flowMax="1800.0" densityJam="150.0"/>
 	 </event>
      <event tstamp="20" link_id="-3" type="FD" enabled="true">
-        <!--<fd densityCritical="200.0" flowMax="1800.0" densityJam="150.0"/>-->
+        <fd densityCritical="200.0" flowMax="1800.0" densityJam="150.0"/>
 	 </event>
   </EventSet>
   <DemandProfileSet>
@@ -181,7 +181,6 @@
   </DemandProfileSet>
    <ControllerSet>
 		<controller dt="5" link_id="-6" type="ALINEA" usesensors="false">
-			<!--<limits cmin="0" cmax="900"/>-->
 			<parameters>
 				<parameter name="gain" value="50"/>
 			</parameters>

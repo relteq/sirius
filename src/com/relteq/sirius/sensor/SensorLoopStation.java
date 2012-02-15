@@ -5,7 +5,6 @@
 
 package com.relteq.sirius.sensor;
 
-import com.relteq.sirius.simulator.Types;
 import com.relteq.sirius.simulator._Sensor;
 
 public class SensorLoopStation extends _Sensor {
@@ -14,7 +13,7 @@ public class SensorLoopStation extends _Sensor {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor c,Types.Sensor myType) {
+	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor c,_Sensor.Type myType) {
 		super(c,myType);		
 	}
 	

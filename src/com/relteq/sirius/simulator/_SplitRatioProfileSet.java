@@ -8,7 +8,7 @@ package com.relteq.sirius.simulator;
 import com.relteq.sirius.jaxb.SplitRatioProfileSet;
 import com.relteq.sirius.jaxb.SplitratioProfile;
 
-public class _SplitRatioProfileSet extends SplitRatioProfileSet {
+final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 

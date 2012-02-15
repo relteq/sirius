@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.StringTokenizer;
 
-public class Double2DMatrix {
+final class Double2DMatrix {
 	
 	private int nTime;			// number of time slices
 	private int nVTypes;		// number of vehicle types

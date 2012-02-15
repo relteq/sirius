@@ -14,7 +14,7 @@ public class SensorFloating extends _Sensor {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorFloating(Sensor s, com.relteq.sirius.simulator.Types.Sensor myType) {
+	public SensorFloating(Sensor s,_Sensor.Type myType) {
 		super(s, myType);
 		// TODO Auto-generated constructor stub
 	}

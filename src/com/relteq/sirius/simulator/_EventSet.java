@@ -10,8 +10,7 @@ import java.util.Collections;
 
 import com.relteq.sirius.jaxb.Event;
 
-
-public class _EventSet extends com.relteq.sirius.jaxb.EventSet {
+final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 
 	private boolean isdone;			// true if we are done with events
 	private int currentevent;
@@ -31,16 +30,16 @@ public class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 				// keep only enabled events
 				if(event.isEnabled()){
 
-					Types.Event myType;
+					_Event.Type myType;
 			    	try {
-						myType = Types.Event.valueOf(event.getType());
+						myType = _Event.Type.valueOf(event.getType());
 					} catch (IllegalArgumentException e) {
-						myType = Types.Event.NULL;
+						myType = _Event.Type.NULL;
 						return;
 					}	
 					
 					// generate event
-					if(myType!=Types.Event.NULL)
+					if(myType!=_Event.Type.NULL)
 						_sortedevents.add(new _Event(event,myType));
 				}
 			}

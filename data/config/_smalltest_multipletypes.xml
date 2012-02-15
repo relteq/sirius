@@ -62,7 +62,7 @@
    </ControllerSet>
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram densityCritical="30" densityJam="150"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-2">
          <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>

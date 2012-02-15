@@ -81,12 +81,15 @@ scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'q_control');
 % convert sensor links to link_reference
 if(hassensors)
     for i=1:length(scenario.network.SensorList.sensor)
-        clear link_reference
-        for j=1:length(scenario.network.SensorList.sensor(i).links)
-            link_reference(j).ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links(j);
+        
+        if(length(scenario.network.SensorList.sensor(i).links)>1)
+            error('Sensors may only attach to single links');
         end
-        scenario.network.SensorList.sensor(i).links.link_reference = link_reference;
+        clear link_reference  
+        link_reference.ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links;
+        scenario.network.SensorList.sensor(i).link_reference = link_reference;
     end
+    scenario.network.SensorList.sensor = rmfield(scenario.network.SensorList.sensor,'links');
 end
 
 % display paramers put in simulation
@@ -372,7 +375,7 @@ scenario = rmfield(scenario,'WeavingFactorsProfile');
 if(hasdemandprofile)
     for i=1:length(scenario.DemandProfileSet.demandProfile)
         scenario.DemandProfileSet.demandProfile(i).CONTENT = ...
-        class_Utils.writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT)
+        class_Utils.writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT);
     end
 end
 
@@ -630,15 +633,33 @@ if(isempty(fd))
 end
     
 x = fd.ATTRIBUTE;
-if(isfield(x,'densityCritical'))
-    FD.ATTRIBUTE.densityCritical = x.densityCritical;
-end
+
 if(isfield(x,'flowMax'))
-    FD.ATTRIBUTE.capacity = x.flowMax;
+    capacity = x.flowMax;
+else
+    capacity = 2400;
 end
+
 if(isfield(x,'densityJam'))
-    FD.ATTRIBUTE.densityJam = x.densityJam;
+    densityJam = x.densityJam;
+else
+    densityJam = 160;
 end
+
+if(isfield(x,'densityCritical'))
+    densityCritical = x.densityCritical;
+else
+    densityCritical = 40;
+end
+
 if(isfield(x,'capacityDrop'))
-    FD.ATTRIBUTE.capacityDrop = x.capacityDrop;
+    capacityDrop = x.capacityDrop;
+else
+    capacityDrop = 0;
 end
+
+FD.ATTRIBUTE.capacity = capacity;
+FD.ATTRIBUTE.densityJam = densityJam;
+FD.ATTRIBUTE.capacityDrop = capacityDrop;
+FD.ATTRIBUTE.congestion_speed = capacity/(densityJam-densityCritical);
+FD.ATTRIBUTE.freeflow_speed = capacity/densityCritical;

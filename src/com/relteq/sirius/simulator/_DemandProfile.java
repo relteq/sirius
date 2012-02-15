@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-public class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
+final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
 	private _Link myLinkOrigin;
 	private double dtinseconds;			// not really necessary

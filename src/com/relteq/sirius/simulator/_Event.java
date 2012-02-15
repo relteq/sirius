@@ -12,9 +12,17 @@ import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.ScenarioElement;
 
 @SuppressWarnings("rawtypes")
-public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
+final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 
-	protected Types.Event myType;
+	public static enum Type	{NULL, fundamental_diagram,
+								   link_demand_knob,
+								   link_lanes, 
+								   node_split_ratio,
+								   control_toggle,
+								   global_control_toggle,
+								   global_demand_knob };
+										   
+	protected _Event.Type myType;
 	protected int timestampstep;
 	protected ArrayList<_ScenarioElement> targets;
 	
@@ -24,7 +32,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 	
 	public _Event(){}
 	
-	public _Event(Event e,Types.Event myType){
+	public _Event(Event e,_Event.Type myType){
 		this.myType = myType;
 		timestampstep = Utils.round(e.getTstamp().floatValue()/Utils.simdtinseconds);		// assume in seconds
 		targets = new ArrayList<_ScenarioElement>();
@@ -36,7 +44,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 	// interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public Types.Event getMyType() {
+	public _Event.Type getMyType() {
 		return myType;
 	}
 	
@@ -69,7 +77,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 			case fundamental_diagram:
 			case link_demand_knob:
 			case link_lanes:
-				if(s.myType!=Types.ScenarioElement.link){
+				if(s.myType!=_ScenarioElement.Type.link){
 					System.out.println("wrong target type.");
 					return false;
 				}
@@ -77,7 +85,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 				
 			// these apply to nodes only
 			case node_split_ratio:
-				if(s.myType!=Types.ScenarioElement.node){
+				if(s.myType!=_ScenarioElement.Type.node){
 					System.out.println("wrong target type.");
 					return false;
 				}
@@ -85,7 +93,7 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 			
 			// these apply to controllers only
 			case control_toggle:
-				if(s.myType!=Types.ScenarioElement.controller){
+				if(s.myType!=_ScenarioElement.Type.controller){
 					System.out.println("wrong target type.");
 					return false;
 				}
@@ -224,8 +232,8 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 			return compare;
 
 		// second ordering by event type
-		Types.Event thiseventtype = this.getMyType();
-		Types.Event thateventtype = that.getMyType();
+		_Event.Type thiseventtype = this.getMyType();
+		_Event.Type thateventtype = that.getMyType();
 		compare = thiseventtype.compareTo(thateventtype);
 		if(compare!=0)
 			return compare;
@@ -239,8 +247,8 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		
 		// fourth ordering by target type
 		for(int i=0;i<thisnumtargets;i++){
-			Types.ScenarioElement thistargettype = this.targets.get(i).myType;
-			Types.ScenarioElement thattargettype = that.targets.get(i).myType;
+			_ScenarioElement.Type thistargettype = this.targets.get(i).myType;
+			_ScenarioElement.Type thattargettype = that.targets.get(i).myType;
 			compare = thistargettype.compareTo(thattargettype);
 			if(compare!=0)
 				return compare;		

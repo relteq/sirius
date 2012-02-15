@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-public class _Signal extends com.relteq.sirius.jaxb.Signal {
+final class _Signal extends com.relteq.sirius.jaxb.Signal {
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import com.relteq.sirius.jaxb.Controller;
 
-public class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
+final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
 	private ArrayList<_Controller> _controllers = new ArrayList<_Controller>();
 	
@@ -31,11 +31,11 @@ public class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 			for(Controller controller : Utils.theScenario.getControllerSet().getController()){
 	
 				// assign type
-				Types.Controller myType;
+				_Controller.Type myType;
 		    	try {
-					myType = Types.Controller.valueOf(controller.getType());
+					myType = _Controller.Type.valueOf(controller.getType());
 				} catch (IllegalArgumentException e) {
-					myType = Types.Controller.NULL;
+					myType = _Controller.Type.NULL;
 					return;
 				}	
 				// generate controller
@@ -45,7 +45,7 @@ public class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 						C = new com.relteq.sirius.control.ControllerAlinea(controller,myType);
 					break;
 				}
-				if(myType!=Types.Controller.NULL)
+				if(myType!=_Controller.Type.NULL)
 					_controllers.add(C);
 			}
 		}

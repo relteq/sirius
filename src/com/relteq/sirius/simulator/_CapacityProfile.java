@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-public class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
+final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 
 	private _Link myLink;
 	private double dtinseconds;				// not really necessary

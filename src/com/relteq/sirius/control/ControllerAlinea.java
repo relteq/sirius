@@ -31,7 +31,7 @@ public class ControllerAlinea extends _Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public ControllerAlinea(com.relteq.sirius.jaxb.Controller c,com.relteq.sirius.simulator.Types.Controller myType) {
+	public ControllerAlinea(com.relteq.sirius.jaxb.Controller c,_Controller.Type myType) {
 		super(c,myType);
 
 		hasmainlinelink = false;

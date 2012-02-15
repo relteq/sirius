@@ -5,18 +5,19 @@
 
 package com.relteq.sirius.simulator;
 
-public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
+final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
 
 	private _Link myLink;
 	private double lanes;
-	private Double _densityCritical; 	// [veh]           
 	private Double _densityJam;     	// [veh] 
     private Double _capacity_nominal;   // [veh] 
     private Double _capacity_actual;   	// [veh] 
 	private Double _capacityDrop;     	// [veh] 
-    private double _vf;                	// [-]
-    private double _w;                	// [-]
-    private double std_dev_capacity;	// [veh]
+    private Double _vf;                	// [-]
+    private Double _w;                	// [-]
+    private Double std_dev_capacity;	// [veh]
+    
+    private Double density_critical;	// [veh]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction 
@@ -27,7 +28,6 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 			return;
 		this.myLink = myLink;
 		this.lanes = myLink.get_Lanes();
-		_densityCritical  = Double.NaN;         
 		_densityJam 	  = Double.NaN;  
 	    _capacity_nominal = Double.NaN; 
 	    _capacity_actual  = Double.NaN;
@@ -35,6 +35,7 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
 	    std_dev_capacity  = Double.NaN;
+	    density_critical  = Double.NaN;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -45,31 +46,31 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 	// they are only called for fundamental diagrams belonging
 	// to links, these are initialized with default values, and 
 	// copyfrom only replaces with non-nan values.
-	
-	public Double _getDensityCritical() {
-		return _densityCritical;
-	}
 
-	public Double _getDensityJam() {
+	public Double _getDensityJamInVeh() {
 		return _densityJam;
 	}
 
-	public Double _getCapacity() {
+	public Double _getCapacityInVeh() {
 		return _capacity_actual;
 	}
 
-	public Double _getCapacityDrop() {
+	public Double _getCapacityDropInVeh() {
 		return _capacityDrop;
 	}
 
-	public double getVf() {
+	public double getVfNormalized() {
 		return _vf;
 	}
 
-	public double getW() {
+	public double getWNormalized() {
 		return _w;
 	}
 
+	public Double getDensityCriticalInVeh() {
+		return density_critical;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -84,11 +85,11 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 		if(newlanes<=0)
 			return;
 		double alpha = newlanes/lanes;
-		_densityCritical *= alpha;          
-		_densityJam 	 *= alpha; 
-		_capacity_actual *= alpha; 
+		_densityJam 	  *= alpha; 
+		_capacity_actual  *= alpha; 
 		_capacity_nominal *= alpha; 
-		_capacityDrop 	 *= alpha; 
+		_capacityDrop 	  *= alpha; 
+		density_critical  *= alpha;
 		lanes = newlanes;
 	}
 	
@@ -100,13 +101,13 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
  	protected void settoDefault(){
 		if(myLink==null)
 			return;
-		_densityCritical = Defaults.densityCritical	*lanes*myLink.getLengthInMiles();
-		_densityJam 	 = Defaults.densityJam		*lanes*myLink.getLengthInMiles();
-		_capacity_nominal= Defaults.capacity		*lanes*Utils.simdtinhours;
-		_capacity_actual = Defaults.capacity		*lanes*Utils.simdtinhours;
-		_capacityDrop 	 = Defaults.capacityDrop	*lanes*Utils.simdtinhours;
-		_vf = computeVf();
-        _w  = computeW();
+		_densityJam 	  = Defaults.densityJam		*lanes*myLink.getLengthInMiles();
+		_capacity_nominal = Defaults.capacity		*lanes*Utils.simdtinhours;
+		_capacity_actual  = Defaults.capacity		*lanes*Utils.simdtinhours;
+		_capacityDrop 	  = Defaults.capacityDrop	*lanes*Utils.simdtinhours;
+		_vf = Defaults.vf * Utils.simdtinhours / myLink.getLengthInMiles();
+        _w  = Defaults.w  * Utils.simdtinhours / myLink.getLengthInMiles();
+        density_critical =  _capacity_actual / _vf;
 	}
 
  	// copy per lane parameters from jaxb and normalize
@@ -114,13 +115,11 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 
 		if(fd==null)
 			return;
+
+		if(myLink==null)
+			return;
 		
 		double value;
-		
-		if(fd.getDensityCritical()!=null){
-			value = fd.getDensityCritical().doubleValue();	// [veh/mile/lane]
-			_densityCritical = value * lanes*myLink.getLengthInMiles();	
-		}
 
 		if(fd.getDensityJam()!=null){
 			value = fd.getDensityJam().doubleValue();			// [veh/mile/lane]
@@ -130,10 +129,11 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 		if(fd.getCapacity()!=null){
 			value = fd.getCapacity().doubleValue();			// [veh/hr/lane]
 			_capacity_nominal = value * lanes*Utils.simdtinhours;
+			_capacity_actual = _capacity_nominal;
 		} 
 		
 		if(fd.getStdDevCapacity()!=null){
-			value = fd.getStdDevCapacity().doubleValue();			// [veh/hr/lane]
+			value = fd.getStdDevCapacity().doubleValue();	// [veh/hr/lane]
 			std_dev_capacity = value * lanes*Utils.simdtinhours;
 		}
 		
@@ -142,9 +142,17 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 			_capacityDrop = value * lanes*Utils.simdtinhours;
 		} 
 		
-		// compute vf and w
-        _vf = computeVf();		// [0,1]
-        _w  = computeW();		// [0,1]
+		if(fd.getFreeflowSpeed()!=null){
+			value = fd.getFreeflowSpeed().doubleValue();		// [mile/hr]
+			_vf = value * Utils.simdtinhours / myLink.getLengthInMiles();
+		}
+
+		if(fd.getCongestionSpeed()!=null){
+			value = fd.getCongestionSpeed().doubleValue();		// [mile/hr]
+			_w = value * Utils.simdtinhours / myLink.getLengthInMiles();
+		}
+
+		density_critical =  _capacity_actual / _vf;
         
 	}
 	
@@ -155,7 +163,7 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 		
 		// sample the capacity distribution
 		_capacity_actual = _capacity_nominal;
-		if(std_dev_capacity!=Double.NaN){
+		if(!std_dev_capacity.isNaN()){
 			switch(Utils.uncertaintyModel){
 			case uniform:
 				_capacity_actual += std_dev_capacity*Math.sqrt(3)*(2*Utils.random.nextDouble()-1);
@@ -173,50 +181,23 @@ public class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagr
 	}
 	
 	protected boolean validate(){
-		if(_densityCritical<0 || _densityJam<0 || _capacity_nominal<0 || _capacity_actual<0 || _capacityDrop<0){
+		if(_vf<0 || _w<0 || _densityJam<0 || _capacity_nominal<0 || _capacity_actual<0 || _capacityDrop<0){
 			System.out.println("Fundamental diagram parameters must be non-negative.");
 			return false;
 		}
 		
-		if(_densityCritical>=_densityJam){
-			System.out.println("Critical density must be smaller than jam density.");
+		double dens_crit_congestion = _densityJam-_capacity_nominal/_w;	// [veh]
+			
+		if(Utils.greaterthan(density_critical,dens_crit_congestion)){
+			System.out.println("Invalid fundamental diagram.");
 			return false;
 		}
-
-        Double vf = computeVf();
-        Double w  = computeW();
-        
-        if(vf.isInfinite() || w.isInfinite()){
-        	System.out.println("Infinite freeflow or congestion wave speed.");
-        	return false;
-        }
-
-        if(vf.isNaN() || w.isNaN()){
-        	System.out.println("Infinite freeflow or congestion wave speed.");
-        	return false;
-        }
         	
-		if(vf>1 || w>1){
+		if(_vf>1 || _w>1){
 			System.out.println("CFL condition violated");
 			return false;
 		}
 		return true;
 	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// private methods
-	/////////////////////////////////////////////////////////////////////
 
-	private Double computeVf(){	
-		if(_densityCritical==0)
-			return Double.POSITIVE_INFINITY;
-		return _capacity_actual / _densityCritical;
-	}
-	
-	private Double computeW(){
-		if(_densityJam<=_densityCritical)
-			return Double.POSITIVE_INFINITY;		
-		return _capacity_actual / (_densityJam-_densityCritical);
-	}
-	
 }

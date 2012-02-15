@@ -22,13 +22,13 @@
    </SplitRatioProfileSet>
    <EventSet>
       <event enabled="true" tstamp="4" type="fundamental diagram">
-         <fundamentalDiagram capacity="1800" densityCritical="20" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="13.8461538461538" densityJam="150" freeflow_speed="90"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
-      <event enabled="true" tstamp="20" type="fundamental diagram"><!--<fd densityCritical="200.0" flowMax="1800.0" densityJam="150.0"/>-->
-         <fundamentalDiagram/>
+      <event enabled="true" tstamp="20" type="fundamental diagram">
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="-36" densityJam="150" freeflow_speed="9"/>
          <targetElements>
             <scenarioElement id="-3" type="link"/>
          </targetElements>
@@ -39,7 +39,7 @@
       <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
    </DemandProfileSet>
    <ControllerSet>
-      <controller dt="5" type="IRM alinea"><!--<limits cmin="0" cmax="900"/>-->
+      <controller dt="5" type="IRM alinea">
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>
@@ -50,25 +50,25 @@
    </ControllerSet>
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-2">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-3">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-4">
-         <fundamentalDiagram capacity="300" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="300" capacityDrop="0" congestion_speed="2.5" densityJam="150" freeflow_speed="10"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-5">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-6">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-7">
-         <fundamentalDiagram capacity="1800" densityCritical="30" densityJam="150"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
    </FundamentalDiagramProfileSet>
    <NetworkList>

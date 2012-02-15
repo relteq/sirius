@@ -15,8 +15,7 @@ import java.util.List;
 import com.relteq.sirius.jaxb.Link;
 import com.relteq.sirius.jaxb.Network;
 
-
-public class OutputWriter {
+final class OutputWriter {
 
 	protected int outsteps;
 	protected Writer out_density = null;

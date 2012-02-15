@@ -5,9 +5,22 @@
 
 package com.relteq.sirius.simulator;
 
-public class _Link extends com.relteq.sirius.jaxb.Link {
+public final class _Link extends com.relteq.sirius.jaxb.Link {
 
-	private Types.Link myType;
+	protected static enum Type	{NULL, freeway,
+								       HOV,
+								       HOT,
+								       onramp,
+								       offramp,
+								       freeway_connector,
+								       street,
+								       intersection_apporach,other };	
+		   
+	protected static enum DynamicsType	{NULL, CTM,
+										       region_tracking,
+										       discrete_departure };
+																		   
+	private _Link.Type myType;
 	
 	// network references
 	private _Node begin_node;
@@ -58,7 +71,7 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	    
-	public Types.Link getMyType() {
+	public _Link.Type getMyType() {
 		return myType;
 	}
     
@@ -108,56 +121,56 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
 		if(totaldensity>Utils.EPSILON)
 			speed = Utils.sum(outflow)/totaldensity;
 		else
-			speed = FD.getVf();
+			speed = FD.getVfNormalized();
 		return speed*_length/Utils.simdtinhours;
 	}
 
-	public double getDensityCriticalInVeh() {
-		return FD._getDensityCritical();
-	}
-
 	public double getDensityJamInVeh() {
-		return FD._getDensityJam();
+		return FD._getDensityJamInVeh();
+	}
+	
+	public double getDensityCriticalInVeh() {
+		return FD.getDensityCriticalInVeh();
 	}
 
 	public double getCapacityDropInVeh() {
-		return FD._getCapacityDrop();
+		return FD._getCapacityDropInVeh();
 	}
 
 	public double getCapacityInVeh() {
-		return FD._getCapacity();
+		return FD._getCapacityInVeh();
 	}
 	
+	public double getDensityJamInVPMPL() {
+		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
+	}
+
 	public double getDensityCriticalInVPMPL() {
-		return FD._getDensityCritical()/getLengthInMiles()/_lanes;
-	}
-	
-	public double getDensityJamInVehVPMPL() {
-		return FD._getDensityJam()/getLengthInMiles()/_lanes;
+		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
 	}
 	
 	public double getCapacityDropInVPHPL() {
-		return FD._getCapacityDrop()/Utils.simdtinhours/_lanes;
+		return FD._getCapacityDropInVeh()/Utils.simdtinhours/_lanes;
 	}
 
 	public double getCapacityInVPHPL() {
-		return FD._getCapacity()/Utils.simdtinhours/_lanes;
+		return FD._getCapacityInVeh()/Utils.simdtinhours/_lanes;
 	}
 	
 	public double getNormalizedVf() {
-		return FD.getVf();
+		return FD.getVfNormalized();
 	}
 
 	public double getVfInMPH() {
-		return FD.getVf()*getLengthInMiles()/Utils.simdtinhours;
+		return FD.getVfNormalized()*getLengthInMiles()/Utils.simdtinhours;
 	}
 	
 	public double getNormalizedW() {
-		return FD.getW();
+		return FD.getWNormalized();
 	}
 
 	public double getWInMPH() {
-		return FD.getW()*getLengthInMiles()/Utils.simdtinhours;
+		return FD.getWNormalized()*getLengthInMiles()/Utils.simdtinhours;
 	}
 
 	public boolean isIssource() {
@@ -286,8 +299,8 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
  				outflowDemand[k] += density[k];
  				sum += outflowDemand[k];
  			}
- 			if(sum>FD._getCapacity()){
- 				double ratio = FD._getCapacity()/sum;
+ 			if(sum>FD._getCapacityInVeh()){
+ 				double ratio = FD._getCapacityInVeh()/sum;
  				for(int k=0;k<Utils.numVehicleTypes;k++)
  					outflowDemand[k] *= ratio;
  			}
@@ -307,20 +320,20 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
         
         // compute total flow leaving the link in the absence of flow control
         double totaloutflow;
-        if( totaldensity < FD._getDensityCritical() ){
+        if( totaldensity < FD.getDensityCriticalInVeh() ){
         	if(iscontrolled)
         		// speed control sets a bound on freeflow speed
-        		totaloutflow = totaldensity * Math.min(FD.getVf(),control_maxspeed);	
+        		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
         	else
-        		totaloutflow = totaldensity * FD.getVf();
+        		totaloutflow = totaldensity * FD.getVfNormalized();
         }
         else{
-        	totaloutflow = Math.max(FD._getCapacity()-FD._getCapacityDrop(),0d);
-            if(iscontrolled)
-            	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD._getDensityCritical());
+        	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
+            if(iscontrolled)	// speed controller
+            	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
         }        
         
-        // add controller
+        // flow controller
         if(iscontrolled)
         	totaloutflow = Math.min( totaloutflow , control_maxflow );
         
@@ -332,8 +345,8 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
     
     protected void updateSpaceSupply(){
     	double totaldensity = Utils.sum(density);
-        spaceSupply = FD.getW()*(FD._getDensityJam() - totaldensity);
-        spaceSupply = Math.min(spaceSupply,FD._getCapacity());
+        spaceSupply = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
+        spaceSupply = Math.min(spaceSupply,FD._getCapacityInVeh());
     }
 	
 	/////////////////////////////////////////////////////////////////////
@@ -346,7 +359,7 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
         
 		// assign type
     	try {
-			myType = Types.Link.valueOf(getType());
+			myType = _Link.Type.valueOf(getType());
 		} catch (IllegalArgumentException e) {
 			myType = null;
 			return;
@@ -448,8 +461,8 @@ public class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 	
 	protected void resetFD(){
-    	FD = new _FundamentalDiagram(this);		// set to default
-        FD.settoDefault();
+    	FD = new _FundamentalDiagram(this);
+        FD.settoDefault();		// set to default
     	eventactive = false;
 	}
 

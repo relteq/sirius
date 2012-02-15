@@ -5,21 +5,29 @@
 
 package com.relteq.sirius.simulator;
 
-public class _ScenarioElement {
-	public Types.ScenarioElement myType;
-	public String network_id = "";
-	public String id;
-	public Object reference;
+final class _ScenarioElement {
+	
+	public static enum Type {NULL, link, 
+								   node,
+								   controller,
+								   sensor,
+								   event,
+								   signal };
+		    
+	protected _ScenarioElement.Type myType;
+	protected String network_id = "";
+	protected String id;
+	protected Object reference;
 	
 	public _ScenarioElement(com.relteq.sirius.jaxb.ScenarioElement s){
 		this.id = s.getId();
 		this.network_id = s.getNetworkId();
 		if(id.equalsIgnoreCase("link")){
-			this.myType = Types.ScenarioElement.link;
+			this.myType = _ScenarioElement.Type.link;
 			this.reference = Utils.getLinkWithCompositeId(network_id,id);
 		}
 		if(id.equalsIgnoreCase("node")){
-			this.myType = Types.ScenarioElement.node;
+			this.myType = _ScenarioElement.Type.node;
 			this.reference = Utils.getNodeWithCompositeId(network_id,id);
 		}
 	}

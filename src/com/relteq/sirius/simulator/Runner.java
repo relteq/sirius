@@ -7,14 +7,12 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileNotFoundException;
 
-import com.relteq.sirius.jaxb.DemandProfile;
+final class Runner {
 
-public class Runner {
-	
 	public static void main(String[] args) {
 
 		long time = System.currentTimeMillis();
-		
+
 		// process input parameters
 		if(!parseInput(args)){
 			Utils.printErrorMessage();
@@ -23,64 +21,17 @@ public class Runner {
 
 		// load configuration file ................................
 		_Scenario scenario = Utils.load(Utils.configfilename);
-		
-		if(scenario==null){
-			Utils.setErrorHeader("Load failed.");
-			Utils.printErrorMessage();
-			return;
-		}
-		
-		if(!scenario.isloadedandinitialized){
+
+		// did load succeed?
+		if(!Utils.isloadedandinitialized){
 			Utils.setErrorHeader("Initialization failed.");
-			Utils.printErrorMessage();
-			return;
-		}
-		
-        // set simulation mode .....................................
-        
-        // normal <=> start time == initial profile time stamp
-        double time_ic = ((_InitialDensityProfile)Utils.theScenario.getInitialDensityProfile()).getTimestamp();
-		if(Utils.timestart==time_ic){
-			Utils.simulationMode = Types.Mode.normal;
-		}
-		else{
-			// it is a warmup. we need to decide on start and end times
-			Utils.timeend = Utils.timestart;
-			if(time_ic<Utils.timestart){	// go from ic to timestart
-				Utils.timestart = time_ic;
-				Utils.simulationMode = Types.Mode.warmupFromIC;
-			}
-			else{							// start at earliest demand profile
-				Utils.timestart = Double.POSITIVE_INFINITY;
-				for(DemandProfile D : Utils.theScenario.getDemandProfileSet().getDemandProfile())
-					Utils.timestart = Math.min(Utils.timestart,D.getStartTime().doubleValue());
-				Utils.simulationMode = Types.Mode.warmupFromZero;
-			}		
-		}
-		
-		// check timestart < timeend ..............................
-		if(Utils.timestart>=Utils.timeend){
-			Utils.setErrorHeader("Empty simulation period.");
-			Utils.printErrorMessage();
-			return;
-		}
-
-		// create the clock
-        Utils.clock = new Clock(Utils.timestart,Utils.timeend,Utils.simdtinseconds);
-
-		// reset scenario ..........................................
-        // (reset before validate only so that the fundamental diagrams get populated
-        // and therefore the initial density profiles can validate. try to get rid of this)
-		scenario.reset();
-		if(!scenario.isreset){
-			Utils.setErrorHeader("Reset failed.");
 			Utils.printErrorMessage();
 			return;
 		}
 			
 		// validate scenario ......................................
 		scenario.validate();
-		if(!scenario.isvalid){
+		if(!Utils.isvalid){
 			Utils.setErrorHeader("Validation failed.");
 			Utils.printErrorMessage();
 			return;
@@ -89,12 +40,16 @@ public class Runner {
 		// loop through simulation runs ............................
 		for(int i=0;i<Utils.numRepititions;i++){
 			
-			// reset 
-			if(i>0)
-				scenario.reset();
-			
+			// reset scenario
+			scenario.reset();
+			if(!Utils.isreset){
+				Utils.setErrorHeader("Reset failed.");
+				Utils.printErrorMessage();
+				return;
+			}
+
 			// open output files
-	        if(Utils.simulationMode==Types.Mode.normal){
+	        if(Utils.simulationMode==Utils.ModeType.normal){
 	        	Utils.outputwriter = new OutputWriter(Utils.round(Utils.outdt/Utils.simdtinseconds));
 				try {
 					Utils.outputwriter.open(Utils.outputfile_density,Utils.outputfile_outflow,Utils.outputfile_inflow);
@@ -109,11 +64,11 @@ public class Runner {
 			scenario.run();
 
             // close output files
-	        if(Utils.simulationMode==Types.Mode.normal)
+	        if(Utils.simulationMode==Utils.ModeType.normal)
 	        	Utils.outputwriter.close();
 
 			// or save scenario (in warmup mode)
-	        if(Utils.simulationMode==Types.Mode.warmupFromIC || Utils.simulationMode==Types.Mode.warmupFromZero){
+	        if(Utils.simulationMode==Utils.ModeType.warmupFromIC || Utils.simulationMode==Utils.ModeType.warmupFromZero){
 //	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
 //	    		Utils.save(scenario, outfile);
 	        }
@@ -123,7 +78,7 @@ public class Runner {
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 		
 	}
-	
+
 	private static boolean parseInput(String[] args){
 
 		if(args.length==0){

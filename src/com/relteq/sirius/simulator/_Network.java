@@ -11,7 +11,7 @@ import com.relteq.sirius.jaxb.Link;
 import com.relteq.sirius.jaxb.Node;
 import com.relteq.sirius.jaxb.Signal;
 
-public class _Network extends com.relteq.sirius.jaxb.Network {
+final class _Network extends com.relteq.sirius.jaxb.Network {
 
 	protected _SensorList _sensorlist = new _SensorList();
 	

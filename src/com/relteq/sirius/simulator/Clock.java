@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-public class Clock {
+final class Clock {
 	protected double t;					// [sec]
 	protected double to;					// [sec]
 	protected double dt;					// [sec]

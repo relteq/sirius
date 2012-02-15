@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.Splitratio;
 
-public class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
+final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	public _Node myNode;
 	private double dtinseconds;				// not really necessary
