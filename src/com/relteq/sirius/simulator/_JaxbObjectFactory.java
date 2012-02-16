@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.*;
 
- final class _JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactory {
+public final class _JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactory {
 	
 	@Override
 	public CapacityProfile createCapacityProfile() {
@@ -30,11 +30,6 @@ import com.relteq.sirius.jaxb.*;
 		return new _DemandProfileSet();
 	}
 	
-	@Override
-	public Event createEvent() {
-		return new _Event();
-	}
-
 	@Override
 	public FundamentalDiagram createFundamentalDiagram() {
 		// TODO Auto-generated method stub

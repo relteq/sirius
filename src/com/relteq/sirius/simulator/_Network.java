@@ -13,13 +13,16 @@ import com.relteq.sirius.jaxb.Signal;
 
 final class _Network extends com.relteq.sirius.jaxb.Network {
 
+	protected _Scenario myScenario;
 	protected _SensorList _sensorlist = new _SensorList();
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
+		
+		this.myScenario = myScenario;
 		
 		if(getNodeList()!=null)
 			for (Node node : getNodeList().getNode())
@@ -33,7 +36,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 
 	protected boolean validate() {
 
-		if(API.getSimDtInSeconds()<=0)
+		if(myScenario.getSimDtInSeconds()<=0)
 			return false;
 		
 		// node list
@@ -72,7 +75,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		if(getLinkList()!=null)
 			for (Link link : getLinkList().getLink()){
 				_Link _link = (_Link) link;
-				_link.resetLanes();
+				_link.resetLanes();				
 				_link.resetState();
 				_link.resetFD();
 				_link.resetControl();

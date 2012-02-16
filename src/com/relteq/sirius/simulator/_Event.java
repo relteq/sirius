@@ -7,10 +7,17 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.DemandProfile;
+import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.jaxb.ScenarioElement;
+
+/** DESCRIPTION OF THE CLASS
+*
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 
 @SuppressWarnings("rawtypes")
-public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
+public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceEvent {
 
 	public static enum Type	{NULL, fundamental_diagram,
 								   link_demand_knob,
@@ -19,28 +26,28 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 								   control_toggle,
 								   global_control_toggle,
 								   global_demand_knob };
-										   
+
+	protected _Scenario myScenario;
 	protected _Event.Type myType;
 	protected int timestampstep;
 	protected ArrayList<_ScenarioElement> targets;
-		
-	/////////////////////////////////////////////////////////////////////
-	// public interface
-	/////////////////////////////////////////////////////////////////////
-	
-	public _Event.Type getMyType() {
-		return myType;
-	}
-	
-	public int getTimestampstep() {
-		return timestampstep;
-	}
 
 	/////////////////////////////////////////////////////////////////////
-	// reset / validate / activate
+	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
 	
-	protected boolean validate() {
+	protected void populateFromJaxb(_Scenario myScenario,Event jaxbE,_Event.Type myType){
+		this.myScenario = myScenario;
+		this.myType = myType;
+		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
+		this.targets = new ArrayList<_ScenarioElement>();
+		for(ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() ){
+			this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
+		}
+	}
+
+	public boolean validate() {
+		
 		// check that there are targets assigned
 		if(targets.isEmpty()){
 			System.out.println("No targets assigned.");
@@ -49,150 +56,12 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		
 		// check each target is valid
 		for(_ScenarioElement s : targets){
-			
 			if(s.reference==null){
 				System.out.println("Invalid target.");
 				return false;
 			}
-			
-			switch(this.myType){	
-			
-			// these apply to links only
-			case fundamental_diagram:
-			case link_demand_knob:
-			case link_lanes:
-				if(s.myType!=_ScenarioElement.Type.link){
-					System.out.println("wrong target type.");
-					return false;
-				}
-				break;
-				
-			// these apply to nodes only
-			case node_split_ratio:
-				if(s.myType!=_ScenarioElement.Type.node){
-					System.out.println("wrong target type.");
-					return false;
-				}
-				break;
-			
-			// these apply to controllers only
-			case control_toggle:
-				if(s.myType!=_ScenarioElement.Type.controller){
-					System.out.println("wrong target type.");
-					return false;
-				}
-				break;
-			}
-
 		}
 		return true;
-	}
-
-	protected void activate() {
-
-		switch(myType){
-		
-		// Link events =====================================================
-		case fundamental_diagram:
-			for(_ScenarioElement s : targets){
-				_Link targetlink = (_Link) s.reference;
-				if(isResetToNominal()){
-					targetlink.deactivateFDEvent();
-				}
-				else{
-					_FundamentalDiagram eventFD = new _FundamentalDiagram(targetlink);
-					eventFD.copyfrom((targetlink).FD);		// copy current FD
-					eventFD.copyfrom(this.getFundamentalDiagram());		// replace values with those defined in the event
-					if(eventFD.validate()){								// validate the result
-						//targetlink.setEventFundamentalDiagram(eventFD);
-						targetlink.activateFDEvent(eventFD);
-					}
-				}
-				break;
-			}
-		
-		// ....................................
-		case link_demand_knob:
-			for(_ScenarioElement s : targets){
-		    	if(Global.theScenario.getDemandProfileSet()!=null){
-		        	for(DemandProfile profile : Global.theScenario.getDemandProfileSet().getDemandProfile()){
-		        		if(profile.getLinkIdOrigin().equals(s.id)){
-		        			double newknob;
-		        			if(isResetToNominal())
-		        				newknob = profile.getKnob().doubleValue();
-		        			else
-		        				newknob = getKnob().getValue().doubleValue();
-		        			((_DemandProfile) profile).set_knob( newknob );
-		        			break;
-		        		}
-		        	}
-		    	}
-			}
-			break;
-
-		// ....................................
-		case link_lanes:
-			for(_ScenarioElement s : targets){
-				_Link targetlink = (_Link) s.reference;
-				if(getLaneCountChange()!=null){
-					if(isResetToNominal()){
-						double originallanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
-						targetlink.set_Lanes(originallanes);
-					}
-					if(getLaneCountChange().getDelta()!=null){
-						double deltalanes = getLaneCountChange().getDelta().doubleValue();
-						targetlink.setLanesDelta(deltalanes);
-					}
-				}
-			}
-			break;
-		
-		// ....................................
-		case control_toggle:
-			for(_ScenarioElement s : targets){
-				_Controller c = API.getControllerWithName(s.id);
-				c.ison = getOnOffSwitch().getValue().equalsIgnoreCase("on");
-			}			
-			break;
-		
-		// Node events =====================================================
-		case node_split_ratio:
-			
-			if(isResetToNominal()){
-				for(_ScenarioElement s : targets){
-					_Node targetnode = (_Node) s.reference;
-					targetnode.removeEventSplitratio();
-				}
-			}
-			else{
-				for(_ScenarioElement s : targets){
-					_Node targetnode = (_Node) s.reference;
-					Double3DMatrix splitratio = new Double3DMatrix(0,0,0,0d);
-					if(_SplitRatioProfile.validateSplitRatioMatrix(splitratio,targetnode))
-						targetnode.setEventSplitratio(splitratio);
-				}
-			}
-			break;
-			
-		// Global events =====================================================
-			
-		case global_demand_knob:
-	    	if(Global.theScenario.getDemandProfileSet()!=null)
-	        	for(DemandProfile profile : Global.theScenario.getDemandProfileSet().getDemandProfile() ){
-	        		double knobvalue;
-	    			if(isResetToNominal())
-	    				knobvalue = ((_DemandProfile) profile).getKnob().doubleValue();
-	    			else
-	    				knobvalue = getKnob().getValue().doubleValue();
-	        		((_DemandProfile) profile).set_knob( knobvalue );
-	        	}
-			break;
-		
-       	// ....................................
-		case global_control_toggle:
-			Global.theScenario.controlon = getOnOffSwitch().getValue().equalsIgnoreCase("on");
-			break;
-		}
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -209,8 +78,8 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		_Event that = ((_Event) arg0);
 		
 		// first ordering by time stamp
-		Integer thiststamp = this.getTimestampstep();
-		Integer thattstamp = that.getTimestampstep();
+		Integer thiststamp = this.timestampstep;
+		Integer thattstamp = that.timestampstep;
 		compare = thiststamp.compareTo(thattstamp);
 		if(compare!=0)
 			return compare;
@@ -258,4 +127,19 @@ public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 			return this.compareTo((_Event) obj)==0;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////
+
+	public _Event.Type getMyType() {
+		return myType;
+	}
+	
+	public _Scenario getMyScenario() {
+		return myScenario;
+	}
+
+	public int getTimeStampStep() {
+		return timestampstep;
+	}	
 }

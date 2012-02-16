@@ -10,15 +10,18 @@ import com.relteq.sirius.jaxb.SplitratioProfile;
 
 final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 
+	protected _Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
 
 		int i;
+		
+		this.myScenario = myScenario;
 		
 		if(getSplitratioProfile().isEmpty())
 			return;
@@ -29,23 +32,23 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = API.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
+				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
 		}
 		else{
-			numTypes = API.getNumVehicleTypes();
+			numTypes = myScenario.getNumVehicleTypes();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
 		}
 		
 		for(SplitratioProfile sr : getSplitratioProfile())
-			((_SplitRatioProfile) sr).populate();
+			((_SplitRatioProfile) sr).populate(myScenario);
 	}
 
 	protected boolean validate() {
 
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=API.getNumVehicleTypes()){
+		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
 			System.out.println("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}

@@ -11,6 +11,7 @@ import com.relteq.sirius.jaxb.Controller;
 
 final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
+	protected _Scenario myScenario;
 	protected ArrayList<_Controller> _controllers = new ArrayList<_Controller>();
 	
 	/////////////////////////////////////////////////////////////////////
@@ -25,10 +26,12 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
 
-		if(Global.theScenario.getControllerSet()!=null){
-			for(Controller controller : Global.theScenario.getControllerSet().getController()){
+		this.myScenario = myScenario;
+		
+		if(myScenario.getControllerSet()!=null){
+			for(Controller controller : myScenario.getControllerSet().getController()){
 	
 				// assign type
 				_Controller.Type myType;
@@ -41,7 +44,7 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 				
 				// generate controller
 				if(myType!=_Controller.Type.NULL){
-					_Controller C = ObjectFactory.createControllerFromJaxb(controller,myType);
+					_Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
 					if(C!=null)
 						_controllers.add(C);
 				}

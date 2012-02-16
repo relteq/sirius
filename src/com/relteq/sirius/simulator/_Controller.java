@@ -10,7 +10,12 @@ import java.util.ArrayList;
 import com.relteq.sirius.jaxb.Controller;
 import com.relteq.sirius.jaxb.ScenarioElement;
 
-public abstract class _Controller implements InterfaceController{
+/** DESCRIPTION OF THE CLASS
+*
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
+public abstract class _Controller implements InterfaceController {
 	
 	public static enum Type {NULL, IRM_alinea,
 						   		      IRM_time_of_day,
@@ -24,7 +29,8 @@ public abstract class _Controller implements InterfaceController{
 	protected static enum QueueControlType	{NULL, queue_override,
 											       proportional,
 											       proportional_integral  };
-																		   
+					
+	protected _Scenario myScenario;										       
 	protected String name;			// This is used only for controller on/off events.
 									// would prefer to reference contorllers by id. 
 	protected _Controller.Type myType;
@@ -36,7 +42,7 @@ public abstract class _Controller implements InterfaceController{
 	protected boolean ison;
 	
 	/////////////////////////////////////////////////////////////////////
-	// interface
+	// API
 	/////////////////////////////////////////////////////////////////////
 	
 	public final _Controller.Type getMyType() {
@@ -72,34 +78,41 @@ public abstract class _Controller implements InterfaceController{
 	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected final void populateFromJaxb(Controller c,_Controller.Type myType){
+	protected final void populateFromJaxb(_Scenario myScenario,Controller c,_Controller.Type myType){
+		this.myScenario = myScenario;
 		this.myType = myType;
 		this.name = c.getName();
 		this.ison = true;
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
+		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 
 		// store targets ......
 		targets = new ArrayList<_ScenarioElement>();
 		if(c.getTargetElements()!=null)
-			for(ScenarioElement s : c.getTargetElements().getScenarioElement() )
-				targets.add( new _ScenarioElement(s) );	
+			for(ScenarioElement s : c.getTargetElements().getScenarioElement() ){
+				_ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
+				if(se!=null)
+					targets.add(se);
+			}
 
 		// store feedbacks ......
 		feedbacks = new ArrayList<_ScenarioElement>();
 		if(c.getFeedbackElements()!=null)
-			for(ScenarioElement s : c.getFeedbackElements().getScenarioElement())
-				feedbacks.add( new _ScenarioElement(s) );	
+			for(ScenarioElement s : c.getFeedbackElements().getScenarioElement()){
+				_ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
+				if(se!=null)
+					feedbacks.add(se);	
+			}
 		
 		// register controller with targets
 		for(_ScenarioElement s : targets){
 			boolean registersuccess = false;
 			switch(s.myType){
 			case link:
-				_Link link = API.getLinkWithCompositeId(s.network_id,s.id);
+				_Link link = myScenario.getLinkWithCompositeId(s.network_id,s.id);
 				registersuccess = link.registerController();
 			case node:
-				_Node node = API.getNodeWithCompositeId(s.network_id,s.id);
+				_Node node = myScenario.getNodeWithCompositeId(s.network_id,s.id);
 				registersuccess = node.registerController();	
 			}
 			if(!registersuccess){
@@ -119,7 +132,7 @@ public abstract class _Controller implements InterfaceController{
 		}
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
 			System.out.println("Controller sample time must be integer multiple of simulation time step.");
 			return false;
 		}

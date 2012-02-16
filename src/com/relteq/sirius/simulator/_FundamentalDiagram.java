@@ -5,8 +5,11 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.Random;
+
 final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
 
+	//protected _Scenario myScenario;
 	protected _Link myLink;
 	protected double lanes;
 	protected Double _densityJam;     	// [veh] 
@@ -76,7 +79,7 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 
 	// used by CapacityProfile
 	protected void setCapacityFromVeh(double c) {
-		_capacity_actual = c*lanes*API.getSimDtInHours();
+		_capacity_actual = c*lanes*myLink.myNetwork.myScenario.getSimDtInHours();
 		_capacity_nominal = _capacity_actual;
 	}
 
@@ -100,12 +103,14 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
  	protected void settoDefault(){
 		if(myLink==null)
 			return;
+		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
+		double lengthInMiles = myLink.getLengthInMiles();
 		_densityJam 	  = Defaults.densityJam		*lanes*myLink.getLengthInMiles();
-		_capacity_nominal = Defaults.capacity		*lanes*API.getSimDtInHours();
-		_capacity_actual  = Defaults.capacity		*lanes*API.getSimDtInHours();
-		_capacityDrop 	  = Defaults.capacityDrop	*lanes*API.getSimDtInHours();
-		_vf = Defaults.vf * API.getSimDtInHours() / myLink.getLengthInMiles();
-        _w  = Defaults.w  * API.getSimDtInHours() / myLink.getLengthInMiles();
+		_capacity_nominal = Defaults.capacity		*lanes*simDtInHours;
+		_capacity_actual  = Defaults.capacity		*lanes*simDtInHours;
+		_capacityDrop 	  = Defaults.capacityDrop	*lanes*simDtInHours;
+		_vf = Defaults.vf * simDtInHours / lengthInMiles;
+        _w  = Defaults.w  * simDtInHours / lengthInMiles;
         density_critical =  _capacity_actual / _vf;
 	}
 
@@ -114,11 +119,11 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 
 		if(fd==null)
 			return;
-
 		if(myLink==null)
 			return;
 		
 		double value;
+		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
 
 		if(fd.getDensityJam()!=null){
 			value = fd.getDensityJam().doubleValue();			// [veh/mile/lane]
@@ -127,49 +132,51 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 
 		if(fd.getCapacity()!=null){
 			value = fd.getCapacity().doubleValue();			// [veh/hr/lane]
-			_capacity_nominal = value * lanes*API.getSimDtInHours();
+			_capacity_nominal = value * lanes*simDtInHours;
 			_capacity_actual = _capacity_nominal;
 		} 
 		
 		if(fd.getStdDevCapacity()!=null){
 			value = fd.getStdDevCapacity().doubleValue();	// [veh/hr/lane]
-			std_dev_capacity = value * lanes*API.getSimDtInHours();
+			std_dev_capacity = value * lanes*simDtInHours;
 		}
 		
 		if(fd.getCapacityDrop()!=null){
 			value = fd.getCapacityDrop().doubleValue();		// [veh/hr/lane]
-			_capacityDrop = value * lanes*API.getSimDtInHours();
+			_capacityDrop = value * lanes*simDtInHours;
 		} 
 		
 		if(fd.getFreeflowSpeed()!=null){
 			value = fd.getFreeflowSpeed().doubleValue();		// [mile/hr]
-			_vf = value * API.getSimDtInHours() / myLink.getLengthInMiles();
+			_vf = value * simDtInHours / myLink.getLengthInMiles();
 		}
 
 		if(fd.getCongestionSpeed()!=null){
 			value = fd.getCongestionSpeed().doubleValue();		// [mile/hr]
-			_w = value * API.getSimDtInHours() / myLink.getLengthInMiles();
+			_w = value * simDtInHours / myLink.getLengthInMiles();
 		}
 
 		density_critical =  _capacity_actual / _vf;
         
 	}
 	
-	protected void reset(){
+	protected void reset(_Scenario.UncertaintyType uncertaintyModel){
 	
+		Random random = myLink.myNetwork.myScenario.random;
+			
 		// set lanes back to original value
 		setLanes(myLink.get_Lanes());
 		
 		// sample the capacity distribution
 		_capacity_actual = _capacity_nominal;
 		if(!std_dev_capacity.isNaN()){
-			switch(Global.theScenario.uncertaintyModel){
+			switch(uncertaintyModel){
 			case uniform:
-				_capacity_actual += std_dev_capacity*Math.sqrt(3)*(2*Global.random.nextDouble()-1);
+				_capacity_actual += std_dev_capacity*Math.sqrt(3)*(2*random.nextDouble()-1);
 				break;
 
 			case gaussian:
-				_capacity_actual += std_dev_capacity*Global.random.nextGaussian();
+				_capacity_actual += std_dev_capacity*random.nextGaussian();
 				break;
 			}			
 		}

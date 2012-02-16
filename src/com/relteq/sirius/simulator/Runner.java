@@ -5,10 +5,15 @@
 
 package com.relteq.sirius.simulator;
 
-import java.io.FileNotFoundException;
-
 final class Runner {
-
+	
+	private static String configfilename;
+	private static String outputfileprefix;
+	private static double timestart;
+	private static double timeend;
+	private static double outdt;
+	private static int numRepetitions;
+	
 	public static void main(String[] args) {
 
 		long time = System.currentTimeMillis();
@@ -20,15 +25,15 @@ final class Runner {
 		}
 
 		// load configuration file ................................
-		_Scenario scenario = ObjectFactory.createAndLoadScenario(Global.configfilename);
+		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename,outputfileprefix,timestart,timeend,outdt);
 
 		// did load succeed?
-		if(!scenario.isloaded){
-			SiriusError.setErrorHeader("Initialization failed.");
+		if(scenario==null){
+			SiriusError.setErrorHeader("Load failed.");
 			SiriusError.printErrorMessage();
 			return;
 		}
-			
+		
 		// validate scenario ......................................
 		scenario.validate();
 		if(!scenario.isvalid){
@@ -36,47 +41,11 @@ final class Runner {
 			SiriusError.printErrorMessage();
 			return;
 		}
-		
-		// loop through simulation runs ............................
-		for(int i=0;i<Global.numRepititions;i++){
-			
-			// reset scenario
-			scenario.reset();
-			if(!scenario.isreset){
-				SiriusError.setErrorHeader("Reset failed.");
-				SiriusError.printErrorMessage();
-				return;
-			}
 
-			// open output files
-	        if(scenario.simulationMode==_Scenario.ModeType.normal){
-	        	Global.outputwriter = new OutputWriter(SiriusMath.round(Global.outdt/scenario.simdtinseconds));
-				try {
-					Global.outputwriter.open(Global.outputfile_density,Global.outputfile_outflow,Global.outputfile_inflow);
-				} catch (FileNotFoundException e) {
-					SiriusError.addErrorMessage("Unable to open output file.");
-					SiriusError.printErrorMessage();
-					return;
-				}
-	        }
-	        	
-			// run scenario		
-			scenario.run();
-
-            // close output files
-	        if(scenario.simulationMode==_Scenario.ModeType.normal)
-	        	Global.outputwriter.close();
-
-			// or save scenario (in warmup mode)
-	        if(scenario.simulationMode==_Scenario.ModeType.warmupFromIC || scenario.simulationMode==_Scenario.ModeType.warmupFromZero){
-//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
-//	    		Utils.save(scenario, outfile);
-	        }
-	        
-		}
+		// run scenario ...........................................
+		scenario.run(numRepetitions);
 		
 		System.out.println("done in " + (System.currentTimeMillis()-time));
-		
 	}
 
 	private static boolean parseInput(String[] args){
@@ -113,46 +82,47 @@ final class Runner {
 		
 		// Configuration file name
 		if(args.length>0)	
-			Global.setconfigfilename(args[0]);
+			configfilename = args[0];
 		else
-			Global.setconfigfilename(Defaults.CONFIGFILE);	
+			configfilename = Defaults.CONFIGFILE;	
 
 		// Output file name		
 		if(args.length>1)	
-			Global.setoutputfilename(args[1]);
+			outputfileprefix = args[1];
 		else
-			Global.setoutputfilename(Defaults.OUTPUTFILE);
+			outputfileprefix = Defaults.OUTPUTFILE;
 		
 		// Start time [seconds after midnight]
 		if(args.length>2){
-			double timestart = Double.parseDouble(args[2]);
-			Global.timestart = SiriusMath.round(timestart*10.0)/10.0;	// round to the nearest decisecond
+			timestart = Double.parseDouble(args[2]);
+			timestart = SiriusMath.round(timestart*10.0)/10.0;	// round to the nearest decisecond
 		}
 		else
-			Global.timestart = Defaults.TIME_INIT;
+			timestart = Defaults.TIME_INIT;
 
 		// Duration [seconds]	
 		if(args.length>3)
-			Global.timeend = Global.timestart + Double.parseDouble(args[3]);
+			timeend = timestart + Double.parseDouble(args[3]);
 		else
-			Global.timeend = Global.timestart + Defaults.DURATION;
+			timeend = timestart + Defaults.DURATION;
 		
 		// Output sampling time [seconds]
 		if(args.length>4){
-			double outdt = Double.parseDouble(args[4]);
-			Global.outdt = SiriusMath.round(outdt*10.0)/10.0;		// round to the nearest decisecond	
+			outdt = Double.parseDouble(args[4]);
+			outdt = SiriusMath.round(outdt*10.0)/10.0;		// round to the nearest decisecond	
 		}
 		else
-			Global.outdt = Defaults.OUT_DT;
+			outdt = Defaults.OUT_DT;
 
 		// Number of simulations
 		if(args.length>5){
-			Global.numRepititions = Integer.parseInt(args[5]);
+			numRepetitions = Integer.parseInt(args[5]);
 		}
 		else
-			Global.numRepititions = 1;
+			numRepetitions = 1;
 		
 		return true;
 	}
-
+	
+	
 }

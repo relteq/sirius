@@ -9,6 +9,7 @@ import com.relteq.sirius.jaxb.Density;
 
 final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
+	protected _Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
 	protected _Link [] link;					// ordered array of references
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
@@ -18,9 +19,11 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate(){
+	protected void populate(_Scenario myScenario){
 		
 		int i;
+		
+		this.myScenario = myScenario;
 		
 		// allocate
 		int numLinks = getDensity().size();
@@ -34,10 +37,10 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = API.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
+				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
 		}
 		else{
-			numTypes = API.getNumVehicleTypes();
+			numTypes = myScenario.getNumVehicleTypes();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
@@ -46,7 +49,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){
 			Density density = getDensity().get(i);
-			link[i] = API.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
+			link[i] = myScenario.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
 			Double1DVector D = new Double1DVector(density.getContent(),":");
 			initial_density[i] = D.getData();
 		}
@@ -64,7 +67,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		int i;
 		
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=API.getNumVehicleTypes()){
+		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
 			System.out.println("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}
@@ -127,7 +130,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 	/////////////////////////////////////////////////////////////////////
 	
 	public Double [] getDensityForLinkIdInVeh(String linkid){
-		Double [] d = SiriusMath.zeros(API.getNumVehicleTypes());
+		Double [] d = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
 			if(link[i].getId().equals(linkid)){
 				for(int j=0;j<vehicletypeindex.length;j++)

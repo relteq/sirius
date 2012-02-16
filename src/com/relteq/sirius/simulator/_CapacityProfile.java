@@ -7,21 +7,25 @@ package com.relteq.sirius.simulator;
 
 final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 
-	private _Link myLink;
-	private double dtinseconds;				// not really necessary
-	private int samplesteps;
-	private Double1DVector capacity;		// [veh]
-	private boolean isdone;
-	private int stepinitial;
+	protected _Scenario myScenario;
+	protected _Link myLink;
+	protected double dtinseconds;			// not really necessary
+	protected int samplesteps;
+	protected Double1DVector capacity;		// [veh]
+	protected boolean isdone;
+	protected int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
-		myLink = API.getLinkWithCompositeId(getNetworkId(),getLinkId());
+	protected void populate(_Scenario myScenario) {
+		if(myScenario==null)
+			return;
+		this.myScenario = myScenario;
+		myLink = myScenario.getLinkWithCompositeId(getNetworkId(),getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
+		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		isdone = false;
 		
 		// read start time, convert to stepinitial
@@ -31,11 +35,11 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 		else
 			starttime = 0f;
 
-		stepinitial = (int) Math.round((starttime-API.getTimeStart())/API.getSimDtInSeconds());
+		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		// read capacity and convert to vehicle units
 		capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-		capacity.multiplyscalar(API.getSimDtInHours()*myLink.get_Lanes());
+		capacity.multiplyscalar(myScenario.getSimDtInHours()*myLink.get_Lanes());
 	}
 	
 	protected boolean validate() {
@@ -54,7 +58,7 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			return false;	
 		}
 
-		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
 			System.out.println("Capacity dt should be multiple of sim dt: " + getLinkId());
 			return false;	
 		}
@@ -75,9 +79,9 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	protected void update() {
 		if(isdone || capacity.isEmpty())
 			return;
-		if(Global.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = capacity.getLength()-1;
-			int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			if(step<n)
 				myLink.FD.setCapacityFromVeh( capacity.get(step) );
 			if(step>=n && !isdone){

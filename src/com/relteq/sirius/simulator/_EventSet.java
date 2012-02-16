@@ -12,6 +12,7 @@ import com.relteq.sirius.jaxb.Event;
 
 final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 
+	protected _Scenario myScenario;
 	protected boolean isdone;			// true if we are done with events
 	protected int currentevent;
 	protected ArrayList<_Event> _sortedevents = new ArrayList<_Event>();
@@ -36,15 +37,17 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 	/////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unchecked")
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
 		
-		// populate the events
-		if(Global.theScenario.getEventSet()!=null)
-			for(Event event : Global.theScenario.getEventSet().getEvent() ){
+		this.myScenario = myScenario;
+
+		if(myScenario.getEventSet()!=null){
+			for(Event event : myScenario.getEventSet().getEvent() ){
 				
 				// keep only enabled events
 				if(event.isEnabled()){
-
+					
+					// assign type
 					_Event.Type myType;
 			    	try {
 						myType = _Event.Type.valueOf(event.getType());
@@ -54,11 +57,17 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 					}	
 					
 					// generate event
-					if(myType!=_Event.Type.NULL)
-						_sortedevents.add(ObjectFactory.createEventFromJaxb(event,myType));
-					
+					if(myType!=_Event.Type.NULL){
+						_Event E = ObjectFactory.createEventFromJaxb(myScenario,event,myType);
+						if(E!=null)
+							_sortedevents.add(E);
+					}
 				}
+				
+				
 			}
+
+		}
 		
 		// sort the events by timestamp, etc
 		Collections.sort(_sortedevents);
@@ -95,7 +104,7 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 			return;
 
 		// check whether next event is due
-		while(_sortedevents.get(currentevent).getTimestampstep()>=Global.clock.getCurrentstep()){
+		while(_sortedevents.get(currentevent).timestampstep>=myScenario.clock.getCurrentstep()){
 			_sortedevents.get(currentevent).activate(); 
 			currentevent++;
 			

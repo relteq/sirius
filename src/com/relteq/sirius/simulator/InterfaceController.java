@@ -5,8 +5,25 @@
 
 package com.relteq.sirius.simulator;
 
+/** DESCRIPTION OF THE CLASS
+*
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 public interface InterfaceController {
+	
+	/** DESCRIPTION
+	 * 
+	 */
 	public boolean validate();
+	
+	/** DESCRIPTION
+	 * 
+	 */
 	public void reset();
+	
+	/** DESCRIPTION
+	 * 
+	 */
 	public void update();
 }

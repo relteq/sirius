@@ -6,20 +6,25 @@
 package com.relteq.sirius.sensor;
 
 import com.relteq.sirius.jaxb.Sensor;
+import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
+/** DESCRIPTION OF THE CLASS
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 public class SensorFloating extends _Sensor {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorFloating(String networkId,String linkId) {
-		super.populateFromParameters(_Sensor.Type.moving_point, networkId, linkId);
+	public SensorFloating(_Scenario myScenario,String networkId,String linkId) {
+		super.populateFromParameters(myScenario,_Sensor.Type.moving_point, networkId, linkId);
 	}
 	
-	public SensorFloating(Sensor s) {
-		super.populateFromJaxb(s, _Sensor.Type.moving_point);
+	public SensorFloating(_Scenario myScenario,Sensor s) {
+		super.populateFromJaxb(myScenario,s, _Sensor.Type.moving_point);
 	}
 
 	/////////////////////////////////////////////////////////////////////

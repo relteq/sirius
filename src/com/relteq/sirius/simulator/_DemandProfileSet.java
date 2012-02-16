@@ -10,16 +10,18 @@ import com.relteq.sirius.jaxb.DemandProfileSet;
 
 final class _DemandProfileSet extends DemandProfileSet {
 
+	protected _Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
+		
+		this.myScenario = myScenario;;
 
 		int i;
-		
 		if(getDemandProfile().isEmpty())
 			return;
 
@@ -29,17 +31,17 @@ final class _DemandProfileSet extends DemandProfileSet {
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = API.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
+				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
 		}
 		else{
-			numTypes = API.getNumVehicleTypes();
+			numTypes = myScenario.getNumVehicleTypes();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
 		}
 		
 		for(DemandProfile dp : getDemandProfile())
-			((_DemandProfile) dp).populate();
+			((_DemandProfile) dp).populate(myScenario);
 	}
 
 	protected void reset() {
@@ -50,7 +52,7 @@ final class _DemandProfileSet extends DemandProfileSet {
 	protected boolean validate() {
 
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=API.getNumVehicleTypes()){
+		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
 			System.out.println("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}

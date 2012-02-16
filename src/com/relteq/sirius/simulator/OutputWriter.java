@@ -17,14 +17,16 @@ import com.relteq.sirius.jaxb.Network;
 
 final class OutputWriter {
 
+	protected _Scenario myScenario;
 	protected int outsteps;
 	protected Writer out_density = null;
 	protected Writer out_outflow = null;
 	protected Writer out_inflow = null;
 	protected static String delim = "\t";
 
-	public OutputWriter(int osteps){
-		outsteps = osteps;
+	public OutputWriter(_Scenario myScenario,int osteps){
+		this.myScenario = myScenario;
+		this.outsteps = osteps;
 	}
 
 	protected int getOutsteps() {
@@ -39,16 +41,20 @@ final class OutputWriter {
 	}
 
 	protected void recordstate(double time,boolean exportflows) {
+		
+		if(myScenario==null)
+			return;
+		
 		Double [] numbers;
 		double invsteps;
 		
-		if(Global.clock.getCurrentstep()==1)
+		if(myScenario.clock.getCurrentstep()==1)
 			invsteps = 1f;
 		else
 			invsteps = 1f/((double)outsteps);
 			
 		try {
-			for(Network network : Global.theScenario.getNetworkList().getNetwork()){
+			for(Network network : myScenario.getNetworkList().getNetwork()){
 				List<Link> links = network.getLinkList().getLink();
 
 				int n = links.size();

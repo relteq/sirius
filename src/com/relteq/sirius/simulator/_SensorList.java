@@ -30,7 +30,7 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 				
 				// generate sensor
 				if(myType!=_Sensor.Type.NULL){
-					_Sensor S = ObjectFactory.createSensorFromJaxb(sensor,myType);
+					_Sensor S = ObjectFactory.createSensorFromJaxb(myNetwork.myScenario,sensor,myType);
 					if(S!=null)
 						_sensors.add(S);
 				}

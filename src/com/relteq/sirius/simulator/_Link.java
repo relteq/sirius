@@ -5,6 +5,11 @@
 
 package com.relteq.sirius.simulator;
 
+/** DESCRIPTION OF THE CLASS
+*
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	public static enum Type	{NULL, freeway,
@@ -19,10 +24,10 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected static enum DynamicsType	{NULL, CTM,
 										       region_tracking,
 										       discrete_departure };
-																		   
+
 	protected _Link.Type myType;
 	
-	// network references
+	// references
 	protected _Network myNetwork;
 	protected _Node begin_node;
 	protected _Node end_node;
@@ -78,9 +83,9 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	protected void reset_cumulative(){
-    	cumulative_density = SiriusMath.zeros(API.getNumVehicleTypes());
-    	cumulative_inflow  = SiriusMath.zeros(API.getNumVehicleTypes());
-    	cumulative_outflow = SiriusMath.zeros(API.getNumVehicleTypes());
+    	cumulative_density = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
+    	cumulative_inflow  = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
+    	cumulative_outflow = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
 	}
     
 	protected boolean registerController(){
@@ -153,19 +158,21 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	protected void updateOutflowDemand(){
         
+		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
+		
 		////////////////////////////////////////
     	// GG: This is to match aurora2, but should be removed
     	// Aurora2 has a different link model for sources than for regular links.
  		if(issource){
  			outflowDemand = sourcedemand.clone();
  			double sum = 0d;
- 			for(int k=0;k<API.getNumVehicleTypes();k++){
+ 			for(int k=0;k<numVehicleTypes;k++){
  				outflowDemand[k] += density[k];
  				sum += outflowDemand[k];
  			}
  			if(sum>FD._getCapacityInVeh()){
  				double ratio = FD._getCapacityInVeh()/sum;
- 				for(int k=0;k<API.getNumVehicleTypes();k++)
+ 				for(int k=0;k<numVehicleTypes;k++)
  					outflowDemand[k] *= ratio;
  			}
  			return;
@@ -176,7 +183,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         
         // case empty link
         if( SiriusMath.lessorequalthan(totaldensity,0d) ){
-        	outflowDemand =  SiriusMath.zeros(API.getNumVehicleTypes());        		
+        	outflowDemand =  SiriusMath.zeros(numVehicleTypes);        		
         	return;
         }
         
@@ -241,13 +248,14 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		_length = getLength().doubleValue();
         
         // initial density, demand, and capacity
-        density 			= new Double[API.getNumVehicleTypes()];
-        inflow 				= new Double[API.getNumVehicleTypes()];
-        outflow 			= new Double[API.getNumVehicleTypes()];
-        sourcedemand 		= new Double[API.getNumVehicleTypes()];
-        cumulative_density 	= new Double[API.getNumVehicleTypes()];
-        cumulative_inflow 	= new Double[API.getNumVehicleTypes()];
-        cumulative_outflow 	= new Double[API.getNumVehicleTypes()];
+		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
+        density 			= new Double[numVehicleTypes];
+        inflow 				= new Double[numVehicleTypes];
+        outflow 			= new Double[numVehicleTypes];
+        sourcedemand 		= new Double[numVehicleTypes];
+        cumulative_density 	= new Double[numVehicleTypes];
+        cumulative_inflow 	= new Double[numVehicleTypes];
+        cumulative_outflow 	= new Double[numVehicleTypes];
 		
         // initialize control
         resetControl();
@@ -280,20 +288,21 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	protected void resetState() {
-				
-		switch(Global.theScenario.simulationMode){
+		
+		_Scenario myScenario = myNetwork.myScenario;
+		
+		switch(myScenario.simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = SiriusMath.zeros(API.getNumVehicleTypes());
+			density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			_InitialDensityProfile profile = (_InitialDensityProfile) Global.theScenario.getInitialDensityProfile();
-			if(profile!=null)
-				density = profile.getDensityForLinkIdInVeh(getId());	
+			if(myScenario.getInitialDensityProfile()!=null)
+				density = ((_InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(getId());	
 			else 
-				density = SiriusMath.zeros(API.getNumVehicleTypes());
+				density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;
 			
 		default:
@@ -302,7 +311,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		}
 
 		// reset other quantities
-		for(int j=0;j<API.getNumVehicleTypes();j++){
+		for(int j=0;j<myScenario.getNumVehicleTypes();j++){
 			inflow[j] = 0d;
 			outflow[j] = 0d;
 			sourcedemand[j] = 0d;
@@ -337,7 +346,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         if(issource)
             inflow = sourcedemand.clone();
         
-        for(int j=0;j<API.getNumVehicleTypes();j++){
+        for(int j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){
         	density[j] += inflow[j] - outflow[j];
         	cumulative_density[j] += density[j];
         	cumulative_inflow[j] += inflow[j];
@@ -393,7 +402,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 			speed = SiriusMath.sum(outflow)/totaldensity;
 		else
 			speed = FD.getVfNormalized();
-		return speed*_length/API.getSimDtInHours();
+		return speed*_length/myNetwork.myScenario.getSimDtInHours();
 	}
 
 	public double getDensityJamInVeh() {
@@ -421,11 +430,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 	
 	public double getCapacityDropInVPHPL() {
-		return FD._getCapacityDropInVeh()/API.getSimDtInHours()/_lanes;
+		return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
 	public double getCapacityInVPHPL() {
-		return FD._getCapacityInVeh()/API.getSimDtInHours()/_lanes;
+		return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 	
 	public double getNormalizedVf() {
@@ -433,7 +442,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	public double getVfInMPH() {
-		return FD.getVfNormalized()*getLengthInMiles()/API.getSimDtInHours();
+		return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 	
 	public double getNormalizedW() {
@@ -441,7 +450,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	public double getWInMPH() {
-		return FD.getWNormalized()*getLengthInMiles()/API.getSimDtInHours();
+		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 
 	public boolean isIsSource() {

@@ -11,6 +11,7 @@ import com.relteq.sirius.jaxb.FundamentalDiagram;
 
 final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.FundamentalDiagramProfile {
 
+	protected _Scenario myScenario;
 	protected _Link myLink;
 	protected double dtinseconds;			// not really necessary
 	protected int samplesteps;
@@ -26,7 +27,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	protected void set_Lanes(double newlanes){
 		if(newlanes<=0 || isdone || FD.isEmpty())
 			return;
-		int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
+		int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 		step = Math.max(0,step);
 		for(int i=step;i<FD.size();i++){
 			FD.get(i).setLanes(newlanes);
@@ -37,18 +38,19 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
 		
+		this.myScenario = myScenario;
 		isdone = false;
 		
 		// required
-		myLink = API.getLinkWithCompositeId(getNetworkId(), getLinkId());
+		myLink = myScenario.getLinkWithCompositeId(getNetworkId(), getLinkId());
 		myLink.setFundamentalDiagramProfile(this);
 		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
+			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getFundamentalDiagram().size()==1){
@@ -83,7 +85,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		else
 			starttime = 0f;
 
-		stepinitial = SiriusMath.round((starttime-API.getTimeStart())/API.getSimDtInSeconds());
+		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		// update so that the link gets the first value of the parameters.
 		// this is need so that the initial density profile can validate. 
@@ -105,7 +107,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 			return false;	
 		}
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
 			System.out.println("Demand dt should be multiple of sim dt: " + getLinkId());
 			return false;	
 		}
@@ -122,7 +124,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		isdone = false;
 		
 		for(_FundamentalDiagram fd : FD)
-			fd.reset();
+			fd.reset(myScenario.uncertaintyModel);
 		
 		// assign the fundamental diagram to the link
 		update();	
@@ -132,9 +134,9 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	protected void update() {
 		if(isdone || FD.isEmpty())
 			return;
-		if(Global.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = FD.size()-1;
-			int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
 				myLink.setProfileFundamentalDiagram( FD.get(step) );

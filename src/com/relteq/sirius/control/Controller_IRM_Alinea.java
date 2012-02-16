@@ -7,21 +7,27 @@ package com.relteq.sirius.control;
 
 import com.relteq.sirius.jaxb.Parameter;
 import com.relteq.sirius.jaxb.ScenarioElement;
-import com.relteq.sirius.simulator.Utils;
 import com.relteq.sirius.simulator._Controller;
 import com.relteq.sirius.simulator._Link;
+import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
-public class ControllerAlinea extends _Controller {
+/** DESCRIPTION OF THE CLASS
+* <p>
+* LACKS IMPLEMENTATION
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
+public class Controller_IRM_Alinea extends _Controller {
 
-	private double targetvehicles;		// [veh]
-	private double gain;				// [-]
+	private _Link onramplink = null;
 	private _Link mainlinelink = null;
 	private _Sensor mainlinesensor = null;
 	private _Sensor queuesensor = null;
-	private boolean usesensor;
+	private double gain;				// [-]
 	
-	private _Link onramplink = null;
+	private double targetvehicles;		// [veh]
+	private boolean usesensor;
 	
 	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
 	boolean hasmainlinesensor; 		// true if config file contains entry for mainlinesensor
@@ -30,9 +36,47 @@ public class ControllerAlinea extends _Controller {
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
+
+	public Controller_IRM_Alinea(_Scenario myScenario,_Link onramplink,_Link mainlinelink,_Sensor mainlinesensor,_Sensor queuesensor,double gain_in_mph){
+
+		this.myScenario = myScenario;
+		this.onramplink 	= onramplink;
+		this.mainlinelink 	= mainlinelink;
+		this.mainlinesensor = mainlinesensor;
+		this.queuesensor 	= queuesensor;
+		
+		hasmainlinelink = mainlinelink!=null;
+		hasmainlinesensor = mainlinesensor!=null;
+		hasqueuesensor = queuesensor!=null;
+		
+		// abort unless there is either one mainline link or one mainline sensor
+		if(mainlinelink==null && mainlinesensor==null)
+			return;
+		if(mainlinelink!=null  && mainlinesensor!=null)
+			return;
+		
+		usesensor = mainlinesensor!=null;
+
+		// normalize the gain 
+		double linklength;
+		if(usesensor){
+			 _Link mylink = mainlinesensor.getMyLink();
+			 if(mylink==null)
+				 return;
+			 linklength = mylink.getLengthInMiles();
+			 targetvehicles = mylink.getDensityCriticalInVeh();
+		}
+		else{
+			linklength = mainlinelink.getLengthInMiles();
+			targetvehicles = mainlinelink.getDensityCriticalInVeh();
+		}
+		this.gain = gain_in_mph * myScenario.getSimDtInHours() /linklength;
+		
+	}
 	
-	public ControllerAlinea(com.relteq.sirius.jaxb.Controller c,_Controller.Type myType) {
-		super(c,myType);
+	public Controller_IRM_Alinea(_Scenario myScenario,com.relteq.sirius.jaxb.Controller c) {
+		
+		super.populateFromJaxb(myScenario,c, _Controller.Type.IRM_alinea);
 
 		hasmainlinelink = false;
 		hasmainlinesensor = false;
@@ -41,7 +85,7 @@ public class ControllerAlinea extends _Controller {
 		// There should be only one target element, and it is the onramp
 		if(c.getTargetElements().getScenarioElement().size()==1){
 			ScenarioElement s = c.getTargetElements().getScenarioElement().get(0);
-			onramplink = Utils.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
+			onramplink = myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
@@ -51,19 +95,19 @@ public class ControllerAlinea extends _Controller {
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
-					mainlinesensor=Utils.getSensorWithCompositeId(s.getNetworkId(),s.getId());
+					mainlinesensor=myScenario.getSensorWithCompositeId(s.getNetworkId(),s.getId());
 					hasmainlinesensor = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=Utils.getLinkWithCompositeId(s.getNetworkId(),s.getId());
+					mainlinelink=myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());
 					hasmainlinelink = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
-					queuesensor=Utils.getSensorWithCompositeId(s.getNetworkId(),s.getId());
+					queuesensor=myScenario.getSensorWithCompositeId(s.getNetworkId(),s.getId());
 					hasqueuesensor = true;
 				}				
 			}
@@ -98,12 +142,12 @@ public class ControllerAlinea extends _Controller {
 			linklength = mainlinelink.getLengthInMiles();
 			targetvehicles = mainlinelink.getDensityCriticalInVeh();
 		}
-		gain = gain_in_mph * Utils.getSimDtInHours() /linklength;
+		gain = gain_in_mph * myScenario.getSimDtInHours() /linklength;
 		
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// _AuroraComponent
+	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
 
 	@Override

@@ -115,14 +115,14 @@ final class Double2DMatrix {
 	}
 
 	public Double [] sampleAtTime(int k,Integer [] vehicletypeindex){
-		Double [] x = new Double[API.getNumVehicleTypes()];
+		Double [] x = new Double[nVTypes];
 		if(vehicletypeindex==null){
-			for(int j=0;j<API.getNumVehicleTypes();j++){
+			for(int j=0;j<nVTypes;j++){
 				x[j] = data[k][j];
 			}
 		}
 		else{
-			for(int j=0;j<API.getNumVehicleTypes();j++){
+			for(int j=0;j<nVTypes;j++){
 				x[vehicletypeindex[j]] = data[k][j];
 			}
 		}

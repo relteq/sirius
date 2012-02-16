@@ -7,6 +7,7 @@ package com.relteq.sirius.simulator;
 
 final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
+	protected _Scenario myScenario;
 	protected _Link myLinkOrigin;
 	protected double dtinseconds;			// not really necessary
 	protected int samplesteps;
@@ -30,21 +31,23 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate() {
+	protected void populate(_Scenario myScenario) {
 
+		this.myScenario = myScenario;
+		
 		isdone = false;
 		
 		// required
-		myLinkOrigin = API.getLinkWithCompositeId(getNetworkIdOrigin(),getLinkIdOrigin());
+		myLinkOrigin = myScenario.getLinkWithCompositeId(getNetworkIdOrigin(),getLinkIdOrigin());
 
 		// sample demand distribution, convert to vehicle units
 		demand_nominal = new Double2DMatrix(getContent());
-		demand_nominal.multiplyscalar(API.getSimDtInHours());
+		demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
 
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
+			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(demand_nominal.getnTime()==1){
@@ -60,12 +63,12 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 		// optional uncertainty model
 		if(getStdDevAdd()!=null)
-			std_dev_add = getStdDevAdd().doubleValue()*API.getSimDtInHours();
+			std_dev_add = getStdDevAdd().doubleValue()*myScenario.getSimDtInHours();
 		else
 			std_dev_add = Double.POSITIVE_INFINITY;		// so that the other will always win the min
 		
 		if(getStdDevMult()!=null)
-			std_dev_mult = getStdDevMult().doubleValue()*API.getSimDtInHours();
+			std_dev_mult = getStdDevMult().doubleValue()*myScenario.getSimDtInHours();
 		else
 			std_dev_mult = Double.POSITIVE_INFINITY;	// so that the other will always win the min
 		
@@ -81,7 +84,7 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		else
 			starttime = 0f;
 
-		stepinitial = SiriusMath.round((starttime-API.getTimeStart())/API.getSimDtInSeconds());
+		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 	}
 
@@ -101,13 +104,13 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			return false;	
 		}
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
 			System.out.println("Demand dt should be multiple of sim dt: " + getLinkIdOrigin());
 			return false;	
 		}
 		
 		// check dimensions
-		if(demand_nominal.getnVTypes()!=API.getNumVehicleTypes()){
+		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes()){
 			System.out.println("Incorrect dimensions for demand on link " + getLinkIdOrigin());
 			return false;
 		}
@@ -131,9 +134,9 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	protected void update() {
 		if(isdone || demand_nominal.isEmpty())
 			return;
-		if(Global.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = demand_nominal.getnTime()-1;
-			int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
@@ -152,8 +155,8 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
-		if(Global.theScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((_DemandProfileSet)Global.theScenario.getDemandProfileSet()).vehicletypeindex;
+		if(myScenario.getSplitRatioProfileSet()!=null)
+			vehicletypeindex = ((_DemandProfileSet)myScenario.getDemandProfileSet()).vehicletypeindex;
 		
 		Double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
 		
@@ -161,25 +164,25 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			return demandvalue;
 			
 		// use smallest between multiplicative and additive standard deviations
-		Double [] std_dev_apply = new Double [API.getNumVehicleTypes()];
-		for(int j=0;j<API.getNumVehicleTypes();j++)
+		Double [] std_dev_apply = new Double [myScenario.getNumVehicleTypes()];
+		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
 			std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
 		
 		// sample the distribution
-		switch(Global.theScenario.uncertaintyModel){
+		switch(myScenario.uncertaintyModel){
 		case uniform:
-			for(int j=0;j<API.getNumVehicleTypes();j++)
-				demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*Global.random.nextDouble()-1);
+			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+				demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*myScenario.random.nextDouble()-1);
 			break;
 
 		case gaussian:
-			for(int j=0;j<API.getNumVehicleTypes();j++)
-				demandvalue[j] += std_dev_apply[j]*Global.random.nextGaussian();
+			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+				demandvalue[j] += std_dev_apply[j]*myScenario.random.nextGaussian();
 			break;
 		}
 		
 		// apply the knob and non-negativity
-		for(int j=0;j<API.getNumVehicleTypes();j++)
+		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
 			demandvalue[j] = Math.max(0.0, demandvalue[j]*_knob);
 		
 		return demandvalue;

@@ -185,7 +185,7 @@ final class Double3DMatrix {
     }
     
 	public void setAllVehicleTypes(int i,int j,Double [] f){
-		for(int k=0;k<API.getNumVehicleTypes();k++)
+		for(int k=0;k<nVTypes;k++)
 			data[i][j][k] = f[k];
 	}
 	

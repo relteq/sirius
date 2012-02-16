@@ -7,6 +7,11 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
+/** DESCRIPTION OF THE CLASS
+*
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 public final class _Node extends com.relteq.sirius.jaxb.Node {
 
 	public static enum Type	{NULL, simple,
@@ -71,8 +76,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,API.getNumVehicleTypes(),0d);
-			_SplitRatioProfile.normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+			normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
 
@@ -111,6 +116,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	protected void populate(_Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
+		this.myNetwork = myNetwork;
+		
     	try {
 			myType = _Node.Type.valueOf(getType());
 		} catch (IllegalArgumentException e) {
@@ -141,12 +148,13 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 			}
 		}
 		
-		inDemand = new Double[nIn][API.getNumVehicleTypes()];
+		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
+		inDemand = new Double[nIn][numVehicleTypes];
 		outSupply = new double[nOut];
 		outDemandKnown = new double[nOut];
 		dsratio = new double[nOut];
 		iscontributor = new boolean[nIn][nOut];
-		outFlow = new Double[nOut][API.getNumVehicleTypes()];
+		outFlow = new Double[nOut][numVehicleTypes];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
 		sampledSRprofile = null;
@@ -219,7 +227,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	        for(j=0;j<nOut;j++){
 	        	outDemandKnown[j] = 0f;
 	        	for(i=0;i<nIn;i++)
-	        		for(k=0;k<API.getNumVehicleTypes();k++)
+	        		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++)
 	        			if(!splitratio.get(i,j,k).isNaN())
 	        				outDemandKnown[j] += splitratio.get(i,j,k) * inDemand[i][k];
 	        }
@@ -249,6 +257,87 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	}
 
 	/////////////////////////////////////////////////////////////////////
+	// operations on split ratio matrices
+	/////////////////////////////////////////////////////////////////////
+	
+	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
+
+		int i,j,k;
+		Double value;
+		
+		// dimension
+		if(X.getnIn()!=this.nIn || X.getnOut()!=this.nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+			System.out.println("Split ratio for node " + this.getId() + " has incorrect dimension");
+			return false;
+		}
+		
+		// range
+		for(i=0;i<X.getnIn();i++){
+			for(j=0;j<X.getnOut();j++){
+				for(k=0;k<X.getnVTypes();k++){
+					value = X.get(i,j,k);
+					if( !value.isNaN() && (value>1 || value<0) ){
+						System.out.println("Split ratio values must be in [0,1]");
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+    protected void normalizeSplitRatioMatrix(Double3DMatrix X){
+
+    	int i,j,k;
+		boolean hasNaN;
+		int countNaN;
+		int idxNegative;
+		double sum;
+    	
+    	for(i=0;i<X.getnIn();i++)
+    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+				hasNaN = false;
+				countNaN = 0;
+				idxNegative = -1;
+				sum = 0.0f;
+				for (j = 0; j < X.getnOut(); j++)
+					if (X.get(i,j,k).isNaN()) {
+						countNaN++;
+						idxNegative = j;
+						if (countNaN > 1)
+							hasNaN = true;
+					}
+					else
+						sum += X.get(i,j,k);
+				
+				if (countNaN==1) {
+					X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
+					sum += X.get(i,idxNegative,k);
+				}
+				
+				if ((!hasNaN) && (sum==0.0)) {	
+					X.set(i,0,k,1d);
+					//for (j=0; j<n2; j++)			
+					//	data[i][j][k] = 1/((double) n2);
+					continue;
+				}
+				
+				if ((!hasNaN) && (sum<1.0)) {
+					for (j=0;j<X.getnOut();j++)
+						X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+					continue;
+				}
+				
+				if (sum >= 1.0)
+					for (j=0; j<X.getnOut(); j++)
+						if (X.get(i,j,k).isNaN())
+							X.set(i,j,k,0d);
+						else
+							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+    		}
+    }
+    
+	/////////////////////////////////////////////////////////////////////
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 	
@@ -259,6 +348,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
         //    error('!!!')
         
     	int i,j,k;
+    	int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 
         // input i contributes to output j .............................
     	for(i=0;i<splitratio.getnIn();i++)
@@ -275,7 +365,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
         	// re-compute known output demands .........................
 			outDemandKnown[j] = 0f;
             for(i=0;i<nIn;i++)
-            	for(k=0;k<API.getNumVehicleTypes();k++)
+            	for(k=0;k<numVehicleTypes;k++)
             		outDemandKnown[j] += inDemand[i][k]*splitratio.get(i,j,k);
             
             // compute and sort output demand/supply ratio .............
@@ -290,12 +380,12 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 
         // scale down input demands
         for(i=0;i<nIn;i++)
-            for(k=0;k<API.getNumVehicleTypes();k++)
+            for(k=0;k<numVehicleTypes;k++)
                 inDemand[i][k] /= applyratio[i];
 
         // compute out flows ...........................................   
         for(j=0;j<nOut;j++){
-        	for(k=0;k<API.getNumVehicleTypes();k++){
+        	for(k=0;k<numVehicleTypes;k++){
         		outFlow[j][k] = 0d;
             	for(i=0;i<nIn;i++){
             		outFlow[j][k] += inDemand[i][k]*splitratio.get(i,j,k);
@@ -314,7 +404,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     	double num;
     	
     	for(i=0;i<nIn;i++){
-	        for(k=0;k<API.getNumVehicleTypes();k++){
+	        for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
 	            
 	        	// number of outputs with unknown split ratio
 	        	numunknown = 0;
@@ -532,14 +622,14 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
 		
 		//////
-		splitratio = new Double3DMatrix(nIn,nOut,API.getNumVehicleTypes(),0d);
-		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
+		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+		normalizeSplitRatioMatrix(splitratio);
 		//////
     }
     
 	private void setSplitratio(Double3DMatrix x) {
 		splitratio.copydata(x);
-		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
+		normalizeSplitRatioMatrix(splitratio);
 	}
 
 	/////////////////////////////////////////////////////////////////////

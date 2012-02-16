@@ -5,20 +5,25 @@
 
 package com.relteq.sirius.sensor;
 
+import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
+/** DESCRIPTION OF THE CLASS
+* @author AUTHOR NAME
+* @version VERSION NUMBER
+*/
 public class SensorLoopStation extends _Sensor {
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorLoopStation(String networkId,String linkId) {
-		super.populateFromParameters(_Sensor.Type.static_point,networkId, linkId);
+	public SensorLoopStation(_Scenario myScenario,String networkId,String linkId) {
+		super.populateFromParameters(myScenario,_Sensor.Type.static_point,networkId, linkId);
 	}
 	
-	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor s) {
-		super.populateFromJaxb(s, _Sensor.Type.static_point);	
+	public SensorLoopStation(_Scenario myScenario,com.relteq.sirius.jaxb.Sensor s) {
+		super.populateFromJaxb(myScenario,s, _Sensor.Type.static_point);	
 	}
 	
 	/////////////////////////////////////////////////////////////////////
