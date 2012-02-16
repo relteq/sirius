@@ -2,7 +2,6 @@ package com.relteq.sirius.event;
 
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator._Event;
-import com.relteq.sirius.simulator._FundamentalDiagram;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._ScenarioElement;

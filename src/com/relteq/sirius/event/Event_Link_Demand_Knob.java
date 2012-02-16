@@ -2,8 +2,6 @@ package com.relteq.sirius.event;
 
 import com.relteq.sirius.jaxb.DemandProfileSet;
 import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.simulator.DemandProfile;
-import com.relteq.sirius.simulator._DemandProfile;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._ScenarioElement;
