@@ -11,13 +11,13 @@ import com.relteq.sirius.jaxb.Controller;
 
 final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
-	private ArrayList<_Controller> _controllers = new ArrayList<_Controller>();
+	protected ArrayList<_Controller> _controllers = new ArrayList<_Controller>();
 	
 	/////////////////////////////////////////////////////////////////////
-	// interface
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public ArrayList<_Controller> get_Controllers(){
+	protected ArrayList<_Controller> get_Controllers(){
 		return _controllers;
 	}
 	
@@ -27,8 +27,8 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	
 	protected void populate() {
 
-		if(Utils.theScenario.getControllerSet()!=null){
-			for(Controller controller : Utils.theScenario.getControllerSet().getController()){
+		if(Global.theScenario.getControllerSet()!=null){
+			for(Controller controller : Global.theScenario.getControllerSet().getController()){
 	
 				// assign type
 				_Controller.Type myType;
@@ -38,15 +38,13 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 					myType = _Controller.Type.NULL;
 					return;
 				}	
+				
 				// generate controller
-				_Controller C = null;
-				switch(myType){
-					case IRM_alinea:
-						C = new com.relteq.sirius.control.ControllerAlinea(controller,myType);
-					break;
+				if(myType!=_Controller.Type.NULL){
+					_Controller C = ObjectFactory.createControllerFromJaxb(controller,myType);
+					if(C!=null)
+						_controllers.add(C);
 				}
-				if(myType!=_Controller.Type.NULL)
-					_controllers.add(C);
 			}
 		}
 	}

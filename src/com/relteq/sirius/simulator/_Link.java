@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 public final class _Link extends com.relteq.sirius.jaxb.Link {
 
-	protected static enum Type	{NULL, freeway,
+	public static enum Type	{NULL, freeway,
 								       HOV,
 								       HOT,
 								       onramp,
@@ -20,183 +20,47 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 										       region_tracking,
 										       discrete_departure };
 																		   
-	private _Link.Type myType;
+	protected _Link.Type myType;
 	
 	// network references
-	private _Node begin_node;
-	private _Node end_node;
+	protected _Network myNetwork;
+	protected _Node begin_node;
+	protected _Node end_node;
 
-	private double _length;					// [miles]
-	private double _lanes;					// [-]
-	private _FundamentalDiagram FD;			// pointer to current fundamental diagram
-	private _FundamentalDiagram FDprofile;	// pointer to profile fundamental diagram
-	private boolean eventactive;
-	private _FundamentalDiagramProfile myFDProfile;	// needed lane change events
+	protected double _length;					// [miles]
+	protected double _lanes;					// [-]
+	protected _FundamentalDiagram FD;			// pointer to current fundamental diagram
+	protected _FundamentalDiagram FDprofile;	// pointer to profile fundamental diagram
+	protected boolean eventactive;
+	protected _FundamentalDiagramProfile myFDProfile;	// needed lane change events
 
     // flow into the link
     // inflow points to either sourcedemand or node outflow
-    private Double [] inflow;    			// [veh]	1 x numVehTypes
-    private Double [] sourcedemand;			// [veh] 	1 x numVehTypes
+	protected Double [] inflow;    			// [veh]	1 x numVehTypes
+	protected Double [] sourcedemand;			// [veh] 	1 x numVehTypes
     
     // demand and actual flow out of the link   
-    private Double [] outflowDemand;   		// [veh] 	1 x numVehTypes
-    private Double [] outflow;    			// [veh]	1 x numVehTypes
+	protected Double [] outflowDemand;   		// [veh] 	1 x numVehTypes
+	protected Double [] outflow;    			// [veh]	1 x numVehTypes
     
     // contoller
-    private boolean iscontrolled;	
-    private double control_maxflow;			// [veh]		
-    private double control_maxspeed;		// [-]
+	protected boolean iscontrolled;	
+	protected double control_maxflow;			// [veh]		
+	protected double control_maxspeed;		// [-]
     
     // state
-    private Double [] density;    			// [veh]	1 x numVehTypes
+	protected Double [] density;    			// [veh]	1 x numVehTypes
 
     // flow evaluation
-    private double spaceSupply;        		// [veh]
+	protected double spaceSupply;        		// [veh]
     
-    private boolean issource; 				// [boolean]
-    private boolean issink;     			// [boolean]
+	protected boolean issource; 				// [boolean]
+	protected boolean issink;     			// [boolean]
 
-    private Double [] cumulative_density;	// [veh] 	1 x numVehTypes
-    private Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
-    private Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
+	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
+	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
+	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
 
-	/////////////////////////////////////////////////////////////////////
-	// construction
-	/////////////////////////////////////////////////////////////////////
-    
-    public _Link(){
-    }
-    
-	/////////////////////////////////////////////////////////////////////
-	// public interface
-	/////////////////////////////////////////////////////////////////////
-	    
-	public _Link.Type getMyType() {
-		return myType;
-	}
-    
-	public _Node getBegin_node() {
-		return begin_node;
-	}
-
-	public _Node getEnd_node() {
-		return end_node;
-	}
-
-	public double getLengthInMiles() {
-		return _length;
-	}
-
-	public Double[] getCumDensityInVeh() {
-		return cumulative_density;
-	}
-
-	public Double[] getCumInflowInVeh() {
-		return cumulative_inflow;
-	}
-
-	public Double[] getCumOutflowInVeh() {
-		return cumulative_outflow;
-	}
-
-	public double getLinkLength() {
-		return _length;
-	}
-
-	public double get_Lanes() {
-		return _lanes;
-	}
-
-	public Double[] getOutflowInVeh() {
-		return outflow;
-	}
-
-	public double getTotalOutflowInVeh() {
-		return Utils.sum(outflow);
-	}
-	
-	public double computeSpeedInMPH(){
-		double totaldensity = Utils.sum(density);
-		double speed;
-		if(totaldensity>Utils.EPSILON)
-			speed = Utils.sum(outflow)/totaldensity;
-		else
-			speed = FD.getVfNormalized();
-		return speed*_length/Utils.simdtinhours;
-	}
-
-	public double getDensityJamInVeh() {
-		return FD._getDensityJamInVeh();
-	}
-	
-	public double getDensityCriticalInVeh() {
-		return FD.getDensityCriticalInVeh();
-	}
-
-	public double getCapacityDropInVeh() {
-		return FD._getCapacityDropInVeh();
-	}
-
-	public double getCapacityInVeh() {
-		return FD._getCapacityInVeh();
-	}
-	
-	public double getDensityJamInVPMPL() {
-		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
-	}
-
-	public double getDensityCriticalInVPMPL() {
-		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
-	}
-	
-	public double getCapacityDropInVPHPL() {
-		return FD._getCapacityDropInVeh()/Utils.simdtinhours/_lanes;
-	}
-
-	public double getCapacityInVPHPL() {
-		return FD._getCapacityInVeh()/Utils.simdtinhours/_lanes;
-	}
-	
-	public double getNormalizedVf() {
-		return FD.getVfNormalized();
-	}
-
-	public double getVfInMPH() {
-		return FD.getVfNormalized()*getLengthInMiles()/Utils.simdtinhours;
-	}
-	
-	public double getNormalizedW() {
-		return FD.getWNormalized();
-	}
-
-	public double getWInMPH() {
-		return FD.getWNormalized()*getLengthInMiles()/Utils.simdtinhours;
-	}
-
-	public boolean isIssource() {
-		return issource;
-	}
-
-	public boolean isIssink() {
-		return issink;
-	}
-
-	public boolean isControlled() {
-		return iscontrolled;
-	}
-	
-	public Double[] getOutflowDemand() {
-		return outflowDemand;
-	}
-
-	public double getSpaceSupply() {
-		return spaceSupply;
-	}
-
-    public _FundamentalDiagram getCurrentFD() {
-		return FD;
-	}
-    
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
@@ -206,7 +70,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	public double getTotalDensityInVeh() {
-		return Utils.sum(density);
+		return SiriusMath.sum(density);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -214,9 +78,9 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	protected void reset_cumulative(){
-    	cumulative_density = Utils.zeros(Utils.numVehicleTypes);
-    	cumulative_inflow  = Utils.zeros(Utils.numVehicleTypes);
-    	cumulative_outflow = Utils.zeros(Utils.numVehicleTypes);
+    	cumulative_density = SiriusMath.zeros(API.getNumVehicleTypes());
+    	cumulative_inflow  = SiriusMath.zeros(API.getNumVehicleTypes());
+    	cumulative_outflow = SiriusMath.zeros(API.getNumVehicleTypes());
 	}
     
 	protected boolean registerController(){
@@ -295,26 +159,24 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
  		if(issource){
  			outflowDemand = sourcedemand.clone();
  			double sum = 0d;
- 			for(int k=0;k<Utils.numVehicleTypes;k++){
+ 			for(int k=0;k<API.getNumVehicleTypes();k++){
  				outflowDemand[k] += density[k];
  				sum += outflowDemand[k];
  			}
  			if(sum>FD._getCapacityInVeh()){
  				double ratio = FD._getCapacityInVeh()/sum;
- 				for(int k=0;k<Utils.numVehicleTypes;k++)
+ 				for(int k=0;k<API.getNumVehicleTypes();k++)
  					outflowDemand[k] *= ratio;
  			}
  			return;
  		}
  		////////////////////////////////////
  		
- 		
-
-        double totaldensity = Utils.sum(density);
+        double totaldensity = SiriusMath.sum(density);
         
         // case empty link
-        if(totaldensity<=Utils.EPSILON){
-        	outflowDemand =  Utils.zeros(Utils.numVehicleTypes);        		
+        if( SiriusMath.lessorequalthan(totaldensity,0d) ){
+        	outflowDemand =  SiriusMath.zeros(API.getNumVehicleTypes());        		
         	return;
         }
         
@@ -338,13 +200,13 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         	totaloutflow = Math.min( totaloutflow , control_maxflow );
         
         // split among types
-        outflowDemand = Utils.times(density,totaloutflow/totaldensity);
+        outflowDemand = SiriusMath.times(density,totaloutflow/totaldensity);
         
         return;
     }
     
     protected void updateSpaceSupply(){
-    	double totaldensity = Utils.sum(density);
+    	double totaldensity = SiriusMath.sum(density);
         spaceSupply = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
         spaceSupply = Math.min(spaceSupply,FD._getCapacityInVeh());
     }
@@ -354,7 +216,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////    
     
 	protected void populate(_Network myNetwork) {
-		
+
+        this.myNetwork = myNetwork;
         iscontrolled = false;
         
 		// assign type
@@ -376,20 +239,15 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		// lanes and length
 		_lanes = getLanes().doubleValue();
 		_length = getLength().doubleValue();
-//		if(_length>10){
-//			System.out.println("Warning: Length of link " + getId() + " given in feet. Changing to miles.");
-//			_length /= 5280f;
-//			setLength(new BigDecimal(_length));
-//		}
         
         // initial density, demand, and capacity
-        density 			= new Double[Utils.numVehicleTypes];
-        inflow 				= new Double[Utils.numVehicleTypes];
-        outflow 			= new Double[Utils.numVehicleTypes];
-        sourcedemand 		= new Double[Utils.numVehicleTypes];
-        cumulative_density 	= new Double[Utils.numVehicleTypes];
-        cumulative_inflow 	= new Double[Utils.numVehicleTypes];
-        cumulative_outflow 	= new Double[Utils.numVehicleTypes];
+        density 			= new Double[API.getNumVehicleTypes()];
+        inflow 				= new Double[API.getNumVehicleTypes()];
+        outflow 			= new Double[API.getNumVehicleTypes()];
+        sourcedemand 		= new Double[API.getNumVehicleTypes()];
+        cumulative_density 	= new Double[API.getNumVehicleTypes()];
+        cumulative_inflow 	= new Double[API.getNumVehicleTypes()];
+        cumulative_outflow 	= new Double[API.getNumVehicleTypes()];
 		
         // initialize control
         resetControl();
@@ -399,22 +257,22 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected boolean validate() {
 		
 		if(!issource && begin_node==null){
-			Utils.addErrorMessage("Incorrect begin node id in link " + getId());
+			SiriusError.addErrorMessage("Incorrect begin node id in link " + getId());
 			return false;
 		}
 
 		if(!issink && end_node==null){
-			Utils.addErrorMessage("Incorrect end node id in link " + getId());
+			SiriusError.addErrorMessage("Incorrect end node id in link " + getId());
 			return false;
 		}
 		
 		if(_length<=0){
-			Utils.addErrorMessage("Link length must be positive: Link " + getId());
+			SiriusError.addErrorMessage("Link length must be positive: Link " + getId());
 			return false;
 		}
 		
 		if(_lanes<=0){
-			Utils.addErrorMessage("Link lanes must be positive: Link " + getId());
+			SiriusError.addErrorMessage("Link lanes must be positive: Link " + getId());
 			return false;
 		}
 		
@@ -423,19 +281,19 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	protected void resetState() {
 				
-		switch(Utils.simulationMode){
+		switch(Global.theScenario.simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = Utils.zeros(Utils.numVehicleTypes);
+			density = SiriusMath.zeros(API.getNumVehicleTypes());
 			break;
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			_InitialDensityProfile profile = (_InitialDensityProfile) Utils.theScenario.getInitialDensityProfile();
+			_InitialDensityProfile profile = (_InitialDensityProfile) Global.theScenario.getInitialDensityProfile();
 			if(profile!=null)
 				density = profile.getDensityForLinkIdInVeh(getId());	
 			else 
-				density = Utils.zeros(Utils.numVehicleTypes);
+				density = SiriusMath.zeros(API.getNumVehicleTypes());
 			break;
 			
 		default:
@@ -444,7 +302,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		}
 
 		// reset other quantities
-		for(int j=0;j<Utils.numVehicleTypes;j++){
+		for(int j=0;j<API.getNumVehicleTypes();j++){
 			inflow[j] = 0d;
 			outflow[j] = 0d;
 			sourcedemand[j] = 0d;
@@ -479,7 +337,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         if(issource)
             inflow = sourcedemand.clone();
         
-        for(int j=0;j<Utils.numVehicleTypes;j++){
+        for(int j=0;j<API.getNumVehicleTypes();j++){
         	density[j] += inflow[j] - outflow[j];
         	cumulative_density[j] += density[j];
         	cumulative_inflow[j] += inflow[j];
@@ -488,4 +346,114 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+	
+	public _Link.Type getMyType() {
+		return myType;
+	}
+    
+	public _Network getMyNetwork() {
+		return myNetwork;
+	}
+
+	public _Node getBegin_node() {
+		return begin_node;
+	}
+
+	public _Node getEnd_node() {
+		return end_node;
+	}
+
+	public double getLengthInMiles() {
+		return _length;
+	}
+
+	public double getLinkLength() {
+		return _length;
+	}
+
+	public double get_Lanes() {
+		return _lanes;
+	}
+
+	public Double[] getOutflowInVeh() {
+		return outflow;
+	}
+
+	public double getTotalOutflowInVeh() {
+		return SiriusMath.sum(outflow);
+	}
+	
+	public double computeSpeedInMPH(){
+		double totaldensity = SiriusMath.sum(density);
+		double speed;
+		if( SiriusMath.greaterthan(totaldensity,0d) )
+			speed = SiriusMath.sum(outflow)/totaldensity;
+		else
+			speed = FD.getVfNormalized();
+		return speed*_length/API.getSimDtInHours();
+	}
+
+	public double getDensityJamInVeh() {
+		return FD._getDensityJamInVeh();
+	}
+	
+	public double getDensityCriticalInVeh() {
+		return FD.getDensityCriticalInVeh();
+	}
+
+	public double getCapacityDropInVeh() {
+		return FD._getCapacityDropInVeh();
+	}
+
+	public double getCapacityInVeh() {
+		return FD._getCapacityInVeh();
+	}
+	
+	public double getDensityJamInVPMPL() {
+		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
+	}
+
+	public double getDensityCriticalInVPMPL() {
+		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
+	}
+	
+	public double getCapacityDropInVPHPL() {
+		return FD._getCapacityDropInVeh()/API.getSimDtInHours()/_lanes;
+	}
+
+	public double getCapacityInVPHPL() {
+		return FD._getCapacityInVeh()/API.getSimDtInHours()/_lanes;
+	}
+	
+	public double getNormalizedVf() {
+		return FD.getVfNormalized();
+	}
+
+	public double getVfInMPH() {
+		return FD.getVfNormalized()*getLengthInMiles()/API.getSimDtInHours();
+	}
+	
+	public double getNormalizedW() {
+		return FD.getWNormalized();
+	}
+
+	public double getWInMPH() {
+		return FD.getWNormalized()*getLengthInMiles()/API.getSimDtInHours();
+	}
+
+	public boolean isIsSource() {
+		return issource;
+	}
+
+	public boolean isIsSink() {
+		return issink;
+	}
+
+	public boolean isControlled() {
+		return iscontrolled;
+	}
+	
 }

@@ -7,12 +7,12 @@ package com.relteq.sirius.simulator;
 
 final class _ScenarioElement {
 	
-	public static enum Type {NULL, link, 
-								   node,
-								   controller,
-								   sensor,
-								   event,
-								   signal };
+	protected static enum Type {NULL, link, 
+									  node,
+									  controller,
+									  sensor,
+									  event,
+									  signal };
 		    
 	protected _ScenarioElement.Type myType;
 	protected String network_id = "";
@@ -24,11 +24,11 @@ final class _ScenarioElement {
 		this.network_id = s.getNetworkId();
 		if(id.equalsIgnoreCase("link")){
 			this.myType = _ScenarioElement.Type.link;
-			this.reference = Utils.getLinkWithCompositeId(network_id,id);
+			this.reference = API.getLinkWithCompositeId(network_id,id);
 		}
 		if(id.equalsIgnoreCase("node")){
 			this.myType = _ScenarioElement.Type.node;
-			this.reference = Utils.getNodeWithCompositeId(network_id,id);
+			this.reference = API.getNodeWithCompositeId(network_id,id);
 		}
 	}
 	

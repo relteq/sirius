@@ -19,28 +19,23 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate() {
-		myLink = Utils.getLinkWithCompositeId(getNetworkId(),getLinkId());
+		myLink = API.getLinkWithCompositeId(getNetworkId(),getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
-		samplesteps = Utils.round(dtinseconds/Utils.simdtinseconds);
+		samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
 		isdone = false;
 		
 		// read start time, convert to stepinitial
 		double starttime;
-		if( getStartTime()!=null){
+		if( getStartTime()!=null)
 			starttime = getStartTime().floatValue();
-//			if(starttime>0 && starttime<=24){
-//				System.out.println("Warning: Initial time given in hours. Changing to seconds.");
-//				starttime *= 3600f;
-//			}
-		}
 		else
 			starttime = 0f;
 
-		stepinitial = (int) Math.round((starttime-Utils.timestart)/Utils.simdtinseconds);
+		stepinitial = (int) Math.round((starttime-API.getTimeStart())/API.getSimDtInSeconds());
 		
 		// read capacity and convert to vehicle units
 		capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-		capacity.multiplyscalar(Utils.simdtinhours*myLink.get_Lanes());
+		capacity.multiplyscalar(API.getSimDtInHours()*myLink.get_Lanes());
 	}
 	
 	protected boolean validate() {
@@ -59,7 +54,7 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			return false;	
 		}
 
-		if(!Utils.isintegermultipleof(dtinseconds,Utils.simdtinseconds)){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
 			System.out.println("Capacity dt should be multiple of sim dt: " + getLinkId());
 			return false;	
 		}
@@ -80,13 +75,13 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	protected void update() {
 		if(isdone || capacity.isEmpty())
 			return;
-		if(Utils.clock.istimetosample(samplesteps,stepinitial)){
+		if(Global.clock.istimetosample(samplesteps,stepinitial)){
 			int n = capacity.getLength()-1;
-			int step = Utils.floor((Utils.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
 			if(step<n)
-				myLink.getCurrentFD().setCapacityFromVeh( capacity.get(step) );
+				myLink.FD.setCapacityFromVeh( capacity.get(step) );
 			if(step>=n && !isdone){
-				myLink.getCurrentFD().setCapacityFromVeh( capacity.get(n) );
+				myLink.FD.setCapacityFromVeh( capacity.get(n) );
 				isdone = true;
 			}
 		}

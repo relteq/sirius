@@ -15,47 +15,47 @@ final class Runner {
 
 		// process input parameters
 		if(!parseInput(args)){
-			Utils.printErrorMessage();
+			SiriusError.printErrorMessage();
 			return;
 		}
 
 		// load configuration file ................................
-		_Scenario scenario = Utils.load(Utils.configfilename);
+		_Scenario scenario = ObjectFactory.createAndLoadScenario(Global.configfilename);
 
 		// did load succeed?
-		if(!Utils.isloadedandinitialized){
-			Utils.setErrorHeader("Initialization failed.");
-			Utils.printErrorMessage();
+		if(!scenario.isloaded){
+			SiriusError.setErrorHeader("Initialization failed.");
+			SiriusError.printErrorMessage();
 			return;
 		}
 			
 		// validate scenario ......................................
 		scenario.validate();
-		if(!Utils.isvalid){
-			Utils.setErrorHeader("Validation failed.");
-			Utils.printErrorMessage();
+		if(!scenario.isvalid){
+			SiriusError.setErrorHeader("Validation failed.");
+			SiriusError.printErrorMessage();
 			return;
 		}
 		
 		// loop through simulation runs ............................
-		for(int i=0;i<Utils.numRepititions;i++){
+		for(int i=0;i<Global.numRepititions;i++){
 			
 			// reset scenario
 			scenario.reset();
-			if(!Utils.isreset){
-				Utils.setErrorHeader("Reset failed.");
-				Utils.printErrorMessage();
+			if(!scenario.isreset){
+				SiriusError.setErrorHeader("Reset failed.");
+				SiriusError.printErrorMessage();
 				return;
 			}
 
 			// open output files
-	        if(Utils.simulationMode==Utils.ModeType.normal){
-	        	Utils.outputwriter = new OutputWriter(Utils.round(Utils.outdt/Utils.simdtinseconds));
+	        if(scenario.simulationMode==_Scenario.ModeType.normal){
+	        	Global.outputwriter = new OutputWriter(SiriusMath.round(Global.outdt/scenario.simdtinseconds));
 				try {
-					Utils.outputwriter.open(Utils.outputfile_density,Utils.outputfile_outflow,Utils.outputfile_inflow);
+					Global.outputwriter.open(Global.outputfile_density,Global.outputfile_outflow,Global.outputfile_inflow);
 				} catch (FileNotFoundException e) {
-					Utils.addErrorMessage("Unable to open output file.");
-					Utils.printErrorMessage();
+					SiriusError.addErrorMessage("Unable to open output file.");
+					SiriusError.printErrorMessage();
 					return;
 				}
 	        }
@@ -64,11 +64,11 @@ final class Runner {
 			scenario.run();
 
             // close output files
-	        if(Utils.simulationMode==Utils.ModeType.normal)
-	        	Utils.outputwriter.close();
+	        if(scenario.simulationMode==_Scenario.ModeType.normal)
+	        	Global.outputwriter.close();
 
 			// or save scenario (in warmup mode)
-	        if(Utils.simulationMode==Utils.ModeType.warmupFromIC || Utils.simulationMode==Utils.ModeType.warmupFromZero){
+	        if(scenario.simulationMode==_Scenario.ModeType.warmupFromIC || scenario.simulationMode==_Scenario.ModeType.warmupFromZero){
 //	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
 //	    		Utils.save(scenario, outfile);
 	        }
@@ -107,50 +107,50 @@ final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			Utils.addErrorMessage(str);
+			SiriusError.addErrorMessage(str);
 			return false;
 		}
 		
 		// Configuration file name
 		if(args.length>0)	
-			Utils.setconfigfilename(args[0]);
+			Global.setconfigfilename(args[0]);
 		else
-			Utils.setconfigfilename(Defaults.CONFIGFILE);	
+			Global.setconfigfilename(Defaults.CONFIGFILE);	
 
 		// Output file name		
 		if(args.length>1)	
-			Utils.setoutputfilename(args[1]);
+			Global.setoutputfilename(args[1]);
 		else
-			Utils.setoutputfilename(Defaults.OUTPUTFILE);
+			Global.setoutputfilename(Defaults.OUTPUTFILE);
 		
 		// Start time [seconds after midnight]
 		if(args.length>2){
 			double timestart = Double.parseDouble(args[2]);
-			Utils.timestart = Utils.round(timestart*10.0)/10.0;	// round to the nearest decisecond
+			Global.timestart = SiriusMath.round(timestart*10.0)/10.0;	// round to the nearest decisecond
 		}
 		else
-			Utils.timestart = Defaults.TIME_INIT;
+			Global.timestart = Defaults.TIME_INIT;
 
 		// Duration [seconds]	
 		if(args.length>3)
-			Utils.timeend = Utils.timestart + Double.parseDouble(args[3]);
+			Global.timeend = Global.timestart + Double.parseDouble(args[3]);
 		else
-			Utils.timeend = Utils.timestart + Defaults.DURATION;
+			Global.timeend = Global.timestart + Defaults.DURATION;
 		
 		// Output sampling time [seconds]
 		if(args.length>4){
 			double outdt = Double.parseDouble(args[4]);
-			Utils.outdt = Utils.round(outdt*10.0)/10.0;		// round to the nearest decisecond	
+			Global.outdt = SiriusMath.round(outdt*10.0)/10.0;		// round to the nearest decisecond	
 		}
 		else
-			Utils.outdt = Defaults.OUT_DT;
+			Global.outdt = Defaults.OUT_DT;
 
 		// Number of simulations
 		if(args.length>5){
-			Utils.numRepititions = Integer.parseInt(args[5]);
+			Global.numRepititions = Integer.parseInt(args[5]);
 		}
 		else
-			Utils.numRepititions = 1;
+			Global.numRepititions = 1;
 		
 		return true;
 	}

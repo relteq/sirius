@@ -13,8 +13,12 @@ public class SensorLoopStation extends _Sensor {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor c,_Sensor.Type myType) {
-		super(c,myType);		
+	public SensorLoopStation(String networkId,String linkId) {
+		super.populateFromParameters(_Sensor.Type.static_point,networkId, linkId);
+	}
+	
+	public SensorLoopStation(com.relteq.sirius.jaxb.Sensor s) {
+		super.populateFromJaxb(s, _Sensor.Type.static_point);	
 	}
 	
 	/////////////////////////////////////////////////////////////////////

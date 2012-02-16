@@ -9,15 +9,7 @@ import java.util.ArrayList;
 
 final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 
-	private ArrayList<_Sensor> _sensors = new ArrayList<_Sensor>();
-
-	/////////////////////////////////////////////////////////////////////
-	// interface
-	/////////////////////////////////////////////////////////////////////
-	
-	public ArrayList<_Sensor> get_Sensors(){
-		return _sensors;
-	}
+	protected ArrayList<_Sensor> _sensors = new ArrayList<_Sensor>();
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -35,15 +27,13 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 					myType = _Sensor.Type.NULL;
 					return;
 				}	
-				// generate controller
-				_Sensor S = null;
-				switch(myType){
-					case static_point:
-						S = new com.relteq.sirius.sensor.SensorLoopStation(sensor,myType);
-					break;
+				
+				// generate sensor
+				if(myType!=_Sensor.Type.NULL){
+					_Sensor S = ObjectFactory.createSensorFromJaxb(sensor,myType);
+					if(S!=null)
+						_sensors.add(S);
 				}
-				if(myType!=_Sensor.Type.NULL)
-					_sensors.add(S);
 			}
 		}
 	}

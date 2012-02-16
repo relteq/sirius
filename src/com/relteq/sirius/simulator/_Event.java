@@ -8,11 +8,9 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 
 import com.relteq.sirius.jaxb.DemandProfile;
-import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.jaxb.ScenarioElement;
 
 @SuppressWarnings("rawtypes")
-final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
+public class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 
 	public static enum Type	{NULL, fundamental_diagram,
 								   link_demand_knob,
@@ -25,23 +23,9 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 	protected _Event.Type myType;
 	protected int timestampstep;
 	protected ArrayList<_ScenarioElement> targets;
-	
+		
 	/////////////////////////////////////////////////////////////////////
-	// construction
-	/////////////////////////////////////////////////////////////////////
-	
-	public _Event(){}
-	
-	public _Event(Event e,_Event.Type myType){
-		this.myType = myType;
-		timestampstep = Utils.round(e.getTstamp().floatValue()/Utils.simdtinseconds);		// assume in seconds
-		targets = new ArrayList<_ScenarioElement>();
-		for(ScenarioElement s : e.getTargetElements().getScenarioElement() )
-			targets.add(new _ScenarioElement(s));
-	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// interface
+	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
 	public _Event.Type getMyType() {
@@ -117,7 +101,7 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 				}
 				else{
 					_FundamentalDiagram eventFD = new _FundamentalDiagram(targetlink);
-					eventFD.copyfrom((targetlink).getCurrentFD());		// copy current FD
+					eventFD.copyfrom((targetlink).FD);		// copy current FD
 					eventFD.copyfrom(this.getFundamentalDiagram());		// replace values with those defined in the event
 					if(eventFD.validate()){								// validate the result
 						//targetlink.setEventFundamentalDiagram(eventFD);
@@ -130,8 +114,8 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		// ....................................
 		case link_demand_knob:
 			for(_ScenarioElement s : targets){
-		    	if(Utils.theScenario.getDemandProfileSet()!=null){
-		        	for(DemandProfile profile : Utils.theScenario.getDemandProfileSet().getDemandProfile()){
+		    	if(Global.theScenario.getDemandProfileSet()!=null){
+		        	for(DemandProfile profile : Global.theScenario.getDemandProfileSet().getDemandProfile()){
 		        		if(profile.getLinkIdOrigin().equals(s.id)){
 		        			double newknob;
 		        			if(isResetToNominal())
@@ -166,7 +150,7 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		// ....................................
 		case control_toggle:
 			for(_ScenarioElement s : targets){
-				_Controller c = Utils.getControllerWithId(s.id);
+				_Controller c = API.getControllerWithName(s.id);
 				c.ison = getOnOffSwitch().getValue().equalsIgnoreCase("on");
 			}			
 			break;
@@ -193,8 +177,8 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		// Global events =====================================================
 			
 		case global_demand_knob:
-	    	if(Utils.theScenario.getDemandProfileSet()!=null)
-	        	for(DemandProfile profile : Utils.theScenario.getDemandProfileSet().getDemandProfile() ){
+	    	if(Global.theScenario.getDemandProfileSet()!=null)
+	        	for(DemandProfile profile : Global.theScenario.getDemandProfileSet().getDemandProfile() ){
 	        		double knobvalue;
 	    			if(isResetToNominal())
 	    				knobvalue = ((_DemandProfile) profile).getKnob().doubleValue();
@@ -206,7 +190,7 @@ final class _Event extends com.relteq.sirius.jaxb.Event implements Comparable {
 		
        	// ....................................
 		case global_control_toggle:
-			Utils.controlon = getOnOffSwitch().getValue().equalsIgnoreCase("on");
+			Global.theScenario.controlon = getOnOffSwitch().getValue().equalsIgnoreCase("on");
 			break;
 		}
 	}

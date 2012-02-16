@@ -14,9 +14,12 @@ public class SensorFloating extends _Sensor {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorFloating(Sensor s,_Sensor.Type myType) {
-		super(s, myType);
-		// TODO Auto-generated constructor stub
+	public SensorFloating(String networkId,String linkId) {
+		super.populateFromParameters(_Sensor.Type.moving_point, networkId, linkId);
+	}
+	
+	public SensorFloating(Sensor s) {
+		super.populateFromJaxb(s, _Sensor.Type.moving_point);
 	}
 
 	/////////////////////////////////////////////////////////////////////

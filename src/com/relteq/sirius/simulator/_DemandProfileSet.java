@@ -29,10 +29,10 @@ final class _DemandProfileSet extends DemandProfileSet {
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = Utils.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
+				vehicletypeindex[i] = API.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
 		}
 		else{
-			numTypes = Utils.numVehicleTypes;
+			numTypes = API.getNumVehicleTypes();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
@@ -50,7 +50,7 @@ final class _DemandProfileSet extends DemandProfileSet {
 	protected boolean validate() {
 
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=Utils.numVehicleTypes){
+		if(vehicletypeindex.length!=API.getNumVehicleTypes()){
 			System.out.println("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}

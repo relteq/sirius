@@ -5,12 +5,39 @@
 
 package com.relteq.sirius.simulator;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import com.relteq.sirius.jaxb.*;
 
 public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
+
+	protected _Scenario.ModeType simulationMode;
+	protected _Scenario.UncertaintyType uncertaintyModel;
+	
+	protected int numVehicleTypes;			// number of vehicle types
+	protected boolean controlon;			// global control switch
+	protected double simdtinseconds;		// [sec] simulation time step 
+	protected double simdtinhours;			// [hr]  simulation time step 	
+	
+	protected boolean isloaded=false;	// true if configuration file has been loaded
+	protected boolean isreset=false;	// true if scenario passed reset.	
+	protected boolean isrunning=false;	// true when the simulation is running
+	protected boolean isvalid=false;	// true if it has passed validation
 	
 	protected _ControllerSet _controllerset = new _ControllerSet();
 	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
+	
+	protected static enum ModeType {NULL, normal, 
+									    warmupFromZero , 
+									    warmupFromIC };
+
+	protected static enum UncertaintyType { NULL, uniform, 
+          										gaussian }
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -62,16 +89,16 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 //			return;
 //		}
 
-		if(!Utils.isloadedandinitialized){
+		if(!isloaded){
 			System.out.println("Scenario has not been correctly loaded.");
 			return;
 		}
 		
-		if(Utils.isvalid)
+		if(isvalid)
 			return;
 		
 		// check that outdt is a multiple of simdt
-		if(!Utils.isintegermultipleof(Utils.outdt,Utils.simdtinseconds)){
+		if(!SiriusMath.isintegermultipleof(Global.outdt,simdtinseconds)){
 //			Utils.addErrorMessage("Aborting: outdt must be an interger multiple of simulation dt.");
 //			Utils.printErrorMessage();
 			return;
@@ -118,7 +145,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(!_eventset.validate())
 			return;
 
-		Utils.isvalid = true;
+		isvalid = true;
 	}
 
 	// prepare scenario for simulation:
@@ -127,16 +154,16 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// open output files
 	protected void reset() {
 		
-		if(Utils.isreset)
+		if(isreset)
 			return;
 		
-		if(!Utils.isloadedandinitialized){
-			Utils.addErrorMessage("Load scenario first.");
+		if(!isloaded){
+			SiriusError.addErrorMessage("Load scenario first.");
 			return;
 		}
 		
 		// reset the clock
-		Utils.clock.reset();
+		Global.clock.reset();
 		
 		// reset network
 		for(Network network : getNetworkList().getNetwork())
@@ -151,13 +178,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((_FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
-		Utils.controlon = true;
+		controlon = true;
 		_controllerset.reset();
 
 		// reset events
 		_eventset.reset();
 		
-		Utils.isreset = true;
+		isreset = true;
 	}	
 	
 	protected void update() {	
@@ -179,7 +206,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
         		((_FundamentalDiagramProfile) fdProfile).update();
     	
         // update controllers
-    	if(Utils.controlon)
+    	if(controlon)
     		_controllerset.update();
 
     	// update events
@@ -192,24 +219,39 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// methods
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
+
+	protected _Network getNetworkWithId(String id){
+		if(id==null)
+			return null;
+		if(getNetworkList()==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(Network network : getNetworkList().getNetwork()){
+			if(network.getId().equals(id))
+				return (_Network) network;
+		}
+		return null;
+	}
 	
 	// Run the scenario
 	protected void run(){
 		
-        if(!Utils.isreset){
+        if(!isreset){
 			System.out.println("Use reset().");
 			return;
         }
         
+        isrunning = true;
+        
         // write initial condition
         //Utils.outputwriter.recordstate(Utils.clock.getT(),false);
         
-        while( !Utils.clock.expired() ){
+        while( !Global.clock.expired() ){
 
             // update time (before write to output)
-            Utils.clock.advance();
+        	Global.clock.advance();
         	
         	// update scenario
         	update();
@@ -218,14 +260,30 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
             // Utils.clock.advance();
         	
             // write output .............................
-            if(Utils.simulationMode==Utils.ModeType.normal)
+            if(simulationMode==ModeType.normal)
             	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
-	        	if((Utils.clock.getCurrentstep()==1) || ((Utils.clock.getCurrentstep()-1)%Utils.outputwriter.getOutsteps()==0))
-	                Utils.outputwriter.recordstate(Utils.clock.getT(),true);
+	        	if((Global.clock.getCurrentstep()==1) || ((Global.clock.getCurrentstep()-1)%Global.outputwriter.getOutsteps()==0))
+	        		Global.outputwriter.recordstate(Global.clock.getT(),true);
         }
         
-        Utils.isreset = false;
+        isreset = false;
+        isrunning = false;
         
 	}
 
+	public void save(String filename){
+        try {
+        	JAXBContext context = JAXBContext.newInstance("aurora.jaxb");
+        	Marshaller m = context.createMarshaller();
+        	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        	m.marshal(this,new FileOutputStream(filename));
+        } catch( JAXBException je ) {
+            je.printStackTrace();
+            return;
+        } catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+        }
+	}
+	
 }

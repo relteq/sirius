@@ -9,20 +9,20 @@ import com.relteq.sirius.jaxb.Splitratio;
 
 final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
-	public _Node myNode;
-	private double dtinseconds;				// not really necessary
-	private int samplesteps;
+	protected _Node myNode;
+	protected double dtinseconds;				// not really necessary
+	protected int samplesteps;
 	
-	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
+	protected Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
 												// input link i, output link j. The first dimension 
 												// of the Double2DMatrix is time, the second in vehicle type.
 	
-	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
+	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	
-	private int laststep;
+	protected int laststep;
 	
-	private boolean isdone; 
-	private int stepinitial;
+	protected boolean isdone; 
+	protected int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -33,7 +33,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		isdone = false;
 		
 		// required
-		myNode = Utils.getNodeWithCompositeId(getNetworkId(),getNodeId());
+		myNode = API.getNodeWithCompositeId(getNetworkId(),getNodeId());
 
 		if(myNode==null)
 			return;
@@ -41,7 +41,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = Utils.round(dtinseconds/Utils.simdtinseconds);
+			samplesteps = SiriusMath.round(dtinseconds/API.getSimDtInSeconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getSplitratio().size()==1){
@@ -57,19 +57,14 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		
 		// read start time, convert to stepinitial
 		double starttime;
-		if( getStartTime()!=null){
+		if( getStartTime()!=null)
 			starttime = getStartTime().floatValue();	// assume given in seconds
-//			if(starttime>0 && starttime<=24){
-//				System.out.println("Warning: Initial time given in hours. Changing to seconds.");
-//				starttime *= 3600f;
-//			}
-		}
 		else
 			starttime = 0f;
 
-		stepinitial = Utils.round((starttime-Utils.timestart)/Utils.simdtinseconds);
+		stepinitial = SiriusMath.round((starttime-API.getTimeStart())/API.getSimDtInSeconds());
 		
-		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
+		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
 		int in_index,out_index;
 		laststep = 0;
 		for(Splitratio sr : getSplitratio()){
@@ -82,7 +77,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
 		}
 		
-		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),Utils.numVehicleTypes,Double.NaN);
+		currentSplitRatio = new Double3DMatrix(myNode.nIn,myNode.nOut,API.getNumVehicleTypes(),Double.NaN);
 		
 		// inform the node
 		myNode.setHasSRprofile(true);
@@ -95,7 +90,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	protected boolean validate() {
 		
 		if(myNode==null){
-			Utils.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
+			SiriusError.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
 			return false;
 		}
 		
@@ -105,7 +100,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
 			if(in_index<0 || out_index<0){
-				Utils.addErrorMessage("Bad link id in split ratio profile: " + getNodeId());
+				SiriusError.addErrorMessage("Bad link id in split ratio profile: " + getNodeId());
 				return false;
 			}
 		}
@@ -116,7 +111,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 			return false;	
 		}
 
-		if(!Utils.isintegermultipleof(dtinseconds,Utils.simdtinseconds)){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,API.getSimDtInSeconds())){
 			System.out.println("Split ratio dt should be multiple of sim dt: " + getNodeId());
 			return false;	
 		}
@@ -124,7 +119,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		// check split ratio dimensions and values
 		for(in_index=0;in_index<profile.length;in_index++){
 			for(out_index=0;out_index<profile[in_index].length;out_index++){
-				if(profile[in_index][out_index].getnVTypes()!=Utils.numVehicleTypes){
+				if(profile[in_index][out_index].getnVTypes()!=API.getNumVehicleTypes()){
 					System.out.println("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
 					return false;
 				}
@@ -137,14 +132,10 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	protected void update() {
 		if(isdone)
 			return;
-		if(Utils.clock.istimetosample(samplesteps,stepinitial)){
-			int step = Utils.floor((Utils.clock.getCurrentstep()-stepinitial)/samplesteps);
+		if(Global.clock.istimetosample(samplesteps,stepinitial)){
+			int step = SiriusMath.floor((Global.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
-			
-System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + currentSplitRatio.toString());
-			
-			
 			normalizeSplitRatioMatrix(currentSplitRatio);
 			myNode.setSampledSRProfile(currentSplitRatio);
 			isdone = step>=laststep-1;
@@ -159,17 +150,17 @@ System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + curr
 	private Double3DMatrix sampleAtTimeStep(int k){
 		if(myNode==null)
 			return null;
-		Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
-				                              Utils.numVehicleTypes,Double.NaN);	// initialize all unknown
+		Double3DMatrix X = new Double3DMatrix(myNode.nIn,myNode.nOut,
+				                              API.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
 		
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
-		if(Utils.theScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((_SplitRatioProfileSet)Utils.theScenario.getSplitRatioProfileSet()).vehicletypeindex;
+		if(Global.theScenario.getSplitRatioProfileSet()!=null)
+			vehicletypeindex = ((_SplitRatioProfileSet)Global.theScenario.getSplitRatioProfileSet()).vehicletypeindex;
 		
 		int i,j,lastk;
-		for(i=0;i<myNode.getnIn();i++){
-			for(j=0;j<myNode.getnOut();j++){
+		for(i=0;i<myNode.nIn;i++){
+			for(j=0;j<myNode.nOut;j++){
 				if(profile[i][j]==null)						// nan if not defined
 					continue;
 				if(profile[i][j].isEmpty())					// nan if no data
@@ -185,13 +176,13 @@ System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + curr
 	// static methods
 	/////////////////////////////////////////////////////////////////////
 	
-	public static boolean validateSplitRatioMatrix(Double3DMatrix X,_Node myNode){
+	protected static boolean validateSplitRatioMatrix(Double3DMatrix X,_Node myNode){
 
 		int i,j,k;
 		Double value;
 		
 		// dimension
-		if(X.getnIn()!=myNode.getnIn() || X.getnOut()!=myNode.getnOut() || X.getnVTypes()!=Utils.numVehicleTypes){
+		if(X.getnIn()!=myNode.nIn || X.getnOut()!=myNode.nOut || X.getnVTypes()!=API.getNumVehicleTypes()){
 			System.out.println("Split ratio for node " + myNode.getId() + " has incorrect dimension");
 			return false;
 		}
@@ -212,7 +203,7 @@ System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + curr
 		return true;
 	}
 
-    public static void normalizeSplitRatioMatrix(Double3DMatrix X){
+    protected static void normalizeSplitRatioMatrix(Double3DMatrix X){
 
     	int i,j,k;
 		boolean hasNaN;
@@ -221,7 +212,7 @@ System.out.println(Utils.simdtinseconds + " node=" + myNode.getId() + " " + curr
 		double sum;
     	
     	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<Utils.numVehicleTypes;k++){
+    		for(k=0;k<API.getNumVehicleTypes();k++){
 				hasNaN = false;
 				countNaN = 0;
 				idxNegative = -1;

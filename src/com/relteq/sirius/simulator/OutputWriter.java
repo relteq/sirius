@@ -42,37 +42,37 @@ final class OutputWriter {
 		Double [] numbers;
 		double invsteps;
 		
-		if(Utils.clock.getCurrentstep()==1)
+		if(Global.clock.getCurrentstep()==1)
 			invsteps = 1f;
 		else
 			invsteps = 1f/((double)outsteps);
 			
 		try {
-			for(Network network : Utils.theScenario.getNetworkList().getNetwork()){
+			for(Network network : Global.theScenario.getNetworkList().getNetwork()){
 				List<Link> links = network.getLinkList().getLink();
 
 				int n = links.size();
 				_Link link;
 				for(int i=0;i<n-1;i++){
 					link = (_Link) links.get(i);
-					numbers = Utils.times(link.getCumDensityInVeh(),invsteps);
+					numbers = SiriusMath.times(link.cumulative_density,invsteps);
 					out_density.write(format(numbers,":")+OutputWriter.delim);
 					if(exportflows){
-						numbers = Utils.times(link.getCumOutflowInVeh(),invsteps);
+						numbers = SiriusMath.times(link.cumulative_outflow,invsteps);
 						out_outflow.write(format(numbers,":")+OutputWriter.delim);
-						numbers = Utils.times(link.getCumInflowInVeh(),invsteps);
+						numbers = SiriusMath.times(link.cumulative_inflow,invsteps);
 						out_inflow.write(format(numbers,":")+OutputWriter.delim);
 					}
 					link.reset_cumulative();
 				}
 				
 				link = (_Link) links.get(n-1);
-				numbers = Utils.times(link.getCumDensityInVeh(),invsteps);
+				numbers = SiriusMath.times(link.cumulative_density,invsteps);
 				out_density.write(format(numbers,":")+"\n");
 				if(exportflows){
-					numbers = Utils.times(link.getCumOutflowInVeh(),invsteps);
+					numbers = SiriusMath.times(link.cumulative_outflow,invsteps);
 					out_outflow.write(format(numbers,":")+"\n");
-					numbers = Utils.times(link.getCumInflowInVeh(),invsteps);
+					numbers = SiriusMath.times(link.cumulative_inflow,invsteps);
 					out_inflow.write(format(numbers,":")+"\n");
 				}
 				link.reset_cumulative();	

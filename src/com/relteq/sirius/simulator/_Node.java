@@ -9,90 +9,47 @@ import java.util.ArrayList;
 
 public final class _Node extends com.relteq.sirius.jaxb.Node {
 
-	protected static enum Type	{NULL, simple,
-								       onramp,
-								       offramp,
-								       signalized_intersection,
-								       unsignalized_intersection };
+	public static enum Type	{NULL, simple,
+								   onramp,
+								   offramp,
+								   signalized_intersection,
+								   unsignalized_intersection };
 		   
-	private _Node.Type myType;
+	protected _Network myNetwork;
+	protected _Node.Type myType;
 
 	// network references
-	private _Link [] output_link;
-	private _Link [] input_link;
+	protected _Link [] output_link;
+	protected _Link [] input_link;
 	
-	private Double3DMatrix sampledSRprofile;
-	private Double3DMatrix splitratio;
-	private boolean istrivialsplit;
-	private boolean hasSRprofile;
+	protected Double3DMatrix sampledSRprofile;
+	protected Double3DMatrix splitratio;
+	protected boolean istrivialsplit;
+	protected boolean hasSRprofile;
 
-	private int nIn;
-	private int nOut;
+	protected int nIn;
+	protected int nOut;
 
-    // contoller
-	private boolean hascontroller;
-	private boolean controlleron;
+    // controller
+	protected boolean hascontroller;
+	protected boolean controlleron;
 	
 	// split event
-	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 											// controller split ratios
     // used in update()
-	private Double [][] inDemand;		// [nIn][nTypes]
-	private double [] outSupply;		// [nOut]
-	private double [] outDemandKnown;	// [nOut]
-	private double [] dsratio;			// [nOut]
-	private Double [][] outFlow; 		// [nOut][nTypes]
-	private boolean [][] iscontributor;	// [nIn][nOut]
-	private ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	private ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	private ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	private ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	private ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+	protected Double [][] inDemand;		// [nIn][nTypes]
+	protected double [] outSupply;		// [nOut]
+	protected double [] outDemandKnown;	// [nOut]
+	protected double [] dsratio;			// [nOut]
+	protected Double [][] outFlow; 		// [nOut][nTypes]
+	protected boolean [][] iscontributor;	// [nIn][nOut]
+	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
     
-	/////////////////////////////////////////////////////////////////////
-	// public interface
-	/////////////////////////////////////////////////////////////////////
-
-	public _Node.Type getMyType() {
-		return myType;
-	}
-    
-    public _Link[] getOutput_link() {
-		return output_link;
-	}
-
-	public _Link[] getInput_link() {
-		return input_link;
-	}
-
-	public int getInputLinkIndex(String id){
-		for(int i=0;i<getnIn();i++){
-			if(input_link[i].getId().equals(id))
-				return i;
-		}
-		return -1;
-	}
-	
-	public int getOutputLinkIndex(String id){
-		for(int i=0;i<getnOut();i++){
-			if(output_link[i].getId().equals(id))
-				return i;
-		}
-		return -1;
-	}
-	
-	public int getnIn() {
-		return nIn;
-	}
-
-	public int getnOut() {
-		return nOut;
-	}
-    
-	public boolean hasController() {
-		return hascontroller;
-	}
-		
 	/////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
@@ -114,7 +71,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,Utils.numVehicleTypes,0d);
+			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,API.getNumVehicleTypes(),0d);
 			_SplitRatioProfile.normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
@@ -184,12 +141,12 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 			}
 		}
 		
-		inDemand = new Double[nIn][Utils.numVehicleTypes];
+		inDemand = new Double[nIn][API.getNumVehicleTypes()];
 		outSupply = new double[nOut];
 		outDemandKnown = new double[nOut];
 		dsratio = new double[nOut];
 		iscontributor = new boolean[nIn][nOut];
-		outFlow = new Double[nOut][Utils.numVehicleTypes];
+		outFlow = new Double[nOut][API.getNumVehicleTypes()];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
 		sampledSRprofile = null;
@@ -244,10 +201,10 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
         
         // collect input demands and output supplies ...................
 		for(i=0;i<nIn;i++)
-			inDemand[i] = input_link[i].getOutflowDemand();
+			inDemand[i] = input_link[i].outflowDemand;
 		
 		for(j=0;j<nOut;j++)
-			outSupply[j] = output_link[j].getSpaceSupply();
+			outSupply[j] = output_link[j].spaceSupply;
 		
 		// solve unknown split ratios if they are non-trivial ..............
 		if(!istrivialsplit){	
@@ -262,7 +219,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	        for(j=0;j<nOut;j++){
 	        	outDemandKnown[j] = 0f;
 	        	for(i=0;i<nIn;i++)
-	        		for(k=0;k<Utils.numVehicleTypes;k++)
+	        		for(k=0;k<API.getNumVehicleTypes();k++)
 	        			if(!splitratio.get(i,j,k).isNaN())
 	        				outDemandKnown[j] += splitratio.get(i,j,k) * inDemand[i][k];
 	        }
@@ -318,7 +275,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
         	// re-compute known output demands .........................
 			outDemandKnown[j] = 0f;
             for(i=0;i<nIn;i++)
-            	for(k=0;k<Utils.numVehicleTypes;k++)
+            	for(k=0;k<API.getNumVehicleTypes();k++)
             		outDemandKnown[j] += inDemand[i][k]*splitratio.get(i,j,k);
             
             // compute and sort output demand/supply ratio .............
@@ -333,12 +290,12 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 
         // scale down input demands
         for(i=0;i<nIn;i++)
-            for(k=0;k<Utils.numVehicleTypes;k++)
+            for(k=0;k<API.getNumVehicleTypes();k++)
                 inDemand[i][k] /= applyratio[i];
 
         // compute out flows ...........................................   
         for(j=0;j<nOut;j++){
-        	for(k=0;k<Utils.numVehicleTypes;k++){
+        	for(k=0;k<API.getNumVehicleTypes();k++){
         		outFlow[j][k] = 0d;
             	for(i=0;i<nIn;i++){
             		outFlow[j][k] += inDemand[i][k]*splitratio.get(i,j,k);
@@ -357,7 +314,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     	double num;
     	
     	for(i=0;i<nIn;i++){
-	        for(k=0;k<Utils.numVehicleTypes;k++){
+	        for(k=0;k<API.getNumVehicleTypes();k++){
 	            
 	        	// number of outputs with unknown split ratio
 	        	numunknown = 0;
@@ -575,7 +532,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
 		
 		//////
-		splitratio = new Double3DMatrix(nIn,nOut,Utils.numVehicleTypes,0d);
+		splitratio = new Double3DMatrix(nIn,nOut,API.getNumVehicleTypes(),0d);
 		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
 		//////
     }
@@ -585,5 +542,54 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		_SplitRatioProfile.normalizeSplitRatioMatrix(splitratio);
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+
+    
+	public _Network getMyNetwork() {
+		return myNetwork;
+	}
+	
+	public _Node.Type getMyType() {
+		return myType;
+	}
+    
+    public _Link[] getOutput_link() {
+		return output_link;
+	}
+
+	public _Link[] getInput_link() {
+		return input_link;
+	}
+
+	public int getInputLinkIndex(String id){
+		for(int i=0;i<getnIn();i++){
+			if(input_link[i].getId().equals(id))
+				return i;
+		}
+		return -1;
+	}
+	
+	public int getOutputLinkIndex(String id){
+		for(int i=0;i<getnOut();i++){
+			if(output_link[i].getId().equals(id))
+				return i;
+		}
+		return -1;
+	}
+	
+	public int getnIn() {
+		return nIn;
+	}
+
+	public int getnOut() {
+		return nOut;
+	}
+    
+	public boolean hasController() {
+		return hascontroller;
+	}
+	
 	
 }

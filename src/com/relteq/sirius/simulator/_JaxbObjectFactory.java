@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.*;
 
- final class _ObjectFactory extends ObjectFactory {
+ final class _JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactory {
 	
 	@Override
 	public CapacityProfile createCapacityProfile() {

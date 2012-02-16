@@ -20,16 +20,16 @@ final class Clock {
 		this.currentstep = 0;
 	}
 	
-	public void reset(){
+	protected void reset(){
 		t = to;
 		currentstep = 0;
 	}
 
-	public double getT() {
+	protected double getT() {
 		return t;
 	}
 
-	public int getCurrentstep() {
+	protected int getCurrentstep() {
 		return currentstep;
 	}
 	
@@ -38,11 +38,11 @@ final class Clock {
 		t = to + currentstep*dt;
 	}
 	
-	public boolean expired(){
+	protected boolean expired(){
 		return t>maxt;
 	}
 
-	public boolean istimetosample(int samplesteps,int stepinitial){	
+	protected boolean istimetosample(int samplesteps,int stepinitial){	
 		if(currentstep<=1)
 			return true;
 		if(currentstep<stepinitial)

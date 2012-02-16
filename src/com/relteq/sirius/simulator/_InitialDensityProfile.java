@@ -9,10 +9,10 @@ import com.relteq.sirius.jaxb.Density;
 
 final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
-	private Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	private _Link [] link;					// ordered array of references
-	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
-	private double timestamp;
+	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
+	protected _Link [] link;					// ordered array of references
+	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
+	protected double timestamp;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -34,10 +34,10 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 			numTypes = getVehicleTypeOrder().getVehicleType().size();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = Utils.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
+				vehicletypeindex[i] = API.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
 		}
 		else{
-			numTypes = Utils.numVehicleTypes;
+			numTypes = API.getNumVehicleTypes();
 			vehicletypeindex = new Integer[numTypes];
 			for(i=0;i<numTypes;i++)
 				vehicletypeindex[i] = i;
@@ -46,14 +46,14 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){
 			Density density = getDensity().get(i);
-			link[i] = Utils.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
+			link[i] = API.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
 			Double1DVector D = new Double1DVector(density.getContent(),":");
 			initial_density[i] = D.getData();
 		}
 		
 		// round to the nearest decisecond
 		if(getTstamp()!=null)
-			timestamp = Utils.round(getTstamp().doubleValue()*10.0)/10.0;
+			timestamp = SiriusMath.round(getTstamp().doubleValue()*10.0)/10.0;
 		else
 			timestamp = 0.0;
 		
@@ -64,7 +64,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		int i;
 		
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=Utils.numVehicleTypes){
+		if(vehicletypeindex.length!=API.getNumVehicleTypes()){
 			System.out.println("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}
@@ -121,13 +121,13 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 
 	protected void update() {
 	}
-
+	
 	/////////////////////////////////////////////////////////////////////
-	// API
+	// public API
 	/////////////////////////////////////////////////////////////////////
 	
 	public Double [] getDensityForLinkIdInVeh(String linkid){
-		Double [] d = Utils.zeros(Utils.numVehicleTypes);
+		Double [] d = SiriusMath.zeros(API.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
 			if(link[i].getId().equals(linkid)){
 				for(int j=0;j<vehicletypeindex.length;j++)
@@ -138,8 +138,4 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		return d;
 	}
 
-	public double getTimestamp() {
-		return timestamp;
-	}
-	
 }

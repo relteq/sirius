@@ -16,61 +16,6 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 	protected _SensorList _sensorlist = new _SensorList();
 	
 	/////////////////////////////////////////////////////////////////////
-	// public interface
-	/////////////////////////////////////////////////////////////////////
-	
-	public ArrayList<_Sensor> getSensorWithLinkId(String linkid){
-		ArrayList<_Sensor> result = new ArrayList<_Sensor>();
-		for(_Sensor sensor : _sensorlist.get_Sensors()){
-			if(sensor.getMyLink()!=null){
-				if(sensor.getMyLink().getId().equals(linkid)){
-					result.add(sensor);
-					break;
-				}	
-			}
-		}
-		return result;
-	}
-	
-	public _Sensor getFirstSensorWithLinkId(String linkid){
-		for(_Sensor sensor : _sensorlist.get_Sensors()){
-			if(sensor.getMyLink()!=null){
-				if(sensor.getMyLink().getId().equals(linkid)){
-					return sensor;
-				}
-			}
-		}
-		return null;
-	}
-
-	public _Sensor getSensorWithId(String id){
-		id.replaceAll("\\s","");
-		for(_Sensor sensor : _sensorlist.get_Sensors()){
-			if(sensor.id.equals(id))
-				return sensor;
-		}
-		return null;
-	}
-	
-	public _Link getLinkWithId(String id){
-		id.replaceAll("\\s","");
-		for(Link link : getLinkList().getLink()){
-			if(link.getId().equals(id))
-				return (_Link) link;
-		}
-		return null;
-	}
-
-	public _Node getNodeWithId(String id){
-		id.replaceAll("\\s","");
-		for(Node node : getNodeList().getNode()){
-			if(node.getId().equals(id))
-				return (_Node) node;
-		}
-		return null;
-	}
-	
-	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
@@ -88,7 +33,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 
 	protected boolean validate() {
 
-		if(Utils.simdtinseconds<=0)
+		if(API.getSimDtInSeconds()<=0)
 			return false;
 		
 		// node list
@@ -163,4 +108,59 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
         	((_Link)link).update();
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+	
+	public ArrayList<_Sensor> getSensorWithLinkId(String linkid){
+		ArrayList<_Sensor> result = new ArrayList<_Sensor>();
+		for(_Sensor sensor : _sensorlist._sensors){
+			if(sensor.getMyLink()!=null){
+				if(sensor.getMyLink().getId().equals(linkid)){
+					result.add(sensor);
+					break;
+				}	
+			}
+		}
+		return result;
+	}
+	
+	public _Sensor getFirstSensorWithLinkId(String linkid){
+		for(_Sensor sensor : _sensorlist._sensors){
+			if(sensor.getMyLink()!=null){
+				if(sensor.getMyLink().getId().equals(linkid)){
+					return sensor;
+				}
+			}
+		}
+		return null;
+	}
+
+	public _Sensor getSensorWithId(String id){
+		id.replaceAll("\\s","");
+		for(_Sensor sensor : _sensorlist._sensors){
+			if(sensor.id.equals(id))
+				return sensor;
+		}
+		return null;
+	}
+	
+	public _Link getLinkWithId(String id){
+		id.replaceAll("\\s","");
+		for(Link link : getLinkList().getLink()){
+			if(link.getId().equals(id))
+				return (_Link) link;
+		}
+		return null;
+	}
+
+	public _Node getNodeWithId(String id){
+		id.replaceAll("\\s","");
+		for(Node node : getNodeList().getNode()){
+			if(node.getId().equals(id))
+				return (_Node) node;
+		}
+		return null;
+	}
+	
 }
