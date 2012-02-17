@@ -47,18 +47,10 @@ public class Event_Fundamental_Diagram extends _Event {
 	public void activate() {
 		for(_ScenarioElement s : targets){
 			_Link targetlink = (_Link) s.getReference();
-			if(isResetToNominal()){
-				targetlink.deactivateFDEvent();
-			}
-			else{
-				_FundamentalDiagram eventFD = new _FundamentalDiagram(targetlink);
-				eventFD.copyfrom((targetlink).FD);		// copy current FD
-				eventFD.copyfrom(this.getFundamentalDiagram());		// replace values with those defined in the event
-				if(eventFD.validate()){								// validate the result
-					//targetlink.setEventFundamentalDiagram(eventFD);
-					targetlink.activateFDEvent(eventFD);
-				}
-			}
+			if(isResetToNominal())
+				deactivateLinkFDEvent(targetlink);
+			else
+				activateLinkFDEvent(targetlink,getFundamentalDiagram());
 		}
 		
 	}

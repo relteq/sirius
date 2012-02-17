@@ -1,6 +1,7 @@
 package com.relteq.sirius.event;
 
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.simulator.Double3DMatrix;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Node;
 import com.relteq.sirius.simulator._Scenario;
@@ -48,15 +49,14 @@ public class Event_Node_Split_Ratio extends _Event {
 		if(isResetToNominal()){
 			for(_ScenarioElement s : targets){
 				_Node targetnode = (_Node) s.getReference();
-				targetnode.removeEventSplitratio();
+				deactivateNodeSplitRatioEvent(targetnode);
 			}
 		}
 		else{
 			for(_ScenarioElement s : targets){
 				_Node targetnode = (_Node) s.getReference();
 				Double3DMatrix splitratio = new Double3DMatrix(0,0,0,0d);
-				if(targetnode.validateSplitRatioMatrix(splitratio))
-					targetnode.setEventSplitratio(splitratio);
+				activateNodeSplitRatioEvent(targetnode,splitratio);
 			}
 		}		
 	}

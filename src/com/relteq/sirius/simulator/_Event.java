@@ -7,7 +7,9 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
+import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.jaxb.FundamentalDiagram;
 import com.relteq.sirius.jaxb.ScenarioElement;
 
 /** DESCRIPTION OF THE CLASS
@@ -127,6 +129,77 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 			return this.compareTo((_Event) obj)==0;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
+	/////////////////////////////////////////////////////////////////////	
+
+	protected void activateGlobalControlOnOffEvent(boolean ison){
+		myScenario.controlon = ison;
+	}
+	
+	protected void activateControllerOnOffEvent(_Controller c,boolean ison){
+		if(c==null)
+			return;
+		c.ison = ison;
+	}
+
+    protected void activateLinkLanesEvent(_Link link,double lanes){
+		if(link==null)
+			return;
+    	link.set_Lanes(lanes);
+    }
+    
+    protected void activateLinkLanesDeltaEvent(_Link link,double deltalanes){
+		if(link==null)
+			return;
+    	link.setLanesDelta(deltalanes);
+    }
+	
+	protected void activateLinkFDEvent(_Link link,FundamentalDiagram newFD){
+		if(link==null)
+			return;
+		if(newFD==null)
+			return;
+		_FundamentalDiagram eventFD = new _FundamentalDiagram(link);
+		eventFD.copyfrom((link).FD);	// copy current FD
+		eventFD.copyfrom(newFD);		// replace values with those defined in the event
+		if(eventFD.validate()){			// validate the result
+	    	link.eventactive = true;
+	    	link.FD = eventFD;
+		}	
+	}
+	
+    protected void deactivateLinkFDEvent(_Link link){
+    	if(link==null)
+    		return;
+    	link.eventactive = false;
+    	link.FD = link.FDprofile;
+    }    
+
+	protected void activateNodeSplitRatioEvent(_Node node,Double3DMatrix x) {
+		if(node==null)
+			return;
+		if(!node.validateSplitRatioMatrix(x))
+			return;
+		node.setSplitratio(x);
+		node.hasactivesplitevent = true;
+	}
+
+	protected void deactivateNodeSplitRatioEvent(_Node node) {
+		if(node==null)
+			return;
+		if(node.hasactivesplitevent){
+			node.resetSplitRatio();
+			node.hasactivesplitevent = false;
+		}
+	}
+	
+    protected void activateDemandProfileKnobEvent(DemandProfile profile,double knob){
+		if(profile==null)
+			return;
+		((_DemandProfile) profile).set_knob(knob);
+    }
+	
 	/////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////

@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 
 // 3D matrix class used for representing time-invariant split ratio matrices.
 
-final class Double3DMatrix {
+public final class Double3DMatrix {
 	
 	private int nIn;			// [1st dimension] number of input links
 	private int nOut;			// [2nd dimension] number of columns

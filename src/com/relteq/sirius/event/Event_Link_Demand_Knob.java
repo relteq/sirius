@@ -1,6 +1,6 @@
 package com.relteq.sirius.event;
 
-import com.relteq.sirius.jaxb.DemandProfileSet;
+import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
@@ -48,14 +48,14 @@ public class Event_Link_Demand_Knob extends _Event {
 	public void activate() {
 		for(_ScenarioElement s : targets){
 	    	if(myScenario.getDemandProfileSet()!=null){
-	        	for(DemandProfileSet profile : myScenario.getDemandProfileSet().getDemandProfile()){
-	        		if(profile.getLinkIdOrigin().equals(s.id)){
+	        	for(DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
+	        		if(profile.getLinkIdOrigin().equals(s.getId())){
 	        			double newknob;
 	        			if(isResetToNominal())
 	        				newknob = profile.getKnob().doubleValue();
 	        			else
 	        				newknob = getKnob().getValue().doubleValue();
-	        			((_DemandProfile) profile).set_knob( newknob );
+	        			activateDemandProfileKnobEvent(profile,newknob);
 	        			break;
 	        		}
 	        	}

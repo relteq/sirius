@@ -46,8 +46,9 @@ public class Event_Control_Toggle extends _Event {
 	@Override
 	public void activate() {
 		for(_ScenarioElement s : targets){
-			_Controller c = API.getControllerWithName(s.id);
-			c.ison = getOnOffSwitch().getValue().equalsIgnoreCase("on");
+			_Controller c = myScenario.getControllerWithName(s.getId());
+			boolean ison = getOnOffSwitch().getValue().equalsIgnoreCase("on");
+			activateControllerOnOffEvent(c, ison);
 		}			
 	}
 	

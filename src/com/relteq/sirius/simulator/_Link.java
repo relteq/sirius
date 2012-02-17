@@ -142,16 +142,6 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     	myFDProfile = fdp;
     }
 
-    protected void activateFDEvent(_FundamentalDiagram fd){
-    	eventactive = true;
-    	FD = fd;
-    }
-    
-    protected void deactivateFDEvent(){
-    	eventactive = false;
-    	FD = FDprofile;
-    }    
-    
 	/////////////////////////////////////////////////////////////////////
 	// supply and demand calculation
 	/////////////////////////////////////////////////////////////////////

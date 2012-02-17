@@ -50,11 +50,11 @@ public class Event_Link_Lanes extends _Event {
 			if(getLaneCountChange()!=null){
 				if(isResetToNominal()){
 					double originallanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
-					targetlink.set_Lanes(originallanes);
+					activateLinkLanesEvent(targetlink,originallanes);
 				}
 				if(getLaneCountChange().getDelta()!=null){
 					double deltalanes = getLaneCountChange().getDelta().doubleValue();
-					targetlink.setLanesDelta(deltalanes);
+					activateLinkLanesDeltaEvent(targetlink,deltalanes);
 				}
 			}
 		}		

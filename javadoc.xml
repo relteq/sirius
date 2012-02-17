@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
     <target name="javadoc">
-        <javadoc access="public" author="false" classpath="." destdir="doc" nodeprecated="true" nodeprecatedlist="true" noindex="false" nonavbar="false" notree="false" source="1.6" sourcefiles="src/com/relteq/sirius/simulator/_Node.java,src/com/relteq/sirius/simulator/_Controller.java,src/com/relteq/sirius/simulator/_Sensor.java,src/com/relteq/sirius/simulator/ObjectFactory.java,src/com/relteq/sirius/simulator/_Link.java,src/com/relteq/sirius/simulator/_Scenario.java,src/com/relteq/sirius/simulator/_Event.java" sourcepath="src" splitindex="true" use="true" version="false"/>
+        <javadoc access="protected" author="false" classpath="." destdir="doc" nodeprecated="true" nodeprecatedlist="true" noindex="false" nonavbar="false" notree="false" source="1.6" sourcefiles="src/com/relteq/sirius/simulator/_Controller.java,src/com/relteq/sirius/simulator/_Node.java,src/com/relteq/sirius/simulator/_Sensor.java,src/com/relteq/sirius/simulator/ObjectFactory.java,src/com/relteq/sirius/simulator/_Link.java,src/com/relteq/sirius/simulator/_Event.java,src/com/relteq/sirius/simulator/_Scenario.java" sourcepath="src" splitindex="true" use="true" version="false"/>
     </target>
 </project>

@@ -56,7 +56,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
     
 	/////////////////////////////////////////////////////////////////////
-	// protected
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
 	protected boolean registerController(){
@@ -81,26 +81,6 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 	}
 
-	protected void setControllerSplitratio(Double3DMatrix x) {
-		// to be used only by an active controller,
-		// only if there is no split event
-		if(controlleron && !hasactivesplitevent){
-			setSplitratio(x);
-		}
-	}
-
-	protected void setEventSplitratio(Double3DMatrix x) {
-		setSplitratio(x);
-		hasactivesplitevent = true;
-	}
-
-	protected void removeEventSplitratio() {
-		if(hasactivesplitevent){
-			resetSplitRatio();
-			hasactivesplitevent = false;
-		}
-	}
-	
 	protected void setControllerOn(boolean controlleron) {
 		if(hascontroller){
 			this.controlleron = controlleron;
@@ -109,6 +89,21 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 	}
 
+    protected void resetSplitRatio(){
+
+		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
+		
+		//////
+		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+		normalizeSplitRatioMatrix(splitratio);
+		//////
+    }
+    
+	protected void setSplitratio(Double3DMatrix x) {
+		splitratio.copydata(x);
+		normalizeSplitRatioMatrix(splitratio);
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -617,26 +612,10 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     }    
     */
     
-    private void resetSplitRatio(){
-
-		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
-		
-		//////
-		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
-		normalizeSplitRatioMatrix(splitratio);
-		//////
-    }
-    
-	private void setSplitratio(Double3DMatrix x) {
-		splitratio.copydata(x);
-		normalizeSplitRatioMatrix(splitratio);
-	}
-
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-    
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}

@@ -64,15 +64,20 @@ public abstract class _Controller implements InterfaceController {
 		}
 	}
 	
-//	protected final void setNodeSplitRatio(...){
-//	if(!ison)
-//	return;
-//	}
+	protected void setNodeSplitratio(_Node node,Double3DMatrix x) {
+		if(!ison)
+			return;
+		
+		// to be used only by an active controller, only if there is no split event
+		if(node.controlleron && !node.hasactivesplitevent){
+			node.setSplitratio(x);
+		}
+	}
 	
-//	protected final void set LinkMaxSpeed(){
-//	if(!ison)
-//	return;	
-//	}
+	protected final void setLinkMaxSpeed(){
+		if(!ison)
+			return;	
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update

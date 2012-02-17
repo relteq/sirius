@@ -35,6 +35,6 @@ public class Event_Global_Control_Toggle extends _Event {
 
 	@Override
 	public void activate() {
-		myScenario.controlon = getOnOffSwitch().getValue().equalsIgnoreCase("on");
+		activateGlobalControlOnOffEvent(getOnOffSwitch().getValue().equalsIgnoreCase("on"));
 	}
 }

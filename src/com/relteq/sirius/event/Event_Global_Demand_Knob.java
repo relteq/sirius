@@ -1,5 +1,6 @@
 package com.relteq.sirius.event;
 
+import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
@@ -35,14 +36,17 @@ public class Event_Global_Demand_Knob extends _Event {
 
 	@Override
 	public void activate() {
-    	if(myScenario.getDemandProfileSet()!=null)
+    	if(myScenario.getDemandProfileSet()!=null){
         	for(DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile() ){
         		double knobvalue;
-    			if(isResetToNominal())
-    				knobvalue = ((_DemandProfile) profile).getKnob().doubleValue();
-    			else
-    				knobvalue = getKnob().getValue().doubleValue();
-        		((_DemandProfile) profile).set_knob( knobvalue );
-        	}		
+    			if(isResetToNominal()){
+    				knobvalue = profile.getKnob().doubleValue();
+    			}
+    			else{
+    				knobvalue = this.getKnob().getValue().doubleValue();
+    			}
+				activateDemandProfileKnobEvent(profile,knobvalue);
+        	}	
+    	}
 	}
 }
