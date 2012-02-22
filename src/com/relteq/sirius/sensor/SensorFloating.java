@@ -1,7 +1,3 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
 
 package com.relteq.sirius.sensor;
 
@@ -19,17 +15,25 @@ public class SensorFloating extends _Sensor {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SensorFloating(_Scenario myScenario,String networkId,String linkId) {
-		super.populateFromParameters(myScenario,_Sensor.Type.moving_point, networkId, linkId);
+	public SensorFloating(){
 	}
 	
-	public SensorFloating(_Scenario myScenario,Sensor s) {
-		super.populateFromJaxb(myScenario,s, _Sensor.Type.moving_point);
+	public SensorFloating(_Scenario myScenario,String networkId,String linkId){
+		if(myScenario==null)
+			return;
+		this.myScenario  = myScenario;
+		// this.id = GENERATE AN ID;
+	    this.myType = _Sensor.Type.moving_point;
+	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
 	}
-
+		
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////	
+
+	@Override
+	public void populate(Sensor s) {
+	}
 	
 	@Override
 	public boolean validate() {
@@ -78,5 +82,6 @@ public class SensorFloating extends _Sensor {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 
 }

@@ -12,14 +12,14 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 	//protected _Scenario myScenario;
 	protected _Link myLink;
 	protected double lanes;
-	protected Double _densityJam;     	// [veh] 
-	protected Double _capacity_nominal;   // [veh] 
+	protected Double _densityJam;     		// [veh] 
+	protected Double _capacity_nominal;   	// [veh] 
 	protected Double _capacity_actual;   	// [veh] 
 	protected Double _capacityDrop;     	// [veh] 
 	protected Double _vf;                	// [-]
 	protected Double _w;                	// [-]
-	protected Double std_dev_capacity;	// [veh]
-	protected Double density_critical;	// [veh]
+	protected Double std_dev_capacity;		// [veh]
+	protected Double density_critical;		// [veh]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction 
@@ -114,6 +114,39 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
         density_critical =  _capacity_actual / _vf;
 	}
 
+ 	// copy per lane parameters from _FundamentalDiagram 
+	protected void copyfrom(_FundamentalDiagram that){
+
+		if(that==null)
+			return;
+		if(myLink==null)
+			return;
+		
+		if(that._densityJam!=null)
+			this._densityJam = that._densityJam;
+
+		if(that._capacity_nominal!=null)
+			this._capacity_nominal = that._capacity_nominal;
+
+		if(that._capacity_actual!=null)
+			this._capacity_actual = that._capacity_actual;
+
+		if(that.std_dev_capacity!=null)
+			this.std_dev_capacity = that.std_dev_capacity;
+
+		if(that._capacityDrop!=null)
+			this._capacityDrop = that._capacityDrop;
+
+		if(that._vf!=null)
+			this._vf = that._vf;
+
+		if(that._w!=null)
+			this._w = that._w;
+
+		this.density_critical =  this._capacity_actual / this._vf;
+        
+	}
+	
  	// copy per lane parameters from jaxb and normalize
 	protected void copyfrom(com.relteq.sirius.jaxb.FundamentalDiagram fd){
 
@@ -126,7 +159,7 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
 
 		if(fd.getDensityJam()!=null){
-			value = fd.getDensityJam().doubleValue();			// [veh/mile/lane]
+			value = fd.getDensityJam().doubleValue();		// [veh/mile/lane]
 			_densityJam = value *lanes*myLink.getLengthInMiles();
 		} 
 

@@ -11,6 +11,11 @@ package com.relteq.sirius.simulator;
 * @version VERSION NUMBER
 */
 public interface InterfaceEvent {
+
+	/** DESCRIPTION
+	 * 
+	 */
+	public void populate(com.relteq.sirius.jaxb.Event e);
 	
 	/** DESCRIPTION
 	 * 

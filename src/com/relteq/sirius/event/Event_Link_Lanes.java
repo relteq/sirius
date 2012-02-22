@@ -12,22 +12,33 @@ import com.relteq.sirius.simulator._ScenarioElement;
 */
 public class Event_Link_Lanes extends _Event {
 
+	protected boolean resetToNominal;
+	protected double deltalanes;
+	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public Event_Link_Lanes(_Scenario myScenario, Event jaxbE) {
-		super.populateFromJaxb(myScenario,jaxbE, _Event.Type.link_lanes);
+	public Event_Link_Lanes(){
 	}
 	
-	public Event_Link_Lanes(_Scenario myScenario) {
-		// TODO Auto-generated constructor stub
+	public Event_Link_Lanes(_Scenario myScenario,double deltalanes) {
+		this.deltalanes = deltalanes;
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
-	
+
+	@Override
+	public void populate(Event e) {
+		this.resetToNominal = e.isResetToNominal();
+		if(e.getLaneCountChange()!=null)
+			this.deltalanes = e.getLaneCountChange().getDelta().doubleValue();
+		else
+			this.deltalanes = 0.0;
+	}
+
 	@Override
 	public boolean validate() {
 		if(!super.validate())
@@ -47,16 +58,11 @@ public class Event_Link_Lanes extends _Event {
 	public void activate() {
 		for(_ScenarioElement s : targets){
 			_Link targetlink = (_Link) s.getReference();
-			if(getLaneCountChange()!=null){
-				if(isResetToNominal()){
-					double originallanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
-					activateLinkLanesEvent(targetlink,originallanes);
-				}
-				if(getLaneCountChange().getDelta()!=null){
-					double deltalanes = getLaneCountChange().getDelta().doubleValue();
-					activateLinkLanesDeltaEvent(targetlink,deltalanes);
-				}
+			if(resetToNominal){
+				double originallanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
+				setLinkLanes(targetlink,originallanes);
 			}
+			setLinkDeltaLanes(targetlink,deltalanes);
 		}		
 	}
 }

@@ -18,7 +18,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 								   onramp,
 								   offramp,
 								   signalized_intersection,
-								   unsignalized_intersection };
+								   unsignalized_intersection,
+								   terminal };
 		   
 	protected _Network myNetwork;
 	protected _Node.Type myType;
@@ -120,8 +121,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 			return;
 		}
     	    	
-//    	if(myType==Types.Node.T)
-//    		return;
+    	if(myType==_Node.Type.terminal)
+    		return;
     	
 		nOut = 0;
 		if(getOutputs()!=null){
@@ -163,8 +164,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     
 	protected boolean validate() {
 		
-//		if(myType==Types.Node.T)
-//			return true;
+		if(myType==_Node.Type.terminal)
+			return true;
 		
 		if(output_link!=null)
 			for(_Link link : output_link){
@@ -182,23 +183,23 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 				}
 			}
 		
-//		if(myType!=Types.Node.T && nIn==0){
-//			System.out.println("No inputs into node " + getId());
-//			return false;
-//		}
-//
-//		if(myType!=Types.Node.T && nOut==0){
-//			System.out.println("No outputs from node " + getId());
-//			return false;
-//		}
+		if(myType!=_Node.Type.terminal && nIn==0){
+			System.out.println("No inputs into node " + getId());
+			return false;
+		}
+
+		if(myType!=_Node.Type.terminal && nOut==0){
+			System.out.println("No outputs from node " + getId());
+			return false;
+		}
 		
 		return true;
 	}
 
 	protected void update() {
 		
-//        if(myType==Types.Node.T)
-//            return;
+        if(myType==_Node.Type.terminal)
+            return;
 
         int i,j,k;        
         

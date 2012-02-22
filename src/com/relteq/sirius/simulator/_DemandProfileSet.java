@@ -69,7 +69,7 @@ final class _DemandProfileSet extends DemandProfileSet {
 
 	protected void update() {
     	for(DemandProfile dp : getDemandProfile())
-    		((_DemandProfile) dp).update();	
+    		((_DemandProfile) dp).update(false);	
 	}
 	
 }

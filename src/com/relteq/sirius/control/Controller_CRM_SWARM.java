@@ -15,14 +15,29 @@ public class Controller_CRM_SWARM extends _Controller {
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
-
-	public Controller_CRM_SWARM(_Scenario myScenario,Controller c) {
-		super.populateFromJaxb(myScenario,c, _Controller.Type.CRM_swarm);
-	}
 	
+	public Controller_CRM_SWARM() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Controller_CRM_SWARM(_Scenario myScenario) {
 		// TODO Auto-generated constructor stub
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// InterfaceController
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void populate(Controller c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean register() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

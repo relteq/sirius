@@ -25,17 +25,20 @@ public abstract class _Controller implements InterfaceController {
 								      VSL_time_of_day,
 								      SIG_pretimed,
 								      SIG_actuated };
-										  
+								      
 	protected static enum QueueControlType	{NULL, queue_override,
 											       proportional,
 											       proportional_integral  };
-					
+			
 	protected _Scenario myScenario;										       
 	protected String name;			// This is used only for controller on/off events.
 									// would prefer to reference contorllers by id. 
 	protected _Controller.Type myType;
 	protected ArrayList<_ScenarioElement> targets;
 	protected ArrayList<_ScenarioElement> feedbacks;
+	
+	protected Double [] control_maxflow;		// [veh/simultaion time period] indexed by target	
+	protected Double [] control_maxspeed;		// [-]	 indexed by target
 
 	protected double dtinseconds;
 	protected int samplesteps;
@@ -48,36 +51,31 @@ public abstract class _Controller implements InterfaceController {
 	public final _Controller.Type getMyType() {
 		return myType;
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////
-	// actuation
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected final void setLinkMaxFlow(double desiredvehrate){
-		if(!ison)
-			return;
-		double rate = desiredvehrate;
-//		rate = Math.max(rate, minrate);
-//		rate = Math.min(rate, maxrate);
-		for(_ScenarioElement s: targets){
-			((_Link)s.reference).setControl_maxflow( rate );
-		}
+	protected boolean registerFlowController(_Link link,int index){
+		if(link==null)
+			return false;
+		else
+			return link.registerFlowController(this,index);
 	}
 	
-	protected void setNodeSplitratio(_Node node,Double3DMatrix x) {
-		if(!ison)
-			return;
-		
-		// to be used only by an active controller, only if there is no split event
-		if(node.controlleron && !node.hasactivesplitevent){
-			node.setSplitratio(x);
-		}
+	protected boolean registerSpeedController(_Link link,int index){
+		if(link==null)
+			return false;
+		else
+			return link.registerSpeedController(this,index);
 	}
-	
-	protected final void setLinkMaxSpeed(){
-		if(!ison)
-			return;	
-	}
+
+//	protected boolean registerSplitRatioController(_Node node,int index){
+//		if(node==null)
+//			return false;
+//		else
+//			return node.registerSplitRatioController(this,index);
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update
@@ -99,6 +97,9 @@ public abstract class _Controller implements InterfaceController {
 				if(se!=null)
 					targets.add(se);
 			}
+		
+		control_maxflow  = new Double [targets.size()];
+		control_maxspeed = new Double [targets.size()];
 
 		// store feedbacks ......
 		feedbacks = new ArrayList<_ScenarioElement>();
@@ -108,23 +109,6 @@ public abstract class _Controller implements InterfaceController {
 				if(se!=null)
 					feedbacks.add(se);	
 			}
-		
-		// register controller with targets
-		for(_ScenarioElement s : targets){
-			boolean registersuccess = false;
-			switch(s.myType){
-			case link:
-				_Link link = myScenario.getLinkWithCompositeId(s.network_id,s.id);
-				registersuccess = link.registerController();
-			case node:
-				_Node node = myScenario.getNodeWithCompositeId(s.network_id,s.id);
-				registersuccess = node.registerController();	
-			}
-			if(!registersuccess){
-				targets = null;		// cause validation failure.
-				return;
-			}
-		}
 
 	}
 	

@@ -78,7 +78,6 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 				_link.resetLanes();				
 				_link.resetState();
 				_link.resetFD();
-				_link.resetControl();
 			}
 
 		// sensor list

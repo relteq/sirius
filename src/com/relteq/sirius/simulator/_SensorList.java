@@ -24,8 +24,8 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 		    	try {
 					myType = _Sensor.Type.valueOf(sensor.getType());
 				} catch (IllegalArgumentException e) {
-					myType = _Sensor.Type.NULL;
-					return;
+					System.out.println("Warning: sensor has wrong type. Ignoring.");
+					continue;
 				}	
 				
 				// generate sensor

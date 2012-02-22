@@ -12,21 +12,31 @@ import com.relteq.sirius.simulator._ScenarioElement;
 */
 public class Event_Control_Toggle extends _Event {
 
+	protected boolean ison; 
+	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public Event_Control_Toggle(_Scenario myScenario, Event jaxbE) {
-		super.populateFromJaxb(myScenario,jaxbE, _Event.Type.control_toggle);
+	public Event_Control_Toggle(){
 	}
-	
-	public Event_Control_Toggle(_Scenario myScenario) {
-		// TODO Auto-generated constructor stub
+		
+	public Event_Control_Toggle(_Scenario myScenario,boolean ison) {
+		this.myScenario = myScenario;
+		this.ison = ison;
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void populate(Event e) {
+		if(e.getOnOffSwitch()!=null)
+			this.ison = e.getOnOffSwitch().getValue().equalsIgnoreCase("on");
+		else 
+			this.ison = true;
+	}
 	
 	@Override
 	public boolean validate() {
@@ -47,8 +57,7 @@ public class Event_Control_Toggle extends _Event {
 	public void activate() {
 		for(_ScenarioElement s : targets){
 			_Controller c = myScenario.getControllerWithName(s.getId());
-			boolean ison = getOnOffSwitch().getValue().equalsIgnoreCase("on");
-			activateControllerOnOffEvent(c, ison);
+			setControllerIsOn(c, ison);
 		}			
 	}
 	

@@ -3,7 +3,6 @@
    <settings>
       <units>US</units>
    </settings>
-   <InitialDensityProfile/>
    <SplitRatioProfileSet>
       <splitratioProfile dt="300" node_id="-2">
          <splitratio link_in="-1" link_out="-2">1.000000</splitratio>
@@ -13,41 +12,108 @@
          <splitratio link_in="-6" link_out="-3">1.000000</splitratio>
       </splitratioProfile>
       <splitratioProfile dt="300" node_id="-4">
-         <splitratio link_in="-3" link_out="-4">1.000000</splitratio>
-         <splitratio link_in="-3" link_out="-7">0.000000</splitratio>
+         <splitratio link_in="-3" link_out="-4">0.8</splitratio>
+         <splitratio link_in="-3" link_out="-7">0.2</splitratio>
       </splitratioProfile>
       <splitratioProfile dt="300" node_id="-5">
          <splitratio link_in="-4" link_out="-5">1.000000</splitratio>
       </splitratioProfile>
    </SplitRatioProfileSet>
+   
+   <ControllerSet>
+      <controller dt="300" type="IRM_alinea" name="c1">
+         <targetElements>
+            <scenarioElement id="-6" type="link"/>
+         </targetElements>
+		 
+         <feedbackElements>
+            <scenarioElement id="-2" type="link" usage="mainlinelink"/>
+         </feedbackElements>
+      </controller>
+	  
+   </ControllerSet>   
+   
    <EventSet>
-      <event enabled="true" tstamp="4" type="fundamental diagram">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="13.8461538461538" densityJam="150" freeflow_speed="90"/>
+   
+      <event enabled="true" tstamp="42300" type="global_control_toggle">
+		 <on_off_switch value="off"/>
+      </event>
+	  
+      <event enabled="true" tstamp="60000" type="global_control_toggle">
+		 <on_off_switch value="on"/>
+      </event>
+   
+	  <!--
+   
+   
+	  
+      <event enabled="true" tstamp="42300" type="node_split_ratio">
+         <targetElements>
+            <scenarioElement id="-4" type="node"/>
+         </targetElements>
+		 <splitratioEvent>
+			 <splitratio link_in="-3" link_out="-4">1</splitratio>
+			 <splitratio link_in="-3" link_out="-7">0</splitratio>
+		 </splitratioEvent>
+      </event>
+	  
+      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="node_split_ratio">
+         <targetElements>
+            <scenarioElement id="-4" type="node"/>
+         </targetElements>
+      </event>
+	  
+      <event enabled="true" tstamp="42300" type="global_demand_knob">
+		 <knob value="2"/>
+      </event>
+	  
+      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="global_demand_knob"/>
+	  
+      <event enabled="true" tstamp="42300" type="link_demand_knob">
+		 <knob value="2"/>
+         <targetElements>
+            <scenarioElement id="-1" type="link"/>
+         </targetElements>
+      </event>
+	  
+      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="link_demand_knob">
+         <targetElements>
+            <scenarioElement id="-1" type="link"/>
+         </targetElements>
+      </event>
+   
+      <event enabled="true" tstamp="42300" type="fundamental_diagram">
+         <fundamentalDiagram capacity="150" capacityDrop="0" congestion_speed="15" densityJam="25" freeflow_speed="60"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
-      <event enabled="true" tstamp="20" type="fundamental diagram">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="-36" densityJam="150" freeflow_speed="9"/>
+	  
+      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="fundamental_diagram">
          <targetElements>
-            <scenarioElement id="-3" type="link"/>
+            <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
+	  
+	  
+      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="link_lanes">
+         <targetElements>
+            <scenarioElement id="-2" type="link"/>
+         </targetElements>
+      </event>
+      <event enabled="true" tstamp="42300" type="link_lanes">
+         <lane_count_change  delta = "-0.9"/>
+         <targetElements>
+            <scenarioElement id="-2" type="link"/>
+         </targetElements>
+      </event>
+	  -->
+	  
    </EventSet>
    <DemandProfileSet>
       <demandProfile dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
+      <demandProfile dt="300" knob="1" link_id_origin="-1">200.000000</demandProfile>
    </DemandProfileSet>
-   <ControllerSet>
-      <controller dt="5" type="IRM alinea">
-         <parameters>
-            <parameter name="gain" value="50"/>
-         </parameters>
-         <targetElements>
-            <scenarioElement id="-6" type="link"/>
-         </targetElements>
-      </controller>
-   </ControllerSet>
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
          <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
@@ -59,7 +125,7 @@
          <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-4">
-         <fundamentalDiagram capacity="300" capacityDrop="0" congestion_speed="2.5" densityJam="150" freeflow_speed="10"/>
+         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-5">
          <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
@@ -197,9 +263,6 @@
                <dynamics type="CTM"/>
             </link>
          </LinkList>
-         <SignalList/>
-         <SensorList/>
-         <DirectionsCache/>
       </network>
    </NetworkList>
 </scenario>

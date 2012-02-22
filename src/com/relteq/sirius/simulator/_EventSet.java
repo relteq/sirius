@@ -46,14 +46,14 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 				
 				// keep only enabled events
 				if(event.isEnabled()){
-					
+	
 					// assign type
 					_Event.Type myType;
 			    	try {
 						myType = _Event.Type.valueOf(event.getType());
 					} catch (IllegalArgumentException e) {
-						myType = _Event.Type.NULL;
-						return;
+						System.out.println("Warning: event has wrong type. Ignoring.");
+						continue;
 					}	
 					
 					// generate event
@@ -63,15 +63,11 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 							_sortedevents.add(E);
 					}
 				}
-				
-				
 			}
-
 		}
 		
 		// sort the events by timestamp, etc
 		Collections.sort(_sortedevents);
-
 	}
 
 	protected boolean validate() {
@@ -100,11 +96,13 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 		if(isdone)
 			return;
 		
-		if(getEvent().isEmpty())
+		if(_sortedevents.isEmpty()){
+			isdone=true;
 			return;
+		}
 
 		// check whether next event is due
-		while(_sortedevents.get(currentevent).timestampstep>=myScenario.clock.getCurrentstep()){
+		while(myScenario.clock.getCurrentstep()>=_sortedevents.get(currentevent).timestampstep){
 			_sortedevents.get(currentevent).activate(); 
 			currentevent++;
 			

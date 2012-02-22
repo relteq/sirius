@@ -10,22 +10,24 @@ hasevents           = hasfields(scenario,'EventSet','event');
 hassplits           = hasfields(scenario,'SplitRatioProfileSet','splitratios');
 hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
         
-% remove terminal nodes
-for i=1:length(scenario.network.NodeList.node)
-    removethis(i) = strcmpi(scenario.network.NodeList.node(i).ATTRIBUTE.type,'T');
-    removethisid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
-end
-scenario.network.NodeList.node(removethis)=[];
-for i=1:length(scenario.network.LinkList.link)
-    if(ismember(scenario.network.LinkList.link(i).begin.ATTRIBUTE.node_id,removethisid))
-        scenario.network.LinkList.link(i).begin = [];
-    end
-    if(ismember(scenario.network.LinkList.link(i).xEnd.ATTRIBUTE.node_id,removethisid))
-        scenario.network.LinkList.link(i).xEnd = [];
-    end
-end
-clear removethis
-
+% % remove terminal nodes
+% removethisid = [];
+% for i=1:length(scenario.network.NodeList.node)
+%     removethis(i) = strcmpi(scenario.network.NodeList.node(i).ATTRIBUTE.type,'T');
+%     if(removethis(i))
+%         removethisid = [removethisid scenario.network.NodeList.node(i).ATTRIBUTE.id];
+%     end
+% end
+% scenario.network.NodeList.node(removethis)=[];
+% for i=1:length(scenario.network.LinkList.link)
+%     if(ismember(scenario.network.LinkList.link(i).begin.ATTRIBUTE.node_id,removethisid))
+%         scenario.network.LinkList.link(i).begin = [];
+%     end
+%     if(ismember(scenario.network.LinkList.link(i).xEnd.ATTRIBUTE.node_id,removethisid))
+%         scenario.network.LinkList.link(i).xEnd = [];
+%     end
+% end
+% clear removethis removethisid
 
 % remove ODList
 scenario.network=safermfield(scenario.network,'ODList');
@@ -510,7 +512,7 @@ switch x.ATTRIBUTE.type
     case 'S'
         newtype = 'signalized intersection';
     case 'T'
-        newtype = 'XXXX';
+        newtype = 'terminal';
     otherwise
         warning('unsupported node type')
 end

@@ -1,6 +1,7 @@
 package com.relteq.sirius.event;
 
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.jaxb.FundamentalDiagram;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
@@ -12,21 +13,29 @@ import com.relteq.sirius.simulator._ScenarioElement;
 */
 public class Event_Fundamental_Diagram extends _Event {
 
+	protected boolean resetToNominal;
+	protected FundamentalDiagram FD;
+	  
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public Event_Fundamental_Diagram(_Scenario myScenario, Event jaxbE) {
-		super.populateFromJaxb(myScenario,jaxbE, _Event.Type.fundamental_diagram);
+	public Event_Fundamental_Diagram(){
 	}
 	
 	public Event_Fundamental_Diagram(_Scenario myScenario) {
-		// TODO Auto-generated constructor stub
+		// XXXXX
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void populate(Event e) {
+		this.resetToNominal = e.isResetToNominal();
+		this.FD = e.getFundamentalDiagram();
+	}
 	
 	@Override
 	public boolean validate() {
@@ -47,10 +56,10 @@ public class Event_Fundamental_Diagram extends _Event {
 	public void activate() {
 		for(_ScenarioElement s : targets){
 			_Link targetlink = (_Link) s.getReference();
-			if(isResetToNominal())
-				deactivateLinkFDEvent(targetlink);
+			if(resetToNominal)
+				revertLinkFundamentalDiagram(targetlink);
 			else
-				activateLinkFDEvent(targetlink,getFundamentalDiagram());
+				setLinkFundamentalDiagram(targetlink,FD);
 		}
 		
 	}

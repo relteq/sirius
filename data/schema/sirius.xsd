@@ -237,7 +237,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="simple|onramp|offramp|signalized intersection|unsignalized intersection|terminal"/>
+						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -303,7 +303,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway connector|street|intersection apporach"/>
+						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_apporach"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -318,7 +318,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="CTM|region tracking|discrete departure"/>
+						<xs:pattern value="CTM|region_tracking|discrete_departure"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -395,7 +395,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="static point|static area|moving point"/>
+						<xs:pattern value="static_point|static_area|moving_point"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -425,7 +425,7 @@
 					  <xs:attribute name="format" use="required">
 						<xs:simpleType>
 						  <xs:restriction base="xs:string">
-							<xs:pattern value="PeMS Data Clearinghouse|Caltrans DBX|BHL"/>
+							<xs:pattern value="PeMS_Data_Clearinghouse|Caltrans_DBX|BHL"/>
 						  </xs:restriction>
 						</xs:simpleType>
 					  </xs:attribute>
@@ -646,12 +646,12 @@
 			  <xs:all>
 				<xs:element ref="description" minOccurs="0" />
 				<xs:element ref="display_position" minOccurs="0" />
-				<xs:element ref="targetElements" minOccurs="1" />
+				<xs:element ref="targetElements" minOccurs="0" />
 				<xs:element ref="fundamentalDiagram" minOccurs="0" />		<!-- fundamental diagram -->
 				<xs:element ref="lane_count_change" minOccurs="0" />		<!-- link lanes -->
 				<xs:element ref="on_off_switch"  minOccurs="0" />			<!-- link control toggle, node control toggle, global control toggle -->
 				<xs:element ref="knob"  minOccurs="0" />					<!-- link demand knob, global demand knob -->
-				<xs:element ref="splitratioProfile" minOccurs="0" />		<!-- node split ratio -->
+				<xs:element ref="splitratioEvent" minOccurs="0" />			<!-- node split ratio -->
 			  </xs:all>
 		      <xs:attribute name="reset_to_nominal" type="xs:boolean" use="optional" default="false" />
 			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
@@ -660,7 +660,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="fundamental diagram|link demand knob|link lanes|node split ratio|control toggle|global control toggle|global demand knob"/>
+					<xs:pattern value="fundamental_diagram|link_demand_knob|link_lanes|node_split_ratio|control_toggle|global_control_toggle|global_demand_knob"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
@@ -758,7 +758,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="IRM alinea|IRM time of day|IRM traffic responsive|CRM swarm|CRM hero|VSL time of day|SIG pretimed|SIG actuated"/>
+					<xs:pattern value="IRM_alinea|IRM_time_of_day|IRM_traffic_responsive|CRM_swarm|CRM_hero|VSL_time_of_day|SIG_pretimed|SIG_actuated"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
@@ -774,7 +774,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="none|queue override|proportional|proportional integral"/>
+						<xs:pattern value="none|queue_override|proportional|proportional_integral"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>

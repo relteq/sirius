@@ -15,6 +15,11 @@ public interface InterfaceController {
 	/** DESCRIPTION
 	 * 
 	 */
+	public void populate(com.relteq.sirius.jaxb.Controller c);
+	
+	/** DESCRIPTION
+	 * 
+	 */
 	public boolean validate();
 	
 	/** DESCRIPTION
@@ -26,4 +31,9 @@ public interface InterfaceController {
 	 * 
 	 */
 	public void update();
+	
+	/** DESCRIPTION
+	 * 
+	 */
+	public boolean register();
 }

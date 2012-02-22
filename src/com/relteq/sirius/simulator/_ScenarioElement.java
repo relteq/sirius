@@ -5,35 +5,46 @@
 
 package com.relteq.sirius.simulator;
 
-public final class _ScenarioElement {
+import com.relteq.sirius.jaxb.ScenarioElement;
+
+public final class _ScenarioElement extends ScenarioElement {
 	
 	public _ScenarioElement() {
 	}
 	
 	public static enum Type {NULL, link, 
-									  node,
-									  controller,
-									  sensor,
-									  event,
-									  signal };
+								   node, 
+								   controller,
+								   sensor,
+								   event,
+								   signal };
 		    
 	protected _Scenario myScenario;
 	protected _ScenarioElement.Type myType;
 	protected String network_id = "";
 	protected String id;
 	protected Object reference;
+
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////
+
 	public _Scenario getMyScenario() {
 		return myScenario;
 	}
+	
 	public _ScenarioElement.Type getMyType() {
 		return myType;
 	}
+	
 	public String getNetwork_id() {
 		return network_id;
 	}
+	
 	public String getId() {
 		return id;
 	}
+	
 	public Object getReference() {
 		return reference;
 	}

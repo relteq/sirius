@@ -1,10 +1,7 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
 
 package com.relteq.sirius.sensor;
 
+import com.relteq.sirius.jaxb.Sensor;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
@@ -17,19 +14,32 @@ public class SensorLoopStation extends _Sensor {
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
-	
-	public SensorLoopStation(_Scenario myScenario,String networkId,String linkId) {
-		super.populateFromParameters(myScenario,_Sensor.Type.static_point,networkId, linkId);
+
+	public  SensorLoopStation(){
 	}
-	
-	public SensorLoopStation(_Scenario myScenario,com.relteq.sirius.jaxb.Sensor s) {
-		super.populateFromJaxb(myScenario,s, _Sensor.Type.static_point);	
+
+	public SensorLoopStation(_Scenario myScenario,String networkId,String linkId){
+		if(myScenario==null)
+			return;
+		this.myScenario  = myScenario;
+		// this.id = GENERATE AN ID;
+	    this.myType = _Sensor.Type.static_point;
+	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////	
 
+	@Override
+	public void populate(Sensor s) {
+	}
+	
+	@Override
+	public Double[] getDensityInVeh() {
+		return myLink.getDensityInVeh();
+	}
+	
 	@Override
 	public boolean validate() {
 		if(myLink==null)
@@ -47,10 +57,9 @@ public class SensorLoopStation extends _Sensor {
 		return;
 	}
 
-	@Override
-	public Double[] getDensityInVeh() {
-		return myLink.getDensityInVeh();
-	}
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////	
 
 	@Override
 	public double getTotalDensityInVeh() {

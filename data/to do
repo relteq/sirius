@@ -1,27 +1,3 @@
-
- 
-	/** Description of myMethod(int a, String b)
-	 * 
-	 * @param a			Description of a
-	 * @param b			Description of b
-	 * @return			Description of c
-	 */
-	 
-	 
-* @param       (methods and constructors only)
-               
-* @return      (methods only)
-               
-* @exception   (@throws is a synonym added in Javadoc 1.2)
-               
-* @see         
-               
-* @since       
-               
-* @serial      (or @serialField or @serialData)
-               
-* @deprecated  (see  
-	 
 + API
 + output
 + exception handling

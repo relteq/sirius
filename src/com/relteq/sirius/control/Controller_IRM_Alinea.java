@@ -1,7 +1,3 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
 
 package com.relteq.sirius.control;
 
@@ -37,6 +33,10 @@ public class Controller_IRM_Alinea extends _Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
+	public Controller_IRM_Alinea() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Controller_IRM_Alinea(_Scenario myScenario,_Link onramplink,_Link mainlinelink,_Sensor mainlinesensor,_Sensor queuesensor,double gain_in_mph){
 
 		this.myScenario = myScenario;
@@ -45,9 +45,9 @@ public class Controller_IRM_Alinea extends _Controller {
 		this.mainlinesensor = mainlinesensor;
 		this.queuesensor 	= queuesensor;
 		
-		hasmainlinelink = mainlinelink!=null;
+		hasmainlinelink   = mainlinelink!=null;
 		hasmainlinesensor = mainlinesensor!=null;
-		hasqueuesensor = queuesensor!=null;
+		hasqueuesensor    = queuesensor!=null;
 		
 		// abort unless there is either one mainline link or one mainline sensor
 		if(mainlinelink==null && mainlinesensor==null)
@@ -74,10 +74,22 @@ public class Controller_IRM_Alinea extends _Controller {
 		
 	}
 	
-	public Controller_IRM_Alinea(_Scenario myScenario,com.relteq.sirius.jaxb.Controller c) {
-		
-		super.populateFromJaxb(myScenario,c, _Controller.Type.IRM_alinea);
+	/////////////////////////////////////////////////////////////////////
+	// InterfaceController
+	/////////////////////////////////////////////////////////////////////
 
+	@Override
+	public void populate(com.relteq.sirius.jaxb.Controller c) {
+
+		if(c.getTargetElements()==null)
+			return;
+		if(c.getTargetElements().getScenarioElement()==null)
+			return;
+		if(c.getFeedbackElements()==null)
+			return;
+		if(c.getFeedbackElements().getScenarioElement()==null)
+			return;
+		
 		hasmainlinelink = false;
 		hasmainlinesensor = false;
 		hasqueuesensor = false;
@@ -92,6 +104,9 @@ public class Controller_IRM_Alinea extends _Controller {
 		if(!c.getFeedbackElements().getScenarioElement().isEmpty()){
 			
 			for(ScenarioElement s:c.getFeedbackElements().getScenarioElement()){
+				
+				if(s.getUsage()==null)
+					return;
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
@@ -143,18 +158,17 @@ public class Controller_IRM_Alinea extends _Controller {
 			targetvehicles = mainlinelink.getDensityCriticalInVeh();
 		}
 		gain = gain_in_mph * myScenario.getSimDtInHours() /linklength;
-		
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
-	/////////////////////////////////////////////////////////////////////
-
 	@Override
 	public boolean validate() {
 		if(!super.validate())
 			return false;
 
+		// must have exactly one target
+		if(targets.size()!=1)
+			return false;
+		
 		// bad mainline link id
 		if(hasmainlinelink && mainlinelink==null)
 			return false;
@@ -180,7 +194,7 @@ public class Controller_IRM_Alinea extends _Controller {
 			return false;
 		
 		// Target link id not found, or number of targets not 1.
-		if(this.onramplink==null)
+		if(onramplink==null)
 			return false;
 			
 		// negative gain
@@ -205,8 +219,12 @@ public class Controller_IRM_Alinea extends _Controller {
 		else
 			mainlinedensity = mainlinelink.getTotalDensityInVeh();
 
-		double desiredvehrate = onramplink.getTotalOutflowInVeh() + gain*(targetvehicles-mainlinedensity);
-		setLinkMaxFlow(desiredvehrate);
+		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain*(targetvehicles-mainlinedensity);
+	}
+
+	@Override
+	public boolean register() {
+		return registerFlowController(onramplink,0);
 	}
 
 }

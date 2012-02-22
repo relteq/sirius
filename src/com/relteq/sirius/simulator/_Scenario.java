@@ -40,13 +40,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected _Scenario.UncertaintyType uncertaintyModel;
 	
 	protected int numVehicleTypes;			// number of vehicle types
-	protected boolean controlon;			// global control switch
+	protected boolean global_control_on;	// global control switch
 	protected double simdtinseconds;		// [sec] simulation time step 
 	protected double simdtinhours;			// [hr]  simulation time step 	
 	
-	protected boolean isloaded=false;	// true if configuration file has been loaded
-	protected boolean isvalid=false;	// true if it has passed validation
-	protected boolean isrunning=false;	// true when the simulation is running
+	protected boolean isloaded=false;		// true if configuration file has been loaded
+	protected boolean isvalid=false;		// true if it has passed validation
+	protected boolean isrunning=false;		// true when the simulation is running
 	
 	protected _ControllerSet _controllerset = new _ControllerSet();
 	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
@@ -126,7 +126,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((_FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
-		controlon = true;
+		global_control_on = true;
 		_controllerset.reset();
 
 		// reset events
@@ -139,13 +139,12 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected void update() {	
 
         // sample profiles .............................	
-    	if(this.getDownstreamBoundaryCapacitySet()!=null)
+    	if(getDownstreamBoundaryCapacitySet()!=null)
         	for(CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
         		((_CapacityProfile) capacityProfile).update();
 
     	if(getDemandProfileSet()!=null)
-        	for(DemandProfile demandProfile : getDemandProfileSet().getDemandProfile())
-        		((_DemandProfile) demandProfile).update();
+    		((_DemandProfileSet)getDemandProfileSet()).update();
 
     	if(getSplitRatioProfileSet()!=null)
     		((_SplitRatioProfileSet) getSplitRatioProfileSet()).update();        		
@@ -155,7 +154,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
         		((_FundamentalDiagramProfile) fdProfile).update();
     	
         // update controllers
-    	if(controlon)
+    	if(global_control_on)
     		_controllerset.update();
 
     	// update events
@@ -296,7 +295,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	            // update time (before write to output)
 	        	clock.advance();
-	        	
+	        	      	        	
 	        	// update scenario
 	        	update();
 

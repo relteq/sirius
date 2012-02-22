@@ -43,18 +43,19 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		this.myType = myType;
 		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
 		this.targets = new ArrayList<_ScenarioElement>();
-		for(ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() ){
-			this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
-		}
+		if(jaxbE.getTargetElements()!=null)
+			for(ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
+				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
 	}
 
 	public boolean validate() {
 		
-		// check that there are targets assigned
-		if(targets.isEmpty()){
-			System.out.println("No targets assigned.");
-			return false;
-		}
+		// check that there are targets assigned to non-global events
+		if(getMyType()!=_Event.Type.global_control_toggle && getMyType()!=_Event.Type.global_demand_knob)
+			if(targets.isEmpty()){
+				System.out.println("No targets assigned.");
+				return false;
+			}
 		
 		// check each target is valid
 		for(_ScenarioElement s : targets){
@@ -133,50 +134,41 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 	// protected interface
 	/////////////////////////////////////////////////////////////////////	
 
-	protected void activateGlobalControlOnOffEvent(boolean ison){
-		myScenario.controlon = ison;
+	protected void setGlobalControlIsOn(boolean ison){
+		myScenario.global_control_on = ison;
 	}
 	
-	protected void activateControllerOnOffEvent(_Controller c,boolean ison){
+	protected void setControllerIsOn(_Controller c,boolean ison){
 		if(c==null)
 			return;
 		c.ison = ison;
 	}
 
-    protected void activateLinkLanesEvent(_Link link,double lanes){
+    protected void setLinkLanes(_Link link,double lanes){
 		if(link==null)
 			return;
     	link.set_Lanes(lanes);
     }
     
-    protected void activateLinkLanesDeltaEvent(_Link link,double deltalanes){
+    protected void setLinkDeltaLanes(_Link link,double deltalanes){
 		if(link==null)
 			return;
-    	link.setLanesDelta(deltalanes);
+		link.set_Lanes(link.get_Lanes()+deltalanes);		
     }
 	
-	protected void activateLinkFDEvent(_Link link,FundamentalDiagram newFD){
+	protected void setLinkFundamentalDiagram(_Link link,FundamentalDiagram newFD){
 		if(link==null)
 			return;
-		if(newFD==null)
-			return;
-		_FundamentalDiagram eventFD = new _FundamentalDiagram(link);
-		eventFD.copyfrom((link).FD);	// copy current FD
-		eventFD.copyfrom(newFD);		// replace values with those defined in the event
-		if(eventFD.validate()){			// validate the result
-	    	link.eventactive = true;
-	    	link.FD = eventFD;
-		}	
+		link.activateFundamentalDiagramEvent(newFD);
 	}
 	
-    protected void deactivateLinkFDEvent(_Link link){
+    protected void revertLinkFundamentalDiagram(_Link link){
     	if(link==null)
     		return;
-    	link.eventactive = false;
-    	link.FD = link.FDprofile;
+    	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void activateNodeSplitRatioEvent(_Node node,Double3DMatrix x) {
+	protected void setNodeEventSplitRatio(_Node node,Double3DMatrix x) {
 		if(node==null)
 			return;
 		if(!node.validateSplitRatioMatrix(x))
@@ -185,7 +177,7 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		node.hasactivesplitevent = true;
 	}
 
-	protected void deactivateNodeSplitRatioEvent(_Node node) {
+	protected void revertNodeEventSplitRatio(_Node node) {
 		if(node==null)
 			return;
 		if(node.hasactivesplitevent){
@@ -194,8 +186,10 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		}
 	}
 	
-    protected void activateDemandProfileKnobEvent(DemandProfile profile,double knob){
+    protected void setDemandProfileEventKnob(DemandProfile profile,Double knob){
 		if(profile==null)
+			return;
+		if(knob.isNaN())
 			return;
 		((_DemandProfile) profile).set_knob(knob);
     }

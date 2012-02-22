@@ -25,7 +25,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	
 	// scale present and future fundamental diagrams to new lane value
 	protected void set_Lanes(double newlanes){
-		if(newlanes<=0 || isdone || FD.isEmpty())
+		if(newlanes<=0 || FD.isEmpty())
 			return;
 		int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 		step = Math.max(0,step);
@@ -139,9 +139,9 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
-				myLink.setProfileFundamentalDiagram( FD.get(step) );
+				myLink.setFundamentalDiagramFromProfile( FD.get(step) );
 			if(step>=n && !isdone){
-				myLink.setProfileFundamentalDiagram( FD.get(n) );
+				myLink.setFundamentalDiagramFromProfile( FD.get(n) );
 				isdone = true;
 			}
 		}

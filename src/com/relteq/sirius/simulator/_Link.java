@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import com.relteq.sirius.jaxb.FundamentalDiagram;
+
 /** DESCRIPTION OF THE CLASS
 *
 * @author AUTHOR NAME
@@ -32,34 +34,41 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected _Node begin_node;
 	protected _Node end_node;
 
-	protected double _length;					// [miles]
-	protected double _lanes;					// [-]
-	protected _FundamentalDiagram FD;			// pointer to current fundamental diagram
-	protected _FundamentalDiagram FDprofile;	// pointer to profile fundamental diagram
-	protected boolean eventactive;
-	protected _FundamentalDiagramProfile myFDProfile;	// needed lane change events
+	protected double _length;							// [miles]
+	protected double _lanes;							// [-]
+	protected _FundamentalDiagram FD;					// current fundamental diagram
+	protected _FundamentalDiagram FDfromProfile;		// profile fundamental diagram
+	protected _FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	protected _FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
+	protected boolean activeFDevent;					// true if an FD event is active on this link,
+														// true  means FD points to FDfromEvent 
+														// false means FD points to FDfromprofile
 
     // flow into the link
     // inflow points to either sourcedemand or node outflow
 	protected Double [] inflow;    			// [veh]	1 x numVehTypes
-	protected Double [] sourcedemand;			// [veh] 	1 x numVehTypes
+	protected Double [] sourcedemand;		// [veh] 	1 x numVehTypes
     
     // demand and actual flow out of the link   
-	protected Double [] outflowDemand;   		// [veh] 	1 x numVehTypes
-	protected Double [] outflow;    			// [veh]	1 x numVehTypes
+	protected Double [] outflowDemand;   	// [veh] 	1 x numVehTypes
+	protected Double [] outflow;    		// [veh]	1 x numVehTypes
     
     // contoller
-	protected boolean iscontrolled;	
-	protected double control_maxflow;			// [veh]		
-	protected double control_maxspeed;		// [-]
-    
+	//protected boolean iscontrolled;
+	protected int control_maxflow_index;
+	protected int control_maxspeed_index;
+	protected _Controller myFlowController;
+	protected _Controller mySpeedController;
+//	protected double control_maxflow;		// [veh]		
+//	protected double control_maxspeed;		// [-]
+   
     // state
-	protected Double [] density;    			// [veh]	1 x numVehTypes
+	protected Double [] density;    		// [veh]	1 x numVehTypes
 
     // flow evaluation
-	protected double spaceSupply;        		// [veh]
+	protected double spaceSupply;        	// [veh]
     
-	protected boolean issource; 				// [boolean]
+	protected boolean issource; 			// [boolean]
 	protected boolean issink;     			// [boolean]
 
 	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
@@ -88,41 +97,41 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     	cumulative_outflow = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
 	}
     
-	protected boolean registerController(){
-		if(iscontrolled)		// used to detect multiple controllers
+	protected boolean registerFlowController(_Controller c,int index){
+		if(myFlowController!=null)
 			return false;
 		else{
-			iscontrolled = true;
+			myFlowController = c;
+			control_maxflow_index = index;
 			return true;
 		}
 	}
 	
-	protected void set_Lanes(double newlanes){
-		if(newlanes<=0)
-			return;
-		myFDProfile.set_Lanes(newlanes);	// adjust present and future fd's
-		_lanes = newlanes;					// change number of lanes
+	protected boolean registerSpeedController(_Controller c,int index){
+		if(mySpeedController!=null)
+			return false;
+		else{
+			mySpeedController = c;
+			control_maxspeed_index = index;
+			return true;
+		}
 	}
 	
-	protected void setLanesDelta(double x){
-		set_Lanes(_lanes+x);
-	}
-	
-	protected void setIscontrolled(boolean iscontrolled) {
-		this.iscontrolled = iscontrolled;
-	}
+//	protected void setIscontrolled(boolean iscontrolled) {
+//		this.iscontrolled = iscontrolled;
+//	}
 	
 	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
 		this.sourcedemand = sourcedemand;		
 	}
 
-	protected void setControl_maxflow(double control_maxflow) {
-		this.control_maxflow = control_maxflow;
-	}
-
-	protected void setControl_maxspeed(double control_maxspeed) {
-		this.control_maxspeed = control_maxspeed;
-	}
+//	protected void setControl_maxflow(double control_maxflow) {
+//		this.control_maxflow = control_maxflow;
+//	}
+//
+//	protected void setControl_maxspeed(double control_maxspeed) {
+//		this.control_maxspeed = control_maxspeed;
+//	}
 
 	protected void setInflow(Double[] inflow) {
 		this.inflow = inflow;
@@ -131,17 +140,50 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected void setOutflow(Double[] outflow) {
 		this.outflow = outflow;
 	}
-
-    protected void setProfileFundamentalDiagram(_FundamentalDiagram fd){
-    	FDprofile = fd;
-    	if(!eventactive)
-    		FD = FDprofile;
-    }
     
     protected void setFundamentalDiagramProfile(_FundamentalDiagramProfile fdp){
-    	myFDProfile = fdp;
+    	if(fdp==null)
+    		return;
+    	myFDprofile = fdp;
     }
 
+    protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd){
+    	if(fd==null)
+    		return;
+    	FDfromProfile = fd;				// update the profile pointer
+    	if(!activeFDevent)				
+    		FD = FDfromProfile;			// update the fd pointer
+    }
+
+    protected void activateFundamentalDiagramEvent(FundamentalDiagram fd){
+    	if(fd==null)
+    		return;
+    	FDfromEvent = new _FundamentalDiagram(this);
+    	FDfromEvent.copyfrom(FD);			// copy current FD
+    	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
+		if(FDfromEvent.validate()){			// validate the result
+	    	activeFDevent = true;
+	    	FD = FDfromEvent;
+		}	
+    }
+
+    protected void revertFundamentalDiagramEvent(){
+    	if(activeFDevent){
+	    	activeFDevent = false;
+    		FD = FDfromProfile;				// point the fd back at the profile
+    		FDfromEvent = null;
+    	}
+    }
+    
+	protected void set_Lanes(double newlanes){
+		if(newlanes<0)
+			return;
+		myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
+		if(FDfromEvent!=null)
+			FDfromEvent.setLanes(newlanes);	// adjust the event fd.
+		_lanes = newlanes;					// adjust local copy of lane count
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// supply and demand calculation
 	/////////////////////////////////////////////////////////////////////
@@ -153,20 +195,20 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		////////////////////////////////////////
     	// GG: This is to match aurora2, but should be removed
     	// Aurora2 has a different link model for sources than for regular links.
- 		if(issource){
- 			outflowDemand = sourcedemand.clone();
- 			double sum = 0d;
- 			for(int k=0;k<numVehicleTypes;k++){
- 				outflowDemand[k] += density[k];
- 				sum += outflowDemand[k];
- 			}
- 			if(sum>FD._getCapacityInVeh()){
- 				double ratio = FD._getCapacityInVeh()/sum;
- 				for(int k=0;k<numVehicleTypes;k++)
- 					outflowDemand[k] *= ratio;
- 			}
- 			return;
- 		}
+// 		if(issource){
+// 			outflowDemand = sourcedemand.clone();
+// 			double sum = 0d;
+// 			for(int k=0;k<numVehicleTypes;k++){
+// 				outflowDemand[k] += density[k];
+// 				sum += outflowDemand[k];
+// 			}
+// 			if(sum>FD._getCapacityInVeh()){
+// 				double ratio = FD._getCapacityInVeh()/sum;
+// 				for(int k=0;k<numVehicleTypes;k++)
+// 					outflowDemand[k] *= ratio;
+// 			}
+// 			return;
+// 		}
  		////////////////////////////////////
  		
         double totaldensity = SiriusMath.sum(density);
@@ -180,21 +222,28 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         // compute total flow leaving the link in the absence of flow control
         double totaloutflow;
         if( totaldensity < FD.getDensityCriticalInVeh() ){
-        	if(iscontrolled)
+        	if(mySpeedController!=null && mySpeedController.ison){
         		// speed control sets a bound on freeflow speed
+            	double control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
         		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
+        	}
         	else
         		totaloutflow = totaldensity * FD.getVfNormalized();
         }
         else{
         	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-            if(iscontrolled)	// speed controller
+            if(mySpeedController!=null && mySpeedController.ison){	// speed controller
+            	double control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
             	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
-        }        
+            }
+        }
         
         // flow controller
-        if(iscontrolled)
+        if(myFlowController!=null && myFlowController.ison){
+        	double control_maxflow = myFlowController.control_maxflow[control_maxflow_index];
         	totaloutflow = Math.min( totaloutflow , control_maxflow );
+        }
+
         
         // split among types
         outflowDemand = SiriusMath.times(density,totaloutflow/totaldensity);
@@ -214,8 +263,12 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     
 	protected void populate(_Network myNetwork) {
 
+		if(getBegin()==null)
+			return;
+		if(getEnd()==null)
+			return;
+				
         this.myNetwork = myNetwork;
-        iscontrolled = false;
         
 		// assign type
     	try {
@@ -226,12 +279,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		}
 
 		// make network connections
-		issource = getBegin()==null;
-        issink = getEnd()==null;
-		if(!issource)
-			begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
-		if(!issink)
-			end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
+		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
+		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
+        
+		issource = _Node.Type.valueOf(begin_node.getType()) ==_Node.Type.terminal;
+		issink = _Node.Type.valueOf(end_node.getType()) ==_Node.Type.terminal;
 
 		// lanes and length
 		_lanes = getLanes().doubleValue();
@@ -247,9 +299,6 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         cumulative_inflow 	= new Double[numVehicleTypes];
         cumulative_outflow 	= new Double[numVehicleTypes];
 		
-        // initialize control
-        resetControl();
-        
 	}
     
 	protected boolean validate() {
@@ -320,12 +369,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected void resetFD(){
     	FD = new _FundamentalDiagram(this);
         FD.settoDefault();		// set to default
-    	eventactive = false;
-	}
-
-	protected void resetControl(){
-        control_maxflow  = Double.POSITIVE_INFINITY;
-        control_maxspeed = Double.POSITIVE_INFINITY;
+    	activeFDevent = false;
 	}
 	
 	protected void update() {
@@ -443,16 +487,16 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 
-	public boolean isIsSource() {
+	public boolean isSource() {
 		return issource;
 	}
 
-	public boolean isIsSink() {
+	public boolean isSink() {
 		return issink;
 	}
 
-	public boolean isControlled() {
-		return iscontrolled;
-	}
+//	public boolean isControlled() {
+//		return iscontrolled;
+//	}
 	
 }

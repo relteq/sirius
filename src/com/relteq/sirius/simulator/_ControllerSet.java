@@ -38,8 +38,8 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 		    	try {
 					myType = _Controller.Type.valueOf(controller.getType());
 				} catch (IllegalArgumentException e) {
-					myType = _Controller.Type.NULL;
-					return;
+					System.out.println("Warning: controller has wrong type. Ignoring.");
+					continue;
 				}	
 				
 				// generate controller
@@ -65,10 +65,11 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	}
 
 	protected void update() {
-    	for(_Controller controller : _controllers){
-    		if(controller.ison)
+    	for(_Controller controller : _controllers)
+    		if(controller.ison && myScenario.clock.istimetosample(controller.samplesteps,0)){
+System.out.println(myScenario.clock.getT() + "\tSampling controller");
     			controller.update();
-    	}
+    		}
 	}
 	
 }

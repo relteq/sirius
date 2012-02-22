@@ -25,6 +25,9 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	
 	protected void set_knob(double _knob) {
 		this._knob = Math.max(_knob,0.0);
+		
+		// resample the profile
+		update(true);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -131,16 +134,17 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		_knob = getKnob().doubleValue();	
 	}
 	
-	protected void update() {
-		if(isdone || demand_nominal.isEmpty())
-			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+	protected void update(boolean forcesample) {
+		if(!forcesample)
+			if(isdone || demand_nominal.isEmpty())
+				return;
+		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = demand_nominal.getnTime()-1;
 			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			step = Math.max(0,step);
 			if(step<n)
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
-			if(step>=n && !isdone){
+			if( forcesample || (step>=n && !isdone) ){
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(n) );
 				isdone = true;
 			}
@@ -160,25 +164,25 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 		Double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
 		
-		if(isdeterministic)
-			return demandvalue;
+		if(!isdeterministic){
 			
-		// use smallest between multiplicative and additive standard deviations
-		Double [] std_dev_apply = new Double [myScenario.getNumVehicleTypes()];
-		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-			std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
-		
-		// sample the distribution
-		switch(myScenario.uncertaintyModel){
-		case uniform:
+			// use smallest between multiplicative and additive standard deviations
+			Double [] std_dev_apply = new Double [myScenario.getNumVehicleTypes()];
 			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-				demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*myScenario.random.nextDouble()-1);
-			break;
-
-		case gaussian:
-			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-				demandvalue[j] += std_dev_apply[j]*myScenario.random.nextGaussian();
-			break;
+				std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
+			
+			// sample the distribution
+			switch(myScenario.uncertaintyModel){
+			case uniform:
+				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+					demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*myScenario.random.nextDouble()-1);
+				break;
+	
+			case gaussian:
+				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+					demandvalue[j] += std_dev_apply[j]*myScenario.random.nextGaussian();
+				break;
+			}
 		}
 		
 		// apply the knob and non-negativity

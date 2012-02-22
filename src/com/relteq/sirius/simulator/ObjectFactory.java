@@ -13,6 +13,9 @@ import javax.xml.validation.SchemaFactory;
 
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.control.*;
+import com.relteq.sirius.event.*;
+import com.relteq.sirius.sensor.*;
 import com.relteq.sirius.jaxb.Controller;
 import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
@@ -28,6 +31,7 @@ public final class ObjectFactory {
 
 	private static String schemafile = "data/schema/sirius.xsd";
 	
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
@@ -38,42 +42,43 @@ public final class ObjectFactory {
 		_Controller C;
 		switch(myType){
 			case IRM_alinea:
-				C = new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,jaxbC);
+				C = new Controller_IRM_Alinea();
 				break;
 				
 			case IRM_time_of_day:
-				C = new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario,jaxbC);
+				C = new Controller_IRM_Time_of_Day();
 				break;
 				
 			case IRM_traffic_responsive:
-				C = new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario,jaxbC);
+				C = new Controller_IRM_Traffic_Responsive();
 				break;
 	
 			case CRM_swarm:
-				C = new com.relteq.sirius.control.Controller_CRM_SWARM(myScenario,jaxbC);
+				C = new Controller_CRM_SWARM();
 				break;
 				
 			case CRM_hero:
-				C = new com.relteq.sirius.control.Controller_CRM_HERO(myScenario,jaxbC);
+				C = new Controller_CRM_HERO();
 				break;
 				
 			case VSL_time_of_day:
-				C = new com.relteq.sirius.control.Controller_VSL_Time_of_Day(myScenario,jaxbC);
+				C = new Controller_VSL_Time_of_Day();
 				break;
 				
 			case SIG_pretimed:
-				C = new com.relteq.sirius.control.Controller_SIG_Pretimed(myScenario,jaxbC);
+				C = new Controller_SIG_Pretimed();
 				break;
 				
 			case SIG_actuated:
-				C = new com.relteq.sirius.control.Controller_SIG_Actuated(myScenario,jaxbC);
+				C = new Controller_SIG_Actuated();
 				break;
 				
 			default:
 				C = null;
 				break;
 		}
-		
+		C.populateFromJaxb(myScenario, jaxbC, myType);
+		C.populate(jaxbC);
 		return C;
 
 	}
@@ -84,44 +89,40 @@ public final class ObjectFactory {
 		_Event E;
 		switch(myType){
 			case fundamental_diagram:
-				E = new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,jaxbE);
+				E = new Event_Fundamental_Diagram();
 				break;
 
 			case link_demand_knob:
-				E = new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario,jaxbE);
+				E = new Event_Link_Demand_Knob();
 				break;
 
 			case link_lanes:
-				E = new com.relteq.sirius.event.Event_Link_Lanes(myScenario,jaxbE);
+				E = new Event_Link_Lanes();
 				break;
 
 			case node_split_ratio:
-				E = new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,jaxbE);
+				E = new Event_Node_Split_Ratio();
 				break;
 
 			case control_toggle:
-				E = new com.relteq.sirius.event.Event_Control_Toggle(myScenario,jaxbE);
+				E = new Event_Control_Toggle();
 				break;
 
 			case global_control_toggle:
-				E = new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario,jaxbE);
+				E = new Event_Global_Control_Toggle();
 				break;
 
 			case global_demand_knob:
-				E = new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario,jaxbE);
+				E = new Event_Global_Demand_Knob();
 				break;
 				
 			default:
 				E = null;
 				break;
 		}
-		
+		E.populateFromJaxb(myScenario, jaxbE, myType);
+		E.populate(jaxbE);
 		return E;
-		
-		
-		
-		
-		
 	}
 
 	protected static _Sensor createSensorFromJaxb(_Scenario myScenario,Sensor jaxbS,_Sensor.Type myType) {	
@@ -130,7 +131,7 @@ public final class ObjectFactory {
 		_Sensor S;
 		switch(myType){
 			case static_point:
-				S = new com.relteq.sirius.sensor.SensorLoopStation(myScenario,jaxbS);
+				S = new SensorLoopStation();
 				break;
 
 			case static_area:
@@ -138,16 +139,16 @@ public final class ObjectFactory {
 				break;
 
 			case moving_point:
-				S = new com.relteq.sirius.sensor.SensorFloating(myScenario,jaxbS);
+				S = new SensorFloating();
 				break;
 				
 			default:
 				S = null;
 				break;
 		}
-		
+		S.populateFromJaxb(myScenario, jaxbS, myType);
+		S.populate(jaxbS);
 		return S;
-		
 	}
 
 	protected static _ScenarioElement createScenarioElementFromJaxb(_Scenario myScenario,ScenarioElement jaxbS){
@@ -157,13 +158,26 @@ public final class ObjectFactory {
 		S.myScenario = myScenario;
 		S.id = jaxbS.getId();
 		S.network_id = jaxbS.getNetworkId();
-		if(S.id.equalsIgnoreCase("link")){
-			S.myType = _ScenarioElement.Type.link;
+		S.myType = _ScenarioElement.Type.valueOf(jaxbS.getType());
+		switch(S.myType){
+		case link:
 			S.reference = myScenario.getLinkWithCompositeId(S.network_id,S.id);
-		}
-		if(S.id.equalsIgnoreCase("node")){
-			S.myType = _ScenarioElement.Type.node;
+			break;
+		case node:
 			S.reference = myScenario.getNodeWithCompositeId(S.network_id,S.id);
+			break;
+		case sensor:
+			S.reference = myScenario.getSensorWithCompositeId(S.network_id,S.id);
+			break;
+//		case signal:
+//			S.reference = myScenario.getSignalWithCompositeId(S.network_id,S.id);
+//			break;
+		case controller:
+			S.reference = myScenario.getControllerWithName(S.id);
+			break;
+			
+		default:
+			S.reference = null;	
 		}
 		return S;
 	}
@@ -228,7 +242,7 @@ public final class ObjectFactory {
         S.outdt = outdt;
         
         // copy data to static variables ..............................................
-        S.controlon = true;
+        S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
         S.simdtinhours = S.simdtinseconds/3600.0;
         S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
@@ -246,6 +260,16 @@ public final class ObjectFactory {
 
         // populate the scenario ....................................................
         S.populate();
+        
+        // register controllers with their targets ..................................
+        boolean registersuccess = true;
+        for(_Controller controller : S._controllerset._controllers)
+        	registersuccess &= controller.register();
+        
+        if(!registersuccess){
+        	System.out.println("Conflicting controllers");
+        	return null;
+        }
         
         // check that load was successful
         S.isloaded = checkLoad(S);
@@ -286,32 +310,32 @@ public final class ObjectFactory {
 		return  new com.relteq.sirius.control.Controller_VSL_Time_of_Day(myScenario);
 	}
 	
-	public static _Event createEvent_Control_Toggle(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Control_Toggle(myScenario);
+	public static _Event createEvent_Control_Toggle(_Scenario myScenario,boolean ison){
+		return  new com.relteq.sirius.event.Event_Control_Toggle(myScenario,ison);
 	}	
 
 	public static _Event createEvent_Fundamental_Diagram(_Scenario myScenario){
 		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario);
 	}	
 	
-	public static _Event createEvent_Global_Control_Toggle(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario);
+	public static _Event createEvent_Global_Control_Toggle(_Scenario myScenario,boolean ison){
+		return  new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario,ison);
 	}	
 	
-	public static _Event createEvent_Global_Demand_Toggle(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario);
+	public static _Event createEvent_Global_Demand_Knob(_Scenario myScenario,double newknob){
+		return  new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario,newknob);
 	}	
 	
-	public static _Event createEvent_Link_Demand_Knob(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario);
+	public static _Event createEvent_Link_Demand_Knob(_Scenario myScenario,double newknob){
+		return  new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario,newknob);
 	}	
 	
-	public static _Event createEvent_Link_Lanes(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario);
+	public static _Event createEvent_Link_Lanes(_Scenario myScenario,double deltalanes){
+		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,deltalanes);
 	}	
 	
-	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario){
-		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario);
+	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario,boolean isreset,_Node node,Double3DMatrix splitratio){
+		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,isreset,node,splitratio);
 	}	
 	
 	public static _Sensor createSensor_LoopStation(_Scenario myScenario,String networkId,String linkId){
@@ -321,6 +345,70 @@ public final class ObjectFactory {
 	public static _Sensor createSensor_Floating(_Scenario myScenario,String networkId,String linkId){
 		_Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,networkId,linkId);
 		return S;
+	}
+	
+	public static _ScenarioElement createScenarioElement(_Node node){
+		if(node==null)
+			return null;
+		_ScenarioElement se = new _ScenarioElement();
+		se.myScenario = node.getMyNetwork().myScenario;
+		se.myType = _ScenarioElement.Type.node;
+		se.network_id = node.myNetwork.getId();
+		se.reference = node;
+		return se;
+	}
+	
+	public static _ScenarioElement createScenarioElement(_Link link){
+		if(link==null)
+			return null;
+		_ScenarioElement se = new _ScenarioElement();
+		se.myScenario = link.getMyNetwork().myScenario;
+		se.myType = _ScenarioElement.Type.link;
+		se.network_id = link.myNetwork.getId();
+		se.reference = link;
+		return se;
+	}
+
+	public static _ScenarioElement createScenarioElement(_Sensor sensor){
+		if(sensor==null)
+			return null;
+		_ScenarioElement se = new _ScenarioElement();
+		se.myScenario = sensor.myScenario;
+		se.myType = _ScenarioElement.Type.sensor;
+		if(sensor.myLink!=null)
+			se.network_id = sensor.myLink.myNetwork.getId();
+		se.reference = sensor;
+		return se;
+	}
+
+//	public static _ScenarioElement createScenarioElement(_Signal signal){
+//		if(signal==null)
+//			return null;
+//		_ScenarioElement se = new _ScenarioElement();
+//		se.myScenario = signal.getMyNetwork().myScenario;
+//		se.myType = _ScenarioElement.Type.sensor;
+//		se.network_id = signal.myNetwork.getId();
+//		se.id = "";
+//		se.reference = signal;
+//		return se;
+//	}
+	
+	public static _ScenarioElement createScenarioElement(_Controller controller){
+		if(controller==null)
+			return null;
+		_ScenarioElement se = new _ScenarioElement();
+		se.myType = _ScenarioElement.Type.controller;
+		se.reference = controller;
+		return se;
+	}
+
+	public static _ScenarioElement createScenarioElement(_Event event){
+		if(event==null)
+			return null;
+		_ScenarioElement se = new _ScenarioElement();
+		se.myType = _ScenarioElement.Type.event;
+		se.reference = event;
+		return se;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -360,7 +448,12 @@ public final class ObjectFactory {
 		
 		scenario.simulationMode = _Scenario.ModeType.NULL;
 		
-        double time_ic = ((_InitialDensityProfile)scenario.getInitialDensityProfile()).timestamp;
+        double time_ic;
+        if(scenario.getInitialDensityProfile()!=null)
+        	time_ic = ((_InitialDensityProfile)scenario.getInitialDensityProfile()).timestamp;
+        else
+        	time_ic = 0.0;
+       
 		if(scenario.timestart==time_ic){
 			scenario.simulationMode = _Scenario.ModeType.normal;
 		}
