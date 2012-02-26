@@ -1,11 +1,14 @@
 package com.relteq.sirius.event;
 
 
+import java.util.ArrayList;
+
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.Splitratio;
 import com.relteq.sirius.jaxb.SplitratioEvent;
 import com.relteq.sirius.simulator.Double1DVector;
 import com.relteq.sirius.simulator.Double3DMatrix;
+import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Node;
 import com.relteq.sirius.simulator._Scenario;
@@ -30,11 +33,20 @@ public class Event_Node_Split_Ratio extends _Event {
 	}
 	
 	// constructor for event with single node target
-	public Event_Node_Split_Ratio(_Scenario myScenario,boolean isreset,_Node node,Double3DMatrix splitratio) {
-		this.resetToNominal = isreset;
+	public Event_Node_Split_Ratio(_Scenario myScenario,_Node node,Double3DMatrix splitratio) {
+		this.resetToNominal = false;
 		this.splitratio = splitratio;
 		this.myType = _Event.Type.node_split_ratio;
-		this.myNode = node;
+		this.targets = new ArrayList<_ScenarioElement>();
+		this.targets.add(ObjectFactory.createScenarioElement(node));		
+	}
+
+	// constructor for event with single node target
+	public Event_Node_Split_Ratio(_Scenario myScenario,_Node node) {
+		this.resetToNominal = true;
+		this.myType = _Event.Type.node_split_ratio;
+		this.targets = new ArrayList<_ScenarioElement>();
+		this.targets.add(ObjectFactory.createScenarioElement(node));	
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -42,16 +54,18 @@ public class Event_Node_Split_Ratio extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
+	public void populate(Object jaxbobject) {
 
-		if(!e.isResetToNominal() && e.getSplitratioEvent()==null)
+		Event jaxbe = (Event) jaxbobject;
+		
+		if(!jaxbe.isResetToNominal() && jaxbe.getSplitratioEvent()==null)
 			return;
 
 		// only accepts single target
 		if(targets.size()!=1)
 			return;
 
-		this.resetToNominal = e.isResetToNominal();
+		this.resetToNominal = jaxbe.isResetToNominal();
 		this.myNode = (_Node) targets.get(0).getReference();
 		
 		if(myNode==null)
@@ -60,21 +74,11 @@ public class Event_Node_Split_Ratio extends _Event {
 		if(resetToNominal)		// nothing else to populate in this case
 			return;
 		
-		// use <VehicleTypesOrder> if it is there, otherwise assume order given in <settings>
-		int i,numTypes;
-		SplitratioEvent sre = e.getSplitratioEvent();
-		if(sre!=null && sre.getVehicleTypeOrder()!=null){
-			numTypes = sre.getVehicleTypeOrder().getVehicleType().size();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(sre.getVehicleTypeOrder().getVehicleType().get(i).getName());
-		}
-		else{
-			numTypes = myScenario.getNumVehicleTypes();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = i;
-		}
+		SplitratioEvent sre = jaxbe.getSplitratioEvent();
+		if(sre!=null)
+			vehicletypeindex = myScenario.getVehicleTypeIndices(sre.getVehicleTypeOrder());
+		else
+			vehicletypeindex = myScenario.getVehicleTypeIndices(null);
 				
 		splitratio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		
@@ -97,12 +101,20 @@ public class Event_Node_Split_Ratio extends _Event {
 		if(!super.validate())
 			return false;
 		
+		if(targets.size()!=1){
+			System.out.println("This event does not work for multiple targets.");
+			return false;
+		}
+		
 		// check each target is valid
-		for(_ScenarioElement s : targets){
-			if(s.getMyType()!=_ScenarioElement.Type.node){
-				System.out.println("wrong target type.");
-				return false;
-			}
+		if(targets.get(0).getMyType()!=_ScenarioElement.Type.node){
+			System.out.println("wrong target type.");
+			return false;
+		}
+		
+		if(myNode==null){
+			System.out.println("wrong node id.");
+			return false;
 		}
 		
 		// check split ratio matrix
@@ -113,18 +125,10 @@ public class Event_Node_Split_Ratio extends _Event {
 
 	@Override
 	public void activate() {
-		if(resetToNominal){
-			for(_ScenarioElement s : targets){
-				_Node targetnode = (_Node) s.getReference();
-				revertNodeEventSplitRatio(targetnode);
-			}
-		}
-		else{
-			for(_ScenarioElement s : targets){
-				_Node targetnode = (_Node) s.getReference();
-				setNodeEventSplitRatio(targetnode,splitratio);
-			}
-		}		
+		if(resetToNominal)
+			revertNodeEventSplitRatio(myNode);
+		else
+			setNodeEventSplitRatio(myNode,splitratio);	
 	}
 
 }

@@ -19,27 +19,12 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 	
 	protected void populate(_Scenario myScenario) {
 
-		int i;
-		
 		this.myScenario = myScenario;
 		
 		if(getSplitratioProfile().isEmpty())
 			return;
 
-		// use <VehicleTypesOrder> if it is there, otherwise assume order given in <settings>
-		int numTypes;
-		if(getVehicleTypeOrder()!=null){
-			numTypes = getVehicleTypeOrder().getVehicleType().size();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
-		}
-		else{
-			numTypes = myScenario.getNumVehicleTypes();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = i;
-		}
+		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
 		for(SplitratioProfile sr : getSplitratioProfile())
 			((_SplitRatioProfile) sr).populate(myScenario);

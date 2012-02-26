@@ -1,6 +1,10 @@
 package com.relteq.sirius.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
@@ -22,7 +26,10 @@ public class Event_Link_Lanes extends _Event {
 	public Event_Link_Lanes(){
 	}
 	
-	public Event_Link_Lanes(_Scenario myScenario,double deltalanes) {
+	public Event_Link_Lanes(_Scenario myScenario,List<_Link> links,double deltalanes) {
+		this.targets = new ArrayList<_ScenarioElement>();
+		for(_Link link : links)
+			this.targets.add(ObjectFactory.createScenarioElement(link));
 		this.deltalanes = deltalanes;
 	}
 
@@ -31,10 +38,11 @@ public class Event_Link_Lanes extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
-		this.resetToNominal = e.isResetToNominal();
-		if(e.getLaneCountChange()!=null)
-			this.deltalanes = e.getLaneCountChange().getDelta().doubleValue();
+	public void populate(Object jaxbobject) {
+		Event jaxbe = (Event) jaxbobject;
+		this.resetToNominal = jaxbe.isResetToNominal();
+		if(jaxbe.getLaneCountChange()!=null)
+			this.deltalanes = jaxbe.getLaneCountChange().getDelta().doubleValue();
 		else
 			this.deltalanes = 0.0;
 	}

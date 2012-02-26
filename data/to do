@@ -1,3 +1,12 @@
++ validate created events
++ Document Double3DMatrix
++ complete scenario element creators
++ createLinkLanesRevertEvent
++ implement non-jaxb constructors for events.
++ global demand knob
++ validate events.
++ implement controller ids rather than names, sensors
++ Can we eliminate constructors?
 + API
 + output
 + exception handling

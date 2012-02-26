@@ -57,7 +57,7 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 					}	
 					
 					// generate event
-					if(myType!=_Event.Type.NULL){
+					if(myType!=null){
 						_Event E = ObjectFactory.createEventFromJaxb(myScenario,event,myType);
 						if(E!=null)
 							_sortedevents.add(E);

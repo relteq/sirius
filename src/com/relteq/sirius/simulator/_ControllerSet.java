@@ -43,7 +43,7 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 				}	
 				
 				// generate controller
-				if(myType!=_Controller.Type.NULL){
+				if(myType!=null){
 					_Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
 					if(C!=null)
 						_controllers.add(C);
@@ -66,10 +66,8 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
 	protected void update() {
     	for(_Controller controller : _controllers)
-    		if(controller.ison && myScenario.clock.istimetosample(controller.samplesteps,0)){
-System.out.println(myScenario.clock.getT() + "\tSampling controller");
+    		if(controller.ison && myScenario.clock.istimetosample(controller.samplesteps,0))
     			controller.update();
-    		}
 	}
 	
 }

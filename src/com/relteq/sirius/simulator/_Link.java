@@ -14,89 +14,75 @@ import com.relteq.sirius.jaxb.FundamentalDiagram;
 */
 public final class _Link extends com.relteq.sirius.jaxb.Link {
 
-	public static enum Type	{NULL, freeway,
-								       HOV,
-								       HOT,
-								       onramp,
-								       offramp,
-								       freeway_connector,
-								       street,
-								       intersection_apporach,other };	
+	public static enum Type	{  freeway,
+						       HOV,
+						       HOT,
+						       onramp,
+						       offramp,
+						       freeway_connector,
+						       street,
+						       intersection_apporach,
+						       other };	
 		   
-	protected static enum DynamicsType	{NULL, CTM,
-										       region_tracking,
-										       discrete_departure };
+//	public static enum DynamicsType	{NULL, CTM,
+//										   region_tracking,
+//										   discrete_departure };
 
-	protected _Link.Type myType;
-	
-	// references
-	protected _Network myNetwork;
-	protected _Node begin_node;
-	protected _Node end_node;
+	/** @y.exclude */ 	protected _Link.Type myType;
+	/** @y.exclude */ 	protected _Network myNetwork;
+	/** @y.exclude */ 	protected _Node begin_node;
+	/** @y.exclude */ 	protected _Node end_node;
 
-	protected double _length;							// [miles]
-	protected double _lanes;							// [-]
-	protected _FundamentalDiagram FD;					// current fundamental diagram
-	protected _FundamentalDiagram FDfromProfile;		// profile fundamental diagram
-	protected _FundamentalDiagram FDfromEvent;			// event fundamental diagram
-	protected _FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
-	protected boolean activeFDevent;					// true if an FD event is active on this link,
-														// true  means FD points to FDfromEvent 
-														// false means FD points to FDfromprofile
-
+	/** @y.exclude */ 	protected double _length;							// [miles]
+	/** @y.exclude */ 	protected double _lanes;							// [-]
+	/** @y.exclude */ 	protected _FundamentalDiagram FD;					// current fundamental diagram
+	/** @y.exclude */ 	protected _FundamentalDiagram FDfromProfile;		// profile fundamental diagram
+	/** @y.exclude */ 	protected _FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	/** @y.exclude */ 	protected _FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
+	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
+																			// true  means FD points to FDfromEvent 
+																			// false means FD points to FDfromprofile
     // flow into the link
-    // inflow points to either sourcedemand or node outflow
-	protected Double [] inflow;    			// [veh]	1 x numVehTypes
-	protected Double [] sourcedemand;		// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] inflow;    			// [veh]	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	1 x numVehTypes
     
     // demand and actual flow out of the link   
-	protected Double [] outflowDemand;   	// [veh] 	1 x numVehTypes
-	protected Double [] outflow;    		// [veh]	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] outflowDemand;   	// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] outflow;    		// [veh]	1 x numVehTypes
     
     // contoller
-	//protected boolean iscontrolled;
-	protected int control_maxflow_index;
-	protected int control_maxspeed_index;
-	protected _Controller myFlowController;
-	protected _Controller mySpeedController;
-//	protected double control_maxflow;		// [veh]		
-//	protected double control_maxspeed;		// [-]
+	/** @y.exclude */ 	protected int control_maxflow_index;
+	/** @y.exclude */ 	protected int control_maxspeed_index;
+	/** @y.exclude */ 	protected _Controller myFlowController;
+	/** @y.exclude */ 	protected _Controller mySpeedController;
    
-    // state
-	protected Double [] density;    		// [veh]	1 x numVehTypes
-
-    // flow evaluation
-	protected double spaceSupply;        	// [veh]
-    
-	protected boolean issource; 			// [boolean]
-	protected boolean issink;     			// [boolean]
-
-	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
-	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
-	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] density;    		// [veh]	1 x numVehTypes
+	/** @y.exclude */ 	protected double spaceSupply;        	// [veh]
+	/** @y.exclude */ 	protected boolean issource; 			// [boolean]
+	/** @y.exclude */ 	protected boolean issink;     			// [boolean]
+	/** @y.exclude */ 	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceSensor
+	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	public Double[] getDensityInVeh() {
-		return density;
-	}
-
-	public double getTotalDensityInVeh() {
-		return SiriusMath.sum(density);
-	}
+	/** @y.exclude */
+	protected _Link(){}
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+	/** @y.exclude */
 	protected void reset_cumulative(){
     	cumulative_density = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
     	cumulative_inflow  = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
     	cumulative_outflow = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
 	}
-    
+
+	/** @y.exclude */
 	protected boolean registerFlowController(_Controller c,int index){
 		if(myFlowController!=null)
 			return false;
@@ -106,7 +92,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 			return true;
 		}
 	}
-	
+
+	/** @y.exclude */
 	protected boolean registerSpeedController(_Controller c,int index){
 		if(mySpeedController!=null)
 			return false;
@@ -116,37 +103,30 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 			return true;
 		}
 	}
-	
-//	protected void setIscontrolled(boolean iscontrolled) {
-//		this.iscontrolled = iscontrolled;
-//	}
-	
+
+	/** @y.exclude */
 	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
 		this.sourcedemand = sourcedemand;		
 	}
 
-//	protected void setControl_maxflow(double control_maxflow) {
-//		this.control_maxflow = control_maxflow;
-//	}
-//
-//	protected void setControl_maxspeed(double control_maxspeed) {
-//		this.control_maxspeed = control_maxspeed;
-//	}
-
+	/** @y.exclude */
 	protected void setInflow(Double[] inflow) {
 		this.inflow = inflow;
 	}
 
+	/** @y.exclude */
 	protected void setOutflow(Double[] outflow) {
 		this.outflow = outflow;
 	}
-    
+
+	/** @y.exclude */
     protected void setFundamentalDiagramProfile(_FundamentalDiagramProfile fdp){
     	if(fdp==null)
     		return;
     	myFDprofile = fdp;
     }
 
+	/** @y.exclude */
     protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd){
     	if(fd==null)
     		return;
@@ -155,6 +135,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     		FD = FDfromProfile;			// update the fd pointer
     }
 
+	/** @y.exclude */
     protected void activateFundamentalDiagramEvent(FundamentalDiagram fd){
     	if(fd==null)
     		return;
@@ -167,6 +148,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		}	
     }
 
+	/** @y.exclude */
     protected void revertFundamentalDiagramEvent(){
     	if(activeFDevent){
 	    	activeFDevent = false;
@@ -174,7 +156,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     		FDfromEvent = null;
     	}
     }
-    
+
+	/** @y.exclude */
 	protected void set_Lanes(double newlanes){
 		if(newlanes<0)
 			return;
@@ -188,6 +171,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	// supply and demand calculation
 	/////////////////////////////////////////////////////////////////////
 
+	/** @y.exclude */
 	protected void updateOutflowDemand(){
         
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
@@ -250,7 +234,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         
         return;
     }
-    
+
+	/** @y.exclude */
     protected void updateSpaceSupply(){
     	double totaldensity = SiriusMath.sum(density);
         spaceSupply = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
@@ -260,7 +245,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////    
-    
+
+	/** @y.exclude */
 	protected void populate(_Network myNetwork) {
 
 		if(getBegin()==null)
@@ -300,7 +286,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
         cumulative_outflow 	= new Double[numVehicleTypes];
 		
 	}
-    
+
+	/** @y.exclude */
 	protected boolean validate() {
 		
 		if(!issource && begin_node==null){
@@ -326,6 +313,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		return true;
 	}
 
+	/** @y.exclude */
 	protected void resetState() {
 		
 		_Scenario myScenario = myNetwork.myScenario;
@@ -362,16 +350,19 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		return;
 	}
 
+	/** @y.exclude */
 	protected void resetLanes(){
 		_lanes = getLanes().doubleValue();
 	}
-	
+
+	/** @y.exclude */
 	protected void resetFD(){
     	FD = new _FundamentalDiagram(this);
         FD.settoDefault();		// set to default
     	activeFDevent = false;
 	}
-	
+
+	/** @y.exclude */
 	protected void update() {
 		
         if(issink)
@@ -393,42 +384,104 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
+	// Link geometry ....................
+	
+	/** DESCRIPTION 
+	 * 
+	 */
 	public _Link.Type getMyType() {
 		return myType;
 	}
+	/** DESCRIPTION 
+	 * 
+	 */
     
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public _Node getBegin_node() {
 		return begin_node;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public _Node getEnd_node() {
 		return end_node;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getLengthInMiles() {
 		return _length;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getLinkLength() {
 		return _length;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double get_Lanes() {
 		return _lanes;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
+	public boolean isSource() {
+		return issource;
+	}
+
+	/** DESCRIPTION 
+	 * 
+	 */
+	public boolean isSink() {
+		return issink;
+	}
+	
+	// Link state .......................
+
+	/** DESCRIPTION 
+	 * 
+	 */
+	public Double[] getDensityInVeh() {
+		return density;
+	}
+
+	/** DESCRIPTION 
+	 * 
+	 */
+	public double getTotalDensityInVeh() {
+		return SiriusMath.sum(density);
+	}
+	
+	/** DESCRIPTION 
+	 * 
+	 */
 	public Double[] getOutflowInVeh() {
 		return outflow;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getTotalOutflowInVeh() {
 		return SiriusMath.sum(outflow);
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double computeSpeedInMPH(){
 		double totaldensity = SiriusMath.sum(density);
 		double speed;
@@ -439,64 +492,90 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		return speed*_length/myNetwork.myScenario.getSimDtInHours();
 	}
 
+	// Fundamental diagram ....................
+	
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getDensityJamInVeh() {
 		return FD._getDensityJamInVeh();
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getDensityCriticalInVeh() {
 		return FD.getDensityCriticalInVeh();
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getCapacityDropInVeh() {
 		return FD._getCapacityDropInVeh();
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getCapacityInVeh() {
 		return FD._getCapacityInVeh();
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getDensityJamInVPMPL() {
 		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getDensityCriticalInVPMPL() {
 		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getCapacityDropInVPHPL() {
 		return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getCapacityInVPHPL() {
 		return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getNormalizedVf() {
 		return FD.getVfNormalized();
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getVfInMPH() {
 		return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
-	
+
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getNormalizedW() {
 		return FD.getWNormalized();
 	}
 
+	/** DESCRIPTION 
+	 * 
+	 */
 	public double getWInMPH() {
 		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 
-	public boolean isSource() {
-		return issource;
-	}
-
-	public boolean isSink() {
-		return issink;
-	}
-
-//	public boolean isControlled() {
-//		return iscontrolled;
-//	}
-	
 }

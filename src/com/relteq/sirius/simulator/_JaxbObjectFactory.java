@@ -47,7 +47,7 @@ public final class _JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFacto
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Link createLink() {
+	public Link createLink() {
 		return new _Link();
 	}
 

@@ -1,7 +1,7 @@
 
 package com.relteq.sirius.sensor;
 
-import com.relteq.sirius.jaxb.Sensor;
+import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
@@ -32,12 +32,7 @@ public class SensorLoopStation extends _Sensor {
 	/////////////////////////////////////////////////////////////////////	
 
 	@Override
-	public void populate(Sensor s) {
-	}
-	
-	@Override
-	public Double[] getDensityInVeh() {
-		return myLink.getDensityInVeh();
+	public void populate(Object jaxbobject) {
 	}
 	
 	@Override
@@ -57,27 +52,28 @@ public class SensorLoopStation extends _Sensor {
 		return;
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// API
-	/////////////////////////////////////////////////////////////////////	
-
 	@Override
-	public double getTotalDensityInVeh() {
-		return myLink.getTotalDensityInVeh();
+	public Double[] getDensityInVPM() {
+		return SiriusMath.times(myLink.getDensityInVeh(),1/myLink.getLengthInMiles());
+	}
+	
+	@Override
+	public double getTotalDensityInVPM() {
+		return myLink.getTotalDensityInVeh()/myLink.getLengthInMiles();
 	}
 
 	@Override
-	public Double[] getFlowInVeh() {
-		return myLink.getOutflowInVeh();
+	public Double[] getFlowInVPH() {
+		return SiriusMath.times(myLink.getOutflowInVeh(),1/myScenario.getSimDtInHours());
 	}
 
 	@Override
-	public double getTotalFlowInVeh() {
-		return myLink.getTotalOutflowInVeh();
+	public double getTotalFlowInVPH() {
+		return myLink.getTotalOutflowInVeh()/myScenario.getSimDtInHours();
 	}
 
 	@Override
-	public double getNormalizedSpeed() {
+	public double getSpeedInMPH() {
 		return myLink.computeSpeedInMPH();
 	}
 		

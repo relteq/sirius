@@ -14,52 +14,59 @@ import java.util.ArrayList;
 */
 public final class _Node extends com.relteq.sirius.jaxb.Node {
 
-	public static enum Type	{NULL, simple,
-								   onramp,
-								   offramp,
-								   signalized_intersection,
-								   unsignalized_intersection,
-								   terminal };
+	public static enum Type	{  simple,
+							   onramp,
+							   offramp,
+							   signalized_intersection,
+							   unsignalized_intersection,
+							   terminal };
 		   
-	protected _Network myNetwork;
-	protected _Node.Type myType;
+	/** @y.exclude */ 	protected _Network myNetwork;
+	/** @y.exclude */ 	protected _Node.Type myType;
 
 	// network references
-	protected _Link [] output_link;
-	protected _Link [] input_link;
+	/** @y.exclude */ 	protected _Link [] output_link;
+	/** @y.exclude */ 	protected _Link [] input_link;
 	
-	protected Double3DMatrix sampledSRprofile;
-	protected Double3DMatrix splitratio;
-	protected boolean istrivialsplit;
-	protected boolean hasSRprofile;
-
-	protected int nIn;
-	protected int nOut;
+	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
+	/** @y.exclude */ 	protected Double3DMatrix splitratio;
+	/** @y.exclude */ 	protected boolean istrivialsplit;
+	/** @y.exclude */ 	protected boolean hasSRprofile;
+	/** @y.exclude */ 	protected int nIn;
+	/** @y.exclude */ 	protected int nOut;
 
     // controller
-	protected boolean hascontroller;
-	protected boolean controlleron;
+	/** @y.exclude */ 	protected boolean hascontroller;
+	/** @y.exclude */ 	protected boolean controlleron;
 	
 	// split event
-	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
-											// controller split ratios
+	/** @y.exclude */ 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
+																// controller split ratios
     // used in update()
-	protected Double [][] inDemand;		// [nIn][nTypes]
-	protected double [] outSupply;		// [nOut]
-	protected double [] outDemandKnown;	// [nOut]
-	protected double [] dsratio;			// [nOut]
-	protected Double [][] outFlow; 		// [nOut][nTypes]
-	protected boolean [][] iscontributor;	// [nIn][nOut]
-	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
-    
+	/** @y.exclude */ 	protected Double [][] inDemand;			// [nIn][nTypes]
+	/** @y.exclude */ 	protected double [] outSupply;			// [nOut]
+	/** @y.exclude */ 	protected double [] outDemandKnown;		// [nOut]
+	/** @y.exclude */ 	protected double [] dsratio;			// [nOut]
+	/** @y.exclude */ 	protected Double [][] outFlow; 			// [nOut][nTypes]
+	/** @y.exclude */ 	protected boolean [][] iscontributor;	// [nIn][nOut]
+	/** @y.exclude */ 	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+	/** @y.exclude */ 	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+	/** @y.exclude */ 	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+
+	/////////////////////////////////////////////////////////////////////
+	// protected default constructor
+	/////////////////////////////////////////////////////////////////////
+
+	/** @y.exclude */
+	protected _Node(){}
+							  
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	/** @y.exclude */ 	
 	protected boolean registerController(){
 		if(hascontroller)		// used to detect multiple controllers
 			return false;
@@ -70,10 +77,12 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 	}
 	
+	/** @y.exclude */ 	
     protected void setSampledSRProfile(Double3DMatrix s){
     	sampledSRprofile = s;
     }
 
+    /** @y.exclude */ 	
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
@@ -82,6 +91,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 	}
 
+	/** @y.exclude */ 	
 	protected void setControllerOn(boolean controlleron) {
 		if(hascontroller){
 			this.controlleron = controlleron;
@@ -90,6 +100,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 	}
 
+	/** @y.exclude */ 	
     protected void resetSplitRatio(){
 
 		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
@@ -100,6 +111,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		//////
     }
     
+    /** @y.exclude */ 	
 	protected void setSplitratio(Double3DMatrix x) {
 		splitratio.copydata(x);
 		normalizeSplitRatioMatrix(splitratio);
@@ -109,6 +121,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
     
+	/** @y.exclude */ 	
 	protected void populate(_Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
@@ -162,6 +175,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		hasactivesplitevent = false;
 	}
     
+	/** @y.exclude */ 	
 	protected boolean validate() {
 		
 		if(myType==_Node.Type.terminal)
@@ -196,6 +210,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return true;
 	}
 
+	/** @y.exclude */ 	
 	protected void update() {
 		
         if(myType==_Node.Type.terminal)
@@ -249,6 +264,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 
 	}
 
+	/** @y.exclude */ 	
 	protected void reset() {		
 	}
 
@@ -256,6 +272,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
 	
+	/** @y.exclude */ 	
 	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
 
 		int i,j,k;
@@ -282,6 +299,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return true;
 	}
 	
+	/** @y.exclude */ 	
     protected void normalizeSplitRatioMatrix(Double3DMatrix X){
 
     	int i,j,k;
@@ -617,22 +635,37 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+    /** DESCRIPTION
+     *  
+     */ 	
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}
 	
+    /** DESCRIPTION
+     *  
+     */ 
 	public _Node.Type getMyType() {
 		return myType;
 	}
     
+    /** DESCRIPTION
+     *  
+     */ 
     public _Link[] getOutput_link() {
 		return output_link;
 	}
 
+    /** DESCRIPTION
+     *  
+     */ 
 	public _Link[] getInput_link() {
 		return input_link;
 	}
 
+    /** DESCRIPTION
+     *  
+     */ 
 	public int getInputLinkIndex(String id){
 		for(int i=0;i<getnIn();i++){
 			if(input_link[i].getId().equals(id))
@@ -641,6 +674,9 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
+    /** DESCRIPTION
+     *  
+     */ 
 	public int getOutputLinkIndex(String id){
 		for(int i=0;i<getnOut();i++){
 			if(output_link[i].getId().equals(id))
@@ -649,14 +685,23 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
+    /** DESCRIPTION
+     *  
+     */ 
 	public int getnIn() {
 		return nIn;
 	}
 
+    /** DESCRIPTION
+     *  
+     */ 
 	public int getnOut() {
 		return nOut;
 	}
     
+    /** DESCRIPTION
+     *  
+     */ 
 	public boolean hasController() {
 		return hascontroller;
 	}

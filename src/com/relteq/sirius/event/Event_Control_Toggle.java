@@ -1,6 +1,10 @@
 package com.relteq.sirius.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator._Controller;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
@@ -21,9 +25,14 @@ public class Event_Control_Toggle extends _Event {
 	public Event_Control_Toggle(){
 	}
 		
-	public Event_Control_Toggle(_Scenario myScenario,boolean ison) {
+	public Event_Control_Toggle(_Scenario myScenario,float timestampinseconds,List <_Controller> controllers,boolean ison) {
 		this.myScenario = myScenario;
 		this.ison = ison;
+		this.myType = _Event.Type.control_toggle;
+		this.timestampstep = (int) Math.round(timestampinseconds/myScenario.getSimDtInSeconds());
+		this.targets = new ArrayList<_ScenarioElement>();
+			for(_Controller controller : controllers )
+				this.targets.add(ObjectFactory.createScenarioElement(controller));	
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -31,9 +40,10 @@ public class Event_Control_Toggle extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
-		if(e.getOnOffSwitch()!=null)
-			this.ison = e.getOnOffSwitch().getValue().equalsIgnoreCase("on");
+	public void populate(Object jaxbobject) {
+		Event jaxbe = (Event) jaxbobject;
+		if(jaxbe.getOnOffSwitch()!=null)
+			this.ison = jaxbe.getOnOffSwitch().getValue().equalsIgnoreCase("on");
 		else 
 			this.ison = true;
 	}

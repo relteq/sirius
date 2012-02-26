@@ -21,24 +21,10 @@ final class _DemandProfileSet extends DemandProfileSet {
 		
 		this.myScenario = myScenario;;
 
-		int i;
 		if(getDemandProfile().isEmpty())
 			return;
 
-		// use <VehicleTypesOrder> if it is there, otherwise assume order given in <settings>
-		int numTypes;
-		if(getVehicleTypeOrder()!=null){
-			numTypes = getVehicleTypeOrder().getVehicleType().size();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
-		}
-		else{
-			numTypes = myScenario.getNumVehicleTypes();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = i;
-		}
+		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
 		for(DemandProfile dp : getDemandProfile())
 			((_DemandProfile) dp).populate(myScenario);

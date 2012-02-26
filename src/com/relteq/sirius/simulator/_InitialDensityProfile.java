@@ -29,22 +29,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		int numLinks = getDensity().size();
 		initial_density = new Double [numLinks][];
 		link = new _Link [numLinks];
-		
-		int numTypes;
-		
-		// use <VehicleTypesOrder> if it is there, otherwise assume order given in <settings>
-		if(getVehicleTypeOrder()!=null){
-			numTypes = getVehicleTypeOrder().getVehicleType().size();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = myScenario.getVehicleTypeIndex(getVehicleTypeOrder().getVehicleType().get(i).getName());
-		}
-		else{
-			numTypes = myScenario.getNumVehicleTypes();
-			vehicletypeindex = new Integer[numTypes];
-			for(i=0;i<numTypes;i++)
-				vehicletypeindex[i] = i;
-		}
+		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
 		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){

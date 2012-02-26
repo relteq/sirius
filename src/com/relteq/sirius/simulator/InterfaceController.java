@@ -5,35 +5,22 @@
 
 package com.relteq.sirius.simulator;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
+/** Interface implemented by all controllers.
+ * 
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public interface InterfaceController {
-	
-	/** DESCRIPTION
+		
+	/** Register the controller with its targets. 
 	 * 
-	 */
-	public void populate(com.relteq.sirius.jaxb.Controller c);
-	
-	/** DESCRIPTION
+	 * <p> All controllers must register with their targets in order to be allowed to
+	 * manipulate them. This is to prevent clashes, in which two or 
+	 * more controllers access the same variable. Use 
+	 * {@link _Controller#registerFlowController} {@link _Controller#registerSpeedController} to register. 
+	 * The return value of these methods indicates whether the registration was successful.
 	 * 
-	 */
-	public boolean validate();
-	
-	/** DESCRIPTION
-	 * 
-	 */
-	public void reset();
-	
-	/** DESCRIPTION
-	 * 
-	 */
-	public void update();
-	
-	/** DESCRIPTION
-	 * 
+	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
+	 * <code>false</code> otherwise.
 	 */
 	public boolean register();
 }

@@ -10,59 +10,64 @@ import java.util.ArrayList;
 import com.relteq.sirius.jaxb.Controller;
 import com.relteq.sirius.jaxb.ScenarioElement;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
-public abstract class _Controller implements InterfaceController {
+/** Simple implementation of {@link InterfaceController}.
+ * 
+ * <p> This is the base class for all controllers contained in a scenario. 
+ * It provides a full default implementation of <code>InterfaceController</code>
+ * so that extended classes need only implement a portion of the interface.
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
+public abstract class _Controller implements InterfaceComponent,InterfaceController {
 	
-	public static enum Type {NULL, IRM_alinea,
-						   		      IRM_time_of_day,
-								      IRM_traffic_responsive,
-								      CRM_swarm,
-								      CRM_hero,
-								      VSL_time_of_day,
-								      SIG_pretimed,
-								      SIG_actuated };
-								      
-	protected static enum QueueControlType	{NULL, queue_override,
-											       proportional,
-											       proportional_integral  };
-			
-	protected _Scenario myScenario;										       
-	protected String name;			// This is used only for controller on/off events.
-									// would prefer to reference contorllers by id. 
+	protected _Scenario myScenario;										       								       
+	protected String name;						// This is used only for controller on/off events.
+																	// would prefer to reference contorllers by id. 
 	protected _Controller.Type myType;
 	protected ArrayList<_ScenarioElement> targets;
 	protected ArrayList<_ScenarioElement> feedbacks;
-	
 	protected Double [] control_maxflow;		// [veh/simultaion time period] indexed by target	
 	protected Double [] control_maxspeed;		// [-]	 indexed by target
-
 	protected double dtinseconds;
 	protected int samplesteps;
 	protected boolean ison;
+	protected static enum Type {  IRM_alinea,
+					   		      IRM_time_of_day,
+							      IRM_traffic_responsive,
+							      CRM_swarm,
+							      CRM_hero,
+							      VSL_time_of_day,
+							      SIG_pretimed,
+							      SIG_actuated };
+								      
+//	protected static enum QueueControlType	{NULL, queue_override,
+//											       proportional,
+//											       proportional_integral  };
 	
 	/////////////////////////////////////////////////////////////////////
-	// API
+	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
-	
-	public final _Controller.Type getMyType() {
-		return myType;
-	}
 
+	/** @y.exclude */
+	 protected _Controller(){}
+							      
 	/////////////////////////////////////////////////////////////////////
-	// protected interface
+	// registration
 	/////////////////////////////////////////////////////////////////////
-	
+
+   	/** DESCRIPTION
+   	 * 
+   	 */
 	protected boolean registerFlowController(_Link link,int index){
 		if(link==null)
 			return false;
 		else
 			return link.registerFlowController(this,index);
 	}
-	
+
+   	/** DESCRIPTION
+   	 * 
+   	 */
 	protected boolean registerSpeedController(_Link link,int index){
 		if(link==null)
 			return false;
@@ -70,6 +75,9 @@ public abstract class _Controller implements InterfaceController {
 			return link.registerSpeedController(this,index);
 	}
 
+//   	/** DESCRIPTION
+//   	 * 
+//   	 */
 //	protected boolean registerSplitRatioController(_Node node,int index){
 //		if(node==null)
 //			return false;
@@ -78,9 +86,10 @@ public abstract class _Controller implements InterfaceController {
 //	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset / update
+	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
 
+	/** @y.exclude */
 	protected final void populateFromJaxb(_Scenario myScenario,Controller c,_Controller.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
@@ -111,7 +120,8 @@ public abstract class _Controller implements InterfaceController {
 			}
 
 	}
-	
+
+	/** @y.exclude */
 	public boolean validate() {
 		
 		// check that the target is valid
@@ -125,15 +135,12 @@ public abstract class _Controller implements InterfaceController {
 			System.out.println("Controller sample time must be integer multiple of simulation time step.");
 			return false;
 		}
-		
 		return true;
 	}
 
+	/** @y.exclude */
 	public void reset() {
 		ison = true;
-	}
-	
-	public void update() {
 	}
 
 }

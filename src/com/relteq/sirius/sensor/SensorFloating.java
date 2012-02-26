@@ -1,7 +1,6 @@
 
 package com.relteq.sirius.sensor;
 
-import com.relteq.sirius.jaxb.Sensor;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
@@ -32,7 +31,7 @@ public class SensorFloating extends _Sensor {
 	/////////////////////////////////////////////////////////////////////	
 
 	@Override
-	public void populate(Sensor s) {
+	public void populate(Object jaxbobject) {
 	}
 	
 	@Override
@@ -52,36 +51,5 @@ public class SensorFloating extends _Sensor {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public Double[] getDensityInVeh() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getTotalDensityInVeh() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Double[] getFlowInVeh() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getTotalFlowInVeh() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getNormalizedSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 
 }

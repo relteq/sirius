@@ -17,54 +17,71 @@ import javax.xml.bind.Marshaller;
 
 import com.relteq.sirius.jaxb.*;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
+/** This class provides methods for loading, manipulating, and running scenarios. 
+ * <p>
+ * A scenario is a collection of,
+ * <ul>
+ * <li> networks (nodes, links, sensors, and signals), </li>
+ * <li> network connections, </li>
+ * <li> initial conditions, </li>
+ * <li> weaving factor profiles, </li>
+ * <li> split ratio profiles, </li>
+ * <li> downstream boundary conditions, </li> 
+ * <li> events, </li>
+ * <li> controllers, </li>
+ * <li> fundamental diagram profiles, </li>
+ * <li> path segments, </li>
+ * <li> decision points, </li>
+ * <li> routes, </li>
+ * <li> background demand profiles, and </li>
+ * <li> OD demand profiles. </li>
+*  </ul>
+* @author Gabriel Gomes
 * @version VERSION NUMBER
 */
 public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
-	protected Clock clock;
-	protected String configfilename;
-	protected double outdt;				// [sec] output sampling time
-	protected double timestart;			// [sec] start of the simulation
-	protected double timeend;			// [sec] end of the simulation
-	protected OutputWriter outputwriter = null;
-	protected String outputfile_density;
-	protected String outputfile_outflow;
-	protected String outputfile_inflow;
+	/** @y.exclude */	protected Clock clock;
+	/** @y.exclude */	protected String configfilename;
+	/** @y.exclude */	protected double outdt;				// [sec] output sampling time
+	/** @y.exclude */	protected double timestart;			// [sec] start of the simulation
+	/** @y.exclude */	protected double timeend;			// [sec] end of the simulation
+	/** @y.exclude */	protected OutputWriter outputwriter = null;
+	/** @y.exclude */	protected String outputfile_density;
+	/** @y.exclude */	protected String outputfile_outflow;
+	/** @y.exclude */	protected String outputfile_inflow;
+	/** @y.exclude */	protected Random random = new Random();
+	/** @y.exclude */	protected _Scenario.ModeType simulationMode;
+	/** @y.exclude */	protected _Scenario.UncertaintyType uncertaintyModel;
+	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
+	/** @y.exclude */	protected boolean global_control_on;	// global control switch
+	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
+	/** @y.exclude */	protected double simdtinhours;			// [hr]  simulation time step 	
+	/** @y.exclude */	protected boolean isrunning=false;		// true when the simulation is running
+	/** @y.exclude */	protected _ControllerSet _controllerset = new _ControllerSet();
+	/** @y.exclude */	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
+	/** @y.exclude */	protected static enum ModeType {  normal, 
+								    					  warmupFromZero , 
+								    					  warmupFromIC };
+	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
+          														gaussian }
 	
-	protected Random random = new Random();
+	/////////////////////////////////////////////////////////////////////
+	// protected constructor
+	/////////////////////////////////////////////////////////////////////
 
-	protected _Scenario.ModeType simulationMode;
-	protected _Scenario.UncertaintyType uncertaintyModel;
-	
-	protected int numVehicleTypes;			// number of vehicle types
-	protected boolean global_control_on;	// global control switch
-	protected double simdtinseconds;		// [sec] simulation time step 
-	protected double simdtinhours;			// [hr]  simulation time step 	
-	
-	protected boolean isloaded=false;		// true if configuration file has been loaded
-	protected boolean isvalid=false;		// true if it has passed validation
-	protected boolean isrunning=false;		// true when the simulation is running
-	
-	protected _ControllerSet _controllerset = new _ControllerSet();
-	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
-	
-	protected static enum ModeType {NULL, normal, 
-									    warmupFromZero , 
-									    warmupFromIC };
-
-	protected static enum UncertaintyType { NULL, uniform, 
-          										gaussian }
+	/** @y.exclude */
+	protected _Scenario(){}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	// populate methods copy data from the jaxb state to extended objects. 
-	// They do not throw exceptions or report mistakes. Data errors should be
-	// circumvented and left for the validation to report.
+	/** populate methods copy data from the jaxb state to extended objects. 
+	 * They do not throw exceptions or report mistakes. Data errors should be 
+	 * circumvented and left for the validation to report.
+	 * @y.exclude
+	 */
 	protected void populate() {
 		
 		// network list
@@ -99,16 +116,14 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}
 
-	// prepare scenario for simulation:
-	// set the state of the scenario to the initial condition
-	// sample profiles
-	// open output files
+	/** Prepare scenario for simulation:
+	 * set the state of the scenario to the initial condition
+	 * sample profiles
+	 * open output files
+	 * @return success		A boolean indicating whether the scenario was successfuly reset.
+	 * @y.exclude
+	 */
 	protected boolean reset() {
-		
-		if(!isloaded){
-			SiriusError.addErrorMessage("Load scenario first.");
-			return false;
-		}
 		
 		// reset the clock
 		clock.reset();
@@ -136,6 +151,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}	
 	
+	/** @y.exclude
+	 */
 	protected void update() {	
 
         // sample profiles .............................	
@@ -170,6 +187,9 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	/** DESCRIPTION
+	 * 
+	 */
 	protected _Network getNetworkWithId(String id){
 		if(id==null)
 			return null;
@@ -182,74 +202,116 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return null;
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// excluded from API
+	/////////////////////////////////////////////////////////////////////
+
+	/** DESCRIPTION
+	 * @y.exclude
+	 */
+	public Integer [] getVehicleTypeIndices(VehicleTypeOrder vtypeorder){
+		
+		Integer [] vehicletypeindex;
+		
+		// single vehicle types in setting and no vtypeorder, return 0
+		if(vtypeorder==null && numVehicleTypes==1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			vehicletypeindex[0]=0;
+			return vehicletypeindex;
+		}
+		
+		// multiple vehicle types in setting and no vtypeorder, return 0...n
+		if(vtypeorder==null && numVehicleTypes>1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			for(int i=0;i<numVehicleTypes;i++)
+				vehicletypeindex[i] = i;	
+			return vehicletypeindex;	
+		}
+		
+		// vtypeorder is not null
+		int numTypesInOrder = vtypeorder.getVehicleType().size();
+		int i,j;
+		vehicletypeindex = new Integer[numTypesInOrder];
+		for(i=0;i<numTypesInOrder;i++)
+			vehicletypeindex[i] = -1;			
+
+		if(getSettings()==null)
+			return vehicletypeindex;
+
+		if(getSettings().getVehicleTypes()==null)
+			return vehicletypeindex;
+		
+		for(i=0;i<numTypesInOrder;i++){
+			List<VehicleType> vt = getSettings().getVehicleTypes().getVehicleType();
+			for(j=0;j<vt.size();j++){
+				if(vt.get(j).getName().equals(name)){
+					vehicletypeindex[i] =  j;
+					break;
+				}
+			}			
+		}
+		return vehicletypeindex;
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////
 	
-	/** DESCRIPTION
-	 * 
+	/** 
+	 * @y.exclude
 	 */
-	public void validate() {
-		
-		if(!isloaded){
-			SiriusError.setErrorHeader("Load failed.");
-			SiriusError.printErrorMessage();
-			return;
-		}
-		
-		if(isvalid)
-			return;
-		
+	public boolean validate() {
+					
 		// check that outdt is a multiple of simdt
 		if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds)){
 //			Utils.addErrorMessage("Aborting: outdt must be an interger multiple of simulation dt.");
 //			Utils.printErrorMessage();
-			return;
+			return false;
 		}
 		
 		// validate network
 		if( getNetworkList()!=null)
 			for(Network network : getNetworkList().getNetwork())
 				if(!((_Network)network).validate())
-					return;
+					return false;
 
 		// validate initial density profile
 		if(getInitialDensityProfile()!=null)
 			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate())
-				return;
+				return false;
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacitySet()!=null)
 			for(CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
 				if(!((_CapacityProfile)capacityProfile).validate())
-					return;
+					return false;
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
 			if(!((_DemandProfileSet)getDemandProfileSet()).validate())
-				return;
+				return false;
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
 			if(!((_SplitRatioProfileSet)getSplitRatioProfileSet()).validate())
-				return;
+				return false;
 
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
 			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
 				if(!((_FundamentalDiagramProfile)fd).validate())
-					return;
+					return false;
 
 		// validate controllers
 		if(!_controllerset.validate())
-			return;
+			return false;
 
 		// validate events
 		if(!_eventset.validate())
-			return;
+			return false;
 
-		isvalid = true;
+		return true;
 	}
 	
 	/** DESCRIPTION
@@ -257,12 +319,6 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param numRepetitions 	The integer number of simulations to run.
 	 */
 	public void run(int numRepetitions){
-
-		if(!isvalid){
-			SiriusError.setErrorHeader("Validate first.");
-			SiriusError.printErrorMessage();
-			return;
-		}
 		
         isrunning = true;
 
@@ -362,14 +418,6 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return 0;
 		return clock.getCurrentstep();
 	}
-	
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
-	 */
-	public String getConfigFileName() {
-		return configfilename;
-	}
 
 	/** DESCRIPTION
 	 * 
@@ -379,6 +427,34 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return numVehicleTypes;
 	}
 
+	/** DESCRIPTION
+	 * 
+	 * @return			XXX
+	 */
+	public String [] getVehicleTypeNames(){
+		String [] vehtypenames = new String [numVehicleTypes];
+		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+			vehtypenames[0] = Defaults.vehicleType;
+		else
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
+		return vehtypenames;
+	}
+
+	/** DESCRIPTION
+	 * 
+	 * @return			XXX
+	 */
+	public Double [] getVehicleTypeWeights(){
+		Double [] vehtypeweights = new Double [numVehicleTypes];
+		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+			vehtypeweights[0] = 1d;
+		else
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
+		return vehtypeweights;
+	}
+	
 	/** DESCRIPTION
 	 * 
 	 * @return			XXX
@@ -493,31 +569,15 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	
 	/** DESCRIPTION
 	 * 
-	 * @return			XXX
-	 */
-	public int getVehicleTypeIndex(String name){
-		if(getSettings()==null)
-			return -1;
-		if(getSettings().getVehicleTypes()==null)
-			return -1;
-		List<VehicleType> vt = getSettings().getVehicleTypes().getVehicleType();
-		for(int i=0;i<vt.size();i++){
-			if(vt.get(i).getName().equals(name))
-				return i;
-		}
-		return -1;
-	}
-	
-	/** DESCRIPTION
-	 * 
 	 * @param C			XXX
+	 * @y.exclude
 	 */
 	public void addController(_Controller C){
 		if(isrunning)
 			return;
 		if(C==null)
 			return;
-		if(C.myType==_Controller.Type.NULL)
+		if(C.myType==null)
 			return;
 		
 		// validate
@@ -536,9 +596,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return;
 		if(E==null)
 			return;
-		if(E.myType==_Event.Type.NULL)
+		if(E.myType==null)
 			return;
-		
 		// validate
 		if(!E.validate())
 			return;
@@ -554,7 +613,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	public void addSensor(_Sensor S){
 		if(S==null)
 			return;
-		if(S.myType==_Sensor.Type.NULL)
+		if(S.myType==null)
 			return;
 		if(S.myLink==null)
 			return;

@@ -1,7 +1,12 @@
 package com.relteq.sirius.event;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.FundamentalDiagram;
+import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
@@ -23,8 +28,24 @@ public class Event_Fundamental_Diagram extends _Event {
 	public Event_Fundamental_Diagram(){
 	}
 	
-	public Event_Fundamental_Diagram(_Scenario myScenario) {
-		// XXXXX
+	public Event_Fundamental_Diagram(_Scenario myScenario,List <_Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
+		this.FD = new FundamentalDiagram();
+		this.FD.setFreeflowSpeed(new BigDecimal(freeflowSpeed));
+		this.FD.setCongestionSpeed(new BigDecimal(congestionSpeed));
+		this.FD.setCapacity(new BigDecimal(capacity));
+		this.FD.setDensityJam(new BigDecimal(densityJam));
+		this.FD.setCapacityDrop(new BigDecimal(capacityDrop));
+		this.FD.setStdDevCapacity(new BigDecimal(stdDevCapacity));
+		this.resetToNominal = false;
+		this.targets = new ArrayList<_ScenarioElement>();
+		for(_Link link : links)
+			this.targets.add(ObjectFactory.createScenarioElement(link));
+	}
+	
+	public Event_Fundamental_Diagram(_Scenario myScenario,List <_Link> links) {		
+		this.resetToNominal = true;
+		for(_Link link : links)
+			this.targets.add(ObjectFactory.createScenarioElement(link));
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -32,9 +53,10 @@ public class Event_Fundamental_Diagram extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
-		this.resetToNominal = e.isResetToNominal();
-		this.FD = e.getFundamentalDiagram();
+	public void populate(Object jaxbobject) {
+		Event jaxbe = (Event) jaxbobject;
+		this.resetToNominal = jaxbe.isResetToNominal();
+		this.FD = jaxbe.getFundamentalDiagram();
 	}
 	
 	@Override

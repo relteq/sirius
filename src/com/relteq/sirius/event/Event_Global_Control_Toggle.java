@@ -29,9 +29,10 @@ public class Event_Global_Control_Toggle extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
-		if(e.getOnOffSwitch()!=null)
-			this.ison = e.getOnOffSwitch().getValue().equalsIgnoreCase("on");
+	public void populate(Object jaxbobject) {
+		Event jaxbe = (Event) jaxbobject;
+		if(jaxbe.getOnOffSwitch()!=null)
+			this.ison = jaxbe.getOnOffSwitch().getValue().equalsIgnoreCase("on");
 		else
 			this.ison = true;
 	}

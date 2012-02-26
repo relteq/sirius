@@ -11,6 +11,8 @@ final class Defaults {
 	public static double OUT_DT 	= 60f;			// [sec]
 	public static double SIMDT	 	= 10f;			// [sec]
 	
+	public static String vehicleType = "vehicle";
+	
 	// fundamental diagram
 	public static Double vf					= 60.0;		// [mile/hr]
 	public static Double w					= 20.0;		// [mile/hr]

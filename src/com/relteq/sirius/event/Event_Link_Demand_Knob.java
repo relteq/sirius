@@ -33,10 +33,11 @@ public class Event_Link_Demand_Knob extends _Event {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(Event e) {
-		this.resetToNominal = e.isResetToNominal();
-		if(e.getKnob()!=null)
-			newknob = e.getKnob().getValue().doubleValue();
+	public void populate(Object jaxbobject) {
+		Event jaxbe = (Event) jaxbobject;
+		this.resetToNominal = jaxbe.isResetToNominal();
+		if(jaxbe.getKnob()!=null)
+			newknob = jaxbe.getKnob().getValue().doubleValue();
 		else 
 			newknob = Double.NaN;
 		

@@ -12,22 +12,24 @@ import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.FundamentalDiagram;
 import com.relteq.sirius.jaxb.ScenarioElement;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
-
+/** Simple implementation of {@link InterfaceEvent}.
+ * 
+ * <p> This is the base class for all events contained in a scenario. 
+ * It provides a full default implementation of <code>InterfaceEvent</code>
+ * so that extended classes need only implement a portion of the interface.
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 @SuppressWarnings("rawtypes")
-public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceEvent {
+public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
 
-	public static enum Type	{NULL, fundamental_diagram,
-								   link_demand_knob,
-								   link_lanes, 
-								   node_split_ratio,
-								   control_toggle,
-								   global_control_toggle,
-								   global_demand_knob };
+	public static enum Type	{  fundamental_diagram,
+							   link_demand_knob,
+							   link_lanes, 
+							   node_split_ratio,
+							   control_toggle,
+							   global_control_toggle,
+							   global_demand_knob };
 
 	protected _Scenario myScenario;
 	protected _Event.Type myType;
@@ -35,9 +37,17 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 	protected ArrayList<_ScenarioElement> targets;
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceEvent
+	// protected default constructor
+	/////////////////////////////////////////////////////////////////////
+
+	/** @y.exclude */
+	protected _Event(){}
+							  
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	/** @y.exclude */
 	protected void populateFromJaxb(_Scenario myScenario,Event jaxbE,_Event.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
@@ -48,10 +58,14 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// InterfaceComponent
+	/////////////////////////////////////////////////////////////////////
+	
 	public boolean validate() {
 		
 		// check that there are targets assigned to non-global events
-		if(getMyType()!=_Event.Type.global_control_toggle && getMyType()!=_Event.Type.global_demand_knob)
+		if(myType!=_Event.Type.global_control_toggle && myType!=_Event.Type.global_demand_knob)
 			if(targets.isEmpty()){
 				System.out.println("No targets assigned.");
 				return false;
@@ -66,7 +80,17 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		}
 		return true;
 	}
+	
+	@Override
+	public void reset() {
+		return;
+	}
 
+	@Override
+	public void update() {
+		return;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// Comparable
 	/////////////////////////////////////////////////////////////////////
@@ -88,8 +112,8 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 			return compare;
 
 		// second ordering by event type
-		_Event.Type thiseventtype = this.getMyType();
-		_Event.Type thateventtype = that.getMyType();
+		_Event.Type thiseventtype = this.myType;
+		_Event.Type thateventtype = that.myType;
 		compare = thiseventtype.compareTo(thateventtype);
 		if(compare!=0)
 			return compare;
@@ -194,19 +218,4 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		((_DemandProfile) profile).set_knob(knob);
     }
 	
-	/////////////////////////////////////////////////////////////////////
-	// API
-	/////////////////////////////////////////////////////////////////////
-
-	public _Event.Type getMyType() {
-		return myType;
-	}
-	
-	public _Scenario getMyScenario() {
-		return myScenario;
-	}
-
-	public int getTimeStampStep() {
-		return timestampstep;
-	}	
 }

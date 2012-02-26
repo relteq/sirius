@@ -1,6 +1,5 @@
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.jaxb.Controller;
 import com.relteq.sirius.simulator._Controller;
 import com.relteq.sirius.simulator._Scenario;
 
@@ -29,7 +28,7 @@ public class Controller_SIG_Actuated extends _Controller {
 	/////////////////////////////////////////////////////////////////////
 	
 	@Override
-	public void populate(Controller c) {
+	public void populate(Object jaxbobject) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -38,6 +37,12 @@ public class Controller_SIG_Actuated extends _Controller {
 	public boolean register() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

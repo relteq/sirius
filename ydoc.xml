@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="protected" additionalparam="-docletpath C:\Users\gomes\workspace\sirius-0.2\yworks-uml-doclet-3.0_01-jdk1.5\resources -d C:\Users\gomes\workspace\sirius-0.2\ydoc -filterpath C:\Users\gomes\workspace\sirius-0.2\yworks-uml-doclet-3.0_01-jdk1.5\lib\ydoc.jar -filter ydoc.filters.ExcludeFilter " classpath="." sourcefiles="src/com/relteq/sirius/simulator/_ScenarioElement.java,src/com/relteq/sirius/simulator/InterfaceComponent.java,src/com/relteq/sirius/simulator/_Node.java,src/com/relteq/sirius/simulator/_Controller.java,src/com/relteq/sirius/simulator/_Sensor.java,src/com/relteq/sirius/simulator/InterfaceController.java,src/com/relteq/sirius/simulator/ObjectFactory.java,src/com/relteq/sirius/simulator/_Link.java,src/com/relteq/sirius/simulator/InterfaceSensor.java,src/com/relteq/sirius/simulator/InterfaceEvent.java,src/com/relteq/sirius/simulator/_Scenario.java,src/com/relteq/sirius/simulator/_Event.java" sourcepath="src">
+            <doclet name="ydoc.doclets.YStandard" path="C:\Users\gomes\workspace\sirius-0.2\yworks-uml-doclet-3.0_01-jdk1.5\lib\ydoc.jar"/>
+        </javadoc>
+    </target>
+</project>

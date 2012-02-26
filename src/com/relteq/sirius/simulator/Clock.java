@@ -7,8 +7,8 @@ package com.relteq.sirius.simulator;
 
 final class Clock {
 	protected double t;					// [sec]
-	protected double to;					// [sec]
-	protected double dt;					// [sec]
+	protected double to;				// [sec]
+	protected double dt;				// [sec]
 	protected double maxt;				// [sec]
 	protected int currentstep;			// [sec]
 	

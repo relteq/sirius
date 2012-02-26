@@ -5,25 +5,16 @@
 
 package com.relteq.sirius.simulator;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
-* @version VERSION NUMBER
+/** Interface implemented by all events.
+* 
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public interface InterfaceEvent {
-
-	/** DESCRIPTION
-	 * 
-	 */
-	public void populate(com.relteq.sirius.jaxb.Event e);
 	
-	/** DESCRIPTION
+	/** Activate the event.
 	 * 
-	 */
-	public boolean validate();
-	
-	/** DESCRIPTION
-	 * 
+	 * <p> Called once by {@link _Scenario#run} at the event time stamp.
+	 * Executes all changes to the scenario caused by the event.
 	 */
 	public void activate();
 }

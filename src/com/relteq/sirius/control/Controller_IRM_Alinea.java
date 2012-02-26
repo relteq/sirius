@@ -70,7 +70,7 @@ public class Controller_IRM_Alinea extends _Controller {
 			linklength = mainlinelink.getLengthInMiles();
 			targetvehicles = mainlinelink.getDensityCriticalInVeh();
 		}
-		this.gain = gain_in_mph * myScenario.getSimDtInHours() /linklength;
+		this.gain = gain_in_mph * myScenario.getSimDtInHours()/linklength;
 		
 	}
 	
@@ -79,15 +79,17 @@ public class Controller_IRM_Alinea extends _Controller {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void populate(com.relteq.sirius.jaxb.Controller c) {
+	public void populate(Object jaxbobject) {
 
-		if(c.getTargetElements()==null)
+		com.relteq.sirius.jaxb.Controller jaxbc = (com.relteq.sirius.jaxb.Controller) jaxbobject;
+		
+		if(jaxbc.getTargetElements()==null)
 			return;
-		if(c.getTargetElements().getScenarioElement()==null)
+		if(jaxbc.getTargetElements().getScenarioElement()==null)
 			return;
-		if(c.getFeedbackElements()==null)
+		if(jaxbc.getFeedbackElements()==null)
 			return;
-		if(c.getFeedbackElements().getScenarioElement()==null)
+		if(jaxbc.getFeedbackElements().getScenarioElement()==null)
 			return;
 		
 		hasmainlinelink = false;
@@ -95,15 +97,15 @@ public class Controller_IRM_Alinea extends _Controller {
 		hasqueuesensor = false;
 		
 		// There should be only one target element, and it is the onramp
-		if(c.getTargetElements().getScenarioElement().size()==1){
-			ScenarioElement s = c.getTargetElements().getScenarioElement().get(0);
+		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
+			ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
-		if(!c.getFeedbackElements().getScenarioElement().isEmpty()){
+		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
-			for(ScenarioElement s:c.getFeedbackElements().getScenarioElement()){
+			for(ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
 				
 				if(s.getUsage()==null)
 					return;
@@ -138,8 +140,8 @@ public class Controller_IRM_Alinea extends _Controller {
 		
 		// read parameters
 		double gain_in_mph = 50.0;
-		if(c.getParameters()!=null)
-			for(Parameter p : c.getParameters().getParameter())
+		if(jaxbc.getParameters()!=null)
+			for(Parameter p : jaxbc.getParameters().getParameter())
 				if(p.getName().equals("gain"))
 					gain_in_mph = Double.parseDouble(p.getValue());
 
@@ -211,11 +213,10 @@ public class Controller_IRM_Alinea extends _Controller {
 
 	@Override
 	public void update() {
-		super.update();
 		
 		double mainlinedensity;
 		if(usesensor)
-			mainlinedensity = mainlinesensor.getTotalDensityInVeh();
+			mainlinedensity = mainlinesensor.getTotalDensityInVPM()*mainlinesensor.getMyLink().getLengthInMiles();
 		else
 			mainlinedensity = mainlinelink.getTotalDensityInVeh();
 

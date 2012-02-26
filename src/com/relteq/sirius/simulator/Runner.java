@@ -27,21 +27,6 @@ final class Runner {
 		// load configuration file ................................
 		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename,outputfileprefix,timestart,timeend,outdt);
 
-		// did load succeed?
-		if(scenario==null){
-			SiriusError.setErrorHeader("Load failed.");
-			SiriusError.printErrorMessage();
-			return;
-		}
-		
-		// validate scenario ......................................
-		scenario.validate();
-		if(!scenario.isvalid){
-			SiriusError.setErrorHeader("Validation failed.");
-			SiriusError.printErrorMessage();
-			return;
-		}
-
 		// run scenario ...........................................
 		scenario.run(numRepetitions);
 		

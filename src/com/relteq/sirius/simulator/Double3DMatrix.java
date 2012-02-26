@@ -183,7 +183,7 @@ public final class Double3DMatrix {
 	public void set(int i,int j,int k,Double f){
     	data[i][j][k] = f;
     }
-    
+    	
 	public void setAllVehicleTypes(int i,int j,Double [] f){
 		for(int k=0;k<nVTypes;k++)
 			data[i][j][k] = f[k];

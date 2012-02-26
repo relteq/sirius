@@ -2,7 +2,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-final class SiriusMath {
+public final class SiriusMath {
 	
 	private static final double EPSILON = (double) 1e-4;
 	

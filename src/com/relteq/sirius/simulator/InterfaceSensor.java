@@ -5,61 +5,56 @@
 
 package com.relteq.sirius.simulator;
 
-/** DESCRIPTION OF THE CLASS
+/** Interface implemented by all sensors.
 *
-* @author AUTHOR NAME
-* @version VERSION NUMBER
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public interface InterfaceSensor {
 
-	/** DESCRIPTION
+	/** Measured density per vehicle type in veh/mile. 
 	 * 
+	 * <p> The output array contains measured densities.
+	 * The array is organized by vehicle type in the order in which they appear in the 
+	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * 
+	 * @return Array of densities.
 	 */
-	public void populate(com.relteq.sirius.jaxb.Sensor s);
+	public Double[] getDensityInVPM();
 	
-	/** DESCRIPTION
+	/** Measured total density in veh/mile. 
 	 * 
+	 * <p> Returns the total density measured by the sensor.
+	 * Must equal the sum of values in {@link InterfaceSensor#getDensityInVPM}.
+	 * 
+	 * @return A double with the total measured density in veh/mile.	 
 	 */
-	public abstract boolean validate();
+	public double getTotalDensityInVPM();
+
+	/** Measured flow per vehicle type in veh/hr. 
+	 * 
+	 * <p> The output array contains measured flows.
+	 * The array is organized by vehicle type in the order in which they appear in the 
+	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * 
+	 * @return Array of flows.
+	 */
+	public Double[] getFlowInVPH();
 	
-	/** DESCRIPTION
+	/** Measured total flow in veh/hr. 
 	 * 
+	 * <p> Returns the total flow measured by the sensor.
+	 * Must equal the sum of values in {@link InterfaceSensor#getFlowInVPH}.
+	 * 
+	 * @return A double with the total measured flow in veh/hr.	 
 	 */
-	public abstract void reset();
+	public double getTotalFlowInVPH();
 	
-	/** DESCRIPTION
+	/** Measured speed in mile/hr. 
 	 * 
-	 */
-	public abstract void update();
-	
-	/** DESCRIPTION
+	 * <p> Returns the speed measured by the sensor.
 	 * 
-	 * @return XXX
+	 * @return A double with the measured speed in mile/hr.	 
 	 */
-	public Double[] getDensityInVeh();
-	
-	/** DESCRIPTION
-	 * 
-	 * @return XXX
-	 */
-	public double getTotalDensityInVeh();
-	
-	/** DESCRIPTION
-	 * 
-	 * @return XXX
-	 */
-	public Double[] getFlowInVeh();
-	
-	/** DESCRIPTION
-	 * 
-	 * @return XXX
-	 */
-	public double getTotalFlowInVeh();
-	
-	/** DESCRIPTION
-	 * 
-	 * @return XXX
-	 */
-	public double getNormalizedSpeed();
+	public double getSpeedInMPH();
 	
 }

@@ -117,8 +117,8 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 	public ArrayList<_Sensor> getSensorWithLinkId(String linkid){
 		ArrayList<_Sensor> result = new ArrayList<_Sensor>();
 		for(_Sensor sensor : _sensorlist._sensors){
-			if(sensor.getMyLink()!=null){
-				if(sensor.getMyLink().getId().equals(linkid)){
+			if(sensor.myLink!=null){
+				if(sensor.myLink.getId().equals(linkid)){
 					result.add(sensor);
 					break;
 				}	
@@ -129,8 +129,8 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 	
 	public _Sensor getFirstSensorWithLinkId(String linkid){
 		for(_Sensor sensor : _sensorlist._sensors){
-			if(sensor.getMyLink()!=null){
-				if(sensor.getMyLink().getId().equals(linkid)){
+			if(sensor.myLink!=null){
+				if(sensor.myLink.getId().equals(linkid)){
 					return sensor;
 				}
 			}
