@@ -4,10 +4,6 @@ package com.relteq.sirius.sensor;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class SensorFloating extends _Sensor {
 
 	/////////////////////////////////////////////////////////////////////

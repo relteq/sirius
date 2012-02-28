@@ -3,6 +3,7 @@ package com.relteq.sirius.simulator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -522,11 +523,13 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param node				The node
+	 * @param inputlink			String id of the input link 
+	 * @param vehicletype		String name of the vehicle type
 	 * @param splitratio		A Double3DMatrix with the new split ratio matrix.
 	 * @return					_Event object
 	 */		
-	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario,_Node node,Double3DMatrix splitratio){
-		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,node,splitratio);
+	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario,_Node node,String inlink,String vehicleType,ArrayList<Double>splits){
+		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
 	}	
 	
 	/////////////////////////////////////////////////////////////////////

@@ -665,16 +665,14 @@
 				</xs:simpleType>
 			  </xs:attribute>
 			</xs:complexType>
-		  </xs:element>
-		  
-			  <xs:element name="splitratioEvent">		<!-- split ratio matrix for one time instant -->
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
-					<xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />		
-				  </xs:sequence>
-				</xs:complexType>
-			  </xs:element>		    
+		  </xs:element>			 
+
+			  <xs:element name="splitratioEvent">		<!-- split ratio matrix for one time instant, one input link, one vehicle type -->
+			    <xs:complexType mixed="true">
+				  <xs:attribute name="link_in" type="xs:string" use="required" />
+				  <xs:attribute name="vehicleTypeName" type="xs:string" use="required" />
+			    </xs:complexType>
+			  </xs:element>	 
   
 			  <xs:element name="on_off_switch">
 				<xs:complexType>

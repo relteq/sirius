@@ -1,9 +1,7 @@
 + The try-with-resources Statement
 + finally
-+ replace null returns with exceptions
-+ split ratio events without Double3DMatrix
++ split ratio events must set all splits for a given input and vehicle type. 
 + output
-+ exception handling
 
 SCHEMA:
 + global demand knob

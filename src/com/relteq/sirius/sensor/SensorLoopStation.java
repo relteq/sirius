@@ -5,10 +5,6 @@ import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class SensorLoopStation extends _Sensor {
 	
 	/////////////////////////////////////////////////////////////////////

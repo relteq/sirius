@@ -200,12 +200,16 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(_Node node,Double3DMatrix x) {
+	protected void setNodeEventSplitRatio(_Node node,int inputindex,int vehicletypeindex,ArrayList<Double> splitrow) {
 		if(node==null)
 			return;
-		if(!node.validateSplitRatioMatrix(x))
+		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
+		X.copydata(node.splitratio);
+		for(int j=0;j<node.getnOut();j++)
+			X.set(inputindex, j,vehicletypeindex,splitrow.get(j));
+		if(!node.validateSplitRatioMatrix(X))
 			return;
-		node.setSplitratio(x);
+		node.setSplitratio(X);
 		node.hasactivesplitevent = true;
 	}
 

@@ -8,12 +8,6 @@ import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._Sensor;
 
-/** DESCRIPTION OF THE CLASS
-* <p>
-* LACKS IMPLEMENTATION
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Controller_IRM_Alinea extends _Controller {
 
 	private _Link onramplink = null;

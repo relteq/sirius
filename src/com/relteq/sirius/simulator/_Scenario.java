@@ -453,7 +453,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
 		return vehtypenames;
 	}
-
+	
 	/** Vehicle type weights.
 	 * @return	Array of doubles with the weights of the vehicles types.
 	 */
@@ -465,6 +465,22 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
 				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
 		return vehtypeweights;
+	}
+	
+	
+	/** Vehicle type index from name
+	 * @return integer index of the vehicle type.
+	 */
+	public int getVehicleTypeIndex(String name){
+		String [] vehicleTypeNames = getVehicleTypeNames();
+		if(vehicleTypeNames==null)
+			return 0;
+		if(vehicleTypeNames.length<=1)
+			return 0;
+		for(int i=0;i<vehicleTypeNames.length;i++)
+			if(vehicleTypeNames[i].equals(name))
+				return i;
+		return -1;
 	}
 	
 	/** Size of the simulation time step in seconds.

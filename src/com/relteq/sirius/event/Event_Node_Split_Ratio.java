@@ -1,13 +1,10 @@
 package com.relteq.sirius.event;
 
-
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.jaxb.Splitratio;
 import com.relteq.sirius.jaxb.SplitratioEvent;
-import com.relteq.sirius.simulator.Double1DVector;
-import com.relteq.sirius.simulator.Double3DMatrix;
 import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
@@ -18,9 +15,10 @@ import com.relteq.sirius.simulator._ScenarioElement;
 
 public class Event_Node_Split_Ratio extends _Event {
 
-	protected boolean resetToNominal;
-	protected Double3DMatrix splitratio;
-	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
+	protected boolean resetToNominal;			// if true, go back to nominal before applying changes
+	protected ArrayList<Double> splitrow;		// if not null, use this one, regardless of resetToNominal
+	protected int inputindex;
+	protected int vehicletypeindex; 			// index of vehicle type into global list
 	protected _Node myNode;
 	
 	/////////////////////////////////////////////////////////////////////
@@ -30,18 +28,24 @@ public class Event_Node_Split_Ratio extends _Event {
 	public Event_Node_Split_Ratio(){
 	}
 	
-	// constructor for event with single node target
-	public Event_Node_Split_Ratio(_Scenario myScenario,_Node node,Double3DMatrix splitratio) {
+	// constructor for change event with single node target, single input, single vehicle type
+	public Event_Node_Split_Ratio(_Scenario myScenario,_Node node,String inlink,String vehicletype,ArrayList<Double>splits) {
+		if(node==null)
+			return;
+		if(myScenario==null)
+			return;
 		this.resetToNominal = false;
-		this.splitratio = splitratio;
-		this.myType = _Event.Type.node_split_ratio;
+		this.inputindex = node.getInputLinkIndex(inlink);
+		this.vehicletypeindex = myScenario.getVehicleTypeIndex(vehicletype);
+		this.splitrow = splits;
 		this.targets = new ArrayList<_ScenarioElement>();
 		this.targets.add(ObjectFactory.createScenarioElement(node));		
 	}
 
-	// constructor for event with single node target
+	// constructor for reset event with single node target
 	public Event_Node_Split_Ratio(_Scenario myScenario,_Node node) {
 		this.resetToNominal = true;
+		this.splitrow = null;
 		this.myType = _Event.Type.node_split_ratio;
 		this.targets = new ArrayList<_ScenarioElement>();
 		this.targets.add(ObjectFactory.createScenarioElement(node));	
@@ -73,25 +77,11 @@ public class Event_Node_Split_Ratio extends _Event {
 			return;
 		
 		SplitratioEvent sre = jaxbe.getSplitratioEvent();
-		if(sre!=null)
-			vehicletypeindex = myScenario.getVehicleTypeIndices(sre.getVehicleTypeOrder());
-		else
-			vehicletypeindex = myScenario.getVehicleTypeIndices(null);
-				
-		splitratio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-		
-		int in_index,out_index,k;
-		for(Splitratio sr :	sre.getSplitratio()){			
-			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
-			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			if(in_index<0 || out_index<0)
-				continue; 
-			Double1DVector values = new Double1DVector(sr.getContent(),":");
-			for(k=0;k<vehicletypeindex.length;k++)
-				splitratio.set(in_index,out_index,vehicletypeindex[k],values.get(k));
-		}
-		
-
+		if(sre==null)
+			return;
+		inputindex = myNode.getInputLinkIndex(sre.getLinkIn());
+		vehicletypeindex = myScenario.getVehicleTypeIndex(sre.getVehicleTypeName());
+		splitrow = readArray(sre.getContent(),",");
 	}
 	
 	@Override
@@ -116,7 +106,16 @@ public class Event_Node_Split_Ratio extends _Event {
 		}
 		
 		// check split ratio matrix
-		
+		if(!resetToNominal){
+			if(splitrow==null)
+				return false;
+			if(splitrow.size()!=myNode.getnOut())
+				return false;
+			if(inputindex<0 || inputindex>=myNode.getnIn())
+				return false;
+			if(vehicletypeindex<0 || vehicletypeindex>=myScenario.getNumVehicleTypes())
+				return false;
+		}
 		
 		return true;
 	}
@@ -126,7 +125,27 @@ public class Event_Node_Split_Ratio extends _Event {
 		if(resetToNominal)
 			revertNodeEventSplitRatio(myNode);
 		else
-			setNodeEventSplitRatio(myNode,splitratio);	
+			setNodeEventSplitRatio(myNode,inputindex,vehicletypeindex,splitrow);	
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// private
+	/////////////////////////////////////////////////////////////////////
+
+    private ArrayList<Double> readArray(String str,String delim) {
+      	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+			return null;
+    	}
+      	ArrayList<Double> data = new ArrayList<Double>();
+    	str.replaceAll("\\s","");    	
+		StringTokenizer slicesX = new StringTokenizer(str,delim);
+		while (slicesX.hasMoreTokens()) {			
+			Double value = Double.parseDouble(slicesX.nextToken());
+			if(value>=0)
+				data.add(value);
+			else
+				data.add(Double.NaN);
+		}
+		return data;
+    }
 }

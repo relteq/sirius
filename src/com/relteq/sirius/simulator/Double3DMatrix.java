@@ -14,7 +14,7 @@ public final class Double3DMatrix {
 	private int nIn;			// [1st dimension] number of input links
 	private int nOut;			// [2nd dimension] number of columns
 	private int nVTypes;		// [3rd dimension] number of slices
-	private boolean isempty;			// true if there is no data;
+	private boolean isempty;	// true if there is no data;
 	private Double [][][] data;
     
 	/////////////////////////////////////////////////////////////////////
