@@ -16,14 +16,6 @@ import com.relteq.sirius.jaxb.Sensor;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
-
-	public static enum Type	{  static_point,
-				   	   	       static_area,
-				   	   	       moving_point };
-	   	   	   		
-//	protected static enum DataSourceType {NULL, PeMSDataClearinghouse,
-//										        CaltransDBX,
-//										        BHL };
    			
 	/** The scenario that contains this sensor. */
 	protected _Scenario myScenario;	
@@ -37,6 +29,16 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/** Current link where the sensor is located. */
 	protected _Link myLink = null;
 
+
+	public static enum Type	{  
+		/** fixed point detector station, such as a loop detector station.*/	static_point,
+		/** fixed area detector, such as a camera or radar detector.	  */	static_area,
+		/** moving detector, such as a probe vehicle or cell phone.		  */	moving_point };
+	   	   	   		
+//	protected static enum DataSourceType {NULL, PeMSDataClearinghouse,
+//										        CaltransDBX,
+//										        BHL };
+				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////

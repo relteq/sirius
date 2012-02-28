@@ -20,25 +20,55 @@ import com.relteq.sirius.jaxb.ScenarioElement;
  */
 public abstract class _Controller implements InterfaceComponent,InterfaceController {
 	
+	/** Scenario that contains this controller */
 	protected _Scenario myScenario;										       								       
-	protected String name;						// This is used only for controller on/off events.
-																	// would prefer to reference contorllers by id. 
+	
+	/** Name of the controller. (To be replaced with a unique id */
+	protected String name;								// This is used only for controller on/off events.
+														// would prefer to reference contorllers by id. 
+	
+	/** Controller type. */
 	protected _Controller.Type myType;
+	
+	/** List of scenario elements affected by this controller */
 	protected ArrayList<_ScenarioElement> targets;
+	
+	/** List of scenario elements that provide input to this controller */
 	protected ArrayList<_ScenarioElement> feedbacks;
-	protected Double [] control_maxflow;		// [veh/simultaion time period] indexed by target	
-	protected Double [] control_maxspeed;		// [-]	 indexed by target
+	
+	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
+	protected Double [] control_maxflow;
+	
+	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
+	protected Double [] control_maxspeed;
+	
+	/** Controller update period in seconds */
 	protected double dtinseconds;
+	
+	/** Controller update period in number of simulation steps */
 	protected int samplesteps;
+	
+	/** On/off switch for this controller */
 	protected boolean ison;
-	protected static enum Type {  IRM_alinea,
-					   		      IRM_time_of_day,
-							      IRM_traffic_responsive,
-							      CRM_swarm,
-							      CRM_hero,
-							      VSL_time_of_day,
-							      SIG_pretimed,
-							      SIG_actuated };
+	
+	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
+	 * controller.  
+	 * <ul>
+	 * <li> IRM, isolated ramp metering </li>
+	 * <li> CRM, coordinated ramp metering </li>
+	 * <li> VSL, variable speed limits </li>
+	 * <li> SIG, signal control (intersections) </li>
+	 * </ul>
+	 */
+	protected static enum Type {  
+	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_alinea,
+	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_time_of_day,
+	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_traffic_responsive,
+	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_swarm,
+      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_hero,
+      /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_time_of_day,
+      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_pretimed,
+      /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_actuated };
 								      
 //	protected static enum QueueControlType	{NULL, queue_override,
 //											       proportional,
@@ -55,8 +85,12 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	// registration
 	/////////////////////////////////////////////////////////////////////
 
-   	/** DESCRIPTION
-   	 * 
+   	/** Use this method within {@link InterfaceController#register} to register
+   	 * flow control with a target link. The return value is <code>true</code> if
+   	 * the registration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for flow control.
+   	 * @param index The index of the link in the controller's list of targets.
+   	 * @return A boolean indicating success of the registration. 
    	 */
 	protected boolean registerFlowController(_Link link,int index){
 		if(link==null)
@@ -65,8 +99,12 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 			return link.registerFlowController(this,index);
 	}
 
-   	/** DESCRIPTION
-   	 * 
+   	/** Use this method within {@link InterfaceController#register} to register
+   	 * speed control with a target link. The return value is <code>true</code> if
+   	 * the registration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for speed control.
+   	 * @param index The index of the link in the controller's list of targets.
+   	 * @return A boolean indicating success of the registration. 
    	 */
 	protected boolean registerSpeedController(_Link link,int index){
 		if(link==null)
@@ -124,15 +162,21 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	/** @y.exclude */
 	public boolean validate() {
 		
+		// check that type was reaad correctly
+		if(myType==null){
+			SiriusErrorLog.addErrorMessage("Controller has the wrong type.");
+			return false;
+		}
+		
 		// check that the target is valid
 		if(targets==null){
-			System.out.println("Target is invalid or has multiple controllers.");
+			SiriusErrorLog.addErrorMessage("Target is invalid or has multiple controllers.");
 			return false;
 		}
 		
 		// check that sample dt is an integer multiple of network dt
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			System.out.println("Controller sample time must be integer multiple of simulation time step.");
+			SiriusErrorLog.addErrorMessage("Controller sample time must be integer multiple of simulation time step.");
 			return false;
 		}
 		return true;

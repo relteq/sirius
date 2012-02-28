@@ -16,7 +16,8 @@ public final class SiriusMath {
 	public static Double sum(Double [] V){
 		Double answ = 0d;
 		for(int i=0;i<V.length;i++)
-			answ += V[i];
+			if(V[i]!=null)
+				answ += V[i];
 		return answ;
 	}
 	

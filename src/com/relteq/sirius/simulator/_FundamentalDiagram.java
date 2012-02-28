@@ -221,21 +221,27 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 	
 	protected boolean validate(){
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity_nominal<0 || _capacity_actual<0 || _capacityDrop<0){
-			System.out.println("Fundamental diagram parameters must be non-negative.");
+			SiriusErrorLog.addErrorMessage("Fundamental diagram parameters must be non-negative.");
 			return false;
 		}
 		
 		double dens_crit_congestion = _densityJam-_capacity_nominal/_w;	// [veh]
 			
 		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion)){
-			System.out.println("Invalid fundamental diagram.");
+			SiriusErrorLog.addErrorMessage("Invalid fundamental diagram.");
 			return false;
 		}
         	
 		if(_vf>1 || _w>1){
-			System.out.println("CFL condition violated");
+			SiriusErrorLog.addErrorMessage("CFL condition violated");
 			return false;
 		}
+		
+		if(myLink.getTotalDensityInVeh()>_densityJam){
+			SiriusErrorLog.addErrorMessage("XXX");
+			return false;
+		}
+		
 		return true;
 	}
 

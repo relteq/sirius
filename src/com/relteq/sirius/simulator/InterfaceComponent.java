@@ -21,6 +21,8 @@ public interface InterfaceComponent {
 	 * 
 	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
 	 * It checks the validity of the configuration parameters.
+	 * Events are validated at their activation time. All other components
+	 * are validated when the scenario is loaded. 
 	 * 
 	 * @return <code>true</code> if the data is valid, <code>false</code> otherwise. 
 	 */
@@ -33,7 +35,7 @@ public interface InterfaceComponent {
 	 * <p> Because events are state-less, the {@link _Event} class provides a default 
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
-	public void reset();
+	public void reset() throws SiriusException;
 
 	/** Update the state of the component.
 	 * 
@@ -42,6 +44,6 @@ public interface InterfaceComponent {
 	 * <p> Because events are state-less, the {@link _Event} class provides a default 
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
-	public void update();
+	public void update() throws SiriusException;
 	
 }

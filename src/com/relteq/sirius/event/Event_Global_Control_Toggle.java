@@ -1,13 +1,10 @@
 package com.relteq.sirius.event;
 
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Event_Global_Control_Toggle extends _Event {
 
 	protected boolean ison;
@@ -45,7 +42,7 @@ public class Event_Global_Control_Toggle extends _Event {
 	}
 
 	@Override
-	public void activate() {
+	public void activate() throws SiriusException{
 		setGlobalControlIsOn(ison);
 	}
 }

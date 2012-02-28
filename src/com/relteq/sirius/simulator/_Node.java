@@ -7,22 +7,14 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-/** DESCRIPTION OF THE CLASS
+/** Node model.
 *
-* @author AUTHOR NAME
-* @version VERSION NUMBER
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class _Node extends com.relteq.sirius.jaxb.Node {
-
-	public static enum Type	{  simple,
-							   onramp,
-							   offramp,
-							   signalized_intersection,
-							   unsignalized_intersection,
-							   terminal };
 		   
 	/** @y.exclude */ 	protected _Network myNetwork;
-	/** @y.exclude */ 	protected _Node.Type myType;
+	// /** @y.exclude */ 	protected _Node.Type myType;
 
 	// network references
 	/** @y.exclude */ 	protected _Link [] output_link;
@@ -34,6 +26,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected boolean hasSRprofile;
 	/** @y.exclude */ 	protected int nIn;
 	/** @y.exclude */ 	protected int nOut;
+	/** @y.exclude */ 	protected boolean isTerminal;
 
     // controller
 	/** @y.exclude */ 	protected boolean hascontroller;
@@ -55,6 +48,15 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
 	/** @y.exclude */ 	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
 
+//	public static enum Type	{  simple,
+//		   onramp,
+//		   offramp,
+//		   signalized_intersection,
+//		   unsignalized_intersection,
+//		   terminal };
+	
+	
+		   
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -127,15 +129,15 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		
 		this.myNetwork = myNetwork;
 		
-    	try {
-			myType = _Node.Type.valueOf(getType());
-		} catch (IllegalArgumentException e) {
-			myType = null;
-			return;
-		}
-    	    	
-    	if(myType==_Node.Type.terminal)
-    		return;
+//    	try {
+//			myType = _Node.Type.valueOf(getType());
+//		} catch (IllegalArgumentException e) {
+//			myType = null;
+//			return;
+//		}
+		
+//    	if(myType==_Node.Type.terminal)
+//    		return;
     	
 		nOut = 0;
 		if(getOutputs()!=null){
@@ -156,6 +158,8 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 				input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
 			}
 		}
+		
+		isTerminal = nOut==0 || nIn==0;
 		
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 		inDemand = new Double[nIn][numVehicleTypes];
@@ -178,13 +182,13 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	
 	protected boolean validate() {
 		
-		if(myType==_Node.Type.terminal)
+		if(isTerminal)
 			return true;
 		
 		if(output_link!=null)
 			for(_Link link : output_link){
 				if(link==null){
-					System.out.println("Incorrect output link id in node " + getId());
+					SiriusErrorLog.addErrorMessage("Incorrect output link id in node " + getId());
 					return false;
 				}
 			}
@@ -192,18 +196,18 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		if(input_link!=null)
 			for(_Link link : input_link){
 				if(link==null){
-					System.out.println("Incorrect input link id in node " + getId());
+					SiriusErrorLog.addErrorMessage("Incorrect input link id in node " + getId());
 					return false;
 				}
 			}
 		
-		if(myType!=_Node.Type.terminal && nIn==0){
-			System.out.println("No inputs into node " + getId());
+		if(nIn==0){
+			SiriusErrorLog.addErrorMessage("No inputs into node " + getId());
 			return false;
 		}
 
-		if(myType!=_Node.Type.terminal && nOut==0){
-			System.out.println("No outputs from node " + getId());
+		if(nOut==0){
+			SiriusErrorLog.addErrorMessage("No outputs from node " + getId());
 			return false;
 		}
 		
@@ -213,7 +217,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	
 	protected void update() {
 		
-        if(myType==_Node.Type.terminal)
+        if(isTerminal)
             return;
 
         int i,j,k;        
@@ -280,7 +284,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		
 		// dimension
 		if(X.getnIn()!=this.nIn || X.getnOut()!=this.nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
-			System.out.println("Split ratio for node " + this.getId() + " has incorrect dimension");
+			SiriusErrorLog.addErrorMessage("Split ratio for node " + this.getId() + " has incorrect dimension");
 			return false;
 		}
 		
@@ -290,7 +294,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
 					if( !value.isNaN() && (value>1 || value<0) ){
-						System.out.println("Split ratio values must be in [0,1]");
+						SiriusErrorLog.addErrorMessage("Split ratio values must be in [0,1]");
 						return false;
 					}
 				}
@@ -635,37 +639,27 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-    /** DESCRIPTION
-     *  
-     */ 	
+	/** network that containts this node */ 	
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}
 	
-    /** DESCRIPTION
-     *  
-     */ 
-	public _Node.Type getMyType() {
-		return myType;
-	}
+//	/** node type */ 
+//	public _Node.Type getMyType() {
+//		return myType;
+//	}
     
-    /** DESCRIPTION
-     *  
-     */ 
+    /** List of links exiting this node */ 
     public _Link[] getOutput_link() {
 		return output_link;
 	}
 
-    /** DESCRIPTION
-     *  
-     */ 
+    /** List of links entering this node */ 
 	public _Link[] getInput_link() {
 		return input_link;
 	}
 
-    /** DESCRIPTION
-     *  
-     */ 
+    /** Index of link with given id in the list of input links of this node */ 
 	public int getInputLinkIndex(String id){
 		for(int i=0;i<getnIn();i++){
 			if(input_link[i].getId().equals(id))
@@ -674,9 +668,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
-    /** DESCRIPTION
-     *  
-     */ 
+    /** Index of link with given id in the list of output links of this node */ 
 	public int getOutputLinkIndex(String id){
 		for(int i=0;i<getnOut();i++){
 			if(output_link[i].getId().equals(id))
@@ -685,23 +677,17 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
-    /** DESCRIPTION
-     *  
-     */ 
+    /** Number of links entering this node */ 
 	public int getnIn() {
 		return nIn;
 	}
 
-    /** DESCRIPTION
-     *  
-     */ 
+    /** Number of links exiting this node */ 
 	public int getnOut() {
 		return nOut;
 	}
     
-    /** DESCRIPTION
-     *  
-     */ 
+    /** <code>true</code> iff there is a split ratio controller attached to this link */
 	public boolean hasController() {
 		return hascontroller;
 	}

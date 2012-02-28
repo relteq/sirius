@@ -1,14 +1,10 @@
 package com.relteq.sirius.event;
 
-import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Scenario;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Event_Global_Demand_Knob extends _Event {
 
 	protected boolean resetToNominal;
@@ -44,18 +40,13 @@ public class Event_Global_Demand_Knob extends _Event {
 	public boolean validate() {
 		if(!super.validate())
 			return false;
+		if(newknob<0)
+			return false;
 		return true;
 	}
 
 	@Override
-	public void activate() {
-    	if(myScenario.getDemandProfileSet()!=null){
-        	for(DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile() ){
-    			if(resetToNominal)
-    				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());
-    			else
-    				setDemandProfileEventKnob(profile,newknob);
-        	}	
-    	}
+	public void activate() throws SiriusException{
+		setGlobalDemandEventKnob(newknob);
 	}
 }

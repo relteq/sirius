@@ -20,7 +20,7 @@ final class Runner {
 
 		// process input parameters
 		if(!parseInput(args)){
-			SiriusError.printErrorMessage();
+			SiriusErrorLog.printErrorMessage();
 			return;
 		}
 
@@ -29,7 +29,7 @@ final class Runner {
 
 		// run scenario ...........................................
 		scenario.run(numRepetitions);
-		
+
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
 
@@ -61,7 +61,7 @@ final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			SiriusError.addErrorMessage(str);
+			SiriusErrorLog.addErrorMessage(str);
 			return false;
 		}
 		
@@ -105,7 +105,7 @@ final class Runner {
 		}
 		else
 			numRepetitions = 1;
-		
+
 		return true;
 	}
 	

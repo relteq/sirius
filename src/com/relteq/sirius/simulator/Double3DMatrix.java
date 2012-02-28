@@ -110,7 +110,7 @@ public final class Double3DMatrix {
 		}
 		
 		if(!issquare){
-			System.out.println("Data is not square.");
+			SiriusErrorLog.addErrorMessage("Data is not square.");
 			nIn=0;
 			nOut=0;
 			nVTypes=0;

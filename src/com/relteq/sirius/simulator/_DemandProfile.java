@@ -97,30 +97,30 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			return true;
 		
 		if(myLinkOrigin==null){
-			System.out.println("Bad link id in demand profile: " + getLinkIdOrigin());
+			SiriusErrorLog.addErrorMessage("Bad link id in demand profile: " + getLinkIdOrigin());
 			return false;
 		}
 		
 		// check dtinseconds
 		if( dtinseconds<=0 ){
-			System.out.println("Demand profile dt should be positive: " + getLinkIdOrigin());
+			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkIdOrigin());
 			return false;	
 		}
 		
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			System.out.println("Demand dt should be multiple of sim dt: " + getLinkIdOrigin());
+			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkIdOrigin());
 			return false;	
 		}
 		
 		// check dimensions
 		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes()){
-			System.out.println("Incorrect dimensions for demand on link " + getLinkIdOrigin());
+			SiriusErrorLog.addErrorMessage("Incorrect dimensions for demand on link " + getLinkIdOrigin());
 			return false;
 		}
 		
 		// check non-negative
 		if(demand_nominal.hasNaN()){
-			System.out.println("Illegal values in demand profile for link " + getLinkIdOrigin());
+			SiriusErrorLog.addErrorMessage("Illegal values in demand profile for link " + getLinkIdOrigin());
 			return false;
 		}
 
@@ -187,7 +187,7 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 		// apply the knob and non-negativity
 		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-			demandvalue[j] = Math.max(0.0, demandvalue[j]*_knob);
+			demandvalue[j] = Math.max(0.0,myScenario.global_demand_knob*demandvalue[j]*_knob);
 		
 		return demandvalue;
 	}

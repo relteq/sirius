@@ -55,6 +55,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected _Scenario.UncertaintyType uncertaintyModel;
 	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
+	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
 	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
 	/** @y.exclude */	protected double simdtinhours;			// [hr]  simulation time step 	
 	/** @y.exclude */	protected boolean isrunning=false;		// true when the simulation is running
@@ -80,9 +81,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** populate methods copy data from the jaxb state to extended objects. 
 	 * They do not throw exceptions or report mistakes. Data errors should be 
 	 * circumvented and left for the validation to report.
+	 * @throws SiriusException 
 	 * @y.exclude
 	 */
-	protected void populate() {
+	protected void populate() throws SiriusException {
 		
 		// network list
 		if(getNetworkList()!=null)
@@ -121,9 +123,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * sample profiles
 	 * open output files
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
+	 * @throws SiriusException 
 	 * @y.exclude
 	 */
-	protected boolean reset() {
+	protected boolean reset() throws SiriusException {
 		
 		// reset the clock
 		clock.reset();
@@ -151,9 +154,11 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}	
 	
-	/** @y.exclude
+	/** 
+	 * @throws SiriusException 
+	 * @y.exclude
 	 */
-	protected void update() {	
+	protected void update() throws SiriusException {	
 
         // sample profiles .............................	
     	if(getDownstreamBoundaryCapacitySet()!=null)
@@ -187,7 +192,9 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	/** DESCRIPTION
+	/** Retrieve a network with a given id.
+	 * @param id The string id of the network
+	 * @return The corresponding network if it exists, <code>null</code> otherwise.
 	 * 
 	 */
 	protected _Network getNetworkWithId(String id){
@@ -207,9 +214,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// excluded from API
 	/////////////////////////////////////////////////////////////////////
 
-	/** DESCRIPTION
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	public Integer [] getVehicleTypeIndices(VehicleTypeOrder vtypeorder){
 		
 		Integer [] vehicletypeindex;
@@ -254,13 +259,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return vehicletypeindex;
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// API
-	/////////////////////////////////////////////////////////////////////
-	
-	/** 
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	public boolean validate() {
 					
 		// check that outdt is a multiple of simdt
@@ -307,82 +306,100 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(!_controllerset.validate())
 			return false;
 
-		// validate events
-		if(!_eventset.validate())
-			return false;
+//		// validate events
+//		if(!_eventset.validate())
+//			return false;
 
 		return true;
 	}
 	
-	/** DESCRIPTION
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////
+	
+	/** Run the scenario <code>numRepetitions</code> times.
+	 * 
+	 * <p> The scenario is reset and run multiple times in sequence. All
+	 * probabilistic quantities are resampled between runs. Output files are
+	 * created with a common prefix with the index of the simulation appended to 
+	 * the file name.
 	 * 
 	 * @param numRepetitions 	The integer number of simulations to run.
 	 */
 	public void run(int numRepetitions){
 		
-        isrunning = true;
-
-		// loop through simulation runs ............................
-		for(int i=0;i<numRepetitions;i++){
+		try{
 			
-			// reset scenario
-			if(!reset()){
-				SiriusError.setErrorHeader("Reset failed.");
-				SiriusError.printErrorMessage();
-				return;
-			}
-
-			// open output files
-	        if(simulationMode==_Scenario.ModeType.normal){
-	        	outputwriter = new OutputWriter(this,SiriusMath.round(outdt/simdtinseconds));
-				try {
-					outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow);
-				} catch (FileNotFoundException e) {
-					SiriusError.addErrorMessage("Unable to open output file.");
-					SiriusError.printErrorMessage();
+	        isrunning = true;
+	
+			// loop through simulation runs ............................
+			for(int i=0;i<numRepetitions;i++){
+				
+				// reset scenario
+				if(!reset()){
+					SiriusErrorLog.setErrorHeader("Reset failed.");
+					SiriusErrorLog.printErrorMessage();
 					return;
 				}
-	        }
-	        	
-	        // write initial condition
-	        //Utils.outputwriter.recordstate(Utils.clock.getT(),false);
-	        
-	        while( !clock.expired() ){
-
-	            // update time (before write to output)
-	        	clock.advance();
-	        	      	        	
-	        	// update scenario
-	        	update();
-
-	            // update time (before write to output)
-	            // Utils.clock.advance();
-	        	
-	            // write output .............................
-	            if(simulationMode==ModeType.normal)
-	            	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
-		        	if((clock.getCurrentstep()==1) || ((clock.getCurrentstep()-1)%outputwriter.getOutsteps()==0))
-		        		outputwriter.recordstate(clock.getT(),true);
-	        }
-	        
-            // close output files
-	        if(simulationMode==_Scenario.ModeType.normal)
-	        	outputwriter.close();
-
-			// or save scenario (in warmup mode)
-	        if(simulationMode==_Scenario.ModeType.warmupFromIC || simulationMode==_Scenario.ModeType.warmupFromZero){
-//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
-//	    		Utils.save(scenario, outfile);
-	        }
-		}
 	
-        isrunning = false;
+				// open output files
+		        if(simulationMode==_Scenario.ModeType.normal){
+		        	outputwriter = new OutputWriter(this,SiriusMath.round(outdt/simdtinseconds));
+					try {
+						outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow);
+					} catch (FileNotFoundException e) {
+						SiriusErrorLog.addErrorMessage("Unable to open output file.");
+						SiriusErrorLog.printErrorMessage();
+						return;
+					}
+		        }
+		        	
+		        // write initial condition
+		        //Utils.outputwriter.recordstate(Utils.clock.getT(),false);
+		        
+		        while( !clock.expired() ){
+	
+		            // update time (before write to output)
+		        	clock.advance();
+		        	      	        	
+		        	// update scenario
+		        	update();
+	
+		            // update time (before write to output)
+		            // Utils.clock.advance();
+		        	
+		            // write output .............................
+		            if(simulationMode==ModeType.normal)
+		            	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
+			        	if((clock.getCurrentstep()==1) || ((clock.getCurrentstep()-1)%outputwriter.getOutsteps()==0))
+			        		outputwriter.recordstate(clock.getT(),true);
+		        }
+	        
+	            // close output files
+		        if(simulationMode==_Scenario.ModeType.normal)
+		        	outputwriter.close();
+	
+				// or save scenario (in warmup mode)
+		        if(simulationMode==_Scenario.ModeType.warmupFromIC || simulationMode==_Scenario.ModeType.warmupFromZero){
+	//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
+	//	    		Utils.save(scenario, outfile);
+		        }
+			}
+		
+	        isrunning = false;
+	        
+	        
+		}
+		catch(SiriusException e){
+			SiriusErrorLog.addErrorMessage("ERROR CAUGHT");
+			return;
+		}
 		
 	}
 
-	/** DESCRIPTION
+	/** Save the scenario to XML.
 	 * 
-	 * @param filename	XXX
+	 * @param filename The name of the configuration file.
 	 */
 	public void saveToXML(String filename){
         try {
@@ -399,9 +416,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
         }
 	}
 	
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Current simulation time in seconds.
+	 * @return Simulation time in seconds after midnight.
 	 */
 	public double getTime() {
 		if(clock==null)
@@ -409,9 +425,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getT();
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Current simulation time step.
+	 * @return	Integer number of time steps since the start of the simulation. 
 	 */
 	public int getCurrentTimeStep() {
 		if(clock==null)
@@ -419,17 +434,15 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getCurrentstep();
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Number of vehicle types included in the scenario.
+	 * @return Integer number of vehicle types
 	 */
 	public int getNumVehicleTypes() {
 		return numVehicleTypes;
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Vehicle type names.
+	 * @return	Array of strings with the names of the vehicles types.
 	 */
 	public String [] getVehicleTypeNames(){
 		String [] vehtypenames = new String [numVehicleTypes];
@@ -441,9 +454,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return vehtypenames;
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Vehicle type weights.
+	 * @return	Array of doubles with the weights of the vehicles types.
 	 */
 	public Double [] getVehicleTypeWeights(){
 		Double [] vehtypeweights = new Double [numVehicleTypes];
@@ -455,66 +467,63 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return vehtypeweights;
 	}
 	
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Size of the simulation time step in seconds.
+	 * @return Simulation time step in seconds. 
 	 */
 	public double getSimDtInSeconds() {
 		return simdtinseconds;
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Size of the simulation time step in hours.
+	 * @return Simulation time step in hours. 
 	 */
 	public double getSimDtInHours() {
 		return simdtinhours;
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Size of the output time step in seconds.
+	 * @return Output time step in seconds. 
 	 */
 	public double getOutDt() {
 		return outdt;
 	}
 
-	/** DESCRIPTION
-	 * 
-	 * @return			XXX
+	/** Start time of the simulation.
+	 * @return Start time in seconds. 
 	 */
 	public double getTimeStart() {
 		return timestart;
 	}
 
-	/** DESCRIPTION
-	 * 
+	/** End time of the simulation.
+	 * @return End time in seconds. 
 	 * @return			XXX
 	 */
 	public double getTimeEnd() {
 		return timeend;
 	}
-	
-	/** DESCRIPTION
-	 * 
-	 * @param id		XXX
-	 * @return			XXX
+
+	/** Get a reference to a controller by its name.
+	 * <p> This method will soon be replaced with id search, since names
+	 * are not guaranteed to be unique. 
+	 * @param name Name of the controller.
+	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
-	public _Controller getControllerWithName(String id){
+	public _Controller getControllerWithName(String name){
 		if(_controllerset==null)
 			return null;
 		for(_Controller c : _controllerset.get_Controllers()){
-			if(c.name.equals(id))
+			if(c.name.equals(name))
 				return c;
 		}
 		return null;
 	}
-	
-	/** DESCRIPTION
+
+	/** Get a reference to a node by its composite id.
 	 * 
-	 * @param network_id	XXX
-	 * @param id			XXX
-	 * @return				XXX
+	 * @param network_id String id of the network containing the node. 
+	 * @param id String id of the node. 
+	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
 	public _Node getNodeWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
@@ -529,11 +538,11 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return network.getNodeWithId(id);
 	}
 
-	/** DESCRIPTION
+	/** Get a reference to a link by its composite id.
 	 * 
-	 * @param network_id	XXX
-	 * @param id			XXX
-	 * @return				XXX
+	 * @param network_id String id of the network containing the link. 
+	 * @param id String id of the link. 
+	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
 	public _Link getLinkWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
@@ -547,12 +556,12 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		else	
 			return network.getLinkWithId(id);
 	}
-	
-	/** DESCRIPTION
+
+	/** Get a reference to a sensor by its composite id.
 	 * 
-	 * @param network_id	XXX
-	 * @param id			XXX
-	 * @return				XXX
+	 * @param network_id String id of the network containing the sensor. 
+	 * @param id String id of the sensor. 
+	 * @return Reference to the sensor if it exists, <code>null</code> otherwise
 	 */
 	public _Sensor getSensorWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
@@ -566,66 +575,77 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		else	
 			return network.getSensorWithId(id);
 	}
-	
-	/** DESCRIPTION
+
+	/** Add a controller to the scenario.
 	 * 
-	 * @param C			XXX
-	 * @y.exclude
+	 * <p>Controllers can only be added if a) the scenario is not currently running, and
+	 * b) the controller is valid. 
+	 * @param C The controller
+	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
 	 */
-	public void addController(_Controller C){
+	public boolean addController(_Controller C){
 		if(isrunning)
-			return;
+			return false;
 		if(C==null)
-			return;
+			return false;
 		if(C.myType==null)
-			return;
+			return false;
 		
 		// validate
 		if(!C.validate())
-			return;
+			return false;
+		
 		// add
 		_controllerset._controllers.add(C);
+		
+		return true;
 	}
-	
-	/** DESCRIPTION
+
+	/** Add an event to the scenario.
 	 * 
-	 * @param E			XXX
+	 * <p>Events are not added if the scenario is running. This method does not validate the event.
+	 * @param E The event
+	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
 	 */
-	public void addEvent(_Event E){
+	public boolean addEvent(_Event E){
 		if(isrunning)
-			return;
+			return false;
 		if(E==null)
-			return;
+			return false;
 		if(E.myType==null)
-			return;
-		// validate
-		if(!E.validate())
-			return;
+			return false;
 		
 		// add event to list
 		_eventset.addEvent(E);
+		
+		return true;
 	}
-	
-	/** DESCRIPTION
-	 * 
-	 * @param S 		XXX
-	 */
-	public void addSensor(_Sensor S){
-		if(S==null)
-			return;
-		if(S.myType==null)
-			return;
-		if(S.myLink==null)
-			return;
-		if(S.myLink.myNetwork==null)
-			return;
 
+	/** Add a sensor to the scenario.
+	 * 
+	 * <p>Sensors can only be added if a) the scenario is not currently running, and
+	 * b) the sensor is valid. 
+	 * @param S The sensor
+	 * @return <code>true</code> if the sensor was successfully added, <code>false</code> otherwise. 
+	 */
+	public boolean addSensor(_Sensor S){
+		if(S==null)
+			return false;
+		if(S.myType==null)
+			return false;
+		if(S.myLink==null)
+			return false;
+		if(S.myLink.myNetwork==null)
+			return false;
+ 
 		// validate
 		if(!S.validate())
-			return;
+			return false;
 		
 		// add sensor to list
 		S.myLink.myNetwork._sensorlist._sensors.add(S);
+		
+		return true;
 	}
-	
+
 }

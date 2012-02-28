@@ -97,7 +97,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	protected boolean validate() {
 		
 		if(myNode==null){
-			SiriusError.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
+			SiriusErrorLog.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
 			return false;
 		}
 		
@@ -107,19 +107,19 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
 			if(in_index<0 || out_index<0){
-				SiriusError.addErrorMessage("Bad link id in split ratio profile: " + getNodeId());
+				SiriusErrorLog.addErrorMessage("Bad link id in split ratio profile: " + getNodeId());
 				return false;
 			}
 		}
 
 		// check dtinhours
 		if( dtinseconds<=0 ){
-			System.out.println("Split ratio profile dt should be positive: " + getNodeId());
+			SiriusErrorLog.addErrorMessage("Split ratio profile dt should be positive: " + getNodeId());
 			return false;	
 		}
 
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			System.out.println("Split ratio dt should be multiple of sim dt: " + getNodeId());
+			SiriusErrorLog.addErrorMessage("Split ratio dt should be multiple of sim dt: " + getNodeId());
 			return false;	
 		}
 		
@@ -127,7 +127,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		for(in_index=0;in_index<profile.length;in_index++){
 			for(out_index=0;out_index<profile[in_index].length;out_index++){
 				if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes()){
-					System.out.println("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
+					SiriusErrorLog.addErrorMessage("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
 					return false;
 				}
 			}

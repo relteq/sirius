@@ -23,19 +23,28 @@ import com.relteq.sirius.jaxb.ScenarioElement;
 @SuppressWarnings("rawtypes")
 public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
 
-	public static enum Type	{  fundamental_diagram,
-							   link_demand_knob,
-							   link_lanes, 
-							   node_split_ratio,
-							   control_toggle,
-							   global_control_toggle,
-							   global_demand_knob };
-
+	/** Scenario that contains this event */
 	protected _Scenario myScenario;
+	
+	/** Event type. */
 	protected _Event.Type myType;
+	
+	/** Activation time of the event, in number of simulation time steps. */
 	protected int timestampstep;
+	
+	/** List of targets for the event. */
 	protected ArrayList<_ScenarioElement> targets;
-
+	
+	/** Possible event type. */
+	public static enum Type	{  
+		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
+		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
+		/** see {@link ObjectFactory#createEvent_Link_Lanes} 			*/ link_lanes, 
+		/** see {@link ObjectFactory#createEvent_Node_Split_Ratio} 		*/ node_split_ratio,
+		/** see {@link ObjectFactory#createEvent_Control_Toggle} 		*/ control_toggle,
+		/** see {@link ObjectFactory#createEvent_Global_Control_Toggle} */ global_control_toggle,
+		/** see {@link ObjectFactory#createEvent_Global_Demand_Knob} 	*/ global_demand_knob };
+		   
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -64,17 +73,22 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 	
 	public boolean validate() {
 		
+		if(myType==null){
+			SiriusErrorLog.addErrorMessage("Event has bad type.");
+			return false;
+		}
+			
 		// check that there are targets assigned to non-global events
 		if(myType!=_Event.Type.global_control_toggle && myType!=_Event.Type.global_demand_knob)
 			if(targets.isEmpty()){
-				System.out.println("No targets assigned.");
+				SiriusErrorLog.addErrorMessage("No targets assigned.");
 				return false;
 			}
 		
 		// check each target is valid
 		for(_ScenarioElement s : targets){
 			if(s.reference==null){
-				System.out.println("Invalid target.");
+				SiriusErrorLog.addErrorMessage("Invalid target.");
 				return false;
 			}
 		}
@@ -168,25 +182,19 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		c.ison = ison;
 	}
 
-    protected void setLinkLanes(_Link link,double lanes){
+    protected void setLinkLanes(_Link link,double lanes) throws SiriusException{
 		if(link==null)
 			return;
     	link.set_Lanes(lanes);
     }
-    
-    protected void setLinkDeltaLanes(_Link link,double deltalanes){
-		if(link==null)
-			return;
-		link.set_Lanes(link.get_Lanes()+deltalanes);		
-    }
-	
-	protected void setLinkFundamentalDiagram(_Link link,FundamentalDiagram newFD){
+    	
+	protected void setLinkFundamentalDiagram(_Link link,FundamentalDiagram newFD) throws SiriusException{
 		if(link==null)
 			return;
 		link.activateFundamentalDiagramEvent(newFD);
 	}
 	
-    protected void revertLinkFundamentalDiagram(_Link link){
+    protected void revertLinkFundamentalDiagram(_Link link) throws SiriusException{
     	if(link==null)
     		return;
     	link.revertFundamentalDiagramEvent();
@@ -216,6 +224,10 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		if(knob.isNaN())
 			return;
 		((_DemandProfile) profile).set_knob(knob);
+    }
+    
+    protected void setGlobalDemandEventKnob(Double knob){
+    	myScenario.global_demand_knob = knob;
     }
 	
 }

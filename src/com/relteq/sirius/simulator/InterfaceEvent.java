@@ -15,6 +15,7 @@ public interface InterfaceEvent {
 	 * 
 	 * <p> Called once by {@link _Scenario#run} at the event time stamp.
 	 * Executes all changes to the scenario caused by the event.
+	 * @throws SiriusException
 	 */
-	public void activate();
+	public void activate() throws SiriusException;
 }

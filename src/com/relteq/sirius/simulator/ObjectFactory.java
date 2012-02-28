@@ -29,7 +29,7 @@ import com.relteq.sirius.jaxb.Sensor;
  * 
 * @author Gabriel Gomes
 */
-public abstract class ObjectFactory {
+public final class ObjectFactory {
 
 	private static String schemafile = "data/schema/sirius.xsd";
 
@@ -240,7 +240,7 @@ public abstract class ObjectFactory {
         	context = JAXBContext.newInstance("com.relteq.sirius.jaxb");
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
-        	SiriusError.addErrorMessage("Failed to create context for JAXB unmarshaller.");
+        	SiriusErrorLog.addErrorMessage("Failed to create context for JAXB unmarshaller.");
             return null;
         }
         
@@ -251,7 +251,7 @@ public abstract class ObjectFactory {
         	Schema schema = factory.newSchema(schemaLocation);
         	u.setSchema(schema);
         } catch(SAXException e){
-        	SiriusError.addErrorMessage("Schema not found.");
+        	SiriusErrorLog.addErrorMessage("Schema not found.");
         	return null;
         }
         
@@ -265,12 +265,12 @@ public abstract class ObjectFactory {
             u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new _JaxbObjectFactory());            
         	S = (_Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
-        	SiriusError.addErrorMessage("JAXB threw an exception when loading the configuration file.");
+        	SiriusErrorLog.addErrorMessage("JAXB threw an exception when loading the configuration file.");
         	if(je.getLinkedException()!=null)
-        		SiriusError.addErrorMessage(je.getLinkedException().getMessage());
+        		SiriusErrorLog.addErrorMessage(je.getLinkedException().getMessage());
             return null;
         } catch (FileNotFoundException e) {
-        	SiriusError.addErrorMessage("Configuration file not found.");
+        	SiriusErrorLog.addErrorMessage("Configuration file not found.");
         	return null;
 		}
 
@@ -290,6 +290,7 @@ public abstract class ObjectFactory {
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
         S.simdtinhours = S.simdtinseconds/3600.0;
         S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
+        S.global_demand_knob = 1d;
         if(S.getSettings().getVehicleTypes()==null)
             S.numVehicleTypes = 1;
         else
@@ -303,7 +304,12 @@ public abstract class ObjectFactory {
         S.clock = new Clock(S.timestart,S.timeend,S.simdtinseconds);
 
         // populate the scenario ....................................................
-        S.populate();
+        try{
+        	S.populate();
+        } catch (SiriusException e){
+        	SiriusErrorLog.addErrorMessage("ERROR CAUGHT.");
+        	return null;
+        }
         
         // register controllers with their targets ..................................
         boolean registersuccess = true;
@@ -311,21 +317,21 @@ public abstract class ObjectFactory {
         	registersuccess &= controller.register();
         
         if(!registersuccess){
-        	System.out.println("Conflicting controllers");
+        	SiriusErrorLog.addErrorMessage("Conflicting controllers");
         	return null;
         }
         
         // check that load was successful        
 		if(!checkLoad(S)){
-			SiriusError.setErrorHeader("Load failed.");
-			SiriusError.printErrorMessage();
+			SiriusErrorLog.setErrorHeader("Load failed.");
+			SiriusErrorLog.printErrorMessage();
 			return null;
 		}
 		
 		// validate scenario ......................................
 		if(!S.validate()){
-			SiriusError.setErrorHeader("Validation failed.");
-			SiriusError.printErrorMessage();
+			SiriusErrorLog.setErrorHeader("Validation failed.");
+			SiriusErrorLog.printErrorMessage();
 			return null;
 		}
 		
@@ -508,8 +514,8 @@ public abstract class ObjectFactory {
 	 * @param deltalanes		Number of lanes to add to each link in the list
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Link_Lanes(_Scenario myScenario,List<_Link> links,double deltalanes){
-		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,links,deltalanes);
+	public static _Event createEvent_Link_Lanes(_Scenario myScenario,List<_Link> links,boolean isrevert,double deltalanes){
+		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
 	}	
 	
 	/** Change the split ratio matrix on a node.
@@ -580,7 +586,7 @@ public abstract class ObjectFactory {
 	/** Container for a link.
 	 * 
 	 * @param link		The link.
-	 * @return			ScenarioElement object
+	 * @return			_ScenarioElement object
 	 */
 	public static _ScenarioElement createScenarioElement(_Link link){
 		if(link==null)
@@ -595,8 +601,8 @@ public abstract class ObjectFactory {
 
 	/** Container for a sensor.
 	 * 
-	 * @param sensor		The sensor.
-	 * @return			ScenarioElement object
+	 * @param sensor	The sensor.
+	 * @return			_ScenarioElement object
 	 */
 	public static _ScenarioElement createScenarioElement(_Sensor sensor){
 		if(sensor==null)
@@ -609,30 +615,11 @@ public abstract class ObjectFactory {
 		se.reference = sensor;
 		return se;
 	}
-
-//	/** DESCRIPTION
-//	 * 
-//	 * @return			XXX
-//	 */
-//	public static _ScenarioElement createScenarioElement(_Signal signal){
-//		if(signal==null)
-//			return null;
-//		_ScenarioElement se = new _ScenarioElement();
-//		se.myScenario = signal.getMyNetwork().myScenario;
-//		se.myType = _ScenarioElement.Type.sensor;
-//		se.network_id = signal.myNetwork.getId();
-//		se.id = "";
-//		se.reference = signal;
-//		return se;
-//	}
-
-	/////////////////////////////////////////////////////////////////////
-	// public: scenario element
-	/////////////////////////////////////////////////////////////////////
 	
-	/** DESCRIPTION
+	/** Container for a controller.
 	 * 
-	 * @return			_Sensor object
+	 * @param controller	The controller.
+	 * @return			_ScenarioElement object
 	 */
 	public static _ScenarioElement createScenarioElement(_Controller controller){
 		if(controller==null)
@@ -643,9 +630,10 @@ public abstract class ObjectFactory {
 		return se;
 	}
 
-	/** DESCRIPTION
+	/** Container for an event.
 	 * 
-	 * @return			_Sensor object
+	 * @param event	The event.
+	 * @return			_ScenarioElement object
 	 */
 	public static _ScenarioElement createScenarioElement(_Event event){
 		if(event==null)
@@ -677,7 +665,7 @@ public abstract class ObjectFactory {
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds
 	        if( SiriusMath.lessthan(dt,0.1) ){
-				System.out.println("Warning: Network dt given in hours. Changing to seconds.");
+	        	SiriusErrorLog.addErrorMessage("Warning: Network dt given in hours. Changing to seconds.");
 				dt *= 3600;
 	        }
 			tengcd = SiriusMath.gcd( SiriusMath.round(dt*10.0) , tengcd );
@@ -721,13 +709,13 @@ public abstract class ObjectFactory {
 	private static boolean checkLoad(_Scenario scenario){
 		
 		if(scenario==null){
-			SiriusError.setErrorHeader("Load failed.");
+			SiriusErrorLog.setErrorHeader("Load failed.");
 			return false;
 		}
 	
 		// check timestart < timeend (depends on simulation mode)
 		if(scenario.timestart>=scenario.timeend){
-			SiriusError.setErrorHeader("Empty simulation period.");
+			SiriusErrorLog.setErrorHeader("Empty simulation period.");
 			return false;
 		}
 		

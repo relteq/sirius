@@ -24,7 +24,7 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 		    	try {
 					myType = _Sensor.Type.valueOf(sensor.getType());
 				} catch (IllegalArgumentException e) {
-					System.out.println("Warning: sensor has wrong type. Ignoring.");
+					SiriusErrorLog.addErrorMessage("Warning: sensor has wrong type. Ignoring.");
 					continue;
 				}	
 				
@@ -45,12 +45,12 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 		return true;
 	}
 
-	protected void reset() {
+	protected void reset() throws SiriusException {
 		for(_Sensor sensor : _sensors)
 			sensor.reset();
 	}
 
-	protected void update() {
+	protected void update() throws SiriusException {
     	for(_Sensor sensor : _sensors)
     		sensor.update();
 	}

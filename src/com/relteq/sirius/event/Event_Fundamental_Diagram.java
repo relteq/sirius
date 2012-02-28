@@ -7,15 +7,13 @@ import java.util.List;
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.FundamentalDiagram;
 import com.relteq.sirius.simulator.ObjectFactory;
+import com.relteq.sirius.simulator.SiriusErrorLog;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._ScenarioElement;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Event_Fundamental_Diagram extends _Event {
 
 	protected boolean resetToNominal;
@@ -67,15 +65,18 @@ public class Event_Fundamental_Diagram extends _Event {
 		// check each target is valid
 		for(_ScenarioElement s : targets){
 			if(s.getMyType()!=_ScenarioElement.Type.link){
-				System.out.println("wrong target type.");
+				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}
 		}
+		
+		// check that new fundamental diagram does not invalidate current state
+		
 		return true;
 	}
 
 	@Override
-	public void activate() {
+	public void activate() throws SiriusException{
 		for(_ScenarioElement s : targets){
 			_Link targetlink = (_Link) s.getReference();
 			if(resetToNominal)

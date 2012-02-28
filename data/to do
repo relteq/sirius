@@ -1,15 +1,13 @@
-+ validate created events
-+ Document Double3DMatrix
-+ complete scenario element creators
-+ createLinkLanesRevertEvent
-+ implement non-jaxb constructors for events.
-+ global demand knob
-+ validate events.
-+ implement controller ids rather than names, sensors
-+ Can we eliminate constructors?
-+ API
++ The try-with-resources Statement
++ finally
++ replace null returns with exceptions
++ split ratio events without Double3DMatrix
 + output
 + exception handling
+
+SCHEMA:
++ global demand knob
++ implement controller ids rather than names, sensors
 
 --- RELEASE ---
 

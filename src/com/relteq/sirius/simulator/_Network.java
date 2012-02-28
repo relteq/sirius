@@ -64,7 +64,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		return true;
 	}
 
-	protected void reset() {
+	protected void reset() throws SiriusException {
 		
 //		// node list
 //		if(getNodeList()!=null)
@@ -90,7 +90,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 				
 	}
 
-	protected void update() {
+	protected void update() throws SiriusException {
 		
         // compute link demand and supply ...............
         for(Link link : getLinkList().getLink()){

@@ -52,7 +52,6 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 			    	try {
 						myType = _Event.Type.valueOf(event.getType());
 					} catch (IllegalArgumentException e) {
-						System.out.println("Warning: event has wrong type. Ignoring.");
 						continue;
 					}	
 					
@@ -91,7 +90,7 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 		isdone = _sortedevents.isEmpty();
 	}
 
-	protected void update() {
+	protected void update() throws SiriusException {
 
 		if(isdone)
 			return;
@@ -103,7 +102,10 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 
 		// check whether next event is due
 		while(myScenario.clock.getCurrentstep()>=_sortedevents.get(currentevent).timestampstep){
-			_sortedevents.get(currentevent).activate(); 
+			
+			_Event event =  _sortedevents.get(currentevent);
+			if(event.validate())
+				event.activate(); 
 			currentevent++;
 			
 			// don't come back if done

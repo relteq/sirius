@@ -53,14 +53,14 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
-			System.out.println("Demand profile list of vehicle types does not match that of settings.");
+			SiriusErrorLog.addErrorMessage("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}
 		
 		// check that vehicle types are valid
 		for(i=0;i<vehicletypeindex.length;i++){
 			if(vehicletypeindex[i]<0){
-				System.out.println("Bad vehicle type name.");
+				SiriusErrorLog.addErrorMessage("Bad vehicle type name.");
 				return false;
 			}
 		}
@@ -68,7 +68,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		// check that links are valid
 		for(i=0;i<link.length;i++){
 			if(link[i]==null){
-				System.out.println("Bad link id");
+				SiriusErrorLog.addErrorMessage("Bad link id");
 				return false;
 			}
 		}
@@ -76,7 +76,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		// check size of data
 		for(i=0;i<link.length;i++){
 			if(initial_density[i].length!=vehicletypeindex.length){
-				System.out.println("Wrong number of data points.");
+				SiriusErrorLog.addErrorMessage("Wrong number of data points.");
 				return false;
 			}
 		}
@@ -90,13 +90,13 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 			for(j=0;j<vehicletypeindex.length;j++){
 				x = initial_density[i][j];
 				if(x<0 || x.isNaN()){
-					System.out.println("Invalid initial density.");
+					SiriusErrorLog.addErrorMessage("Invalid initial density.");
 					return false;
 				}
 				sum += x;
 			}
 			if(sum>link[i].getDensityJamInVPMPL()){
-				System.out.println("Initial density exceeds jam density.");
+				SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
 				return false;
 			}
 		}

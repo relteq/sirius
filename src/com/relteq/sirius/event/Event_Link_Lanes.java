@@ -5,15 +5,13 @@ import java.util.List;
 
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator.ObjectFactory;
+import com.relteq.sirius.simulator.SiriusErrorLog;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Link;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._ScenarioElement;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Event_Link_Lanes extends _Event {
 
 	protected boolean resetToNominal;
@@ -22,12 +20,13 @@ public class Event_Link_Lanes extends _Event {
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
-	
+
 	public Event_Link_Lanes(){
 	}
-	
-	public Event_Link_Lanes(_Scenario myScenario,List<_Link> links,double deltalanes) {
+			
+	public Event_Link_Lanes(_Scenario myScenario,List<_Link> links,boolean isrevert,double deltalanes) {
 		this.targets = new ArrayList<_ScenarioElement>();
+		this.resetToNominal = isrevert;
 		for(_Link link : links)
 			this.targets.add(ObjectFactory.createScenarioElement(link));
 		this.deltalanes = deltalanes;
@@ -55,22 +54,27 @@ public class Event_Link_Lanes extends _Event {
 		// check each target is valid
 		for(_ScenarioElement s : targets){
 			if(s.getMyType()!=_ScenarioElement.Type.link){
-				System.out.println("wrong target type.");
+				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}
 		}
+				
 		return true;
 	}
 
 	@Override
-	public void activate() {
+	public void activate() throws SiriusException{
+		double newlanes;
 		for(_ScenarioElement s : targets){
 			_Link targetlink = (_Link) s.getReference();
-			if(resetToNominal){
-				double originallanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
-				setLinkLanes(targetlink,originallanes);
-			}
-			setLinkDeltaLanes(targetlink,deltalanes);
+			if(resetToNominal)
+				newlanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
+			else
+				newlanes =  targetlink.get_Lanes();
+			newlanes += deltalanes;
+			setLinkLanes(targetlink,newlanes);
 		}		
 	}
+
+
 }

@@ -9,15 +9,13 @@ import com.relteq.sirius.jaxb.SplitratioEvent;
 import com.relteq.sirius.simulator.Double1DVector;
 import com.relteq.sirius.simulator.Double3DMatrix;
 import com.relteq.sirius.simulator.ObjectFactory;
+import com.relteq.sirius.simulator.SiriusErrorLog;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator._Event;
 import com.relteq.sirius.simulator._Node;
 import com.relteq.sirius.simulator._Scenario;
 import com.relteq.sirius.simulator._ScenarioElement;
 
-/** DESCRIPTION OF THE CLASS
-* @author AUTHOR NAME
-* @version VERSION NUMBER
-*/
 public class Event_Node_Split_Ratio extends _Event {
 
 	protected boolean resetToNominal;
@@ -102,18 +100,18 @@ public class Event_Node_Split_Ratio extends _Event {
 			return false;
 		
 		if(targets.size()!=1){
-			System.out.println("This event does not work for multiple targets.");
+			SiriusErrorLog.addErrorMessage("This event does not work for multiple targets.");
 			return false;
 		}
 		
 		// check each target is valid
 		if(targets.get(0).getMyType()!=_ScenarioElement.Type.node){
-			System.out.println("wrong target type.");
+			SiriusErrorLog.addErrorMessage("wrong target type.");
 			return false;
 		}
 		
 		if(myNode==null){
-			System.out.println("wrong node id.");
+			SiriusErrorLog.addErrorMessage("wrong node id.");
 			return false;
 		}
 		
@@ -122,9 +120,9 @@ public class Event_Node_Split_Ratio extends _Event {
 		
 		return true;
 	}
-
+	
 	@Override
-	public void activate() {
+	public void activate() throws SiriusException{
 		if(resetToNominal)
 			revertNodeEventSplitRatio(myNode);
 		else

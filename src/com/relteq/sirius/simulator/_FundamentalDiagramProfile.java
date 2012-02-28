@@ -38,7 +38,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate(_Scenario myScenario) {
+	protected void populate(_Scenario myScenario) throws SiriusException {
 		
 		this.myScenario = myScenario;
 		isdone = false;
@@ -78,7 +78,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		if( getStartTime()!=null){
 			starttime = getStartTime().floatValue();
 //			if(starttime>0 && starttime<=24){
-//				System.out.println("Warning: Initial time given in hours. Changing to seconds.");
+//				System.out.printlnX("Warning: Initial time given in hours. Changing to seconds.");
 //				starttime *= 3600f;
 //			}
 		}
@@ -97,18 +97,18 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	protected boolean validate() {
 		
 		if(myLink==null){
-			System.out.println("Bad link id in fundamental diagram: " + getLinkId());
+			SiriusErrorLog.addErrorMessage("Bad link id in fundamental diagram: " + getLinkId());
 			return false;
 		}
 		
 		// check dtinseconds
 		if( dtinseconds<=0 ){
-			System.out.println("Demand profile dt should be positive: " + getLinkId());
+			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkId());
 			return false;	
 		}
 		
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			System.out.println("Demand dt should be multiple of sim dt: " + getLinkId());
+			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkId());
 			return false;	
 		}
 		
@@ -120,7 +120,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		return true;
 	}
 
-	protected void reset() {
+	protected void reset() throws SiriusException {
 		isdone = false;
 		
 		for(_FundamentalDiagram fd : FD)
@@ -131,7 +131,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		
 	}
 
-	protected void update() {
+	protected void update() throws SiriusException {
 		if(isdone || FD.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){

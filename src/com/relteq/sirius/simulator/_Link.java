@@ -7,28 +7,13 @@ package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.FundamentalDiagram;
 
-/** DESCRIPTION OF THE CLASS
-*
-* @author AUTHOR NAME
-* @version VERSION NUMBER
+/** Link model.
+* 
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class _Link extends com.relteq.sirius.jaxb.Link {
 
-	public static enum Type	{  freeway,
-						       HOV,
-						       HOT,
-						       onramp,
-						       offramp,
-						       freeway_connector,
-						       street,
-						       intersection_apporach,
-						       other };	
-		   
-//	public static enum DynamicsType	{NULL, CTM,
-//										   region_tracking,
-//										   discrete_departure };
-
-	/** @y.exclude */ 	protected _Link.Type myType;
+	// /** @y.exclude */ 	protected _Link.Type myType;
 	/** @y.exclude */ 	protected _Network myNetwork;
 	/** @y.exclude */ 	protected _Node begin_node;
 	/** @y.exclude */ 	protected _Node end_node;
@@ -64,6 +49,22 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
 	/** @y.exclude */ 	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
 
+//	/** */ 
+//	public static enum Type	{  
+//		/** Freeway mainline 			 */	freeway,
+//		/** High occupancy lane 		 */	HOV,
+//	    /** High occupancy / Toll lane 	 */ HOT,
+//	    /** Freeway onramp 				 */ onramp,
+//	    /** Freeeay offramp 			 */ offramp,
+//	    /** Freeway-to-freeway connector */ freeway_connector,
+//	    /** Urban street 				 */ street,
+//	    /** Link feeding an intersection */ intersection_apporach,
+//	    /** None of the above 			 */	other };	
+
+//public static enum DynamicsType	{NULL, CTM,
+//					   region_tracking,
+//					   discrete_departure };
+	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -126,41 +127,56 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     	myFDprofile = fdp;
     }
 
-	/** @y.exclude */
-    protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd){
+	/** @throws SiriusException 
+	 * @y.exclude */
+    protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd) throws SiriusException{
     	if(fd==null)
     		return;
+    	if(!fd.validate())
+			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+    		
     	FDfromProfile = fd;				// update the profile pointer
     	if(!activeFDevent)				
     		FD = FDfromProfile;			// update the fd pointer
     }
 
-	/** @y.exclude */
-    protected void activateFundamentalDiagramEvent(FundamentalDiagram fd){
+	/** @throws SiriusException 
+	 * @y.exclude */
+    protected void activateFundamentalDiagramEvent(FundamentalDiagram fd) throws SiriusException {
     	if(fd==null)
-    		return;
+    		throw new SiriusException("Null parameter.");
+    	
     	FDfromEvent = new _FundamentalDiagram(this);
     	FDfromEvent.copyfrom(FD);			// copy current FD
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
-		if(FDfromEvent.validate()){			// validate the result
-	    	activeFDevent = true;
-	    	FD = FDfromEvent;
-		}	
+    	
+		if(!FDfromEvent.validate())
+			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+		activeFDevent = true;
+	    FD = FDfromEvent;
     }
 
-	/** @y.exclude */
-    protected void revertFundamentalDiagramEvent(){
-    	if(activeFDevent){
-	    	activeFDevent = false;
-    		FD = FDfromProfile;				// point the fd back at the profile
-    		FDfromEvent = null;
-    	}
+	/** @throws SiriusException 
+	 * @y.exclude */
+    protected void revertFundamentalDiagramEvent() throws SiriusException{
+    	if(!activeFDevent)
+    		return;
+    	
+    	if(!FDfromProfile.validate())
+			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+ 
+    	activeFDevent = false;
+		FD = FDfromProfile;				// point the fd back at the profile
+		FDfromEvent = null;
+    	
     }
 
-	/** @y.exclude */
-	protected void set_Lanes(double newlanes){
-		if(newlanes<0)
-			return;
+	/** @throws SiriusException 
+	 * @y.exclude */
+	protected void set_Lanes(double newlanes) throws SiriusException{
+		if(getDensityJamInVeh()*newlanes/get_Lanes() < getTotalDensityInVeh())
+			throw new SiriusException("ERROR: Lanes could not be set.");
+
 		myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
 		if(FDfromEvent!=null)
 			FDfromEvent.setLanes(newlanes);	// adjust the event fd.
@@ -256,20 +272,21 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 				
         this.myNetwork = myNetwork;
         
-		// assign type
-    	try {
-			myType = _Link.Type.valueOf(getType());
-		} catch (IllegalArgumentException e) {
-			myType = null;
-			return;
-		}
+//		// assign type
+//    	try {
+//			myType = _Link.Type.valueOf(getType());
+//		} catch (IllegalArgumentException e) {
+//			myType = null;
+//			return;
+//		}
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
         
-		issource = _Node.Type.valueOf(begin_node.getType()) ==_Node.Type.terminal;
-		issink = _Node.Type.valueOf(end_node.getType()) ==_Node.Type.terminal;
+		// nodes must populate before links
+		issource = begin_node.isTerminal;
+		issink = end_node.isTerminal;
 
 		// lanes and length
 		_lanes = getLanes().doubleValue();
@@ -291,22 +308,22 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected boolean validate() {
 		
 		if(!issource && begin_node==null){
-			SiriusError.addErrorMessage("Incorrect begin node id in link " + getId());
+			SiriusErrorLog.addErrorMessage("Incorrect begin node id in link " + getId());
 			return false;
 		}
 
 		if(!issink && end_node==null){
-			SiriusError.addErrorMessage("Incorrect end node id in link " + getId());
+			SiriusErrorLog.addErrorMessage("Incorrect end node id in link " + getId());
 			return false;
 		}
 		
 		if(_length<=0){
-			SiriusError.addErrorMessage("Link length must be positive: Link " + getId());
+			SiriusErrorLog.addErrorMessage("Link length must be positive: Link " + getId());
 			return false;
 		}
 		
 		if(_lanes<=0){
-			SiriusError.addErrorMessage("Link lanes must be positive: Link " + getId());
+			SiriusErrorLog.addErrorMessage("Link lanes must be positive: Link " + getId());
 			return false;
 		}
 		
@@ -386,101 +403,92 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	
 	// Link geometry ....................
 	
-	/** DESCRIPTION 
-	 * 
-	 */
-	public _Link.Type getMyType() {
-		return myType;
-	}
-	/** DESCRIPTION 
-	 * 
-	 */
-    
+//	/** link type */
+//	public _Link.Type getMyType() {
+//		return myType;
+//	}
+
+	/** network that containts this link */
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** upstream node of this link  */
 	public _Node getBegin_node() {
 		return begin_node;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** downstream node of this link */
 	public _Node getEnd_node() {
 		return end_node;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Length of this link in miles */
 	public double getLengthInMiles() {
 		return _length;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
-	public double getLinkLength() {
-		return _length;
-	}
-
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Number of lanes in this link */
 	public double get_Lanes() {
 		return _lanes;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** <code>true</code> if this link is a source of demand into the network */
 	public boolean isSource() {
 		return issource;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** <code>true</code> if this link is a sink of demand from the network */
 	public boolean isSink() {
 		return issink;
 	}
 	
 	// Link state .......................
 
-	/** DESCRIPTION 
-	 * 
+	/** Density of vehicles per vehicle type in normalized units (vehicles/link/type). 
+	 * The return array is indexed by vehicle type in the order given in the 
+	 * <code>settings</code> portion of the input file. 
+	 * @return number of vehicles of each type in the link. 
 	 */
 	public Double[] getDensityInVeh() {
 		return density;
 	}
 
-	/** DESCRIPTION 
-	 * 
+	/** Total of vehicles in normalized units (vehicles/link). 
+	 * The return value equals the sum of {@link _Link#getDensityInVeh}.
+	 * @return total number of vehicles in the link.
 	 */
 	public double getTotalDensityInVeh() {
-		return SiriusMath.sum(density);
+		if(density!=null)
+			return SiriusMath.sum(density);
+		else
+			return 0d;
 	}
 	
-	/** DESCRIPTION 
-	 * 
+	/** Number of vehicles per vehicle type exiting the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of exiting flows per vehicle type. 
 	 */
 	public Double[] getOutflowInVeh() {
 		return outflow;
 	}
 
-	/** DESCRIPTION 
+	/** Total number of vehicles exiting the link during the current
+	 * time step.  The return value equals the sum of 
+	 * {@link _Link#getOutflowInVeh}.
+	 * @return total number of vehicles exiting the link in one time step.
 	 * 
 	 */
 	public double getTotalOutflowInVeh() {
 		return SiriusMath.sum(outflow);
 	}
 
-	/** DESCRIPTION 
-	 * 
+	/** Average speed of traffic in the link in mile/hour. 
+	 * The return value is computed by dividing the total outgoing 
+	 * link flow by the total link density. 
+	 * @return average link speed.
 	 */
 	public double computeSpeedInMPH(){
 		double totaldensity = SiriusMath.sum(density);
@@ -494,88 +502,64 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	// Fundamental diagram ....................
 	
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Jam density in vehicle/link. */
 	public double getDensityJamInVeh() {
 		return FD._getDensityJamInVeh();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Critical density in vehicle/link. */
 	public double getDensityCriticalInVeh() {
 		return FD.getDensityCriticalInVeh();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Capacity drop in vehicle/simulation time step */
 	public double getCapacityDropInVeh() {
 		return FD._getCapacityDropInVeh();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Capacity in vehicle/simulation time step */
 	public double getCapacityInVeh() {
 		return FD._getCapacityInVeh();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Jam density in vehicle/mile/lane. */
 	public double getDensityJamInVPMPL() {
 		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Critical density in vehicle/mile/lane. */
 	public double getDensityCriticalInVPMPL() {
 		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Capacity drop in vehicle/hr/lane. */
 	public double getCapacityDropInVPHPL() {
 		return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Capacity in vehicle/hr/lane. */
 	public double getCapacityInVPHPL() {
 		return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Freeflow speed in normalized units (link/time step). */
 	public double getNormalizedVf() {
 		return FD.getVfNormalized();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Freeflow speed in mile/hr. */
 	public double getVfInMPH() {
 		return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Congestion wave speed in normalized units (link/time step). */
 	public double getNormalizedW() {
 		return FD.getWNormalized();
 	}
 
-	/** DESCRIPTION 
-	 * 
-	 */
+	/** Congestion wave speed in mile/hr. */
 	public double getWInMPH() {
 		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
-
+	
 }

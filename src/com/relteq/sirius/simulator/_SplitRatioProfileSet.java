@@ -34,7 +34,7 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
-			System.out.println("Demand profile list of vehicle types does not match that of settings.");
+			SiriusErrorLog.addErrorMessage("Demand profile list of vehicle types does not match that of settings.");
 			return false;
 		}
 		
