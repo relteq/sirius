@@ -46,7 +46,6 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected double outdt;				// [sec] output sampling time
 	/** @y.exclude */	protected double timestart;			// [sec] start of the simulation
 	/** @y.exclude */	protected double timeend;			// [sec] end of the simulation
-	/** @y.exclude */	protected OutputWriter outputwriter = null;
 	/** @y.exclude */	protected String outputfile_density;
 	/** @y.exclude */	protected String outputfile_outflow;
 	/** @y.exclude */	protected String outputfile_inflow;
@@ -248,9 +247,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return vehicletypeindex;
 		
 		for(i=0;i<numTypesInOrder;i++){
-			List<VehicleType> vt = getSettings().getVehicleTypes().getVehicleType();
-			for(j=0;j<vt.size();j++){
-				if(vt.get(j).getName().equals(name)){
+			String vtordername = vtypeorder.getVehicleType().get(i).getName();
+			List<VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			for(j=0;j<settingsname.size();j++){
+				if(settingsname.get(j).getName().equals(vtordername)){
 					vehicletypeindex[i] =  j;
 					break;
 				}
@@ -317,84 +317,39 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// API
 	/////////////////////////////////////////////////////////////////////
 	
-	/** Run the scenario <code>numRepetitions</code> times.
+	/** Run the scenario <code>numRepetitions</code> times, save output to text files.
 	 * 
 	 * <p> The scenario is reset and run multiple times in sequence. All
-	 * probabilistic quantities are resampled between runs. Output files are
+	 * probabilistic quantities are re-sampled between runs. Output files are
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
 	 * @param numRepetitions 	The integer number of simulations to run.
 	 */
 	public void run(int numRepetitions){
-		
-		try{
-			
-	        isrunning = true;
+		run_internal(numRepetitions,true,false);
+	}
+
+	/** Run the scenario once, return the state trajectory.
+	 * <p> The scenario is reset and run once. 
+	 * @return An object with the history of densities and flows for all links in the scenario.
+	 */
+	public SiriusStateTrajectory run(){
+		return run_internal(1,false,true);
+	}
 	
-			// loop through simulation runs ............................
-			for(int i=0;i<numRepetitions;i++){
-				
-				// reset scenario
-				if(!reset()){
-					SiriusErrorLog.setErrorHeader("Reset failed.");
-					SiriusErrorLog.printErrorMessage();
-					return;
-				}
-	
-				// open output files
-		        if(simulationMode==_Scenario.ModeType.normal){
-		        	outputwriter = new OutputWriter(this,SiriusMath.round(outdt/simdtinseconds));
-					try {
-						outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow);
-					} catch (FileNotFoundException e) {
-						SiriusErrorLog.addErrorMessage("Unable to open output file.");
-						SiriusErrorLog.printErrorMessage();
-						return;
-					}
-		        }
-		        	
-		        // write initial condition
-		        //Utils.outputwriter.recordstate(Utils.clock.getT(),false);
-		        
-		        while( !clock.expired() ){
-	
-		            // update time (before write to output)
-		        	clock.advance();
-		        	      	        	
-		        	// update scenario
-		        	update();
-	
-		            // update time (before write to output)
-		            // Utils.clock.advance();
-		        	
-		            // write output .............................
-		            if(simulationMode==ModeType.normal)
-		            	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
-			        	if((clock.getCurrentstep()==1) || ((clock.getCurrentstep()-1)%outputwriter.getOutsteps()==0))
-			        		outputwriter.recordstate(clock.getT(),true);
-		        }
-	        
-	            // close output files
-		        if(simulationMode==_Scenario.ModeType.normal)
-		        	outputwriter.close();
-	
-				// or save scenario (in warmup mode)
-		        if(simulationMode==_Scenario.ModeType.warmupFromIC || simulationMode==_Scenario.ModeType.warmupFromZero){
-	//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
-	//	    		Utils.save(scenario, outfile);
-		        }
-			}
-		
-	        isrunning = false;
-	        
-	        
-		}
-		catch(SiriusException e){
-			SiriusErrorLog.addErrorMessage("ERROR CAUGHT");
-			return;
-		}
-		
+	/** Advance the simulation <i>n</i> steps.
+	 * 
+	 * <p> This function moves the simulation forward <i>n</i> time steps and stops.
+	 * The first parameter provides the number of time steps to advance. The second parameter
+	 * is a boolean that resets the clock and the scenario.  
+	 * @param n Number of simulation steps to advance.
+	 * @param fromstart <code>true</code> to reset the scenario before advancing, <code>false</code> otherwise. 
+	 * @return <code>true</code> if the simulation advanced without problem; <code>false</code> A problem was encountered, or the end of the simulation was reached. 
+	 * @throws SiriusException 
+	 */
+	public boolean advanceNSteps(int n,boolean fromstart) throws SiriusException{
+		return advanceNSteps_internal(n,fromstart,false,false,null,null);
 	}
 
 	/** Save the scenario to XML.
@@ -434,6 +389,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getCurrentstep();
 	}
 
+	/** Total number of time steps that will be simulated, regardless of the simulation mode.
+	 * @return	Integer number of time steps to simulate.
+	 */
+	public int getTotalTimeStepsToSimulate(){
+		 return clock.getTotalSteps();
+	}
+	
 	/** Number of vehicle types included in the scenario.
 	 * @return Integer number of vehicle types
 	 */
@@ -466,7 +428,6 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
 		return vehtypeweights;
 	}
-	
 	
 	/** Vehicle type index from name
 	 * @return integer index of the vehicle type.
@@ -663,5 +624,121 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		return true;
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// private
+	/////////////////////////////////////////////////////////////////////
+
+	private SiriusStateTrajectory run_internal(int numRepetitions,boolean writefiles,boolean returnstate){		
+		
+		// debug check
+		if(returnstate && numRepetitions>1){
+			System.out.println("Avoid this.");
+			return null;
+		}
+		
+		SiriusStateTrajectory state = null;
+		
+		try{
+			
+	        isrunning = true;
+	
+			// loop through simulation runs ............................
+			for(int i=0;i<numRepetitions;i++){
+
+				OutputWriter outputwriter  = null;
+				
+				// open output files
+		        if(writefiles && simulationMode==_Scenario.ModeType.normal){
+		        	outputwriter = new OutputWriter(this,SiriusMath.round(outdt/simdtinseconds));
+					try {
+						outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow,String.format("%d",i));
+					} catch (FileNotFoundException e) {
+						SiriusErrorLog.addErrorMessage("Unable to open output file.");
+						SiriusErrorLog.printErrorMessage();
+						return null;
+					}
+		        }
+		        
+		        // allocate state
+		        if(returnstate)
+		        	state = new SiriusStateTrajectory(this);
+		
+				// reset the simulation
+				advanceNSteps_internal(0,true,writefiles,returnstate,outputwriter,state);
+				
+				// advance to end of simulation
+				while( advanceNSteps_internal(1,false,writefiles,returnstate,outputwriter,state) ){					
+				}
+				
+	            // close output files
+		        if(writefiles){
+		        	if(simulationMode==_Scenario.ModeType.normal)
+			        	outputwriter.close();
+					// or save scenario (in warmup mode)
+			        if(simulationMode==_Scenario.ModeType.warmupFromIC || simulationMode==_Scenario.ModeType.warmupFromZero){
+			    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
+			    		//	    		Utils.save(scenario, outfile);
+			        }
+		        }
+		        
+			}		
+	        isrunning = false;
+
+		}
+		catch(SiriusException e){
+			SiriusErrorLog.addErrorMessage("ERROR CAUGHT");
+			return null;
+		}
+
+		return state;
+		
+	}
+	
+	private boolean advanceNSteps_internal(int n,boolean doreset,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state) throws SiriusException{
+				 
+		 // Allow only if simulation is running
+		 if(!isrunning){
+			 System.out.println("isrunning must be set to true before calling this method.");
+			 return false;
+		 }
+		
+		// reset
+		if(doreset)
+			if(!reset()){
+				SiriusErrorLog.setErrorHeader("Reset failed.");
+				SiriusErrorLog.printErrorMessage();
+				return false;
+			}
+        	
+		// advance n steps
+		for(int k=0;k<n;k++){
+
+            // update time (before write to output)
+        	clock.advance();
+        	      	        	
+        	// update scenario
+        	update();
+
+            if(simulationMode==ModeType.normal)
+            	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
+	        	if((clock.getCurrentstep()==1) || ((clock.getCurrentstep()-1)%outputwriter.getOutsteps()==0))
+	        		recordstate(writefiles,returnstate,outputwriter,state);
+        	
+        	if(clock.expired())
+        		return false;
+		}
+	      
+		return true;
+	}
+	
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state) {
+		if(writefiles)
+			outputwriter.recordstate(clock.getT(),true);
+		if(returnstate)
+			state.recordstate(clock.getCurrentstep(),clock.getT(),true);
+	}
+
+		
 
 }

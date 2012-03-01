@@ -184,7 +184,7 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 				break;
 			}
 		}
-		
+
 		// apply the knob and non-negativity
 		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
 			demandvalue[j] = Math.max(0.0,myScenario.global_demand_knob*demandvalue[j]*_knob);

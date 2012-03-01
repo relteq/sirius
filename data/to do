@@ -1,6 +1,6 @@
++ unify run methods
 + The try-with-resources Statement
 + finally
-+ split ratio events must set all splits for a given input and vehicle type. 
 + output
 
 SCHEMA:
@@ -8,7 +8,6 @@ SCHEMA:
 + implement controller ids rather than names, sensors
 
 --- RELEASE ---
-
 + NetworkConnections
 + weaving
 + signals
@@ -17,7 +16,6 @@ SCHEMA:
 + API
 
 --- RELEASE ---
-
 + ODList
 + PathSegements
 + DecisionPoints
@@ -25,8 +23,6 @@ SCHEMA:
 + API
 
 --- RELEASE ---
-
-
 DONE
 
 + added: plus_minus attribute to demandProfile.

@@ -1,6 +1,5 @@
 package com.relteq.sirius.simulator;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ import com.relteq.sirius.jaxb.Sensor;
 * @author Gabriel Gomes
 */
 public final class ObjectFactory {
-
-	private static String schemafile = "data/schema/sirius.xsd";
 
 	/////////////////////////////////////////////////////////////////////
 	// private default constructor
@@ -246,10 +243,10 @@ public final class ObjectFactory {
         }
         
         // schema assignment ..........................................................
-        SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        File schemaLocation = new File(ObjectFactory.schemafile);
         try{
-        	Schema schema = factory.newSchema(schemaLocation);
+            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
+        	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
         } catch(SAXException e){
         	SiriusErrorLog.addErrorMessage("Schema not found.");
@@ -279,9 +276,9 @@ public final class ObjectFactory {
         S.configfilename = configfilename;
 		if(outputfileprefix.endsWith(".csv"))
 			outputfileprefix = outputfileprefix.substring(0,outputfileprefix.length()-4);
-		S.outputfile_density = outputfileprefix + "_density.txt";
-		S.outputfile_outflow = outputfileprefix + "_outflow.txt";
-		S.outputfile_inflow = outputfileprefix + "_inflow.txt";
+		S.outputfile_density = outputfileprefix + "_density";
+		S.outputfile_outflow = outputfileprefix + "_outflow";
+		S.outputfile_inflow = outputfileprefix + "_inflow";
         S.timestart = timestart;
         S.timeend = timeend;
         S.outdt = outdt;
@@ -523,9 +520,9 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param node				The node
-	 * @param inputlink			String id of the input link 
-	 * @param vehicletype		String name of the vehicle type
-	 * @param splitratio		A Double3DMatrix with the new split ratio matrix.
+	 * @param inlink			String id of the input link 
+	 * @param vehicleType		String name of the vehicle type
+	 * @param splits			An array of splits for every link exiting the node.
 	 * @return					_Event object
 	 */		
 	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario,_Node node,String inlink,String vehicleType,ArrayList<Double>splits){

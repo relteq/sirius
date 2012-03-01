@@ -15,7 +15,7 @@ final class Runner {
 	private static int numRepetitions;
 	
 	public static void main(String[] args) {
-
+		
 		long time = System.currentTimeMillis();
 
 		// process input parameters
@@ -26,6 +26,12 @@ final class Runner {
 
 		// load configuration file ................................
 		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename,outputfileprefix,timestart,timeend,outdt);
+
+		// check if it loaded
+		if(SiriusErrorLog.haserror()){
+			SiriusErrorLog.printErrorMessage();
+			return;
+		}
 
 		// run scenario ...........................................
 		scenario.run(numRepetitions);

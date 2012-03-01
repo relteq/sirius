@@ -10,6 +10,10 @@ public final class SiriusErrorLog {
 	public static void clearErrorMessage(){
 		errormessage.clear();
 	}
+	
+	public static boolean haserror(){
+		return !errormessage.isEmpty();
+	}
 
 	public static void printErrorMessage(){
 		if(!errorheader.isEmpty())

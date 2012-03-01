@@ -265,13 +265,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */
 	protected void populate(_Network myNetwork) {
 
-		if(getBegin()==null)
-			return;
-		if(getEnd()==null)
-			return;
-				
         this.myNetwork = myNetwork;
-        
+
 //		// assign type
 //    	try {
 //			myType = _Link.Type.valueOf(getType());

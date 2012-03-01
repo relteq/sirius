@@ -32,6 +32,10 @@ final class Clock {
 	protected int getCurrentstep() {
 		return currentstep;
 	}
+
+	protected int getTotalSteps(){
+		return (int) Math.ceil((maxt-to)/dt);
+	}
 	
 	protected void advance(){
 		currentstep++;
@@ -49,5 +53,6 @@ final class Clock {
 			return false;
 		return (currentstep-stepinitial) % samplesteps == 0;
 	}
+	
 	
 }

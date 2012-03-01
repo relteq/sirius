@@ -136,8 +136,6 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 //			return;
 //		}
 		
-//    	if(myType==_Node.Type.terminal)
-//    		return;
     	
 		nOut = 0;
 		if(getOutputs()!=null){
@@ -160,7 +158,10 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		}
 		
 		isTerminal = nOut==0 || nIn==0;
-		
+
+    	if(isTerminal)
+    		return;
+    	
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 		inDemand = new Double[nIn][numVehicleTypes];
 		outSupply = new double[nOut];

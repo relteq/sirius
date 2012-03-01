@@ -410,11 +410,11 @@ end
 function [x]=adjustEventType(x)
 switch x.ATTRIBUTE.type
     case 'FD'
-        newtype = 'fundamental diagram';
+        newtype = 'fundamental_diagram';
     case 'SRM'
-        newtype = 'node split ratio';
+        newtype = 'node_split_ratio';
     case 'LC'
-        newtype = 'link lanes';
+        newtype = 'link_lanes';
     otherwise
         warning('unsupported event type')
 end
@@ -424,9 +424,9 @@ x.ATTRIBUTE.type = newtype;
 function [x]=adjustDataSourceFormat(x)
 switch x.ATTRIBUTE.format
     case 'pems'
-        newtype = 'PeMS Data Clearinghouse';
+        newtype = 'PeMS_Data_Clearinghouse';
     case 'dbx'
-        newtype = 'Caltrans DBX';
+        newtype = 'Caltrans_DBX';
     case 'bhl'
         newtype = 'BHL';
     otherwise
@@ -438,21 +438,21 @@ x.ATTRIBUTE.format = newtype;
 function [x]=adjustControllerType(x)
 switch x.ATTRIBUTE.type
     case 'ALINEA'
-        newtype = 'IRM alinea';
+        newtype = 'IRM_alinea';
     case 'TOD'
-        newtype = 'IRM time of day';
+        newtype = 'IRM_time_of_day';
     case 'TR'
-        newtype = 'IRM traffic responsive';
+        newtype = 'IRM_traffic_responsive';
     case 'PRETIMED'
-        newtype = 'SIG pretimed';
+        newtype = 'SIG_pretimed';
     case 'ACTUADED'
-        newtype = 'SIG actuated';
+        newtype = 'SIG_actuated';
     case 'SWARM'
-        newtype = 'CRM swarm';
+        newtype = 'CRM_swarm';
     case 'HERO'
-        newtype = 'CRM hero';
+        newtype = 'CRM_hero';
     case 'VSLTOD'
-        newtype = 'VSL time of day';
+        newtype = 'VSL_time_of_day';
     otherwise
         warning('unsupported controller type')
 end
@@ -461,11 +461,11 @@ x.ATTRIBUTE.type = newtype;
 if(isfield(x,'qcontroller'))
     switch x.qcontroller.ATTRIBUTE.type
         case 'QUEUEOVERRIDE'
-            newtype = 'queue override';
+            newtype = 'queue_override';
         case 'PROPORTIONAL'
             newtype = 'proportional';
         case 'PI'
-            newtype = 'proportional integral';
+            newtype = 'proportional_integral';
         case 'null'
             newtype = 'none';
         otherwise
@@ -479,11 +479,11 @@ end
 function [x]=adjustSensorType(x)
 switch x.ATTRIBUTE.type
     case 'loop'
-        newtype = 'static point';
+        newtype = 'static_point';
     case {'radar','camera'}
-        newtype = 'static area';
+        newtype = 'static_area';
     case 'sensys'
-        newtype = 'moving point';
+        newtype = 'moving_point';
     otherwise
         warning('unsupported sensor type')
 end
@@ -510,7 +510,7 @@ switch x.ATTRIBUTE.type
     case {'F','H'}
         newtype = 'simple';
     case 'S'
-        newtype = 'signalized intersection';
+        newtype = 'signalized_intersection';
     case 'T'
         newtype = 'terminal';
     otherwise
@@ -531,7 +531,7 @@ switch x.ATTRIBUTE.type
     case 'FR'
         newtype = 'offramp';
     case 'IC'
-        newtype = 'freeway connector';
+        newtype = 'freeway_connector';
     case 'ST'
         newtype = 'street';
     case 'HOT'

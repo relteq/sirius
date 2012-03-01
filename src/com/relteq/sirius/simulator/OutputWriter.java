@@ -33,10 +33,11 @@ final class OutputWriter {
 		return outsteps;
 	}
 
-	protected boolean open(String density,String outflow,String inflow) throws FileNotFoundException {
-		out_density = new OutputStreamWriter(new FileOutputStream(density));		
-		out_outflow = new OutputStreamWriter(new FileOutputStream(outflow));		
-		out_inflow = new OutputStreamWriter(new FileOutputStream(inflow));	
+	protected boolean open(String density,String outflow,String inflow,String suffix) throws FileNotFoundException {
+		suffix = "_"+suffix+".txt";
+		out_density = new OutputStreamWriter(new FileOutputStream(density+suffix));		
+		out_outflow = new OutputStreamWriter(new FileOutputStream(outflow+suffix));		
+		out_inflow = new OutputStreamWriter(new FileOutputStream(inflow+suffix));	
 		return true;
 	}
 
