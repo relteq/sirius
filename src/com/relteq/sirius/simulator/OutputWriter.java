@@ -18,30 +18,27 @@ import com.relteq.sirius.jaxb.Network;
 final class OutputWriter {
 
 	protected _Scenario myScenario;
-	protected int outsteps;
+	protected Writer out_time = null;
 	protected Writer out_density = null;
 	protected Writer out_outflow = null;
 	protected Writer out_inflow = null;
 	protected static String delim = "\t";
 
-	public OutputWriter(_Scenario myScenario,int osteps){
+	public OutputWriter(_Scenario myScenario){
 		this.myScenario = myScenario;
-		this.outsteps = osteps;
+		//this.outsteps = osteps;
 	}
 
-	protected int getOutsteps() {
-		return outsteps;
-	}
-
-	protected boolean open(String density,String outflow,String inflow,String suffix) throws FileNotFoundException {
+	protected boolean open(String prefix,String suffix) throws FileNotFoundException {
 		suffix = "_"+suffix+".txt";
-		out_density = new OutputStreamWriter(new FileOutputStream(density+suffix));		
-		out_outflow = new OutputStreamWriter(new FileOutputStream(outflow+suffix));		
-		out_inflow = new OutputStreamWriter(new FileOutputStream(inflow+suffix));	
+		out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));	
+		out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));		
+		out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));		
+		out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));	
 		return true;
 	}
 
-	protected void recordstate(double time,boolean exportflows) {
+	protected void recordstate(double time,boolean exportflows,int outsteps) {
 		
 		if(myScenario==null)
 			return;
@@ -55,6 +52,7 @@ final class OutputWriter {
 			invsteps = 1f/((double)outsteps);
 			
 		try {
+			out_time.write(String.format("%f\n",time));
 			for(Network network : myScenario.getNetworkList().getNetwork()){
 				List<Link> links = network.getLinkList().getLink();
 
@@ -93,6 +91,8 @@ final class OutputWriter {
 
 	protected void close(){
 		try {
+			if(out_time!=null)
+				out_time.close();
 			if(out_density!=null)
 				out_density.close();
 			if(out_outflow!=null)

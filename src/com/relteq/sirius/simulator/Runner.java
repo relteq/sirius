@@ -41,13 +41,12 @@ final class Runner {
 
 	private static boolean parseInput(String[] args){
 
-		if(args.length==0){
+		if(args.length<1){
 			String str;
 			str = "Usage:" + "\n";
 			str += "-----\n" + "\n";
-			str += "args[0]: Configuration file name." + "\n";
-			str += "args[1]: Output file name." + "\n";
-			str += "         Default: <config file name>_output.csv." + "\n";
+			str += "args[0]: Configuration file name. (required)\n";
+			str += "args[1]: Output file name.\n";
 			str += "args[2]: Start time [seconds after midnight]." + "\n";
 			str += "         Defailt: Minimum start time of all demand profiles." + "\n";
 			str += "args[3]: Duration [seconds]." + "\n";
@@ -71,18 +70,15 @@ final class Runner {
 			return false;
 		}
 		
-		// Configuration file name
-		if(args.length>0)	
-			configfilename = args[0];
-		else
-			configfilename = Defaults.CONFIGFILE;	
+		// Configuration file name	
+		configfilename = args[0];
 
-		// Output file name		
-		if(args.length>1)	
-			outputfileprefix = args[1];
+		// Output file name
+		if(args.length>1)
+			outputfileprefix = args[1];	
 		else
-			outputfileprefix = Defaults.OUTPUTFILE;
-		
+			outputfileprefix = "output";
+			
 		// Start time [seconds after midnight]
 		if(args.length>2){
 			timestart = Double.parseDouble(args[2]);

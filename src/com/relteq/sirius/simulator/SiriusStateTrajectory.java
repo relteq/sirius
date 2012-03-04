@@ -5,15 +5,22 @@ import java.util.List;
 import com.relteq.sirius.jaxb.Link;
 import com.relteq.sirius.jaxb.Network;
 
+/** Class used for storing the state trajectory of a scenario. 
+ * <p>
+* @author Gabriel Gomes
+*/
 public final class SiriusStateTrajectory {
 
 	protected _Scenario myScenario;
-	protected int outsteps;									// output period in simulation steps
 	protected int numNetworks;								// number of networks in the scenario
 	protected NewtorkStateTrajectory [] networkState;		// array of states trajectories for networks
 	protected int numVehicleTypes; 							// size of 2nd dimension of networkState
 	protected int numTime; 									// size of 3rd dimension of networkState
 
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
 	public SiriusStateTrajectory(_Scenario myScenario) {
 		if(myScenario==null)
 			return;
@@ -35,6 +42,10 @@ public final class SiriusStateTrajectory {
 		}
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////
+	
 	public Double getDensity(int netindex,int i,int j,int k) {
 		if(netindex<0 || netindex>=numNetworks)
 			return Double.NaN;
@@ -55,7 +66,7 @@ public final class SiriusStateTrajectory {
 			return N.flow[i][j][k];
 	}
 
-	protected void recordstate(int timestep,double time,boolean exportflows) {
+	protected void recordstate(int timestep,double time,boolean exportflows,int outsteps) {
 		
 		int i,j;
 		double invsteps;
@@ -80,6 +91,10 @@ public final class SiriusStateTrajectory {
 		}
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// internal class
+	/////////////////////////////////////////////////////////////////////
+	
 	public class NewtorkStateTrajectory{
 
 		protected int numLinks; 		// size of 1st dimension

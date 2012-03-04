@@ -19,8 +19,4 @@ final class Defaults {
 	public static Double densityJam			= 160.0;	// [veh/mile/lane]
 	public static Double capacityDrop 		= 0.0;		// [veh/hr/lane]
 	public static Double capacity 			= 2400.0;	// [veh/hr/lane]
-	
-	public static String CONFIGFILE = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\scenario_2009_02_12.xml";
-	public static String OUTPUTFILE = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.csv";
-	
 }

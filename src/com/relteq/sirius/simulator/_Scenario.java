@@ -44,11 +44,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
 	/** @y.exclude */	protected double outdt;				// [sec] output sampling time
+	/** @y.exclude */	protected int outsteps;				// [-] number of simulation steps per output step
 	/** @y.exclude */	protected double timestart;			// [sec] start of the simulation
 	/** @y.exclude */	protected double timeend;			// [sec] end of the simulation
-	/** @y.exclude */	protected String outputfile_density;
-	/** @y.exclude */	protected String outputfile_outflow;
-	/** @y.exclude */	protected String outputfile_inflow;
+	/** @y.exclude */	protected String outputfileprefix;
 	/** @y.exclude */	protected Random random = new Random();
 	/** @y.exclude */	protected _Scenario.ModeType simulationMode;
 	/** @y.exclude */	protected _Scenario.UncertaintyType uncertaintyModel;
@@ -650,9 +649,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 				
 				// open output files
 		        if(writefiles && simulationMode==_Scenario.ModeType.normal){
-		        	outputwriter = new OutputWriter(this,SiriusMath.round(outdt/simdtinseconds));
+		        	outputwriter = new OutputWriter(this);
 					try {
-						outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow,String.format("%d",i));
+						outputwriter.open(outputfileprefix,String.format("%d",i));
+						//outputwriter.open(outputfile_density,outputfile_outflow,outputfile_inflow,String.format("%d",i));
 					} catch (FileNotFoundException e) {
 						SiriusErrorLog.addErrorMessage("Unable to open output file.");
 						SiriusErrorLog.printErrorMessage();
@@ -710,10 +710,15 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 				SiriusErrorLog.printErrorMessage();
 				return false;
 			}
-        	
+        
 		// advance n steps
 		for(int k=0;k<n;k++){
 
+			// export initial condition
+	        if(simulationMode==ModeType.normal)
+	        	if( clock.getCurrentstep()==0 )
+	        		recordstate(writefiles,returnstate,outputwriter,state,false);
+	        
             // update time (before write to output)
         	clock.advance();
         	      	        	
@@ -722,8 +727,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
             if(simulationMode==ModeType.normal)
             	//if(Utils.clock.istimetosample(Utils.outputwriter.getOutsteps()))
-	        	if((clock.getCurrentstep()==1) || ((clock.getCurrentstep()-1)%outputwriter.getOutsteps()==0))
-	        		recordstate(writefiles,returnstate,outputwriter,state);
+	        	if( clock.getCurrentstep()%outsteps == 0 )
+	        		recordstate(writefiles,returnstate,outputwriter,state,true);
         	
         	if(clock.expired())
         		return false;
@@ -732,13 +737,11 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state) {
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,boolean exportflows) {
 		if(writefiles)
-			outputwriter.recordstate(clock.getT(),true);
+			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
-			state.recordstate(clock.getCurrentstep(),clock.getT(),true);
+			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
 	}
-
-		
 
 }

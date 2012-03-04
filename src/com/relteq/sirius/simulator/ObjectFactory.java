@@ -276,9 +276,7 @@ public final class ObjectFactory {
         S.configfilename = configfilename;
 		if(outputfileprefix.endsWith(".csv"))
 			outputfileprefix = outputfileprefix.substring(0,outputfileprefix.length()-4);
-		S.outputfile_density = outputfileprefix + "_density";
-		S.outputfile_outflow = outputfileprefix + "_outflow";
-		S.outputfile_inflow = outputfileprefix + "_inflow";
+		S.outputfileprefix = outputfileprefix;
         S.timestart = timestart;
         S.timeend = timeend;
         S.outdt = outdt;
@@ -289,6 +287,7 @@ public final class ObjectFactory {
         S.simdtinhours = S.simdtinseconds/3600.0;
         S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
+        S.outsteps = SiriusMath.round(S.outdt/S.simdtinseconds);
         if(S.getSettings().getVehicleTypes()==null)
             S.numVehicleTypes = 1;
         else
