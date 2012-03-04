@@ -15,6 +15,7 @@
 	<property name="doc.dir" value="${basedir}/doc"/>
 
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
+	<property name="schema.file" value="data/schema/sirius.xsd"/>
 
 	<target name="all" depends="jar,doc"/>
 
@@ -32,8 +33,12 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="compile">
-		<jar jarfile="${jar.file}" basedir="${build.dir}" includes="**/*.class">
+	<target name="resources" depends="builddir">
+		<copy file="${schema.file}" todir="${build.dir}"/>
+	</target>
+
+	<target name="jar" depends="compile,resources">
+		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="com/relteq/sirius/simulator/Runner"/>
 			</manifest>
