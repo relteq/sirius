@@ -46,7 +46,7 @@
 	</target>
 
 	<target name="doc" description="run javadoc">
-		<javadoc encoding="${src.encoding}" sourcepath="src" packagenames="**/*.*" destdir="${doc.dir}"
+		<javadoc encoding="${src.encoding}" sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
 				protected="yes" author="yes" use="yes" version="yes" linksource="yes"
 				docletpath="${ydoc.path}/lib/ydoc.jar;${ydoc.path}/resources">
 			<doclet name="ydoc.doclets.YStandard">
