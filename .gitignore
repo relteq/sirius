@@ -1,4 +1,5 @@
 build/
 doc/
 sirius.jar
+src/com/relteq/sirius/jaxb/
 

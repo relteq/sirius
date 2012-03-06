@@ -17,13 +17,32 @@
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
 	<property name="schema.file" value="data/schema/sirius.xsd"/>
 
+	<property name="jaxb.dir" value="jaxb-ri-20120218"/>
+
+	<property name="xjc.destdir" value="${src.dir}/com/relteq/sirius/jaxb"/>
+
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+		<classpath>
+			<fileset dir="${jaxb.dir}/lib" includes="*.jar"/>
+		</classpath>
+	</taskdef>
+
 	<target name="all" depends="jar,doc"/>
+
+	<target name="xsd2java">
+		<mkdir dir="${xjc.destdir}"/>
+		<xjc schema="${schema.file}"
+				package="com.relteq.sirius.jaxb" destdir="${src.dir}"
+				readonly="yes" removeOldOutput="yes">
+			<produces dir="${xjc.destdir}" includes="*.java"/>
+		</xjc>
+	</target>
 
 	<target name="builddir">
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir">
+	<target name="compile" depends="builddir,xsd2java">
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
 				debug="${javac.debug}" optimize="${javac.optimize}"
@@ -45,7 +64,7 @@
 		</jar>
 	</target>
 
-	<target name="doc" description="run javadoc">
+	<target name="doc" description="run javadoc" depends="xsd2java">
 		<javadoc encoding="${src.encoding}" sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
 				protected="yes" author="yes" use="yes" version="yes" linksource="yes"
 				docletpath="${ydoc.path}/lib/ydoc.jar;${ydoc.path}/resources">
@@ -60,6 +79,7 @@
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
+		<delete dir="${xjc.destdir}"/>
 	</target>
 </project>
 
