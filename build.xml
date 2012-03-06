@@ -17,6 +17,13 @@
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
 	<property name="schema.file" value="data/schema/sirius.xsd"/>
 
+	<target name="help">
+		<echo>ant       - build a jar</echo>
+		<echo>ant doc   - generate documentation</echo>
+		<echo>ant all   - build a jar and generate documentation</echo>
+		<echo>ant clean - cleanup</echo>
+	</target>
+
 	<target name="all" depends="jar,doc"/>
 
 	<target name="builddir">
