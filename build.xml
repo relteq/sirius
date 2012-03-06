@@ -52,11 +52,13 @@
 		</jar>
 	</target>
 
-	<target name="doc" description="run javadoc">
-		<javadoc encoding="${src.encoding}" sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
-				protected="yes" author="yes" use="yes" version="yes" linksource="yes"
-				docletpath="${ydoc.path}/lib/ydoc.jar;${ydoc.path}/resources">
-			<doclet name="ydoc.doclets.YStandard">
+	<target name="doc" description="run javadoc" depends="compile">
+		<javadoc encoding="${src.encoding}"
+				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
+				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
+			<doclet name="ydoc.doclets.YStandard"
+					path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}">
+				<param name="-umltypegen"/>
 				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
 				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
 			</doclet>
