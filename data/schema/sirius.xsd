@@ -173,16 +173,6 @@
 			  </xs:restriction>
 			</xs:simpleType>
 		  </xs:element>
-
-<!--
-		  <xs:element name="simulation">
-			<xs:complexType>
-			  <xs:attribute name="timeMax" type="xs:decimal" use="required" />						- in seconds after midnight -
-			  <xs:attribute name="outputDt" type="xs:decimal" use="required" />						- in seconds -
-			  <xs:attribute name="timeInitial" type="xs:decimal" use="optional" default="0.0" />	- in seconds after midnight -
-			</xs:complexType>
-		  </xs:element>	
--->		  
 		
   <!-- NetworkList ............................................................... -->
 
@@ -352,21 +342,21 @@
 				</xs:complexType>
 			  </xs:element>
 			  
-			  <xs:element name="phase">
-				<xs:complexType>
-				  <xs:all>
-					<xs:element ref="links" minOccurs="0" />
-				  </xs:all>
-				  <xs:attribute name="nema" type="xs:integer" use="required" />
-				  <xs:attribute name="protected" type="xs:boolean" use="required" />
-				  <xs:attribute name="permissive" type="xs:boolean" use="required" />
-				  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in seconds -->
-				  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-				  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-				  <xs:attribute name="lag" type="xs:boolean" use="required" />
-				  <xs:attribute name="recall" type="xs:boolean" use="required" />
-				</xs:complexType>
-			  </xs:element>
+				  <xs:element name="phase">
+					<xs:complexType>
+					  <xs:all>
+						<xs:element ref="links" minOccurs="0" />
+					  </xs:all>
+					  <xs:attribute name="nema" type="xs:integer" use="required" />
+					  <xs:attribute name="protected" type="xs:boolean" use="required" />
+					  <xs:attribute name="permissive" type="xs:boolean" use="required" />
+					  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in seconds -->
+					  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+					  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+					  <xs:attribute name="lag" type="xs:boolean" use="required" />
+					  <xs:attribute name="recall" type="xs:boolean" use="required" />
+					</xs:complexType>
+				  </xs:element>
   
   <!-- SensorList ................................................................ -->
   
@@ -896,14 +886,14 @@
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="nertworkpair" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element ref="networkpair" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
 		  <xs:attribute name="id" type="xs:string" use="optional" default="" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>  
 
-		  <xs:element name="nertworkpair">
+		  <xs:element name="networkpair">
 			<xs:complexType>
 			  <xs:sequence>
 				<xs:element ref="linkpair" minOccurs="0" maxOccurs="unbounded" />
