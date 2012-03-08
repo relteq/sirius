@@ -17,14 +17,8 @@
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
 	<property name="schema.file" value="data/schema/sirius.xsd"/>
 
-	<target name="help">
-		<echo>ant       - build a jar</echo>
-		<echo>ant doc   - generate documentation</echo>
-		<echo>ant all   - build a jar and generate documentation</echo>
-		<echo>ant clean - cleanup</echo>
-	</target>
-
-	<target name="all" depends="jar,doc"/>
+	<target name="all" depends="jar,doc"
+			description="build a jar and generate documentation"/>
 
 	<target name="builddir">
 		<mkdir dir="${build.dir}"/>
@@ -44,7 +38,7 @@
 		<copy file="${schema.file}" todir="${build.dir}"/>
 	</target>
 
-	<target name="jar" depends="compile,resources">
+	<target name="jar" depends="compile,resources" description="build a jar">
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="com/relteq/sirius/simulator/Runner"/>
@@ -52,7 +46,7 @@
 		</jar>
 	</target>
 
-	<target name="doc" description="run javadoc" depends="compile">
+	<target name="doc" depends="compile" description="generate documentation">
 		<javadoc encoding="${src.encoding}"
 				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
 				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
@@ -65,7 +59,7 @@
 		</javadoc>
 	</target>
 
-	<target name="clean">
+	<target name="clean" description="clean up">
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
