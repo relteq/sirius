@@ -38,7 +38,7 @@ final class OutputWriter {
 		return true;
 	}
 
-	protected void recordstate(double time,boolean exportflows,int outsteps) {
+	protected void recordstate(double time,boolean exportflows,int outsteps) throws SiriusException {
 		
 		if(myScenario==null)
 			return;
@@ -84,8 +84,7 @@ final class OutputWriter {
 			}
 			
 		} catch (IOException e) {
-			e.printStackTrace();
-			return;
+			throw new SiriusException(e.getMessage());
 		}
 	}
 

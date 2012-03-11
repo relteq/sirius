@@ -132,8 +132,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd) throws SiriusException{
     	if(fd==null)
     		return;
-    	if(!fd.validate())
-			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+//    	if(!fd.validate())
+//			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
     		
     	FDfromProfile = fd;				// update the profile pointer
     	if(!activeFDevent)				
@@ -280,12 +280,16 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
         
 		// nodes must populate before links
-		issource = begin_node.isTerminal;
-		issink = end_node.isTerminal;
+		if(begin_node!=null)
+			issource = begin_node.isTerminal;
+		if(end_node!=null)
+			issink = end_node.isTerminal;
 
 		// lanes and length
-		_lanes = getLanes().doubleValue();
-		_length = getLength().doubleValue();
+		if(getLanes()!=null)
+			_lanes = getLanes().doubleValue();
+		if(getLength()!=null)
+			_length = getLength().doubleValue();
         
         // initial density, demand, and capacity
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
@@ -303,22 +307,22 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	protected boolean validate() {
 		
 		if(!issource && begin_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect begin node id in link " + getId());
+			SiriusErrorLog.addErrorMessage("Incorrect begin node id in link.");
 			return false;
 		}
 
 		if(!issink && end_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect end node id in link " + getId());
+			SiriusErrorLog.addErrorMessage("Incorrect end node id in link.");
 			return false;
 		}
 		
 		if(_length<=0){
-			SiriusErrorLog.addErrorMessage("Link length must be positive: Link " + getId());
+			SiriusErrorLog.addErrorMessage("Non-positive length.");
 			return false;
 		}
 		
 		if(_lanes<=0){
-			SiriusErrorLog.addErrorMessage("Link lanes must be positive: Link " + getId());
+			SiriusErrorLog.addErrorMessage("Non-positive number of lanes.");
 			return false;
 		}
 		

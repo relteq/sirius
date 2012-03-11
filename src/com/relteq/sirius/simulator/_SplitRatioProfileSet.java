@@ -38,9 +38,6 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 			return false;
 		}
 		
-		if(getSplitratioProfile().isEmpty())
-			return true;
-		
 		for(SplitratioProfile sr : getSplitratioProfile())
 			if(!((_SplitRatioProfile)sr).validate())
 				return false;

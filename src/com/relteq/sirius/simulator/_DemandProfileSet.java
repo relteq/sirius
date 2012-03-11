@@ -43,9 +43,6 @@ final class _DemandProfileSet extends DemandProfileSet {
 			return false;
 		}
 		
-		if(getDemandProfile().isEmpty())
-			return true;
-		
 		for(DemandProfile dp : getDemandProfile())
 			if(!((_DemandProfile)dp).validate())
 				return false;

@@ -239,6 +239,7 @@ public final class ObjectFactory {
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	SiriusErrorLog.addErrorMessage("Failed to create context for JAXB unmarshaller.");
+        	SiriusErrorLog.setErrorHeader("Load error.");
             return null;
         }
         
@@ -250,6 +251,7 @@ public final class ObjectFactory {
         	u.setSchema(schema);
         } catch(SAXException e){
         	SiriusErrorLog.addErrorMessage("Schema not found.");
+        	SiriusErrorLog.setErrorHeader("Load error.");
         	return null;
         }
         
@@ -263,12 +265,19 @@ public final class ObjectFactory {
             u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new _JaxbObjectFactory());            
         	S = (_Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
+        	SiriusErrorLog.setErrorHeader("Load error.");
         	SiriusErrorLog.addErrorMessage("JAXB threw an exception when loading the configuration file.");
         	if(je.getLinkedException()!=null)
         		SiriusErrorLog.addErrorMessage(je.getLinkedException().getMessage());
             return null;
         } catch (FileNotFoundException e) {
+        	SiriusErrorLog.setErrorHeader("Load error.");
         	SiriusErrorLog.addErrorMessage("Configuration file not found.");
+        	return null;
+		}
+        
+        if(S==null){
+        	SiriusErrorLog.setErrorHeader("Unknown load error.");
         	return null;
 		}
 
@@ -288,10 +297,9 @@ public final class ObjectFactory {
         S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
         S.outsteps = SiriusMath.round(S.outdt/S.simdtinseconds);
-        if(S.getSettings().getVehicleTypes()==null)
-            S.numVehicleTypes = 1;
-        else
-        	if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
+        S.numVehicleTypes = 1;
+        if(S.getSettings().getVehicleTypes()!=null)
+            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
         		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
         
         // simulation mode
@@ -304,7 +312,8 @@ public final class ObjectFactory {
         try{
         	S.populate();
         } catch (SiriusException e){
-        	SiriusErrorLog.addErrorMessage("ERROR CAUGHT.");
+        	SiriusErrorLog.setErrorHeader("Scenario population error.");
+        	SiriusErrorLog.addErrorMessage(e.getMessage());
         	return null;
         }
         
@@ -314,21 +323,19 @@ public final class ObjectFactory {
         	registersuccess &= controller.register();
         
         if(!registersuccess){
-        	SiriusErrorLog.addErrorMessage("Conflicting controllers");
+        	SiriusErrorLog.setErrorHeader("Controller registration failure.");
         	return null;
         }
         
         // check that load was successful        
 		if(!checkLoad(S)){
-			SiriusErrorLog.setErrorHeader("Load failed.");
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.setErrorHeader("Check load error.");
 			return null;
 		}
 		
 		// validate scenario ......................................
 		if(!S.validate()){
-			SiriusErrorLog.setErrorHeader("Validation failed.");
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.setErrorHeader("Validation error.");
 			return null;
 		}
 		
@@ -663,7 +670,7 @@ public final class ObjectFactory {
 		int tengcd = 0;		// in deciseconds
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds
-	        if( SiriusMath.lessthan(dt,0.1) ){
+	        if( SiriusMath.lessthan( Math.abs(dt) ,0.1) ){
 	        	SiriusErrorLog.addErrorMessage("Warning: Network dt given in hours. Changing to seconds.");
 				dt *= 3600;
 	        }
@@ -707,19 +714,13 @@ public final class ObjectFactory {
 	
 	private static boolean checkLoad(_Scenario scenario){
 		
-		if(scenario==null){
-			SiriusErrorLog.setErrorHeader("Load failed.");
-			return false;
-		}
-	
 		// check timestart < timeend (depends on simulation mode)
 		if(scenario.timestart>=scenario.timeend){
-			SiriusErrorLog.setErrorHeader("Empty simulation period.");
+			SiriusErrorLog.addErrorMessage("Empty simulation period.");
 			return false;
 		}
 		
 		return true;
-		
 	}
 	
 }
