@@ -3,6 +3,7 @@
 <project name="sirius" default="jar" basedir=".">
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="build.dir" value="${basedir}/build"/>
+	<property name="bin.dir" value="${basedir}/bin"/>
 	<property name="src.encoding" value="ISO-8859-1"/>
 
 	<property name="javac.optimize" value="on"/>
@@ -35,6 +36,7 @@
 
 	<target name="resources" depends="builddir">
 		<copy file="${schema.file}" todir="${build.dir}"/>
+		<copy file="${schema.file}" todir="${bin.dir}"/>
 	</target>
 
 	<target name="jar" depends="compile,resources">

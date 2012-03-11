@@ -27,12 +27,6 @@
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
-      <event enabled="true" tstamp="20" type="fundamental_diagram">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="-36" densityJam="150" freeflow_speed="9"/>
-         <targetElements>
-            <scenarioElement id="-3" type="link"/>
-         </targetElements>
-      </event>
    </EventSet>
    <DemandProfileSet>
       <demandProfile dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>

@@ -34,7 +34,12 @@ final class Runner {
 		}
 
 		// run scenario ...........................................
-		scenario.run(numRepetitions);
+		try {
+			scenario.run(numRepetitions);
+		} catch (SiriusException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}

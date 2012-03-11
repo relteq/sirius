@@ -136,7 +136,6 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 //			return;
 //		}
 		
-    	
 		nOut = 0;
 		if(getOutputs()!=null){
 			nOut = getOutputs().getOutput().size();
@@ -189,7 +188,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		if(output_link!=null)
 			for(_Link link : output_link){
 				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect output link id in node " + getId());
+					SiriusErrorLog.addErrorMessage("Incorrect output link id.");
 					return false;
 				}
 			}
@@ -197,18 +196,18 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		if(input_link!=null)
 			for(_Link link : input_link){
 				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect input link id in node " + getId());
+					SiriusErrorLog.addErrorMessage("Incorrect input link id.");
 					return false;
 				}
 			}
 		
 		if(nIn==0){
-			SiriusErrorLog.addErrorMessage("No inputs into node " + getId());
+			SiriusErrorLog.addErrorMessage("No inputs into non-terminal node.");
 			return false;
 		}
 
 		if(nOut==0){
-			SiriusErrorLog.addErrorMessage("No outputs from node " + getId());
+			SiriusErrorLog.addErrorMessage("No outputs from non-terminal node.");
 			return false;
 		}
 		
@@ -663,8 +662,9 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     /** Index of link with given id in the list of input links of this node */ 
 	public int getInputLinkIndex(String id){
 		for(int i=0;i<getnIn();i++){
-			if(input_link[i].getId().equals(id))
-				return i;
+			if(input_link[i]!=null)
+				if(input_link[i].getId().equals(id))
+					return i;
 		}
 		return -1;
 	}
@@ -672,8 +672,9 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
     /** Index of link with given id in the list of output links of this node */ 
 	public int getOutputLinkIndex(String id){
 		for(int i=0;i<getnOut();i++){
-			if(output_link[i].getId().equals(id))
-				return i;
+			if(output_link[i]!=null)
+				if(output_link[i].getId().equals(id))
+					return i;
 		}
 		return -1;
 	}

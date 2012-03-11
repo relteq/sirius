@@ -17,7 +17,7 @@ public final class SiriusErrorLog {
 
 	public static void printErrorMessage(){
 		if(!errorheader.isEmpty())
-			System.out.println("Error: " + errorheader);
+			System.out.println(errorheader);
 		if(!errormessage.isEmpty()){
 			if(errormessage.size()==1)
 				System.out.println(errormessage.get(0));

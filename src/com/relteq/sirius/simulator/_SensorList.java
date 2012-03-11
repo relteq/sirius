@@ -40,8 +40,10 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 
 	protected boolean validate() {
 		for(_Sensor sensor : _sensors)
-			if(!sensor.validate())
+			if(!sensor.validate()){
+				SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
 				return false;
+			}
 		return true;
 	}
 

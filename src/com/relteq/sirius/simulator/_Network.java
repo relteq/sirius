@@ -36,20 +36,26 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 
 	protected boolean validate() {
 
-		if(myScenario.getSimDtInSeconds()<=0)
+		if(myScenario.getSimDtInSeconds()<=0){
+			SiriusErrorLog.addErrorMessage("Negative simulation time (" + myScenario.getSimDtInSeconds() +").");
 			return false;
+		}
 		
 		// node list
 		if(getNodeList()!=null)
 			for (Node node : getNodeList().getNode())
-				if( !((_Node)node).validate() )
+				if( !((_Node)node).validate() ){
+					SiriusErrorLog.addErrorMessage("Node validation failure, node " + node.getId());
 					return false;
+				}
 
 		// link list
 		if(getLinkList()!=null)
 			for (Link link : getLinkList().getLink())
-				if( !((_Link)link).validate() )
+				if( !((_Link)link).validate() ){
+					SiriusErrorLog.addErrorMessage("Link validation failure, link " + link.getId());
 					return false;
+				}
 
 		// sensor list
 		if(!_sensorlist.validate())
@@ -58,8 +64,10 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		// signal list
 		if(getSignalList()!=null)
 			for (Signal signal : getSignalList().getSignal())
-				if( !((_Signal)signal).validate() )
+				if( !((_Signal)signal).validate() ){
+					SiriusErrorLog.addErrorMessage("Signal validation failure.");
 					return false;
+				}
 
 		return true;
 	}
