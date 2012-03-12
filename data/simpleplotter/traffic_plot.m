@@ -2,8 +2,8 @@ function handles = traffic_plot(configfile, fnformat)
 % TRAFFIC_PLOT plot the simulator output
 % TRAFFIC_PLOT(config_file, filename_format)
 
-if nargin < 1, configfile = '../config/test_event.xml'; end
-if nargin < 2, fnformat = '../../output_%s_0.txt'; end
+if nargin < 1, configfile = fullfile('..', 'config', 'test_event.xml'); end
+if nargin < 2, fnformat = fullfile('..', '..', 'output_%s_0.txt'); end
 
 fprintf('Reading %s\n', configfile);
 scenario = xml_read(configfile);
