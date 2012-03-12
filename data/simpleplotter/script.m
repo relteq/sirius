@@ -1,3 +1,6 @@
+clear
+close all
+
 configfile = fullfile('..', 'config', 'test_event.xml');
 fnformat = fullfile('..', '..', 'output_%s_0.txt');
 
