@@ -1,9 +1,5 @@
-function handles = traffic_plot(configfile, fnformat)
-% TRAFFIC_PLOT plot the simulator output
-% TRAFFIC_PLOT(config_file, filename_format)
-
-if nargin < 1, configfile = fullfile('..', 'config', 'test_event.xml'); end
-if nargin < 2, fnformat = fullfile('..', '..', 'output_%s_0.txt'); end
+configfile = fullfile('..', 'config', 'test_event.xml');
+fnformat = fullfile('..', '..', 'output_%s_0.txt');
 
 fprintf('Reading %s\n', configfile);
 scenario = xml_read(configfile);
@@ -34,20 +30,18 @@ disp('Computing speed');
 %  speed in mile/hr
 speed = flow./density(1:(end - 1),:);
 
-handles = zeros(1, 3);
-
 disp('Plotting density');
-handles(1) = figure;
+figure;
 h=pcolor(density);
 set(h,'EdgeAlpha',0)
 
 disp('Plotting flow');
-handles(2) = figure;
+figure;
 h=pcolor(flow);
 set(h,'EdgeAlpha',0)
 
 disp('Plotting speed');
-handles(3) = figure;
+figure;
 h=pcolor(speed);
 set(h,'EdgeAlpha',0)
 
