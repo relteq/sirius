@@ -22,7 +22,7 @@ final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	}
 
 	protected void update() {
-
+		System.out.println("Updating signal");
 	}
 
 }

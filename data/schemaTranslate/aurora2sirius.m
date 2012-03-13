@@ -9,11 +9,15 @@ hascontrollers      = hasfields(scenario,'ControllerSet','controller');
 hasevents           = hasfields(scenario,'EventSet','event');
 hassplits           = hasfields(scenario,'SplitRatioProfileSet','splitratios');
 hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
+hascapacityprofile  = hasfields(scenario,'CapacityProfileSet','capacity');
         
 % % remove terminal nodes
+% removethisid = [];
 % for i=1:length(scenario.network.NodeList.node)
 %     removethis(i) = strcmpi(scenario.network.NodeList.node(i).ATTRIBUTE.type,'T');
-%     removethisid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
+%     if(removethis(i))
+%         removethisid = [removethisid scenario.network.NodeList.node(i).ATTRIBUTE.id];
+%     end
 % end
 % scenario.network.NodeList.node(removethis)=[];
 % for i=1:length(scenario.network.LinkList.link)
@@ -24,8 +28,7 @@ hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
 %         scenario.network.LinkList.link(i).xEnd = [];
 %     end
 % end
-% clear removethis
-
+% clear removethis removethisid
 
 % remove ODList
 scenario.network=safermfield(scenario.network,'ODList');
@@ -41,8 +44,7 @@ for i=1:length(scenario.network.NodeList.node)
     nodeid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
 end
 
-% rename: CapacityProfileSet -> DownstreamBoundaryCapacitySet
-scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacitySet');
+
 
 % rename: demand -> demandProfile
 if(hasdemandprofile)
@@ -54,8 +56,12 @@ if(hassplits)
     scenario.SplitRatioProfileSet = renamefield(scenario.SplitRatioProfileSet,'splitratios','splitratioProfile');
 end
 
+% rename: CapacityProfileSet -> DownstreamBoundaryCapacitySet
 % rename: capacity -> capacityProfile
-% NOT DONE YET
+if(hascapacityprofile)
+    scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacitySet');
+    scenario.DownstreamBoundaryCapacitySet = renamefield(scenario.DownstreamBoundaryCapacitySet,'capacity','capacityProfile');
+end
 
 % create FundamentalDiagramProfileSet
 for i=1:length(scenario.network.LinkList.link)
@@ -81,12 +87,15 @@ scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'q_control');
 % convert sensor links to link_reference
 if(hassensors)
     for i=1:length(scenario.network.SensorList.sensor)
-        clear link_reference
-        for j=1:length(scenario.network.SensorList.sensor(i).links)
-            link_reference(j).ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links(j);
+        
+        if(length(scenario.network.SensorList.sensor(i).links)>1)
+            error('Sensors may only attach to single links');
         end
-        scenario.network.SensorList.sensor(i).links.link_reference = link_reference;
+        clear link_reference  
+        link_reference.ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links;
+        scenario.network.SensorList.sensor(i).link_reference = link_reference;
     end
+    scenario.network.SensorList.sensor = rmfield(scenario.network.SensorList.sensor,'links');
 end
 
 % display paramers put in simulation
@@ -353,7 +362,7 @@ for i=1:length(scenario.network.NodeList.node)
                 c=c+1;
             end
         end
-        scenario.network.NodeList.node(i).inputs(j).input = rmfield(scenario.network.NodeList.node(i).inputs(j).input,'weavingfactors');
+        scenario.network.NodeList.node(i).inputs(j).input = safermfield(scenario.network.NodeList.node(i).inputs(j).input,'weavingfactors');
 
     end
 end
@@ -376,7 +385,8 @@ if(hasdemandprofile)
     end
 end
 
-
+% remove the DirectionsCache
+scenario.network = safermfield(scenario.network,'DirectionsCache');
 
 % move: network to NetworkList
 scenario.NetworkList.network = scenario.network;
@@ -405,11 +415,11 @@ end
 function [x]=adjustEventType(x)
 switch x.ATTRIBUTE.type
     case 'FD'
-        newtype = 'fundamental diagram';
+        newtype = 'fundamental_diagram';
     case 'SRM'
-        newtype = 'node split ratio';
+        newtype = 'node_split_ratio';
     case 'LC'
-        newtype = 'link lanes';
+        newtype = 'link_lanes';
     otherwise
         warning('unsupported event type')
 end
@@ -418,10 +428,10 @@ x.ATTRIBUTE.type = newtype;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustDataSourceFormat(x)
 switch x.ATTRIBUTE.format
-    case 'pems'
-        newtype = 'PeMS Data Clearinghouse';
-    case 'dbx'
-        newtype = 'Caltrans DBX';
+    case {'pems','PeMS Data Clearinghouse'}
+        newtype = 'PeMS_Data_Clearinghouse';
+    case {'dbx','Caltrans DBX'}
+        newtype = 'Caltrans_DBX';
     case 'bhl'
         newtype = 'BHL';
     otherwise
@@ -433,21 +443,21 @@ x.ATTRIBUTE.format = newtype;
 function [x]=adjustControllerType(x)
 switch x.ATTRIBUTE.type
     case 'ALINEA'
-        newtype = 'IRM alinea';
+        newtype = 'IRM_alinea';
     case 'TOD'
-        newtype = 'IRM time of day';
+        newtype = 'IRM_time_of_day';
     case 'TR'
-        newtype = 'IRM traffic responsive';
+        newtype = 'IRM_traffic_responsive';
     case 'PRETIMED'
-        newtype = 'SIG pretimed';
+        newtype = 'SIG_pretimed';
     case 'ACTUADED'
-        newtype = 'SIG actuated';
+        newtype = 'SIG_actuated';
     case 'SWARM'
-        newtype = 'CRM swarm';
+        newtype = 'CRM_swarm';
     case 'HERO'
-        newtype = 'CRM hero';
+        newtype = 'CRM_hero';
     case 'VSLTOD'
-        newtype = 'VSL time of day';
+        newtype = 'VSL_time_of_day';
     otherwise
         warning('unsupported controller type')
 end
@@ -456,11 +466,11 @@ x.ATTRIBUTE.type = newtype;
 if(isfield(x,'qcontroller'))
     switch x.qcontroller.ATTRIBUTE.type
         case 'QUEUEOVERRIDE'
-            newtype = 'queue override';
+            newtype = 'queue_override';
         case 'PROPORTIONAL'
             newtype = 'proportional';
         case 'PI'
-            newtype = 'proportional integral';
+            newtype = 'proportional_integral';
         case 'null'
             newtype = 'none';
         otherwise
@@ -474,11 +484,11 @@ end
 function [x]=adjustSensorType(x)
 switch x.ATTRIBUTE.type
     case 'loop'
-        newtype = 'static point';
+        newtype = 'static_point';
     case {'radar','camera'}
-        newtype = 'static area';
+        newtype = 'static_area';
     case 'sensys'
-        newtype = 'moving point';
+        newtype = 'moving_point';
     otherwise
         warning('unsupported sensor type')
 end
@@ -505,9 +515,9 @@ switch x.ATTRIBUTE.type
     case {'F','H'}
         newtype = 'simple';
     case 'S'
-        newtype = 'signalized intersection';
+        newtype = 'signalized_intersection';
     case 'T'
-        newtype = 'XXXX';
+        newtype = 'terminal';
     otherwise
         warning('unsupported node type')
 end
@@ -526,7 +536,7 @@ switch x.ATTRIBUTE.type
     case 'FR'
         newtype = 'offramp';
     case 'IC'
-        newtype = 'freeway connector';
+        newtype = 'freeway_connector';
     case 'ST'
         newtype = 'street';
     case 'HOT'
@@ -568,15 +578,33 @@ if(isempty(fd))
 end
     
 x = fd.ATTRIBUTE;
-if(isfield(x,'densityCritical'))
-    FD.ATTRIBUTE.densityCritical = x.densityCritical;
-end
+
 if(isfield(x,'flowMax'))
-    FD.ATTRIBUTE.capacity = x.flowMax;
+    capacity = x.flowMax;
+else
+    capacity = 2400;
 end
+
 if(isfield(x,'densityJam'))
-    FD.ATTRIBUTE.densityJam = x.densityJam;
+    densityJam = x.densityJam;
+else
+    densityJam = 160;
 end
+
+if(isfield(x,'densityCritical'))
+    densityCritical = x.densityCritical;
+else
+    densityCritical = 40;
+end
+
 if(isfield(x,'capacityDrop'))
-    FD.ATTRIBUTE.capacityDrop = x.capacityDrop;
+    capacityDrop = x.capacityDrop;
+else
+    capacityDrop = 0;
 end
+
+FD.ATTRIBUTE.capacity = capacity;
+FD.ATTRIBUTE.densityJam = densityJam;
+FD.ATTRIBUTE.capacityDrop = capacityDrop;
+FD.ATTRIBUTE.congestion_speed = capacity/(densityJam-densityCritical);
+FD.ATTRIBUTE.freeflow_speed = capacity/densityCritical;
