@@ -38,11 +38,18 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		// read capacity and convert to vehicle units
-		capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-		capacity.multiplyscalar(myScenario.getSimDtInHours()*myLink.get_Lanes());
+		String str = getContent();
+		if(!str.isEmpty()){
+			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
+			capacity.multiplyscalar(myScenario.getSimDtInHours()*myLink.get_Lanes());
+		}
+			
 	}
 	
 	protected boolean validate() {
+		
+		if(capacity==null)
+			return true;
 		
 		if(capacity.isEmpty())
 			return true;
@@ -77,6 +84,10 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	}
 	
 	protected void update() {
+		
+		if(capacity==null)
+			return;
+		
 		if(isdone || capacity.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){

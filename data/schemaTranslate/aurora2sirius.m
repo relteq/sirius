@@ -1,14 +1,15 @@
-function []=schemaTranslate(infile,outfile)
+function []=aurora2sirius(aurorafile,siriusfile)
 % To do
 % + fix split ratios for multiple vehicle types
 
-scenario = xml_read(infile);
+scenario = xml_read(aurorafile);
 
 hassensors          = hasfields(scenario.network,'SensorList','sensor');
 hascontrollers      = hasfields(scenario,'ControllerSet','controller');
 hasevents           = hasfields(scenario,'EventSet','event');
 hassplits           = hasfields(scenario,'SplitRatioProfileSet','splitratios');
 hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
+hascapacityprofile  = hasfields(scenario,'CapacityProfileSet','capacity');
         
 % % remove terminal nodes
 % removethisid = [];
@@ -43,8 +44,7 @@ for i=1:length(scenario.network.NodeList.node)
     nodeid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
 end
 
-% rename: CapacityProfileSet -> DownstreamBoundaryCapacitySet
-scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacitySet');
+
 
 % rename: demand -> demandProfile
 if(hasdemandprofile)
@@ -56,8 +56,12 @@ if(hassplits)
     scenario.SplitRatioProfileSet = renamefield(scenario.SplitRatioProfileSet,'splitratios','splitratioProfile');
 end
 
+% rename: CapacityProfileSet -> DownstreamBoundaryCapacitySet
 % rename: capacity -> capacityProfile
-% NOT DONE YET
+if(hascapacityprofile)
+    scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacitySet');
+    scenario.DownstreamBoundaryCapacitySet = renamefield(scenario.DownstreamBoundaryCapacitySet,'capacity','capacityProfile');
+end
 
 % create FundamentalDiagramProfileSet
 for i=1:length(scenario.network.LinkList.link)
@@ -251,7 +255,7 @@ if(hassplits)
             for iout = 1:numout
                 splitratio(c).ATTRIBUTE.link_in = inlink(iin);
                 splitratio(c).ATTRIBUTE.link_out = outlink(iout);
-                splitratio(c).CONTENT = class_Utils.writecommaformat(reshape(X(iin,iout,:),1,size(X,3)));
+                splitratio(c).CONTENT = writecommaformat(reshape(X(iin,iout,:),1,size(X,3)));
                 c = c+1;
             end
         end
@@ -353,12 +357,12 @@ for i=1:length(scenario.network.NodeList.node)
             if(isfield(inp,'weavingfactors'))
                 clear weavingfactors
                 weavingfactors.ATTRIBUTE.node_id = scenario.network.NodeList.node(i).ATTRIBUTE.id;
-                weavingfactors.CONTENT = class_Utils.writecommaformat(inp.weavingfactors);
+                weavingfactors.CONTENT = writecommaformat(inp.weavingfactors);
                 scenario.WeavingFactorsProfile.weavingfactors(c)=weavingfactors;
                 c=c+1;
             end
         end
-        scenario.network.NodeList.node(i).inputs(j).input = rmfield(scenario.network.NodeList.node(i).inputs(j).input,'weavingfactors');
+        scenario.network.NodeList.node(i).inputs(j).input = safermfield(scenario.network.NodeList.node(i).inputs(j).input,'weavingfactors');
 
     end
 end
@@ -377,18 +381,19 @@ scenario = rmfield(scenario,'WeavingFactorsProfile');
 if(hasdemandprofile)
     for i=1:length(scenario.DemandProfileSet.demandProfile)
         scenario.DemandProfileSet.demandProfile(i).CONTENT = ...
-        class_Utils.writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT);
+        writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT)
     end
 end
 
-
+% remove the DirectionsCache
+scenario.network = safermfield(scenario.network,'DirectionsCache');
 
 % move: network to NetworkList
 scenario.NetworkList.network = scenario.network;
 scenario = rmfield(scenario,'network');
 
 
-writeToNetworkEditor(outfile,scenario);
+writeToNetworkEditor(siriusfile,scenario);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -423,9 +428,9 @@ x.ATTRIBUTE.type = newtype;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustDataSourceFormat(x)
 switch x.ATTRIBUTE.format
-    case 'pems'
+    case {'pems','PeMS Data Clearinghouse'}
         newtype = 'PeMS_Data_Clearinghouse';
-    case 'dbx'
+    case {'dbx','Caltrans DBX'}
         newtype = 'Caltrans_DBX';
     case 'bhl'
         newtype = 'BHL';
@@ -541,7 +546,6 @@ switch x.ATTRIBUTE.type
 end
 x.ATTRIBUTE.type = newtype;
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [SR]=readMatrix(A,numin,numout)
 
@@ -556,67 +560,6 @@ for k=1:length(A)
         end
     end
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [] = writeToNetworkEditor(outputfilename,scenario)
-
-disp(['Writing ' outputfilename])
-
-% properly format all numeric values
-
-% % split ratio profile
-% if(hassplits)
-%     for i=1:length(scenario.SplitRatioProfileSet.splitratioProfile)
-%         SR = scenario.SplitRatioProfileSet.splitratioProfile(i);
-%         newSR = SR;
-%         newSR.splitratio = [];
-%         multupletimesteps = iscell(SR.splitratio);
-%         if(multupletimesteps)
-%             for j=1:length(SR.splitratio)
-%                 newSR.splitratio{j} = class_Utils.writecommaformat(SR.splitratio(j));
-%             end
-%         else
-%             newSR.splitratio{1} = class_Utils.writecommaformat(SR.splitratio);
-%         end
-%         scenario.SplitRatioProfileSet.splitratioProfile(i) = newSR;
-%     end
-% end
-
-%  write it
-xml_write(outputfilename,scenario)
-
-i=0;
-
-i=i+1;
-replace(i).from = '<begin/>';
-replace(i).to   = '';
-
-i=i+1;
-replace(i).from = '<xEnd/>';
-replace(i).to   = '';
-
-i=i+1;
-replace(i).from = 'xEnd';
-replace(i).to   = 'end';
-
-system(['copy /Y "' outputfilename '" tempfile.xml']);
-fin=fopen('tempfile.xml');
-fout=fopen(outputfilename,'w+');
-while 1
-    tline = fgetl(fin);
-    if ~ischar(tline), break, end
-    for i=1:length(replace)
-        if(~isempty(strfind(tline,replace(i).from)))
-            tline=strrep(tline,replace(i).from,replace(i).to);
-        end
-    end
-    fwrite(fout,sprintf('%s\n',tline));
-end
-
-fclose(fin);
-fclose(fout);
-
-system('del tempfile.xml');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 function [b]=hasfields(X,a,b)

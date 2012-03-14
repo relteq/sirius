@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="sirius" default="jar" basedir=".">
+<project name="sirius" default="jar" basedir="."
+		xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="bin.dir" value="${basedir}/bin"/>
@@ -18,13 +19,35 @@
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
 	<property name="schema.file" value="data/schema/sirius.xsd"/>
 
-	<target name="all" depends="jar,doc"/>
+	<property name="xjc.destdir" value="${src.dir}/com/relteq/sirius/jaxb"/>
+
+	<property name="ivy.lib.dir" value="${basedir}/lib"/>
+
+	<path id="lib.path">
+		<fileset dir="${ivy.lib.dir}"/>
+	</path>
+
+	<target name="xjctask" depends="deps">
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
+	</target>
+
+	<target name="all" depends="jar,doc"
+			description="build a jar and generate documentation"/>
+
+	<target name="xsd2java" depends="xjctask">
+		<mkdir dir="${xjc.destdir}"/>
+		<xjc schema="${schema.file}"
+				package="com.relteq.sirius.jaxb" destdir="${src.dir}"
+				readonly="yes" removeOldOutput="yes">
+			<produces dir="${xjc.destdir}" includes="*.java"/>
+		</xjc>
+	</target>
 
 	<target name="builddir">
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir">
+	<target name="compile" depends="builddir,xsd2java">
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
 				debug="${javac.debug}" optimize="${javac.optimize}"
@@ -39,7 +62,7 @@
 		<copy file="${schema.file}" todir="${bin.dir}"/>
 	</target>
 
-	<target name="jar" depends="compile,resources">
+	<target name="jar" depends="compile,resources" description="build a jar">
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="com/relteq/sirius/simulator/Runner"/>
@@ -47,21 +70,51 @@
 		</jar>
 	</target>
 
-	<target name="doc" description="run javadoc">
-		<javadoc encoding="${src.encoding}" sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
-				protected="yes" author="yes" use="yes" version="yes" linksource="yes"
-				docletpath="${ydoc.path}/lib/ydoc.jar;${ydoc.path}/resources">
-			<doclet name="ydoc.doclets.YStandard">
+	<target name="doc" depends="xsd2java,compile" description="generate documentation">
+		<javadoc encoding="${src.encoding}"
+				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
+				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
+			<doclet name="ydoc.doclets.YStandard"
+					path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}">
+				<param name="-umltypegen"/>
 				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
 				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
 			</doclet>
 		</javadoc>
 	</target>
 
-	<target name="clean">
+	<target name="clean" description="clean up">
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
+		<delete dir="${ivy.lib.dir}"/>
+		<delete dir="${xjc.destdir}"/>
+	</target>
+
+	<target name="deps" description="resolve dependencies" depends="init-ivy">
+		<ivy:retrieve/>
+	</target>
+
+	<property name="ivy.install.version" value="2.1.0-rc2"/>
+	<condition property="ivy.home" value="${env.IVY_HOME}">
+		<isset property="env.IVY_HOME"/>
+	</condition>
+	<property name="ivy.home" value="${user.home}/.ant"/>
+	<property name="ivy.jar.dir" value="${ivy.home}/lib"/>
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+
+	<target name="download-ivy" unless="offline">
+		<mkdir dir="${ivy.jar.dir}"/>
+		<get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+				dest="${ivy.jar.file}" usetimestamp="true"/>
+	</target>
+
+	<target name="init-ivy" depends="download-ivy">
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml"
+				uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 	</target>
 </project>
 
