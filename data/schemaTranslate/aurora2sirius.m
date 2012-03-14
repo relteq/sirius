@@ -511,7 +511,7 @@ x.ATTRIBUTE.link_type = newtype;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustNodeType(x)
-if isfield(x, 'type')	
+if isfield(x.ATTRIBUTE, 'type')
 	switch x.ATTRIBUTE.type
 			case {'F','H'}
 					newtype = 'simple';
@@ -528,7 +528,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustLinkType(x)
-if isfield(x, 'type')	
+if isfield(x.ATTRIBUTE, 'type')
 	switch x.ATTRIBUTE.type
 			case {'FW','HW'}
 					newtype = 'freeway';
