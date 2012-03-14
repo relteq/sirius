@@ -7,7 +7,7 @@
       <units>US</units>
    </settings>
    <ControllerSet>
-      <controller dt="300" type="IRM_alinea">
+      <controller dt="300" type="IRM_alinea" id="-1">
          <parameters>
             <parameter name="gain" value="10"/>
          </parameters>
@@ -547,7 +547,7 @@
       </splitratioProfile>
    </SplitRatioProfileSet>
    <EventSet>
-      <event enabled="true" tstamp="1800" type="fundamental_diagram">
+      <event enabled="true" tstamp="1800" type="fundamental_diagram" id="-1">
          <targetElements>
             <scenarioElement id="123" type="link"/>
          </targetElements>
