@@ -228,12 +228,17 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 		double dens_crit_congestion = _densityJam-_capacity_nominal/_w;	// [veh]
 			
 		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion)){
-			SiriusErrorLog.addErrorMessage("Invalid fundamental diagram.");
+			SiriusErrorLog.addErrorMessage("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
 			return false;
 		}
         	
-		if(_vf>1 || _w>1){
-			SiriusErrorLog.addErrorMessage("CFL condition violated");
+		if(_vf>1){
+			SiriusErrorLog.addErrorMessage("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
+			return false;
+		}
+
+		if(_w>1){
+			SiriusErrorLog.addErrorMessage("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 			return false;
 		}
 		

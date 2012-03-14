@@ -32,6 +32,10 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 			for (Link link : getLinkList().getLink())
 				((_Link) link).populate(this);
 		
+		if(getSignalList()!=null)
+			for (Signal signal : getSignalList().getSignal())
+				((_Signal) signal).populate(myScenario,this);
+		
 	}
 
 	protected boolean validate() {
@@ -108,6 +112,10 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
         
         // update sensor readings .......................
         _sensorlist.update();
+        
+        // update signals
+        for(Signal signal : getSignalList().getSignal())
+        	((_Signal)signal).update();
         
         // update nodes: compute flows on links .........
         for(Node node : getNodeList().getNode())

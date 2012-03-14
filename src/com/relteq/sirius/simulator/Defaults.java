@@ -19,4 +19,9 @@ final class Defaults {
 	public static Double densityJam			= 160.0;	// [veh/mile/lane]
 	public static Double capacityDrop 		= 0.0;		// [veh/hr/lane]
 	public static Double capacity 			= 2400.0;	// [veh/hr/lane]
+	
+	// signal phase
+	public static float mingreen			= 10f;		// [sec]
+	public static float redcleartime		= 5f;		// [sec]
+	public static float yellowtime			= 5f;		// [sec]
 }

@@ -32,6 +32,9 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	
 	protected void populate(_Scenario myScenario) {
 
+		if(getSplitratio().isEmpty())
+			return;
+		
 		if(myScenario==null)
 			return;
 		
@@ -95,6 +98,9 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	}
 
 	protected boolean validate() {
+
+		if(getSplitratio().isEmpty())
+			return true;
 		
 		if(myNode==null){
 			SiriusErrorLog.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
@@ -137,6 +143,8 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	}
 
 	protected void update() {
+		if(profile==null)
+			return;
 		if(isdone)
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
