@@ -1137,196 +1137,196 @@
       </node>
     </NodeList>
     <LinkList>
-      <link name="" road_name="I-80 E" lanes="6" length="0.24091744813617896" type="FW" id="-10020802">
+      <link record="true" name="" road_name="I-80 E" lanes="6" length="0.24091744813617896" type="FW" id="-10020802">
         <description></description>
         <begin node_id="-802002"/>
         <end node_id="-802003"/>
         <fd densityCritical="20.245450" flowMax="1389.324017" densityJam="159.177850"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.20519164323865552" type="OR" id="-20021802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.20519164323865552" type="OR" id="-20021802">
         <description></description>
         <begin node_id="-802064"/>
         <end node_id="-802002"/>
         <fd densityCritical="64.000000" flowMax="2400.000000" densityJam="326.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="8B" lanes="1" length="0.21089144939305363" type="FR" id="-30021802">
+      <link record="true" name="" road_name="8B" lanes="1" length="0.21089144939305363" type="FR" id="-30021802">
         <description></description>
         <begin node_id="-802003"/>
         <end node_id="-802065"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.3623483790363573" type="FW" id="-10030802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.3623483790363573" type="FW" id="-10030802">
         <description></description>
         <begin node_id="-802003"/>
         <end node_id="-802004"/>
         <fd densityCritical="16.329325" flowMax="1074.664325" densityJam="123.795775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.23782659357255023" type="FW" id="-10040802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.23782659357255023" type="FW" id="-10040802">
         <description></description>
         <begin node_id="-802004"/>
         <end node_id="-802005"/>
         <fd densityCritical="16.329325" flowMax="1074.664325" densityJam="123.795775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="8" length="0.24644566013809896" type="FW" id="-10050802">
+      <link record="true" name="" road_name="I-80 E" lanes="8" length="0.24644566013809896" type="FW" id="-10050802">
         <description></description>
         <begin node_id="-802005"/>
         <end node_id="-802006"/>
         <fd densityCritical="29.926150" flowMax="1930.947550" densityJam="164.687575"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="null" lanes="2" length="0.0954441277575423" type="OR" id="-20051802">
+      <link record="true" name="" road_name="null" lanes="2" length="0.0954441277575423" type="OR" id="-20051802">
         <description></description>
         <begin node_id="-802066"/>
         <end node_id="-802005"/>
         <fd densityCritical="160.000000" flowMax="6000.000000" densityJam="815.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.24519689909172565" type="FW" id="-10060802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.24519689909172565" type="FW" id="-10060802">
         <description></description>
         <begin node_id="-802006"/>
         <end node_id="-802007"/>
         <fd densityCritical="24.296160" flowMax="1680.100700" densityJam="178.972880"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.14999233832126121" type="OR" id="-20061802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.14999233832126121" type="OR" id="-20061802">
         <description></description>
         <begin node_id="-802067"/>
         <end node_id="-802006"/>
         <fd densityCritical="160.000000" flowMax="6000.000000" densityJam="815.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.7744986878600939" type="FR" id="-30061802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.7744986878600939" type="FR" id="-30061802">
         <description></description>
         <begin node_id="-802008"/>
         <end node_id="-802068"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.16456911679609346" type="FW" id="-10070802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.16456911679609346" type="FW" id="-10070802">
         <description></description>
         <begin node_id="-802007"/>
         <end node_id="-802008"/>
         <fd densityCritical="24.296160" flowMax="1680.100700" densityJam="178.972880"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.3141555078214935" type="FW" id="-10080802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.3141555078214935" type="FW" id="-10080802">
         <description></description>
         <begin node_id="-802008"/>
         <end node_id="-802009"/>
         <fd densityCritical="23.242740" flowMax="1661.409800" densityJam="179.922920"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.2244412670770022" type="FW" id="-10090802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.2244412670770022" type="FW" id="-10090802">
         <description></description>
         <begin node_id="-802009"/>
         <end node_id="-802010"/>
         <fd densityCritical="23.242740" flowMax="1661.409800" densityJam="179.922920"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-580 W" lanes="2" length="0.574360563633245" type="OR" id="-20091802">
+      <link record="true" name="" road_name="I-580 W" lanes="2" length="0.574360563633245" type="OR" id="-20091802">
         <description></description>
         <begin node_id="-802069"/>
         <end node_id="-802008"/>
         <fd densityCritical="160.000000" flowMax="6000.000000" densityJam="815.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="Ashby Ave" lanes="1" length="0.27827257637196945" type="FR" id="-30091802">
+      <link record="true" name="" road_name="Ashby Ave" lanes="1" length="0.27827257637196945" type="FR" id="-30091802">
         <description></description>
         <begin node_id="-802010"/>
         <end node_id="-802070"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.5078717185835743" type="FW" id="-10100802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.5078717185835743" type="FW" id="-10100802">
         <description></description>
         <begin node_id="-802010"/>
         <end node_id="-802011"/>
         <fd densityCritical="25.804020" flowMax="1833.834960" densityJam="209.187500"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.29035407952848136" type="FW" id="-10110802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.29035407952848136" type="FW" id="-10110802">
         <description></description>
         <begin node_id="-802011"/>
         <end node_id="-802012"/>
         <fd densityCritical="25.791820" flowMax="1841.538460" densityJam="208.801900"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.25151686664841444" type="OR" id="-20111802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.25151686664841444" type="OR" id="-20111802">
         <description></description>
         <begin node_id="-802071"/>
         <end node_id="-802011"/>
         <fd densityCritical="320.000000" flowMax="12000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.29690338067221494" type="FW" id="-10120802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.29690338067221494" type="FW" id="-10120802">
         <description></description>
         <begin node_id="-802012"/>
         <end node_id="-802013"/>
         <fd densityCritical="25.489700" flowMax="1774.388820" densityJam="139.141400"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.2910282355398167" type="FW" id="-10130802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.2910282355398167" type="FW" id="-10130802">
         <description></description>
         <begin node_id="-802013"/>
         <end node_id="-802014"/>
         <fd densityCritical="33.523560" flowMax="2349.085320" densityJam="171.990960"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="University Ave" lanes="1" length="0.1848322058398433" type="FR" id="-30131802">
+      <link record="true" name="" road_name="University Ave" lanes="1" length="0.1848322058398433" type="FR" id="-30131802">
         <description></description>
         <begin node_id="-802014"/>
         <end node_id="-802072"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.429575608109609" type="FW" id="-10140802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.429575608109609" type="FW" id="-10140802">
         <description></description>
         <begin node_id="-802014"/>
         <end node_id="-802015"/>
         <fd densityCritical="25.145640" flowMax="1819.155240" densityJam="172.150000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.03260085669059364" type="OR" id="-20141802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.03260085669059364" type="OR" id="-20141802">
         <description></description>
         <begin node_id="-802073"/>
         <end node_id="-802014"/>
         <fd densityCritical="320.000000" flowMax="12000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.5597917770782291" type="FR" id="-30141802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.5597917770782291" type="FR" id="-30141802">
         <description></description>
         <begin node_id="-802015"/>
         <end node_id="-802074"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.3177002360641427" type="FW" id="-10150802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.3177002360641427" type="FW" id="-10150802">
         <description></description>
         <begin node_id="-802015"/>
         <end node_id="-802016"/>
         <fd densityCritical="28.166080" flowMax="1981.549660" densityJam="195.827980"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.439423416950493" type="FW" id="-10160802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.439423416950493" type="FW" id="-10160802">
         <description></description>
         <begin node_id="-802016"/>
         <end node_id="-802017"/>
         <fd densityCritical="28.166080" flowMax="1981.549660" densityJam="195.827980"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.0630245215902128" type="FW" id="-10170802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.0630245215902128" type="FW" id="-10170802">
         <description></description>
         <begin node_id="-802017"/>
         <end node_id="-802018"/>
         <fd densityCritical="28.166080" flowMax="1981.549660" densityJam="195.827980"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.2515384326592614" type="OR" id="-20171802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.2515384326592614" type="OR" id="-20171802">
         <description></description>
         <begin node_id="-802075"/>
         <end node_id="-802015"/>
@@ -1334,7 +1334,7 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-580 W" lanes="1" length="0.07580709020208352" type="FR" id="-30171802">
+      <link record="true" name="" road_name="I-580 W" lanes="1" length="0.07580709020208352" type="FR" id="-30171802">
         <description></description>
         <begin node_id="-802020"/>
         <end node_id="-802076"/>
@@ -1342,49 +1342,49 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.0764787302992677" type="FW" id="-10180802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.0764787302992677" type="FW" id="-10180802">
         <description></description>
         <begin node_id="-802018"/>
         <end node_id="-802019"/>
         <fd densityCritical="28.166080" flowMax="1981.549660" densityJam="195.827980"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.14113808123627242" type="FW" id="-10190802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.14113808123627242" type="FW" id="-10190802">
         <description></description>
         <begin node_id="-802019"/>
         <end node_id="-802020"/>
         <fd densityCritical="28.166080" flowMax="1981.549660" densityJam="195.827980"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-580 W" lanes="1" length="0.29273365062389184" type="FR" id="-30191802">
+      <link record="true" name="" road_name="I-580 W" lanes="1" length="0.29273365062389184" type="FR" id="-30191802">
         <description></description>
         <begin node_id="-802020"/>
         <end node_id="-802077"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.26558332381435407" type="FW" id="-10200802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.26558332381435407" type="FW" id="-10200802">
         <description></description>
         <begin node_id="-802020"/>
         <end node_id="-802021"/>
         <fd densityCritical="30.509680" flowMax="1937.600000" densityJam="187.852760"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.26171481192130375" type="FW" id="-10210802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.26171481192130375" type="FW" id="-10210802">
         <description></description>
         <begin node_id="-802021"/>
         <end node_id="-802022"/>
         <fd densityCritical="24.709450" flowMax="1628.699300" densityJam="187.579400"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.22065548910871918" type="FW" id="-10220802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.22065548910871918" type="FW" id="-10220802">
         <description></description>
         <begin node_id="-802022"/>
         <end node_id="-802023"/>
         <fd densityCritical="24.709450" flowMax="1628.699300" densityJam="187.579400"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.06350719773691456" type="OR" id="-20221802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.06350719773691456" type="OR" id="-20221802">
         <description></description>
         <begin node_id="-802078"/>
         <end node_id="-802021"/>
@@ -1392,14 +1392,14 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.19140104374754918" type="FW" id="-10230802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.19140104374754918" type="FW" id="-10230802">
         <description></description>
         <begin node_id="-802023"/>
         <end node_id="-802024"/>
         <fd densityCritical="24.709450" flowMax="1628.699300" densityJam="187.579400"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="14A" lanes="1" length="0.21061294126913604" type="FR" id="-30231802">
+      <link record="true" name="" road_name="14A" lanes="1" length="0.21061294126913604" type="FR" id="-30231802">
         <description></description>
         <begin node_id="-802024"/>
         <end node_id="-802079"/>
@@ -1407,35 +1407,35 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.4117626951154844" type="FW" id="-10240802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.4117626951154844" type="FW" id="-10240802">
         <description></description>
         <begin node_id="-802024"/>
         <end node_id="-802025"/>
         <fd densityCritical="28.398750" flowMax="1872.426575" densityJam="196.611875"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2743930629851817" type="FW" id="-10250802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2743930629851817" type="FW" id="-10250802">
         <description></description>
         <begin node_id="-802025"/>
         <end node_id="-802026"/>
         <fd densityCritical="28.902000" flowMax="1911.776225" densityJam="182.034350"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.19058636301404686" type="OR" id="-20251802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.19058636301404686" type="OR" id="-20251802">
         <description></description>
         <begin node_id="-802080"/>
         <end node_id="-802025"/>
         <fd densityCritical="160.000000" flowMax="6000.000000" densityJam="815.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="14B" lanes="1" length="0.26442550069114973" type="FR" id="-30251802">
+      <link record="true" name="" road_name="14B" lanes="1" length="0.26442550069114973" type="FR" id="-30251802">
         <description></description>
         <begin node_id="-802026"/>
         <end node_id="-802081"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2646189006210179" type="FW" id="-10260802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2646189006210179" type="FW" id="-10260802">
         <description></description>
         <begin node_id="-802026"/>
         <end node_id="-802027"/>
@@ -1443,21 +1443,21 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2302036254403186" type="FW" id="-10270802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2302036254403186" type="FW" id="-10270802">
         <description></description>
         <begin node_id="-802027"/>
         <end node_id="-802028"/>
         <fd densityCritical="27.124275" flowMax="1606.762250" densityJam="187.800500"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2766850518236359" type="FW" id="-10280802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2766850518236359" type="FW" id="-10280802">
         <description></description>
         <begin node_id="-802028"/>
         <end node_id="-802029"/>
         <fd densityCritical="27.124275" flowMax="1606.762250" densityJam="187.800500"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.05904846393506912" type="OR" id="-20281802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.05904846393506912" type="OR" id="-20281802">
         <description></description>
         <begin node_id="-802082"/>
         <end node_id="-802027"/>
@@ -1465,28 +1465,28 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="Exit 15" lanes="1" length="0.20878753973908687" type="FR" id="-30281802">
+      <link record="true" name="" road_name="Exit 15" lanes="1" length="0.20878753973908687" type="FR" id="-30281802">
         <description></description>
         <begin node_id="-802029"/>
         <end node_id="-802083"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.275472930791483" type="FW" id="-10290802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.275472930791483" type="FW" id="-10290802">
         <description></description>
         <begin node_id="-802029"/>
         <end node_id="-802030"/>
         <fd densityCritical="27.092450" flowMax="1802.244750" densityJam="140.373100"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.3021714189934291" type="FW" id="-10300802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.3021714189934291" type="FW" id="-10300802">
         <description></description>
         <begin node_id="-802030"/>
         <end node_id="-802031"/>
         <fd densityCritical="28.343175" flowMax="1879.615375" densityJam="173.608175"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.13630409082918213" type="OR" id="-20301802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.13630409082918213" type="OR" id="-20301802">
         <description></description>
         <begin node_id="-802084"/>
         <end node_id="-802030"/>
@@ -1494,14 +1494,14 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="6" length="0.19893633740946068" type="FW" id="-10310802">
+      <link record="true" name="" road_name="I-80 E" lanes="6" length="0.19893633740946068" type="FW" id="-10310802">
         <description></description>
         <begin node_id="-802031"/>
         <end node_id="-802032"/>
         <fd densityCritical="30.769233" flowMax="2000.000000" densityJam="164.102567"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.13285882681464992" type="OR" id="-20311802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.13285882681464992" type="OR" id="-20311802">
         <description></description>
         <begin node_id="-802085"/>
         <end node_id="-802031"/>
@@ -1509,28 +1509,28 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="6" length="0.2574963935941173" type="FW" id="-10320802">
+      <link record="true" name="" road_name="I-80 E" lanes="6" length="0.2574963935941173" type="FW" id="-10320802">
         <description></description>
         <begin node_id="-802032"/>
         <end node_id="-802033"/>
         <fd densityCritical="30.769233" flowMax="2000.000000" densityJam="164.102567"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="16A" lanes="1" length="0.12105820822422944" type="FR" id="-30321802">
+      <link record="true" name="" road_name="16A" lanes="1" length="0.12105820822422944" type="FR" id="-30321802">
         <description></description>
         <begin node_id="-802033"/>
         <end node_id="-802086"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.18152798589168073" type="FW" id="-10330802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.18152798589168073" type="FW" id="-10330802">
         <description></description>
         <begin node_id="-802033"/>
         <end node_id="-802034"/>
         <fd densityCritical="28.062400" flowMax="1862.482525" densityJam="214.310650"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.0446128627930585" type="FR" id="-30331802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.0446128627930585" type="FR" id="-30331802">
         <description></description>
         <begin node_id="-802035"/>
         <end node_id="-802087"/>
@@ -1538,28 +1538,28 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2110624821968266" type="FW" id="-10340802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2110624821968266" type="FW" id="-10340802">
         <description></description>
         <begin node_id="-802034"/>
         <end node_id="-802035"/>
         <fd densityCritical="28.062400" flowMax="1862.482525" densityJam="214.310650"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2100827360326079" type="FW" id="-10350802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2100827360326079" type="FW" id="-10350802">
         <description></description>
         <begin node_id="-802035"/>
         <end node_id="-802036"/>
         <fd densityCritical="28.515725" flowMax="1890.342650" densityJam="208.837475"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.13444671808942776" type="FW" id="-10360802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.13444671808942776" type="FW" id="-10360802">
         <description></description>
         <begin node_id="-802036"/>
         <end node_id="-802037"/>
         <fd densityCritical="28.515725" flowMax="1890.342650" densityJam="208.837475"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.11747057565273775" type="OR" id="-20361802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.11747057565273775" type="OR" id="-20361802">
         <description></description>
         <begin node_id="-802088"/>
         <end node_id="-802035"/>
@@ -1567,35 +1567,35 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="Solano Ave" lanes="1" length="0.14873009973915055" type="FR" id="-30361802">
+      <link record="true" name="" road_name="Solano Ave" lanes="1" length="0.14873009973915055" type="FR" id="-30361802">
         <description></description>
         <begin node_id="-802037"/>
         <end node_id="-802089"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2986165431664936" type="FW" id="-10370802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2986165431664936" type="FW" id="-10370802">
         <description></description>
         <begin node_id="-802037"/>
         <end node_id="-802038"/>
         <fd densityCritical="30.372425" flowMax="2021.426575" densityJam="232.515100"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.3010222429528642" type="FW" id="-10380802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.3010222429528642" type="FW" id="-10380802">
         <description></description>
         <begin node_id="-802038"/>
         <end node_id="-802039"/>
         <fd densityCritical="30.372425" flowMax="2021.426575" densityJam="232.515100"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2779321135129615" type="FW" id="-10390802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2779321135129615" type="FW" id="-10390802">
         <description></description>
         <begin node_id="-802039"/>
         <end node_id="-802040"/>
         <fd densityCritical="28.046500" flowMax="1885.209800" densityJam="127.268050"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="San Pablo Dam Rd" lanes="1" length="0.2261033322575753" type="FR" id="-30391802">
+      <link record="true" name="" road_name="San Pablo Dam Rd" lanes="1" length="0.2261033322575753" type="FR" id="-30391802">
         <description></description>
         <begin node_id="-802040"/>
         <end node_id="-802090"/>
@@ -1603,28 +1603,28 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2551403526690803" type="FW" id="-10400802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2551403526690803" type="FW" id="-10400802">
         <description></description>
         <begin node_id="-802040"/>
         <end node_id="-802041"/>
         <fd densityCritical="28.181250" flowMax="1824.300700" densityJam="143.085300"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2550171619205772" type="FW" id="-10410802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2550171619205772" type="FW" id="-10410802">
         <description></description>
         <begin node_id="-802041"/>
         <end node_id="-802042"/>
         <fd densityCritical="26.356275" flowMax="1813.706300" densityJam="153.796075"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.22765496201827268" type="FW" id="-10420802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.22765496201827268" type="FW" id="-10420802">
         <description></description>
         <begin node_id="-802042"/>
         <end node_id="-802043"/>
         <fd densityCritical="26.356275" flowMax="1813.706300" densityJam="153.796075"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.057788081853589614" type="OR" id="-20421802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.057788081853589614" type="OR" id="-20421802">
         <description></description>
         <begin node_id="-802091"/>
         <end node_id="-802041"/>
@@ -1632,14 +1632,14 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.23599308586779474" type="FW" id="-10430802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.23599308586779474" type="FW" id="-10430802">
         <description></description>
         <begin node_id="-802043"/>
         <end node_id="-802044"/>
         <fd densityCritical="26.356275" flowMax="1813.706300" densityJam="153.796075"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.061729173382467764" type="FR" id="-30431802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.061729173382467764" type="FR" id="-30431802">
         <description></description>
         <begin node_id="-802045"/>
         <end node_id="-802092"/>
@@ -1647,28 +1647,28 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2058544219440077" type="FW" id="-10440802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2058544219440077" type="FW" id="-10440802">
         <description></description>
         <begin node_id="-802044"/>
         <end node_id="-802045"/>
         <fd densityCritical="26.356275" flowMax="1813.706300" densityJam="153.796075"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.22309937040580788" type="FW" id="-10450802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.22309937040580788" type="FW" id="-10450802">
         <description></description>
         <begin node_id="-802045"/>
         <end node_id="-802046"/>
         <fd densityCritical="29.030575" flowMax="1903.405600" densityJam="174.205350"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.1996772444410303" type="FW" id="-10460802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.1996772444410303" type="FW" id="-10460802">
         <description></description>
         <begin node_id="-802046"/>
         <end node_id="-802047"/>
         <fd densityCritical="28.087980" flowMax="1617.460140" densityJam="186.635960"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.24348112144654616" type="OR" id="-20461802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.24348112144654616" type="OR" id="-20461802">
         <description></description>
         <begin node_id="-802093"/>
         <end node_id="-802046"/>
@@ -1676,21 +1676,21 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="19B" lanes="1" length="0.29660939783640283" type="FR" id="-30461802">
+      <link record="true" name="" road_name="19B" lanes="1" length="0.29660939783640283" type="FR" id="-30461802">
         <description></description>
         <begin node_id="-802047"/>
         <end node_id="-802094"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2723484782484805" type="FW" id="-10470802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2723484782484805" type="FW" id="-10470802">
         <description></description>
         <begin node_id="-802047"/>
         <end node_id="-802048"/>
         <fd densityCritical="26.953800" flowMax="1762.531475" densityJam="156.846675"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.056593425682256816" type="OR" id="-20471802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.056593425682256816" type="OR" id="-20471802">
         <description></description>
         <begin node_id="-802095"/>
         <end node_id="-802047"/>
@@ -1698,14 +1698,14 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2775845071580089" type="FW" id="-10480802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2775845071580089" type="FW" id="-10480802">
         <description></description>
         <begin node_id="-802048"/>
         <end node_id="-802049"/>
         <fd densityCritical="28.629450" flowMax="1866.398600" densityJam="173.712875"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.2429287151292635" type="OR" id="-20481802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.2429287151292635" type="OR" id="-20481802">
         <description></description>
         <begin node_id="-802096"/>
         <end node_id="-802048"/>
@@ -1713,14 +1713,14 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.21335730586051663" type="FW" id="-10490802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.21335730586051663" type="FW" id="-10490802">
         <description></description>
         <begin node_id="-802049"/>
         <end node_id="-802050"/>
         <fd densityCritical="28.629450" flowMax="1866.398600" densityJam="173.712875"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="Fitzgerald Dr" lanes="1" length="0.29224357639325443" type="FR" id="-30491802">
+      <link record="true" name="" road_name="Fitzgerald Dr" lanes="1" length="0.29224357639325443" type="FR" id="-30491802">
         <description></description>
         <begin node_id="-802050"/>
         <end node_id="-802097"/>
@@ -1728,63 +1728,63 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.33884934196022237" type="FW" id="-10500802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.33884934196022237" type="FW" id="-10500802">
         <description></description>
         <begin node_id="-802050"/>
         <end node_id="-802051"/>
         <fd densityCritical="25.636300" flowMax="1682.076925" densityJam="193.844000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="5" length="0.26508464614957544" type="FW" id="-10510802">
+      <link record="true" name="" road_name="I-80 E" lanes="5" length="0.26508464614957544" type="FW" id="-10510802">
         <description></description>
         <begin node_id="-802051"/>
         <end node_id="-802052"/>
         <fd densityCritical="24.744560" flowMax="1692.497900" densityJam="193.994360"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.2147636042818079" type="OR" id="-20511802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.2147636042818079" type="OR" id="-20511802">
         <description></description>
         <begin node_id="-802098"/>
         <end node_id="-802051"/>
         <fd densityCritical="320.000000" flowMax="12000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.203198857335855" type="FW" id="-10520802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.203198857335855" type="FW" id="-10520802">
         <description></description>
         <begin node_id="-802052"/>
         <end node_id="-802053"/>
         <fd densityCritical="30.769225" flowMax="2000.000000" densityJam="164.102575"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.3422806474191361" type="OR" id="-20521802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.3422806474191361" type="OR" id="-20521802">
         <description></description>
         <begin node_id="-802099"/>
         <end node_id="-802052"/>
         <fd densityCritical="320.000000" flowMax="12000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.3385812053391926" type="FR" id="-30521802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.3385812053391926" type="FR" id="-30521802">
         <description></description>
         <begin node_id="-802053"/>
         <end node_id="-802100"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.34058528805388266" type="FW" id="-10530802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.34058528805388266" type="FW" id="-10530802">
         <description></description>
         <begin node_id="-802053"/>
         <end node_id="-802054"/>
         <fd densityCritical="28.721975" flowMax="1869.007000" densityJam="199.083975"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.1819086546316863" type="FW" id="-10540802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.1819086546316863" type="FW" id="-10540802">
         <description></description>
         <begin node_id="-802054"/>
         <end node_id="-802055"/>
         <fd densityCritical="28.721975" flowMax="1869.007000" densityJam="199.083975"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.055336104014553696" type="OR" id="-20541802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.055336104014553696" type="OR" id="-20541802">
         <description></description>
         <begin node_id="-802101"/>
         <end node_id="-802053"/>
@@ -1792,49 +1792,49 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.404159078867228" type="FW" id="-10550802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.404159078867228" type="FW" id="-10550802">
         <description></description>
         <begin node_id="-802055"/>
         <end node_id="-802056"/>
         <fd densityCritical="28.721975" flowMax="1869.007000" densityJam="199.083975"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="Pinole Valley Rd" lanes="1" length="0.2863094997316756" type="FR" id="-30551802">
+      <link record="true" name="" road_name="Pinole Valley Rd" lanes="1" length="0.2863094997316756" type="FR" id="-30551802">
         <description></description>
         <begin node_id="-802056"/>
         <end node_id="-802102"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2584397069711531" type="FW" id="-10560802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2584397069711531" type="FW" id="-10560802">
         <description></description>
         <begin node_id="-802056"/>
         <end node_id="-802057"/>
         <fd densityCritical="28.562275" flowMax="1885.034975" densityJam="217.065775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="2" length="0.5976693768962423" type="OR" id="-20561802">
+      <link record="true" name="" road_name="I-80 E" lanes="2" length="0.5976693768962423" type="OR" id="-20561802">
         <description></description>
         <begin node_id="-802103"/>
         <end node_id="-802056"/>
         <fd densityCritical="160.000000" flowMax="6000.000000" densityJam="815.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.3212859647015794" type="FW" id="-10570802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.3212859647015794" type="FW" id="-10570802">
         <description></description>
         <begin node_id="-802057"/>
         <end node_id="-802058"/>
         <fd densityCritical="28.289450" flowMax="1856.713275" densityJam="213.960775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.22030765474982883" type="FW" id="-10580802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.22030765474982883" type="FW" id="-10580802">
         <description></description>
         <begin node_id="-802058"/>
         <end node_id="-802059"/>
         <fd densityCritical="28.289450" flowMax="1856.713275" densityJam="213.960775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="1" length="0.04410050025216126" type="OR" id="-20581802">
+      <link record="true" name="" road_name="I-80 E" lanes="1" length="0.04410050025216126" type="OR" id="-20581802">
         <description></description>
         <begin node_id="-802104"/>
         <end node_id="-802057"/>
@@ -1842,42 +1842,42 @@
         <dynamics type="CTM"/>
         <qmax>100</qmax>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.18048533312687584" type="FW" id="-10590802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.18048533312687584" type="FW" id="-10590802">
         <description></description>
         <begin node_id="-802059"/>
         <end node_id="-802060"/>
         <fd densityCritical="28.289450" flowMax="1856.713275" densityJam="213.960775"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.2307843279804764" type="FW" id="-10600802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.2307843279804764" type="FW" id="-10600802">
         <description></description>
         <begin node_id="-802060"/>
         <end node_id="-802061"/>
         <fd densityCritical="29.935025" flowMax="1935.608400" densityJam="161.064925"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.23488268150577757" type="FW" id="-10610802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.23488268150577757" type="FW" id="-10610802">
         <description></description>
         <begin node_id="-802061"/>
         <end node_id="-802062"/>
         <fd densityCritical="29.935025" flowMax="1935.608400" densityJam="161.064925"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="I-80 E" lanes="4" length="0.17798823933405572" type="FW" id="-10620802">
+      <link record="true" name="" road_name="I-80 E" lanes="4" length="0.17798823933405572" type="FW" id="-10620802">
         <description></description>
         <begin node_id="-802062"/>
         <end node_id="-802063"/>
         <fd densityCritical="30.306150" flowMax="1961.069925" densityJam="163.981500"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="Exit 23" lanes="1" length="0.19835799168465743" type="FR" id="-30621802">
+      <link record="true" name="" road_name="Exit 23" lanes="1" length="0.19835799168465743" type="FR" id="-30621802">
         <description></description>
         <begin node_id="-802063"/>
         <end node_id="-802105"/>
         <fd densityCritical="320.000000" flowMax="21000.000000" densityJam="1630.000000"/>
         <dynamics type="CTM"/>
       </link>
-      <link name="" road_name="" lanes="5" length="0.25453" type="FW" id="-10630802">
+      <link record="true" name="" road_name="" lanes="5" length="0.25453" type="FW" id="-10630802">
         <begin node_id="-802063"/>
         <end node_id="-802106"/>
         <fd densityCritical="23.284780" flowMax="1623.586020" densityJam="108.736680"/>
