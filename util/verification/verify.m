@@ -1,6 +1,6 @@
 aurora_fnam = 'I80_aurora.csv';
-sirius_fnam = fullfile('..', '..', 'output_%s_0.txt');
-sirius_conf = fullfile('..', '..', 'data', 'config', 'I80_sirius.xml');
+sirius_fnam = 'output_%s_0.txt';
+sirius_conf = fullfile('conf', 'I80_sirius.xml');
 
 fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
