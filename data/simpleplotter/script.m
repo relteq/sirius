@@ -35,16 +35,15 @@ speed = flow./density(1:(end - 1),:);
 
 disp('Plotting density');
 figure;
-h=pcolor(density);
-set(h,'EdgeAlpha',0)
+set(pcolor(density), 'EdgeAlpha', 0)
+colorbar;
 
 disp('Plotting flow');
 figure;
-h=pcolor(flow);
-set(h,'EdgeAlpha',0)
+set(pcolor(flow), 'EdgeAlpha', 0);
+colorbar;
 
 disp('Plotting speed');
 figure;
-h=pcolor(speed);
-set(h,'EdgeAlpha',0)
-
+set(pcolor(speed), 'EdgeAlpha', 0);
+colorbar;
