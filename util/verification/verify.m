@@ -6,6 +6,11 @@ fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
 sout = readSiriusOutput(sirius_fnam, sirius_conf);
 
+%link id
+aid = [aout.Links.id];
+sid = sout.Links.id;
+if numel(aid) ~= numel(sid) || any(aid ~= sid), error('links differ'); end
+
 %lanes
 alanes = [aout.Links.lanes];
 slanes = sout.Links.lanes;
