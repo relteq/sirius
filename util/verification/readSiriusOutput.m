@@ -7,7 +7,7 @@ if numel(scenario.NetworkList.network) > 1, error('Multiple networks'); end
 network = scenario.NetworkList.network(1);
 data = struct('Links', struct(), 'dt', network.ATTRIBUTE.dt);
 links = network.LinkList.link;
-for nam = {'lanes', 'length'}
+for nam = {'lanes', 'length', 'id'}
 	data.Links.(char(nam)) = zeros(1, numel(links));
 	for iii = 1:numel(links)
 		data.Links.(char(nam))(iii) = links(iii).ATTRIBUTE.(char(nam));
