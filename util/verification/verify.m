@@ -6,6 +6,8 @@ fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
 sout = readSiriusOutput(sirius_fnam, sirius_conf);
 
+linktype = 'freeway';
+
 %link id
 aid = [aout.Links.id];
 sid = sout.Links.id;
@@ -22,6 +24,16 @@ sdens = bsxfun(@rdivide, sout.density(1:(end - 1), :), slanes .* sout.Links.leng
 %flow [veh/hr/lane]
 aflow = bsxfun(@rdivide, aout.OutFlow, alanes);
 sflow = 3600 / sout.dt * bsxfun(@rdivide, sout.outflow, slanes);
+
+ind = strcmp(linktype, sout.Links.type);
+if ~isempty(ind)
+	adens = adens(:, ind);
+	sdens = sdens(:, ind);
+	aflow = aflow(:, ind);
+	sflow = sflow(:, ind);
+elseif ~isempty(linktype)
+	warning('no %s links', linktype);
+end
 
 scrsz = get(0,'ScreenSize');
 adjust = @(h) set(h, 'EdgeColor', 'none');
