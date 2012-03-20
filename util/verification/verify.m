@@ -26,7 +26,7 @@ aflow = bsxfun(@rdivide, aout.OutFlow, alanes);
 sflow = 3600 / sout.dt * bsxfun(@rdivide, sout.outflow, slanes);
 
 ind = strcmp(linktype, sout.Links.type);
-if ~isempty(ind)
+if any(ind)
 	adens = adens(:, ind);
 	sdens = sdens(:, ind);
 	aflow = aflow(:, ind);
