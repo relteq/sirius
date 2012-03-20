@@ -13,6 +13,12 @@ for nam = {'lanes', 'length', 'id'}
 		data.Links.(char(nam))(iii) = links(iii).ATTRIBUTE.(char(nam));
 	end
 end
+for nam = {'type', 'road_name'}
+	data.Links.(char(nam)) = cell(1, numel(links));
+	for iii = 1:numel(links)
+		data.Links.(char(nam)){iii} = links(iii).ATTRIBUTE.(char(nam));
+	end
+end
 
 for nam = {'density', 'inflow', 'outflow', 'time'}
 	fnam = sprintf(ofnam_templ, char(nam));
