@@ -29,13 +29,13 @@
       </splitratioProfile>
    </SplitRatioProfileSet>
    <EventSet>
-      <event enabled="true" tstamp="4" type="fundamental_diagram">
+      <event enabled="true" tstamp="4" type="fundamental_diagram" id="-1">
          <fundamentalDiagram capacity="900" capacityDrop="0" congestion_speed="15" densityJam="75" freeflow_speed="60"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
-      <event enabled="true" tstamp="20" type="fundamental_diagram"><!--<fd densityCritical="200.0" flowMax="1800.0" densityJam="150.0"/>-->
+      <event enabled="true" tstamp="20" type="fundamental_diagram" id="-2">
          <fundamentalDiagram/>
          <targetElements>
             <scenarioElement id="-3" type="link"/>
@@ -51,7 +51,7 @@
       <demandProfile dt="300" knob="1" link_id_origin="-1">100:50</demandProfile>
    </DemandProfileSet>
    <ControllerSet>
-      <controller dt="5" type="IRM_alinea"><!--<limits cmin="0" cmax="900"/>-->
+      <controller dt="5" type="IRM_alinea" id="-1">
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>
@@ -213,9 +213,6 @@
                <dynamics type="CTM"/>
             </link>
          </LinkList>
-         <SignalList/>
-         <SensorList/>
-         <DirectionsCache/>
       </network>
    </NetworkList>
 </scenario>

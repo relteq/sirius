@@ -338,6 +338,7 @@
 				  <xs:sequence>
 					<xs:element ref="phase" minOccurs="0" maxOccurs="unbounded" />
 				  </xs:sequence>
+				  <xs:attribute name="id" type="xs:string" use="required" />
 				  <xs:attribute name="node_id" type="xs:string" use="required" />
 				</xs:complexType>
 			  </xs:element>
@@ -643,6 +644,7 @@
 				<xs:element ref="knob"  minOccurs="0" />					<!-- link demand knob, global demand knob -->
 				<xs:element ref="splitratioEvent" minOccurs="0" />			<!-- node split ratio -->
 			  </xs:all>
+			  <xs:attribute name="id" type="xs:string" use="required" />
 		      <xs:attribute name="reset_to_nominal" type="xs:boolean" use="optional" default="false" />
 			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
@@ -750,6 +752,7 @@
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
+			  <xs:attribute name="id" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in seconds -->
 			</xs:complexType>
 		  </xs:element>
