@@ -1,3 +1,4 @@
 #!/bin/bash
-java -jar ../../sirius.jar conf/I80_sirius.xml output 0 86400 600 1
+set -x
+java -jar ../../sirius.jar conf/I80_sirius.xml output 0 3600 2 1
 

@@ -5477,7 +5477,7 @@
     </DirectionsCache>
   </network>
   <settings>
-    <display timeMax="86400" timeout="0" dt="300"/>
+    <display timeMax="3600" timeout="0" dt="2"/>
     <VehicleTypes>
       <vtype name="SOV" weight="1"/>
     </VehicleTypes>
