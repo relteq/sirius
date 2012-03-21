@@ -64,10 +64,8 @@ adensend = adens(end, :);
 sdensend = sdens(end, :);
 aflowend = aflow(end, :);
 sflowend = sflow(end, :);
-denserr = 100 * abs(sdensend - adensend) ./ max(adensend, sdensend);
-denserr(adensend == 0 & sdensend == 0) = 0;
-flowerr = 100 * abs(sflowend - aflowend) ./ max(aflowend, sflowend);
-flowerr(aflowend == 0 & sflowend == 0) = 0;
+denserr = 100 * abs(sdensend - adensend) ./ adensend;
+flowerr = 100 * abs(sflowend - aflowend) ./ aflowend;
 graphtitles = {'Aurora', 'Sirius'};
 
 figure('Position', [0, scrsz(2), 1024, 640]);
