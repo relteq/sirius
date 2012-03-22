@@ -1,249 +1,139 @@
-function [D] = readAuroraOutput(inputfile,maxpointspercurve,scope)
-
-if(nargin<3)
-    maxpointspercurve = 200;
-end
-
-if(nargin<4)
-    scope.timeon = true;
-    scope.time = [0 24];
-end
+function [D] = readAuroraOutput(inputfile, npoints, scope)
+if nargin < 2, npoints = Inf; end
+if nargin < 3, scope = struct('timeon', true, 'time', [0 24]); end
     
 [pathname,inputfile] = fileparts(inputfile);
-ready = false;
-time = [];
-
 name = [fullfile(pathname,inputfile) '.csv'];
 fid = fopen(name);
-if(fid<0)
-    name = regexprep(name, '\\', '\\\\');
-    error('ARG:User',['File does not exist: ' name])
+if -1 == fid, error('ARG:User', 'File %s does not exist', name); end
+
+D.dt = 1;
+D.date = datevec(fgetl(fid));
+linkinfo = struct;
+
+delim = '\s*,\s*';
+while true
+	tline = fgetl(fid);
+	if ~ischar(tline), break, end
+	if isempty(tline), continue; end
+	row = regexp(tline, delim, 'split');
+	name = strrep(row{1}, ' ', '');
+	switch row{1}
+		case 'Vehicle Type'
+			vt = struct('name', {}, 'weight', {});
+			while true
+				tline = fgetl(fid);
+				if isempty(tline), break; end
+				row = regexp(tline, delim, 'split');
+				vt(end + 1).name = row{1};
+				vt(end).weight = str2double(row{2});
+			end
+		case 'Entry Format'
+			tline = fgetl(fid);
+			row = regexp(tline, delim, 'split');
+			entries = strrep(regexp(row{1}, ';', 'split'), '_Value', '');
+			entries = strrep(entries, '_', '');
+			entries = strrep(entries, '-', '');
+			fdformat = regexp(row{3}, ':', 'split');
+			D.vehicletypes = regexp(row{2}, ':', 'split');
+
+			% order weights as vehicletypes
+			D.vehicletypeweight = zeros(size(D.vehicletypes));
+			for i = 1:numel(D.vehicletypes)
+				D.vehicletypeweight(i) = vt(strcmp(D.vehicletypes(i), {vt.name})).weight;
+			end
+			clear vt i
+		case 'Sampling Period'
+			while true
+				tline = fgetl(fid);
+				if isempty(tline), break; end
+				row = regexp(tline, delim, 'split');
+				if strcmp('seconds', row{2}),
+					D.dt = round(str2double(row{1}) * 100) / 100;
+				end
+			end
+		case 'Description'
+			D.description = {};
+			while true
+				tline = fgetl(fid);
+				if isempty(tline), break; end
+				row = regexp(tline, delim, 'split');
+				D.description{end + 1} = row{1};
+			end
+		case 'Routes'
+			routes = struct('name', {}, 'links', {});
+			while 1
+				tline = fgetl(fid);
+				if isempty(tline), break; end
+				row = regexp(tline, delim, 'split');
+				routes(end + 1).name = row{1};
+				routes(end).links = str2double(row(2:end));
+			end
+		case {'Link ID', 'Link Length', 'Link Width'}
+			linkinfo.(name) = str2double(row(2:end));
+		case 'Link Name'
+			linkinfo.(name) = row(2:end);
+		case 'Link Type'
+			row = row(2:end);
+			linktype = NaN(size(row));
+			linktype(strcmp('Freeway', row)) = 1;
+			linktype(strcmp('On-Ramp', row)) = 2;
+			linktype(strcmp('Off-Ramp', row)) = 3;
+			linktype(strcmp('HOV', row)) = 4;
+			linkinfo.(name) = linktype;
+			clear linktype;
+		case 'Source'
+			linkinfo.(name) = strcmp('Yes', row(2:end));
+		case 'Time Step'
+			data = textscan(fid, '%f', 'whitespace', ',;:\n');
+			nlinks = numel(linkinfo.LinkID);
+			recordsize = 3 * numel(D.vehicletypes) + numel(fdformat) + numel(entries) - 4;
+			data = reshape(data{1}, nlinks * recordsize + 1, []);
+			time = D.dt / 3600 * data(1, :);
+			if scope.timeon,
+				ind = time >= scope.time(1) & time <= scope.time(2);
+				time = time(ind)';
+				data = data(2:end, ind);
+			else
+				time = time';
+				data = data(2:end, :);
+			end
+			if (npoints > 0 && numel(time) > npoints)
+				ind = false(numel(time), 1);
+				ind(1:ceil(numel(time) / npoints):end) = true;
+				time = time(ind);
+				data = data(:, ind);
+			end
+			D.time = time;
+			%(data, link, time) -> (time, link, data)
+			data = permute(reshape(data, [recordsize, nlinks, numel(D.time)]), [3 2 1]);
+			ind = 0;
+			for iii = 1:numel(entries)
+				entry = entries{iii};
+				switch entry
+					case {'Density', 'InFlow', 'OutFlow'}
+						delta = numel(D.vehicletypes);
+						D.(entry) = data(:, :, ind + (1:delta));
+						ind = ind + delta;
+					case 'FD'
+						for key = fdformat
+							ind = ind + 1;
+							D.(entry) = data(:, :, ind);
+						end
+					otherwise
+						ind = ind + 1;
+						D.(entry) = data(:, :, ind);
+				end
+			end
+			break;
+		otherwise
+			warning('Unknown title %s', row{1});
+	end
 end
-havevehtypes = false;
-while 1
-    tline = fgetl(fid);
-    if ~ischar(tline), break, end
-
-    if(strfind(tline,'Vehicle Type') & ~havevehtypes)
-        tline = fgetl(fid);
-        c=0;
-        while ~isempty(tline)
-            row = splitbydelimiter(tline,',');
-            c = c+1;
-            vt(c).name = row{1};
-            vt(c).weight = str2num(row{2});
-            tline = fgetl(fid);
-        end
-
-        havevehtypes = true;
-    end
-
-    if(strfind(tline,'Entry Format'))
-        % Read format for vehicle types
-        vehicletypes = ReadVehicleTypes(fid);
-
-        % order weights as vehicletypes
-        for i=1:length(vehicletypes)
-            ind = strcmp(vehicletypes(i),{vt.name});
-            vehicletypeweight(i) = vt(ind).weight;
-        end
-        clear vt ind i
-        numvehicletypes = size(vehicletypes,1);
-        continue
-    end
-
-    if(strfind(tline,'Sampling Period'))
-        simT = ReadSamplingPeriod(fid);
-        continue
-    end
-    if(strfind(tline,'Description'))
-        description = ReadDescription(fid);
-        continue
-    end
-    if(strfind(tline,'Routes'))
-        routes = ReadRoutes(fid);
-        continue
-    end
-    if(strfind(tline,'Link ID'))
-        Links = ReadLinkConfig(fid,tline);
-        continue
-    end
-    if(strfind(tline,'Time Step'))
-        ready = true;
-        c=0;
-        start = ftell(fid);
-        continue
-    end
-
-    if(~ready)
-        continue
-    end
-
-    % Read data line
-    row = splitbydelimiter(tline,',');
-    newtime = str2num(row{1});
-    c = c+1;
-    time(c) = newtime;
-end
-clear newtime c row LinkId havevehtypes ready tline
-
-skip = ceil(length(time)/maxpointspercurve);
-clear time
-c = 0;
-n = -1;
-fseek(fid,start,'bof');
-while 1
-    tline = fgetl(fid);
-    if ~ischar(tline), break, end
-
-    n = n+1;
-    if(mod(n,skip)~=0)
-        continue
-    end
-
-    % Read data line
-    row = splitbydelimiter(tline,',');
-    newtime = str2num(row{1});
-
-    if(scope.timeon & newtime*simT/3600<scope.time(1))
-        continue;
-    end
-    
-    if(scope.timeon & newtime*simT/3600>scope.time(2))
-        break;
-    end
-    
-    row = {row{2:length(row)}};
-    
-    c = c+1;
-    time(c) = newtime;
-    for i=1:size(row,2)
-        celldata = splitbydelimiter(row{i},';');
-        dens    = splitbydelimiter(celldata{1},':'); 
-        outflow = splitbydelimiter(celldata{3},':');
-        fd      = splitbydelimiter(celldata{4},':'); 
-        qlimit  = splitbydelimiter(celldata{5},':');
-        weaving = splitbydelimiter(celldata{6},':');
-        for j=1:numvehicletypes
-            Density(c,i,j) = str2num(dens{j});
-            OutFlow(c,i,j) = str2num(outflow{j});
-        end
-        Capacity(c,i) = str2num(fd{1});
-        Critical_Density(c,i) = str2num(fd{2});
-        Jam_Density(c,i) = str2num(fd{3});
-        QueueLimit(c,i) = str2num(qlimit{1});
-        WeavingFactor(c,i) = str2num(weaving{1});
-    end
-
-end
-time = time'*simT/3600;
 fclose(fid);
 
-clear dens ans c celldata fd fid
-clear i inflow j newtime numvehicletypes outflow
-clear ready tline plottimestep row saveLinkTypes savelinks
-clear saveRoutes n name qlimit weaving 
-clear skip start maxpointspercurve
-
-D.description = description;
-D.Links = Links;
-D.vehicletypes = vehicletypes;
-D.vehicletypeweight = vehicletypeweight;
-D.time = time;
-D.Density =Density;
-D.OutFlow = OutFlow;
-D.routes = routes;
-D.Capacity = Capacity;
-D.Critical_Density = Critical_Density;
-D.WeavingFactor = WeavingFactor;
-D.Jam_Density = Jam_Density;
-D.QueueLimit = QueueLimit;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [simT] = ReadSamplingPeriod(fid)
-tline = '';
-while(isempty(strfind(tline,'seconds')))
-    tline = fgetl(fid);
-end
-row = splitbydelimiter(tline,',');
-simT = str2num(row{1});
-simT = round(simT*100)/100;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [vehicletypes] = ReadVehicleTypes(fid)
-tline = fgetl(fid);
-row = splitbydelimiter(tline,',');
-vehicletypes = splitbydelimiter(row{2},':');
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [description] = ReadDescription(fid)
-tline = fgetl(fid);
-description = [];
-while ~isempty(tline)
-    row = splitbydelimiter(tline,',');
-    description = strvcat(description,row{1});
-    tline = fgetl(fid);
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [route] = ReadRoutes(fid)
-tline = fgetl(fid);
-c = 0;
-while ~isempty(tline)
-    row = splitbydelimiter(tline,',');
-    c = c+1;
-    route(c).name = row{1};
-    route(c).links = [];
-    for i=2:size(row,1)
-        n = str2num(row{i});
-        if(~isempty(n))
-            route(c).links(i-1) = n;
-        else
-            route(c).links(i-1) = nan;
-        end
-    end
-    route(c).links(isnan(route(c).links)) = [];
-    tline = fgetl(fid);
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [Link] = ReadLinkConfig(fid,tline)
-Id = splitbydelimiter(tline,',');
-tline = fgetl(fid);
-Name = splitbydelimiter(tline,',');
-tline = fgetl(fid);
-Type = splitbydelimiter(tline,',');
-tline = fgetl(fid);
-Length = splitbydelimiter(tline,',');
-tline = fgetl(fid);
-Lanes = splitbydelimiter(tline,',');
-tline = fgetl(fid);
-Source = splitbydelimiter(tline,',');
-for i=2:size(Id,1)
-    Link(i-1).id = str2num(Id{i});
-    Link(i-1).name= Name{i};
-    switch Type{i}
-        case 'Freeway'
-            Link(i-1).type = 1;
-        case 'On-Ramp'
-            Link(i-1).type = 2;
-        case 'Off-Ramp'
-            Link(i-1).type = 3;
-        case 'HOV'
-            Link(i-1).type = 4;
-        otherwise
-            Link(i-1).type = NaN;
-    end
-    Link(i-1).length = str2num(Length{i});
-    Link(i-1).lanes = str2num(Lanes{i});
-    Link(i-1).issource = strcmp(Source{i},'Yes');
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [x] = splitbydelimiter(str,d)
-if(isempty(str))
-    x = NaN;
-    return
-end
-x = textscan(str,'%s','delimiter',d);
-x = x{1};
+D.Links = struct('id', num2cell(linkinfo.LinkID), ...
+	'name', linkinfo.LinkName, 'type', num2cell(linkinfo.LinkType), ...
+	'length', num2cell(linkinfo.LinkLength), ...
+	'lanes', num2cell(linkinfo.LinkWidth), ...
+	'issource', num2cell(linkinfo.Source));
