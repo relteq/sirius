@@ -29,7 +29,6 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/** Current link where the sensor is located. */
 	protected _Link myLink = null;
 
-
 	public static enum Type	{  
 		/** fixed point detector station, such as a loop detector station.*/	static_point,
 		/** fixed area detector, such as a camera or radar detector.	  */	static_area,
@@ -125,13 +124,6 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/////////////////////////////////////////////////////////////////////
 	// populate
 	/////////////////////////////////////////////////////////////////////
-
-//	protected final void populateFromParameters(_Scenario myScenario,_Sensor.Type myType,String networkId,String linkId){
-//		this.myScenario = myScenario;
-//		this.myType = myType;
-//		//id = API.generateSensorId();
-//		myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
-//	}
 	
 	/** @y.exclude */
 	protected final void populateFromJaxb(_Scenario myScenario,Sensor s,_Sensor.Type myType){

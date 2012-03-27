@@ -80,7 +80,14 @@ public final class SiriusMath {
 	public static boolean isintegermultipleof(Double A,Double a){
 		if(A.isInfinite())
 			return true;
-		return SiriusMath.equals( SiriusMath.round(A/a) , A/a );
+		if(A==0)
+			return true;
+		if(a==0)
+			return false;
+		boolean result;
+		result = SiriusMath.equals( SiriusMath.round(A/a) , A/a );
+		result &=  A/a>0;
+		return result;
 	}
 	
 	public static boolean equals(double a,double b){

@@ -53,7 +53,7 @@ public class Event_Link_Lanes extends _Event {
 		
 		// check each target is valid
 		for(_ScenarioElement s : targets){
-			if(s.getMyType()!=_ScenarioElement.Type.link){
+			if(s.getMyType().compareTo(_ScenarioElement.Type.link)!=0){
 				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns:aurora="http://path.berkeley.edu/aurora" id="null" name="New Scenario" schemaVersion="1.0.20">
+   <settings>
+      <units>US</units>
+   </settings>
+   <!--
+   <FundamentalDiagramProfileSet>
+      <fundamentalDiagramProfile link_id="-1">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-2">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-3">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-4">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-5">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-6">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-7">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-8">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-9">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-10">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-11">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+      <fundamentalDiagramProfile link_id="-12">
+         <fundamentalDiagram capacity="1500" capacityDrop="0" congestion_speed="10" densityJam="200" freeflow_speed="30"/>
+      </fundamentalDiagramProfile>
+   </FundamentalDiagramProfileSet>
+   -->
+   <NetworkList>
+      <network dt="10" id="-1" name="New Network">
+         <description>Created by Network Editor version xsd-1.0.20-55-g89efc8a</description>
+         <position>
+            <point lat="37.8700923120029" lng="-122.292431294918"/>
+         </position>
+         <NodeList>
+            <node id="-1" name="Node -1" type="signalized_intersection">
+               <outputs>
+                  <output link_id="-1"/>
+                  <output link_id="-4"/>
+                  <output link_id="-7"/>
+                  <output link_id="-8"/>
+               </outputs>
+               <inputs>
+                  <input link_id="-2"/>
+                  <input link_id="-3"/>
+                  <input link_id="-5"/>
+                  <input link_id="-6"/>
+               </inputs>
+               <position>
+                  <point lat="37.869111292506" lng="-122.292112112045"/>
+               </position>
+            </node>
+            <node id="-2" name="Node -2" type="simple">
+               <outputs>
+                  <output link_id="-2"/>
+                  <output link_id="-9"/>
+               </outputs>
+               <inputs>
+                  <input link_id="-1"/>
+                  <input link_id="-10"/>
+                  <input link_id="-11"/>
+                  <input link_id="-12"/>
+               </inputs>
+               <position>
+                  <point lat="37.8716775080094" lng="-122.293002605438"/>
+               </position>
+            </node>
+            <node id="-3" name="Node -3" type="simple">
+               <outputs>
+                  <output link_id="-3"/>
+               </outputs>
+               <inputs/>
+               <position>
+                  <point lat="37.8694754803465" lng="-122.289912700653"/>
+               </position>
+            </node>
+            <node id="-4" name="Node -4" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8694839498097" lng="-122.288700342178"/>
+               </position>
+            </node>
+            <node id="-5" name="Node -5" type="simple">
+               <outputs>
+                  <output link_id="-5"/>
+               </outputs>
+               <inputs/>
+               <position>
+                  <point lat="37.8676799321587" lng="-122.29155421257"/>
+               </position>
+            </node>
+            <node id="-6" name="Node -6" type="simple">
+               <outputs>
+                  <output link_id="-6"/>
+               </outputs>
+               <inputs/>
+               <position>
+                  <point lat="37.8685607725862" lng="-122.294676303864"/>
+               </position>
+            </node>
+            <node id="-7" name="Node -7" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8686115899819" lng="-122.295062541962"/>
+               </position>
+            </node>
+            <node id="-8" name="Node -8" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8672649171542" lng="-122.291629314423"/>
+               </position>
+            </node>
+            <node id="-9" name="Node -9" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8729224714491" lng="-122.29327082634"/>
+               </position>
+            </node>
+            <node id="-10" name="Node -10" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8730410382985" lng="-122.293506860733"/>
+               </position>
+            </node>
+            <node id="-11" name="Node -11" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8719569914294" lng="-122.290931940079"/>
+               </position>
+            </node>
+            <node id="-12" name="Node -12" type="terminal">
+               <outputs/>
+               <inputs/>
+               <position>
+                  <point lat="37.8713218003056" lng="-122.294815778732"/>
+               </position>
+            </node>
+         </NodeList>
+         <LinkList>
+            <link id="-1" lanes="1" length="0.183957338089703" name="-1 -&gt; -2" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-1"/>
+               <end node_id="-2"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-2" lanes="1" length="0.191820109199188" name="-2 -&gt; -1" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-2"/>
+               <end node_id="-1"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-3" lanes="1" length="0.122296194753679" name="-3 -&gt; -1" record="false" road_name="University Ave" type="street">
+               <description/>
+               <begin node_id="-3"/>
+               <end node_id="-1"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-4" lanes="1" length="0.188001071130738" name="-1 -&gt; dest" record="false" road_name="University Ave" type="street">
+               <description/>
+               <begin node_id="-1"/>
+               <end node_id="-4"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-5" lanes="1" length="0.103529012077267" name="-5 -&gt; -1" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-5"/>
+               <end node_id="-1"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-6" lanes="1" length="0.144807144208284" name="-6 -&gt; -1" record="false" road_name="University Ave" type="street">
+               <description/>
+               <begin node_id="-6"/>
+               <end node_id="-1"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-7" lanes="1" length="0.164415281515541" name="-1 -&gt; dest" record="false" road_name="University Ave" type="street">
+               <description/>
+               <begin node_id="-1"/>
+               <end node_id="-7"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-8" lanes="1" length="0.132989458699182" name="-1 -&gt; dest" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-1"/>
+               <end node_id="-8"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-9" lanes="1" length="0.0867638672807147" name="-2 -&gt; dest" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-2"/>
+               <end node_id="-9"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-10" lanes="1" length="0.0983022845519576" name="orig -&gt; -2" record="false" road_name="San Pablo Ave" type="street">
+               <description/>
+               <begin node_id="-10"/>
+               <end node_id="-2"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-11" lanes="1" length="0.114503635402679" name="orig -&gt; -2" record="false" road_name="Delaware St" type="street">
+               <description/>
+               <begin node_id="-11"/>
+               <end node_id="-2"/>
+               <dynamics type="CTM"/>
+            </link>
+            <link id="-12" lanes="1" length="0.105871572055369" name="orig -&gt; -2" record="false" road_name="Delaware St" type="street">
+               <description/>
+               <begin node_id="-12"/>
+               <end node_id="-2"/>
+               <dynamics type="CTM"/>
+            </link>
+         </LinkList>
+         <SignalList>
+		 <!--
+            <signal node_id="-1" id="-1">
+               <phase lag="false" min_green_time="0" nema="1" permissive="false" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+                  <links/>
+               </phase>
+               <phase lag="false" min_green_time="4" nema="2" permissive="false" protected="true" recall="false" red_clear_time="3" yellow_time="2">
+                  <links>
+                     <link_reference id="-3"/>
+                     <link_reference id="-5"/>
+                  </links>
+               </phase>
+               <phase lag="false" min_green_time="0" nema="3" permissive="false" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+                  <links/>
+               </phase>
+               <phase lag="false" min_green_time="4" nema="4" permissive="false" protected="true" recall="true" red_clear_time="3" yellow_time="2">
+                  <links/>
+               </phase>
+               <phase lag="false" min_green_time="0" nema="5" permissive="false" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+                  <links/>
+               </phase>
+               <phase lag="false" min_green_time="4" nema="6" permissive="false" protected="true" recall="false" red_clear_time="3" yellow_time="2">
+                  <links>
+                     <link_reference id="-2"/>
+                  </links>
+               </phase>
+               <phase lag="false" min_green_time="0" nema="7" permissive="false" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+                  <links/>
+               </phase>
+               <phase lag="false" min_green_time="4" nema="8" permissive="false" protected="true" recall="true" red_clear_time="3" yellow_time="2">
+                  <links>
+                     <link_reference id="-6"/>
+                  </links>
+               </phase>
+            </signal>
+			-->
+         </SignalList>
+      </network>
+   </NetworkList>
+
+   <ControllerSet>
+      <controller type="SIG_pretimed" dt="">
+	  
+         <PlanSequence transition_delay="0">
+            <plan_reference plan_id="1" start_time="0"/>
+         </PlanSequence>
+         <PlanList>
+           <plan id="1" cyclelength="60">
+             <intersection node_id="-1" offset="0">
+               <stage greentime="26" movA="2" movB="6"/>
+               <stage greentime="27" movA="4" movB=""/>
+             </intersection>
+             <intersection node_id="-63" offset="0">
+               <stage greentime="25" movA="2" movB="6"/>
+               <stage greentime="26" movA="4" movB="8"/>
+             </intersection>
+           </plan>
+         </PlanList>	  
+	  
+	  </controller>
+   </ControllerSet>
+
+</scenario>
