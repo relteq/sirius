@@ -23,9 +23,8 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	/** Scenario that contains this controller */
 	protected _Scenario myScenario;										       								       
 	
-	/** Name of the controller. (To be replaced with a unique id */
-	protected String name;								// This is used only for controller on/off events.
-														// would prefer to reference contorllers by id. 
+	/** Id of the controller. */
+	protected String id;
 	
 	/** Controller type. */
 	protected _Controller.Type myType;
@@ -80,7 +79,15 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 
 	/** @y.exclude */
 	 protected _Controller(){}
-							      
+	
+	/** @y.exclude */
+	 protected _Controller(ArrayList<_ScenarioElement> targets){
+		 this.targets = targets;
+		 this.control_maxflow  = new Double [targets.size()];
+		 this.control_maxspeed = new Double [targets.size()];
+	 }
+	
+		 
 	/////////////////////////////////////////////////////////////////////
 	// registration
 	/////////////////////////////////////////////////////////////////////
@@ -112,7 +119,8 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 		else
 			return link.registerSpeedController(this,index);
 	}
-
+	
+	
 //   	/** DESCRIPTION
 //   	 * 
 //   	 */
@@ -131,7 +139,7 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	protected final void populateFromJaxb(_Scenario myScenario,Controller c,_Controller.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.name = c.getName();
+		this.id = c.getId();
 		this.ison = true;
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
@@ -186,5 +194,33 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	public void reset() {
 		ison = true;
 	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
 
+	public String getId() {
+		return id;
+	}	
+
+	public _Controller.Type getMyType() {
+		return myType;
+	}
+
+	public ArrayList<_ScenarioElement> getTargets() {
+		return targets;
+	}
+
+	public ArrayList<_ScenarioElement> getFeedbacks() {
+		return feedbacks;
+	}
+	
+	public double getDtinseconds() {
+		return dtinseconds;
+	}
+
+	public boolean isIson() {
+		return ison;
+	}
+	
 }

@@ -54,7 +54,7 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	protected boolean validate() {
 		for(_Controller controller : _controllers)
 			if(!controller.validate()){
-				SiriusErrorLog.addErrorMessage("Controller validation failure, controller");
+				SiriusErrorLog.addErrorMessage("Controller validation failure, controller " + controller.getId());
 				return false;
 			}
 		return true;

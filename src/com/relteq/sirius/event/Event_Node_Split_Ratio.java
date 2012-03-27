@@ -95,7 +95,7 @@ public class Event_Node_Split_Ratio extends _Event {
 		}
 		
 		// check each target is valid
-		if(targets.get(0).getMyType()!=_ScenarioElement.Type.node){
+		if(targets.get(0).getMyType().compareTo(_ScenarioElement.Type.node)!=0){
 			SiriusErrorLog.addErrorMessage("wrong target type.");
 			return false;
 		}

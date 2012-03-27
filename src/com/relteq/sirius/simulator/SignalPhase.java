@@ -1,6 +1,7 @@
 package com.relteq.sirius.simulator;
 
 import com.relteq.sirius.jaxb.LinkReference;
+import com.relteq.sirius.simulator._Signal.NEMA;
 
 public class SignalPhase {
 	
@@ -8,7 +9,7 @@ public class SignalPhase {
 	//private AbstractNodeComplex myNetwork;
 	protected _Node myNode;
 	protected _Signal mySignal;
-	protected _Link [] targetlinks;
+	protected _Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
 	
@@ -51,12 +52,12 @@ public class SignalPhase {
 	protected float conflictingcalltime		= 0f;
 
 	// Controller memory
-	protected boolean hold 					= false;
-	protected boolean forceoff				= false;
+	protected boolean hold_requested 		= false;
+	protected boolean forceoff_requested	= false;
 
 	// Safety
-	protected boolean permitopposinghold 	= false;
-	protected boolean permithold			= false;
+	protected boolean permitopposinghold 	= true;
+	protected boolean permithold			= true;
 
 	protected int numapproachloops = 0;	
 	
@@ -76,11 +77,7 @@ public class SignalPhase {
 		}
 		
 		if(jaxbPhase.getNema()!=null)
-			try{
-				myNEMA = _Signal.NEMA.valueOf("_"+jaxbPhase.getNema().toString());
-			} catch(IllegalArgumentException e){
-				myNEMA = _Signal.NEMA.NULL;
-			}
+			myNEMA = _Signal.String2NEMA(jaxbPhase.getNema().toString());
 		else
 			myNEMA = _Signal.NEMA.NULL;
 		
@@ -105,8 +102,54 @@ public class SignalPhase {
 		this.recall = jaxbPhase.isRecall();
 		
 		// actual yellow and red clear times
-		this.actualredcleartime = yellowtime;
+		this.actualyellowtime   = yellowtime;
 		this.actualredcleartime = redcleartime;
+		
+		
+		// dual ring structure: opposingPhase, isthrough, myRingGroup
+		switch(myNEMA){
+		case _1:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._2);
+			isthrough = false;
+			myRingGroup = 0;
+			break;
+		case _2:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._1);
+			isthrough = true;
+			myRingGroup = 0;
+			break;
+		case _3:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._4);
+			isthrough = false;
+			myRingGroup = 1;
+			break;
+		case _4:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._3);
+			isthrough = true;
+			myRingGroup = 1;
+			break;
+		case _5:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._6);
+			isthrough = false;
+			myRingGroup = 0;
+			break;
+		case _6:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._5);
+			isthrough = true;
+			myRingGroup = 0;
+			break;
+		case _7:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._8);
+			isthrough = false;
+			myRingGroup = 1;
+			break;
+		case _8:
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA._7);
+			isthrough = true;
+			myRingGroup = 1;
+			break;
+		}
+		
 		
 	}
 	
@@ -116,12 +159,12 @@ public class SignalPhase {
 		hasapproachcall		= false;
 		hasconflictingcall	= false;
 		conflictingcalltime	= 0f;
-		hold 				= false;
-		forceoff			= false;
-		permitopposinghold 	= false;
-		permithold			= false;
+		hold_requested 		= false;
+		forceoff_requested	= false;
+		permitopposinghold 	= true;
+		permithold			= true;
 
-		setRed();
+		setPhaseColor(_Signal.BulbColor.RED);
 		bulbtimer.reset();
 		
 	}
@@ -139,7 +182,7 @@ public class SignalPhase {
 
 		
 		// myNEMA is valid
-		if(myNEMA==_Signal.NEMA.NULL)
+		if(myNEMA.compareTo(_Signal.NEMA.NULL)==0)
 			return false;
 		
 		// numbers are positive
@@ -150,7 +193,7 @@ public class SignalPhase {
 	}
 	
 //	 -------------------------------------------------------------------------------------------------
-	protected void processCommand(boolean goG,boolean goY)
+	protected void update(boolean hold_approved,boolean forceoff_approved)
 	{
 		double bulbt = bulbtimer.getT();
 
@@ -158,81 +201,130 @@ public class SignalPhase {
 			if(permissive)
 				return;
 			else{
-				setRed();
+				setPhaseColor(_Signal.BulbColor.RED);
 				return;
 			}
 		}
-
-		switch(bulbcolor){
-
-		// .............................................................................................
-		case GREEN:
-
-			setGreen();
-			permitopposinghold = false;
-
-			// Force off 
-			if( goY ){ 
-				setYellow();
-				bulbtimer.reset();
-				//FlushAllStationCallsAndConflicts();
-			}
-
-			break;
-
-		// .............................................................................................
-		case YELLOW:
+		
+		// execute this state machine until "done". May be more than once if 
+		// some state has zero holding time (eg yellowtime=0)
+		boolean done=false;
+		
+		while(!done){
 			
-			setYellow();
-			permitopposinghold = false;
-
-			// if timer>=yellowtime-EPS, go to red (Set permissive opposing left turn to yellow), reset timer
-			if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime) ){
-				setRed();
-				bulbtimer.reset();
-			}
-			break;
-
-		// .............................................................................................
-		case RED:
-
-			setRed();
-
-			//if( SiriusMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
-			if( SiriusMath.greaterorequalthan(bulbt,redcleartime) && !goG )
-				permitopposinghold = true;
-			else
+			switch(bulbcolor){
+	
+			// .............................................................................................
+			case GREEN:
+	
+				setPhaseColor(_Signal.BulbColor.GREEN);
 				permitopposinghold = false;
+	
+				// Force off 
+				if( forceoff_approved ){ 
+					setPhaseColor(_Signal.BulbColor.YELLOW);
+					bulbtimer.reset();
+					//FlushAllStationCallsAndConflicts();
+					done = actualyellowtime>0;
+				}
+				else
+					done = true;
 
-			// if hold, set to green, go to green, etc.
-			if( goG ){ 
-				setGreen();
-				bulbtimer.reset();
+				break;
+	
+			// .............................................................................................
+			case YELLOW:
+				
+				setPhaseColor(_Signal.BulbColor.YELLOW);
+				permitopposinghold = false;
+	
+				// set permitopposinghold one step ahead of time so that other phases update correctly next time.
+				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0){
+					permitopposinghold = true;
+				}
 
-				// Unregister calls (for reading conflicting calls)
-				//FlushAllStationCallsAndConflicts(); // GCG ?????
+				// yellow time over, go immediately to red if redcleartime==0
+				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime) ){
+					setPhaseColor(_Signal.BulbColor.RED);
+					bulbtimer.reset();
+					done = redcleartime>0;
+				}
+				else
+					done = true;
+				break;
+	
+			// .............................................................................................
+			case RED:
+	
+				setPhaseColor(_Signal.BulbColor.RED);
+	
+				//if( SiriusMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
+				if( SiriusMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
+					permitopposinghold = true;
+				else
+					permitopposinghold = false;
+	
+				// if hold, set to green, go to green, etc.
+				if( hold_approved ){ 
+					setPhaseColor(_Signal.BulbColor.GREEN);
+					bulbtimer.reset();
+	
+					// Unregister calls (for reading conflicting calls)
+					//FlushAllStationCallsAndConflicts(); // GCG ?????
+					
+					done = !forceoff_approved;
+				}
+				else
+					done = true;
+	
+				break;
 			}
-
-			break;
+			
 		}
 	}
 	
-	protected void setGreen() {
-		//for (int i=0; i<targetlinks.length; i++)
-		//	mySignal.myController.setControlInput(myControlIndex.get(i), links.get(i).getCapacityValue().getCenter() );
-		bulbcolor = _Signal.BulbColor.GREEN;
+	protected void setPhaseColor(_Signal.BulbColor color){
+		mySignal.myPhaseController.setPhaseColor(myNEMA,color);
+		bulbcolor = color;
 	}
 
-	protected void setYellow(){
-		//for (int i=0; i<targetlinks.length; i++)
-		//	mySignal.myController.setControlInput(myControlIndex.get(i),links.get(i).getCapacityValue().getCenter() );
-		bulbcolor = _Signal.BulbColor.YELLOW;
+	public float getYellowtime() {
+		return yellowtime;
 	}
 
-	protected void setRed() {
-		//for (int i=0; i<targetlinks.length; i++)
-		//	mySignal.myController.setControlInput(myControlIndex.get(i),0.0);
-		bulbcolor = _Signal.BulbColor.RED;
+	public float getRedcleartime() {
+		return redcleartime;
 	}
+
+	public float getMingreen() {
+		return mingreen;
+	}
+
+	public _Signal.NEMA getMyNEMA() {
+		return myNEMA;
+	}
+	
+	public float getActualyellowtime() {
+		return actualyellowtime;
+	}
+
+	public void setActualyellowtime(float actualyellowtime) {
+		this.actualyellowtime = actualyellowtime;
+	}
+	
+	public float getActualredcleartime() {
+		return actualredcleartime;
+	}
+
+	public void setActualredcleartime(float actualredcleartime) {
+		this.actualredcleartime = actualredcleartime;
+	}
+
+	
+	public _Signal.BulbColor getBulbcolor() {
+		return bulbcolor;
+	}
+	
+	
 	
 }

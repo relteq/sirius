@@ -17,8 +17,8 @@ public final class _ScenarioElement extends ScenarioElement {
 	
 	/** @y.exclude */	protected _Scenario myScenario;
 	/** @y.exclude */	protected _ScenarioElement.Type myType;
-	/** @y.exclude */	protected String network_id = "";
-	/** @y.exclude */	protected String id;
+	/** @y.exclude 	protected String network_id = ""; */
+	/** @y.exclude 	protected String id; */
 	/** @y.exclude */	protected Object reference;
 
 	public static enum Type {  link, 
@@ -60,22 +60,16 @@ public final class _ScenarioElement extends ScenarioElement {
 	 * Otherwise it returns <code>null</code>.
 	 * @return Network id, or <code>null</code>.
 	 */
-	public String getNetwork_id() {
-		if(myType==_ScenarioElement.Type.link || 
-		   myType==_ScenarioElement.Type.node || 
-		   myType==_ScenarioElement.Type.sensor || 
-		   myType==_ScenarioElement.Type.signal ){
-			return network_id;
+	@Override
+	public String getNetworkId() {
+		if(myType.compareTo(_ScenarioElement.Type.link)==0 || 
+		   myType.compareTo(_ScenarioElement.Type.node)==0 || 
+		   myType.compareTo(_ScenarioElement.Type.sensor)==0 || 
+		   myType.compareTo(_ScenarioElement.Type.signal)==0 ){
+			return super.getNetworkId();
 		}
 		else
 			return null;
-	}
-
-	/** The id of the referenced component.
-	 * @return string id.
-	 */
-	public String getId() {
-		return id;
 	}
 
 	/** Reference to the component.

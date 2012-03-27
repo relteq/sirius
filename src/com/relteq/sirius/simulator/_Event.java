@@ -79,7 +79,7 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		}
 			
 		// check that there are targets assigned to non-global events
-		if(myType!=_Event.Type.global_control_toggle && myType!=_Event.Type.global_demand_knob)
+		if(myType.compareTo(_Event.Type.global_control_toggle)!=0 && myType.compareTo(_Event.Type.global_demand_knob)!=0)
 			if(targets.isEmpty()){
 				SiriusErrorLog.addErrorMessage("No targets assigned.");
 				return false;
@@ -150,8 +150,8 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 
 		// fifth ordering by target id
 		for(int i=0;i<thisnumtargets;i++){
-			String thistargetId = this.targets.get(i).id;
-			String thattargetId = that.targets.get(i).id;
+			String thistargetId = this.targets.get(i).getId();
+			String thattargetId = that.targets.get(i).getId();
 			compare = thistargetId.compareTo(thattargetId);
 			if(compare!=0)
 				return compare;

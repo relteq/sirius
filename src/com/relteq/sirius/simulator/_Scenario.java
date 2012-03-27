@@ -137,8 +137,9 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((_DemandProfileSet)getDemandProfileSet()).reset();
 
 		// reset fundamental diagrams
-		for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-			((_FundamentalDiagramProfile)fd).reset();
+		if(getFundamentalDiagramProfileSet()!=null)
+			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+				((_FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
 		global_control_on = true;
@@ -390,12 +391,21 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
 	 */
-	public double getTime() {
+	public double getTimeInSeconds() {
 		if(clock==null)
 			return Double.NaN;
 		return clock.getT();
 	}
-
+	
+	/** Time elapsed since the begining of the simulation in seconds.
+	 * @return Simulation time in seconds after start time.
+	 */
+	public double getTimeElapsedInSeconds() {
+		if(clock==null)
+			return Double.NaN;
+		return clock.getTElapsed();
+	}
+	
 	/** Current simulation time step.
 	 * @return	Integer number of time steps since the start of the simulation. 
 	 */
@@ -496,21 +506,33 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return timeend;
 	}
 
-	/** Get a reference to a controller by its name.
-	 * <p> This method will soon be replaced with id search, since names
-	 * are not guaranteed to be unique. 
-	 * @param name Name of the controller.
+	/** Get a reference to a controller by its id.
+	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
-	public _Controller getControllerWithName(String name){
+	public _Controller getControllerWithId(String id){
 		if(_controllerset==null)
 			return null;
 		for(_Controller c : _controllerset.get_Controllers()){
-			if(c.name.equals(name))
+			if(c.id.equals(id))
 				return c;
 		}
 		return null;
 	}
+	
+	/** Get a reference to an event by its id.
+	 * @param id Id of the event.
+	 * @return A reference to the event if it exists, <code>null</code> otherwise.
+	 */
+	public _Event getEventWithId(String id){
+		if(_eventset==null)
+			return null;
+		for(_Event e : _eventset._sortedevents){
+			if(e.getId().equals(id))
+				return e;
+		}
+		return null;
+	}		
 
 	/** Get a reference to a node by its composite id.
 	 * 
@@ -567,6 +589,44 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 				return null;
 		else	
 			return network.getSensorWithId(id);
+	}
+
+	/** Get a reference to a signal by its composite id.
+	 * 
+	 * @param network_id String id of the network containing the signal. 
+	 * @param id String id of the signal. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public _Signal getSignalWithCompositeId(String network_id,String id){
+		if(getNetworkList()==null)
+			return null;
+		_Network network = getNetworkWithId(network_id);
+		if(network==null)
+			if(getNetworkList().getNetwork().size()==1)
+				return ((_Network) getNetworkList().getNetwork().get(0)).getSignalWithId(id);
+			else
+				return null;
+		else	
+			return network.getSignalWithId(id);
+	}
+	
+	/** Get a reference to a signal by the composite id of its node.
+	 * 
+	 * @param network_id String id of the network containing the signal. 
+	 * @param id String id of the node under the signal. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public _Signal getSignalForNodeId(String network_id,String node_id){
+		if(getNetworkList()==null)
+			return null;
+		_Network network = getNetworkWithId(network_id);
+		if(network==null)
+			if(getNetworkList().getNetwork().size()==1)
+				return ((_Network) getNetworkList().getNetwork().get(0)).getSignalWithNodeId(node_id);
+			else
+				return null;
+		else	
+			return network.getSignalWithNodeId(node_id);
 	}
 
 	/** Add a controller to the scenario.
@@ -645,7 +705,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// private
 	/////////////////////////////////////////////////////////////////////
 
-	private SiriusStateTrajectory run_internal(int numRepetitions,boolean writefiles,boolean returnstate) throws SiriusException{		
+	private SiriusStateTrajectory run_internal(int numRepetitions,boolean writefiles,boolean returnstate) throws SiriusException{
 		
 		if(returnstate && numRepetitions>1)
 			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
@@ -661,7 +721,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			OutputWriter outputwriter  = null;
 			
 			// open output files
-	        if(writefiles && simulationMode==_Scenario.ModeType.normal){
+	        if( writefiles && simulationMode.compareTo(_Scenario.ModeType.normal)==0 ){
 	        	outputwriter = new OutputWriter(this);
 				try {
 					outputwriter.open(outputfileprefix,String.format("%d",i));
@@ -683,10 +743,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			
             // close output files
 	        if(writefiles){
-	        	if(simulationMode==_Scenario.ModeType.normal)
+	        	if(simulationMode.compareTo(_Scenario.ModeType.normal)==0)
 		        	outputwriter.close();
 				// or save scenario (in warmup mode)
-		        if(simulationMode==_Scenario.ModeType.warmupFromIC || simulationMode==_Scenario.ModeType.warmupFromZero){
+		        if(simulationMode.compareTo(_Scenario.ModeType.warmupFromIC)==0 || simulationMode.compareTo(_Scenario.ModeType.warmupFromZero)==0 ){
 		    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
 		    		//	    		Utils.save(scenario, outfile);
 		        }
@@ -722,17 +782,17 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		for(int k=0;k<n;k++){
 
 			// export initial condition
-	        if(simulationMode==ModeType.normal)
+	        if(simulationMode.compareTo(ModeType.normal)==0)
 	        	if( clock.getCurrentstep()==0 )
 	        		recordstate(writefiles,returnstate,outputwriter,state,false);
-	        
-            // update time (before write to output)
-        	clock.advance();
-        	      	        	
+	               	
         	// update scenario
         	update();
 
-            if(simulationMode==ModeType.normal)
+            // update time (before write to output)
+        	clock.advance();
+        	
+            if(simulationMode.compareTo(ModeType.normal)==0 )
 	        	if( clock.getCurrentstep()%outsteps == 0 )
 	        		recordstate(writefiles,returnstate,outputwriter,state,true);
         	

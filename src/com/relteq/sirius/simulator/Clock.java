@@ -28,6 +28,10 @@ final class Clock {
 	protected double getT() {
 		return t;
 	}
+	
+	protected double getTElapsed(){
+		return t-to;
+	}
 
 	protected int getCurrentstep() {
 		return currentstep;
