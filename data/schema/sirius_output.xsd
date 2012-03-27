@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="XXX">
+
+  <!-- Scenario Output............................................................ -->
+  
+  <xs:element name="scenario_output">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="scenario" minOccurs="0" maxOccurs="1"/> <!-- include the scenario description in the output -->
+        <xs:element ref="report" minOccurs="0" maxOccurs="1" /> <!-- indicate what sort of data is recorded -->
+        <xs:element ref="data" minOccurs="1" maxOccurs="1" /> <!-- the data itself sliced by timestamps -->
+      </xs:all>
+      <xs:attribute name="id" type="xs:string" use="optional" />
+      <xs:attribute name="name" type="xs:string" use="optional" />
+      <xs:attribute name="schemaVersion" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  
+  
+      <!-- Report - specifies which data is reported ................................ -->
+  
+	  <xs:element name="report">
+		<xs:complexType>
+		  <xs:all>
+			<xs:element ref="link_report" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="node_report" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="signal_report" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="sensor_report" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="probe_report" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="controller_report" minOccurs="0" maxOccurs="1" />
+		  </xs:all>
+		</xs:complexType>
+	  </xs:element>
+		
+		  <xs:element name="link_report">
+			<xs:complexType>
+			  <xs:attribute name="density_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="flow_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="speed_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="node_report">
+			<xs:complexType>
+			  <xs:attribute name="srm_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="signal_report">
+			<xs:complexType>
+			  <xs:attribute name="cycle_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="sensor_report">
+			<xs:complexType>
+			  <xs:attribute name="density_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="occupancy_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="flow_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="speed_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="probe_report">
+			<xs:complexType>
+			  <xs:attribute name="geo_position_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="link_position_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="timestamp_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="speed_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="controller_report">
+			<xs:complexType>
+			  <xs:attribute name="action_report" type="boolean" use="optional" default="false" />
+			  <xs:attribute name="settings_report" type="boolean" use="optional" default="false" />
+			</xs:complexType>
+		  </xs:element>
+
+
+
+      <!-- Data ............................................................... -->
+
+	  <xs:element name="data">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element ref="ts" minOccurs="0" maxOccurs="unbounded" />
+		  </xs:sequence>
+		</xs:complexType>
+	  </xs:element>
+	
+	
+          <!-- TS - timestamp ..................................................... -->
+		  <xs:element name="ts">
+			<xs:complexType>
+			  <xs:all>
+			    <xs:element ref="netl" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="cset" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="probes" minOccurs="0" maxOccurs="1" />
+			  </xs:all>
+			  <xs:attribute name="sec" type="xs:decimal" use="required" />			<!-- in seconds -->
+			</xs:complexType>
+		  </xs:element>
+
+
+            <!-- Network list .................................................................. -->
+  		    <xs:element name="netl">
+			  <xs:complexType>
+			    <xs:sequence>
+				  <xs:element ref="net" minOccurs="0" maxOccurs="unbounded" />
+			    </xs:sequence>
+			  </xs:complexType>
+		    </xs:element>
+
+			  <!-- Network ..................................................................... -->
+			  <xs:element name="net">
+				<xs:complexType>
+				  <xs:all>
+			        <xs:element ref="nl" minOccurs="0" maxOccurs="1" />     <!-- node list -->
+				    <xs:element ref="ll" minOccurs="0" maxOccurs="1" />     <!-- link list -->
+					<xs:element ref="sl" minOccurs="0" maxOccurs="1" />     <!-- sensor list -->
+					<xs:element ref="sigl" minOccurs="0" maxOccurs="1" />   <!-- signal list -->
+			      </xs:all>
+				  <xs:attribute name="id" type="xs:string" use="required" />
+				</xs:complexType>
+			  </xs:element>
+			  
+			    <!-- Node list .................................................................. -->
+				<xs:element name="nl">
+				  <xs:complexType>
+			        <xs:sequence>
+				      <xs:element ref="n" minOccurs="0" maxOccurs="unbounded" />
+			        </xs:sequence>
+			      </xs:complexType>
+				</xs:element>
+				
+				  <!-- Node .................................................................. -->
+				  <xs:element name="n">
+				    <xs:complexType>
+					  <xs:sequence>
+					    <xs:element ref="io" minOccurs="0" maxOccurs="unbounded" />
+					  </xs:sequence>
+					  <xs:attribute name="id" type="xs:string" use="required" />
+					</xs:complexType>
+				  </xs:element>
+				  
+				    <!-- Split ratio vector for given input/output link pair ................. -->
+				    <xs:element name="io"> 
+				      <xs:complexType mixed="true">
+					    <xs:attribute name="il" type="xs:string" use="required" />
+						<xs:attribute name="ol" type="xs:string" use="required" />
+						<xs:attribute name="r" type="xs:decimal" use="optional" />
+					  </xs:complexType>
+				    </xs:element>
+				
+				<!-- Link list .................................................................. -->
+				<xs:element name="ll">
+				  <xs:complexType>
+			        <xs:sequence>
+				      <xs:element ref="l" minOccurs="0" maxOccurs="unbounded" />
+			        </xs:sequence>
+			      </xs:complexType>
+				</xs:element>
+				
+				  <!-- Link .................................................................. -->
+				  <xs:element name="l">
+				    <xs:complexType>
+					  <xs:sequence>
+					    <xs:element ref="ps" minOccurs="0" maxOccurs="unbounded" /> <!-- path segment -->
+					  </xs:sequence>
+					  <xs:attribute name="id" type="xs:string" use="required" />
+					  <xs:attribute name="d" type="xs:string" use="optional" /> <!-- density -->
+					  <xs:attribute name="f" type="xs:string" use="optional" /> <!-- flow -->
+					  <xs:attribute name="v" type="xs:string" use="optional" /> <!-- speed -->
+					  <xs:attribute name="mf" type="xs:string" use="optional" /> <!-- capacity -->
+					  <xs:attribute name="fv" type="xs:string" use="optional" /> <!-- free flow speed -->
+					</xs:complexType>
+				  </xs:element>
+				  
+				    <!-- Path segment ........................................................... -->
+				    <xs:element name="ps">
+				      <xs:complexType>
+					    <xs:attribute name="id" type="xs:string" use="required" />
+					    <xs:attribute name="d" type="xs:string" use="optional" /> <!-- density -->
+					    <xs:attribute name="f" type="xs:string" use="optional" /> <!-- flow -->
+					  </xs:complexType>
+				    </xs:element>
+				
+				<!-- Sensor list ................................................................ -->
+				<xs:element name="sl">
+				  <xs:complexType>
+			        <xs:sequence>
+				      <xs:element ref="s" minOccurs="0" maxOccurs="unbounded" />
+			        </xs:sequence>
+			      </xs:complexType>
+				</xs:element>
+				
+				  <!-- Sensor .................................................................. -->
+				  <xs:element name="s">
+				    <xs:complexType>
+					  <xs:attribute name="id" type="xs:string" use="required" />
+					  <xs:attribute name="d" type="xs:string" use="optional" /> <!-- density -->
+					  <xs:attribute name="o" type="xs:string" use="optional" /> <!-- occupancy -->
+					  <xs:attribute name="f" type="xs:string" use="optional" /> <!-- flow -->
+					  <xs:attribute name="v" type="xs:string" use="optional" /> <!-- speed -->
+					</xs:complexType>
+				  </xs:element>
+				
+				<!-- Signal list ................................................................ -->
+				<xs:element name="sigl">
+				  <xs:complexType>
+			        <xs:sequence>
+				      <xs:element ref="sig" minOccurs="0" maxOccurs="unbounded" />
+			        </xs:sequence>
+			      </xs:complexType>
+				</xs:element>
+				
+				  <!-- Signal .................................................................. -->
+				  <xs:element name="sig">
+				    <xs:complexType>
+					  <xs:sequence>
+				        <xs:element ref="cycle" minOccurs="0" maxOccurs="unbounded" />
+			          </xs:sequence>
+					  <xs:attribute name="id" type="xs:string" use="required" />
+					</xs:complexType>
+				  </xs:element>
+				  
+				    <!-- Cycle .................................................................. -->
+				    <xs:element name="cycle">
+				      <xs:complexType>
+					    <xs:sequence>
+				          <xs:element ref="ph" minOccurs="0" maxOccurs="16" />
+			            </xs:sequence>
+					    <xs:attribute name="len" type="xs:decimal" use="required" /> <!-- length in seconds -->
+					  </xs:complexType>
+				    </xs:element>
+					
+					 <!-- Phase .................................................................. -->
+				    <xs:element name="ph">
+				      <xs:complexType>
+					    <xs:attribute name="i" use="required"> <!-- phase number -->
+						  <xs:simpleType>
+				            <xs:restriction base="xs:integer">
+							  <xs:pattern value="1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16"/>
+							</xs:restriction>
+						  </xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="b" type="xs:decimal" use="required" /> <!-- begin of green in seconds -->
+						<xs:attribute name="g" type="xs:decimal" use="required" /> <!-- duration of green in seconds -->
+				      </xs:complexType>
+				    </xs:element>
+
+					
+			<!-- Controller set .................................................................. -->
+  		    <xs:element name="cset">
+			  <xs:complexType>
+			    <xs:sequence>
+				  <xs:element ref="c" minOccurs="0" maxOccurs="unbounded" />
+			    </xs:sequence>
+			  </xs:complexType>
+		    </xs:element>
+			
+			  <!-- Controller .................................................................. -->
+  		      <xs:element name="c">
+			    <xs:complexType>
+				  <xs:all>
+			        <xs:element ref="act" minOccurs="0" maxOccurs="1" />     <!-- controller actions -->
+				    <xs:element ref="prm" minOccurs="0" maxOccurs="1" />     <!-- controller settings -->
+			      </xs:all>
+				  <xs:attribute name="id" type="xs:string" use="required" />
+				</xs:complexType>
+		      </xs:element>
+			  
+			    <!-- Controller actions .................................................................. -->
+  		        <xs:element name="act">
+				  <xs:complexType mixed="true" />
+		        </xs:element>
+				
+				<!-- Controller settings .................................................................. -->
+  		        <xs:element name="prm">
+				  <xs:complexType mixed="true" />
+		        </xs:element>
+			
+			
+			<!-- Probe list .................................................................. -->
+  		    <xs:element name="probes">
+			  <xs:complexType>
+			    <xs:sequence>
+				  <xs:element ref="p" minOccurs="0" maxOccurs="unbounded" />
+			    </xs:sequence>
+			  </xs:complexType>
+		    </xs:element>
+			
+			  <!-- Probe .................................................................. -->
+  		      <xs:element name="p">
+			    <xs:complexType>
+				  <xs:attribute name="x" type="xs:decimal" use="optional" /> <!-- latitude -->
+			      <xs:attribute name="y" type="xs:decimal" use="optional" /> <!-- longitude -->
+				  <xs:attribute name="z" type="xs:decimal" use="optional" /> <!-- elevation -->
+				  <xs:attribute name="net" type="xs:string" use="optional" /> <!-- network ID -->
+				  <xs:attribute name="l" type="xs:string" use="optional" /> <!-- link ID -->
+				  <xs:attribute name="o" type="xs:decimal" use="optional" /> <!-- offset in link -->
+				  <xs:attribute name="ts" type="xs:decimal" use="optional" /> <!-- timestamp -->
+				  <xs:attribute name="v" type="xs:decimal" use="optional" /> <!-- speed -->
+			    </xs:complexType>
+				<xs:attribute name="id" type="xs:string" use="required" />
+		      </xs:element>
+		  
+	
+  
+</xs:schema>
