@@ -76,6 +76,8 @@ final class OutputWriter {
 					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density, invsteps), ":"));
 					if (exportflows) xmlsw.writeAttribute("f", format(SiriusMath.times(_link.cumulative_outflow, invsteps), ":"));
 					_link.reset_cumulative();
+					xmlsw.writeAttribute("mf", String.format(num_format, _link.getCapacityInVPHPL()));
+					xmlsw.writeAttribute("fv", String.format(num_format, _link.getVfInMPH()));
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
