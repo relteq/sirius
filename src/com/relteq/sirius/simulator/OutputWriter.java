@@ -15,6 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.*;
 
 import com.relteq.sirius.jaxb.Link;
+import com.relteq.sirius.jaxb.Node;
 import com.relteq.sirius.jaxb.Network;
 
 final class OutputWriter {
@@ -50,6 +51,9 @@ final class OutputWriter {
 			xmlsw.writeAttribute("density_report", "true");
 			xmlsw.writeAttribute("flow_report", "true");
 			xmlsw.writeEndElement(); // link_report
+			xmlsw.writeStartElement("node_report");
+			xmlsw.writeAttribute("srm_report", "true");
+			xmlsw.writeEndElement(); // node_report
 			xmlsw.writeEndElement(); // report
 			// data
 			xmlsw.writeStartElement("data");
@@ -81,6 +85,23 @@ final class OutputWriter {
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
+				xmlsw.writeStartElement("nl");
+				for (Node node : network.getNodeList().getNode()) {
+					xmlsw.writeStartElement("n");
+					xmlsw.writeAttribute("id", node.getId());
+					_Node _node = (_Node) node;
+					Double3DMatrix srm = _node.splitratio;
+					for (int ili = 0; ili < _node.getnIn(); ++ili)
+						for (int oli = 0; oli < _node.getnOut(); ++oli) {
+							xmlsw.writeStartElement("io");
+							xmlsw.writeAttribute("il", _node.getInput_link()[ili].getId());
+							xmlsw.writeAttribute("ol", _node.getOutput_link()[oli].getId());
+							xmlsw.writeAttribute("r", format(srm.getData()[ili][oli], ":"));
+							xmlsw.writeEndElement(); // io
+						}
+					xmlsw.writeEndElement(); // n
+				}
+				xmlsw.writeEndElement(); // nl
 				xmlsw.writeEndElement(); // net
 			}
 			xmlsw.writeEndElement(); // netl
