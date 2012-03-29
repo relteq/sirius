@@ -6,7 +6,7 @@
   <xs:element name="scenario_output">
     <xs:complexType>
       <xs:all>
-        <xs:element ref="scenario" minOccurs="0" maxOccurs="1"/> <!-- include the scenario description in the output -->
+        <xs:element ref="scenario" minOccurs="1" maxOccurs="1"/> <!-- include the scenario description in the output -->
         <xs:element ref="report" minOccurs="0" maxOccurs="1" /> <!-- indicate what sort of data is recorded -->
         <xs:element ref="data" minOccurs="1" maxOccurs="1" /> <!-- the data itself sliced by timestamps -->
       </xs:all>
@@ -123,6 +123,7 @@
 					<xs:element ref="sigl" minOccurs="0" maxOccurs="1" />   <!-- signal list -->
 			      </xs:all>
 				  <xs:attribute name="id" type="xs:string" use="required" />
+				  <xs:attribute name="dt" type="xs:decimal" use="required" />
 				</xs:complexType>
 			  </xs:element>
 			  
