@@ -22,8 +22,8 @@ final class OutputWriter {
 
 	protected _Scenario myScenario;
 	protected XMLStreamWriter xmlsw = null;
-	protected static final String sec_format = "%.1f";
-	protected static final String num_format = "%.4f";
+	protected static final String SEC_FORMAT = "%.1f";
+	protected static final String NUM_FORMAT = "%.4f";
 
 	public OutputWriter(_Scenario myScenario){
 		this.myScenario = myScenario;
@@ -72,13 +72,13 @@ final class OutputWriter {
 		double invsteps = (1 == myScenario.clock.getCurrentstep()) ? 1f : 1f / (double) outsteps;
 		try {
 			xmlsw.writeStartElement("ts");
-			xmlsw.writeAttribute("sec", String.format(sec_format, time));
+			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
 			xmlsw.writeStartElement("netl");
 			for (Network network : myScenario.getNetworkList().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
-				xmlsw.writeAttribute("dt", String.format(sec_format, network.getDt()));
+				xmlsw.writeAttribute("dt", String.format(SEC_FORMAT, network.getDt()));
 				xmlsw.writeStartElement("ll");
 				for (Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
@@ -90,9 +90,9 @@ final class OutputWriter {
 					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow, ":"));
 					_link.reset_cumulative();
 					// mf = capacity, vehicles per hour
-					xmlsw.writeAttribute("mf", String.format(num_format, _link.getCapacityInVPH()));
+					xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, _link.getCapacityInVPH()));
 					// fv = free flow speed, miles per hour
-					xmlsw.writeAttribute("fv", String.format(num_format, _link.getVfInMPH()));
+					xmlsw.writeAttribute("fv", String.format(NUM_FORMAT, _link.getVfInMPH()));
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
@@ -135,12 +135,12 @@ final class OutputWriter {
 
 	protected String format(Double [] V,String delim){
 		if (0 == V.length) return "";
-		else if (1 == V.length) return String.format(num_format, V[0]);
+		else if (1 == V.length) return String.format(NUM_FORMAT, V[0]);
 		else {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < V.length; ++i){
 				if (i > 0) sb.append(delim);
-				sb.append(String.format(num_format, V[i]));
+				sb.append(String.format(NUM_FORMAT, V[i]));
 			}
 			return sb.toString();
 		}
