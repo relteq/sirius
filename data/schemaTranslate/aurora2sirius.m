@@ -511,40 +511,44 @@ x.ATTRIBUTE.link_type = newtype;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustNodeType(x)
-switch x.ATTRIBUTE.type
-    case {'F','H'}
-        newtype = 'simple';
-    case 'S'
-        newtype = 'signalized_intersection';
-    case 'T'
-        newtype = 'terminal';
-    otherwise
-        warning('unsupported node type')
+if isfield(x.ATTRIBUTE, 'type')
+	switch x.ATTRIBUTE.type
+			case {'F','H'}
+					newtype = 'simple';
+			case 'S'
+					newtype = 'signalized_intersection';
+			case 'T'
+					newtype = 'terminal';
+			otherwise
+					warning('unsupported node type')
+	end
+	x.ATTRIBUTE.type = newtype;
 end
-x.ATTRIBUTE.type = newtype;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustLinkType(x)
-switch x.ATTRIBUTE.type
-    case {'FW','HW'}
-        newtype = 'freeway';
-    case {'HOV','HV','ETC'}
-        newtype = 'HOV';
-    case 'OR'
-        newtype = 'onramp';
-    case 'FR'
-        newtype = 'offramp';
-    case 'IC'
-        newtype = 'freeway_connector';
-    case 'ST'
-        newtype = 'street';
-    case 'HOT'
-        newtype = 'HOT';
-    otherwise
-        warning('unsupported link type')
+if isfield(x.ATTRIBUTE, 'type')
+	switch x.ATTRIBUTE.type
+			case {'FW','HW'}
+					newtype = 'freeway';
+			case {'HOV','HV','ETC'}
+					newtype = 'HOV';
+			case 'OR'
+					newtype = 'onramp';
+			case 'FR'
+					newtype = 'offramp';
+			case 'IC'
+					newtype = 'freeway_connector';
+			case 'ST'
+					newtype = 'street';
+			case 'HOT'
+					newtype = 'HOT';
+			otherwise
+					warning('unsupported link type')
+	end
+	x.ATTRIBUTE.type = newtype;
 end
-x.ATTRIBUTE.type = newtype;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [SR]=readMatrix(A,numin,numout)

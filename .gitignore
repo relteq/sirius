@@ -5,4 +5,5 @@ bin/
 sirius.jar
 src/com/relteq/sirius/jaxb/
 output_*.txt
+*.asv
 

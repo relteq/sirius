@@ -6,7 +6,7 @@
 package com.relteq.sirius.simulator;
 
 final class Defaults {
-	public static double DURATION 	= 84600f;		// [sec]
+	public static double DURATION 	= 86400f;		// [sec]
 	public static double TIME_INIT 	= 0f;			// [sec]
 	public static double OUT_DT 	= 300f;			// [sec]
 	public static double SIMDT	 	= 10f;			// [sec]
