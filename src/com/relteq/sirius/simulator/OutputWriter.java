@@ -47,6 +47,11 @@ final class OutputWriter {
 			}
 			// report
 			xmlsw.writeStartElement("report");
+			xmlsw.writeStartElement("settings");
+			xmlsw.writeStartElement("units");
+			xmlsw.writeCharacters("US");
+			xmlsw.writeEndElement(); // units
+			xmlsw.writeEndElement(); // settings
 			xmlsw.writeStartElement("link_report");
 			xmlsw.writeAttribute("density_report", "true");
 			xmlsw.writeAttribute("flow_report", "true");
@@ -72,15 +77,21 @@ final class OutputWriter {
 			for (Network network : myScenario.getNetworkList().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
+				// dt = time interval of reporting, sec
+				xmlsw.writeAttribute("dt", String.format(sec_format, network.getDt()));
 				xmlsw.writeStartElement("ll");
 				for (Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
 					xmlsw.writeAttribute("id", link.getId());
 					_Link _link = (_Link) link;
+					// d = average number of vehicles during the interval of reporting dt
 					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density, invsteps), ":"));
-					if (exportflows) xmlsw.writeAttribute("f", format(SiriusMath.times(_link.cumulative_outflow, invsteps), ":"));
+					// f = flow per dt, vehicles
+					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow, ":"));
 					_link.reset_cumulative();
-					xmlsw.writeAttribute("mf", String.format(num_format, _link.getCapacityInVPHPL()));
+					// mf = capacity, vehicles per hour
+					xmlsw.writeAttribute("mf", String.format(num_format, _link.getCapacityInVPH()));
+					// fv = free flow speed, miles per hour
 					xmlsw.writeAttribute("fv", String.format(num_format, _link.getVfInMPH()));
 					xmlsw.writeEndElement(); // l
 				}
