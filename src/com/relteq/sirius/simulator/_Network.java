@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 import com.relteq.sirius.jaxb.Link;
 import com.relteq.sirius.jaxb.Node;
-import com.relteq.sirius.jaxb.Signal;
 
 final class _Network extends com.relteq.sirius.jaxb.Network {
 
 	protected _Scenario myScenario;
 	protected _SensorList _sensorlist = new _SensorList();
+	protected _SignalList _signallist = new _SignalList();
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -31,6 +31,9 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		if(getLinkList()!=null)
 			for (Link link : getLinkList().getLink())
 				((_Link) link).populate(this);
+		
+		_sensorlist.populate(this);
+		_signallist.populate(myScenario,this);
 		
 	}
 
@@ -61,13 +64,18 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		if(!_sensorlist.validate())
 			return false;
 
+
 		// signal list
-		if(getSignalList()!=null)
-			for (Signal signal : getSignalList().getSignal())
-				if( !((_Signal)signal).validate() ){
-					SiriusErrorLog.addErrorMessage("Signal validation failure.");
-					return false;
-				}
+		if(!_signallist.validate())
+			return false;
+		
+//		// signal list
+//		if(getSignalList()!=null)
+//			for (Signal signal : getSignalList().getSignal())
+//				if( !((_Signal)signal).validate() ){
+//					SiriusErrorLog.addErrorMessage("Signal validation failure.");
+//					return false;
+//				}
 
 		return true;
 	}
@@ -91,10 +99,13 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		// sensor list
 		_sensorlist.reset();
 
+		
 		// signal list
-		if(getSignalList()!=null)
-			for (Signal signal : getSignalList().getSignal())
-				((_Signal)signal).reset();
+		_signallist.reset();
+		
+//		if(getSignalList()!=null)
+//			for (Signal signal : getSignalList().getSignal())
+//				((_Signal)signal).reset();
 				
 	}
 
@@ -108,6 +119,12 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
         
         // update sensor readings .......................
         _sensorlist.update();
+        
+        // update signals ...............................
+        _signallist.update();
+//        if(getSignalList()!=null)
+//	        for(Signal signal : getSignalList().getSignal())
+//	        	((_Signal)signal).update();
         
         // update nodes: compute flows on links .........
         for(Node node : getNodeList().getNode())
@@ -151,6 +168,24 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		for(_Sensor sensor : _sensorlist._sensors){
 			if(sensor.id.equals(id))
 				return sensor;
+		}
+		return null;
+	}
+	
+	public _Signal getSignalWithId(String id){
+		id.replaceAll("\\s","");
+		for(_Signal signal : _signallist._signals){
+			if(signal.getId().equals(id))
+				return signal;
+		}
+		return null;
+	}
+	
+	public _Signal getSignalWithNodeId(String node_id){
+		id.replaceAll("\\s","");
+		for(_Signal signal : _signallist._signals){
+			if(signal.getNodeId().equals(node_id))
+				return signal;
 		}
 		return null;
 	}

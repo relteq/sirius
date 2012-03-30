@@ -1,7 +1,5 @@
 function [] = writeToNetworkEditor(outputfilename,scenario)
 
-disp(['Writing ' outputfilename])
-
 % properly format all numeric values
 
 % % split ratio profile
@@ -23,7 +21,9 @@ disp(['Writing ' outputfilename])
 % end
 
 %  write it
-xml_write(outputfilename,scenario)
+disp('Serializing XML');
+dom = xml_write([], scenario);
+str = xmlwrite(dom);
 
 i=0;
 
@@ -39,21 +39,13 @@ i=i+1;
 replace(i).from = 'xEnd';
 replace(i).to   = 'end';
 
-system(['copy /Y "' outputfilename '" tempfile.xml']);
-fin=fopen('tempfile.xml');
-fout=fopen(outputfilename,'w+');
-while 1
-    tline = fgetl(fin);
-    if ~ischar(tline), break, end
-    for i=1:length(replace)
-        if(~isempty(strfind(tline,replace(i).from)))
-            tline=strrep(tline,replace(i).from,replace(i).to);
-        end
-    end
-    fwrite(fout,sprintf('%s\n',tline));
+for i = 1:length(replace)
+	str = strrep(str, replace(i).from, replace(i).to); 
 end
 
-fclose(fin);
-fclose(fout);
+disp(['Writing ' outputfilename])
+[file, msg] = fopen(outputfilename, 'w');
+if msg ~= '', error(msg); end
+fprintf(file, '%s', str);
+fclose(file);
 
-system('del tempfile.xml');

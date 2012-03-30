@@ -333,7 +333,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 					sum += X.get(i,idxNegative,k);
 				}
 				
-				if ((!hasNaN) && (sum==0.0)) {	
+				if ( !hasNaN && SiriusMath.equals(sum,0.0) ) {	
 					X.set(i,0,k,1d);
 					//for (j=0; j<n2; j++)			
 					//	data[i][j][k] = 1/((double) n2);
@@ -462,7 +462,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	            		dsmin = Math.min(dsmax,r);
 	            	}
 	                
-	                if(dsmax==dsmin)
+	                if(SiriusMath.equals(dsmax,dsmin))
 	                    break;
 	                    
                 	// indices of smallest dsratio
@@ -471,7 +471,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	            	sendtoeach.clear();		// flow needed to bring each dsmin up to dsmax
 	            	double sumsendtoeach = 0f;
 	            	for(int z=1;z<numunknown;z++)
-	            		if(unknown_dsratio.get(z)==dsmin){
+	            		if( SiriusMath.equals(unknown_dsratio.get(z),dsmin) ){
 	            			int index = unknownind.get(z);
 	            			minind_to_nOut.add(index);
 	            			minind_to_unknown.add(z);

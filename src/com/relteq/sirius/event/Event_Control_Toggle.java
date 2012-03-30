@@ -53,7 +53,7 @@ public class Event_Control_Toggle extends _Event {
 		
 		// check each target is valid
 		for(_ScenarioElement s : targets){
-			if(s.getMyType()!=_ScenarioElement.Type.controller){
+			if(s.getMyType().compareTo(_ScenarioElement.Type.controller)!=0){
 				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}
@@ -64,7 +64,7 @@ public class Event_Control_Toggle extends _Event {
 	@Override
 	public void activate() throws SiriusException{
 		for(_ScenarioElement s : targets){
-			_Controller c = myScenario.getControllerWithName(s.getId());
+			_Controller c = myScenario.getControllerWithId(s.getId());
 			setControllerIsOn(c, ison);
 		}			
 	}

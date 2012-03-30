@@ -33,8 +33,8 @@ public final class SiriusStateTrajectory {
 		
 		this.numNetworks = myScenario.getNetworkList().getNetwork().size();
 		this.numVehicleTypes = myScenario.getNumVehicleTypes();
-		this.numTime = myScenario.getTotalTimeStepsToSimulate();
-		
+		this.numTime = (int) Math.ceil(myScenario.getTotalTimeStepsToSimulate()/myScenario.outsteps);
+
 		this.networkState = new NewtorkStateTrajectory[numNetworks];
 		for(int i=0;i<numNetworks;i++){
 			int numLinks = myScenario.getNetworkList().getNetwork().get(i).getLinkList().getLink().size();
@@ -75,6 +75,8 @@ public final class SiriusStateTrajectory {
 			invsteps = 1f;
 		else
 			invsteps = 1f/((double)outsteps);
+	
+		int timeindex = timestep/outsteps;
 
 		for(int netindex=0;netindex<numNetworks;netindex++){
 			Network network = myScenario.getNetworkList().getNetwork().get(netindex);
@@ -82,9 +84,9 @@ public final class SiriusStateTrajectory {
 			for(i=0;i<networkState[netindex].getNumLinks();i++){
 				_Link link = (_Link) links.get(i);				
 				for(j=0;j<numVehicleTypes;j++){
-					networkState[netindex].density[i][j][timestep] = link.cumulative_density[j]*invsteps;
+					networkState[netindex].density[i][j][timeindex] = link.cumulative_density[j]*invsteps;
 					if(exportflows)
-						networkState[netindex].flow[i][j][timestep] = link.cumulative_outflow[j]*invsteps;
+						networkState[netindex].flow[i][j][timeindex-1] = link.cumulative_outflow[j]*invsteps;
 				}
 			}
 			netindex++;
@@ -103,7 +105,7 @@ public final class SiriusStateTrajectory {
 
 		public NewtorkStateTrajectory(int numLinks) {
 			this.numLinks = numLinks;
-			this.density = new Double[numLinks][numVehicleTypes][numTime];
+			this.density = new Double[numLinks][numVehicleTypes][numTime+1];
 			this.flow = new Double[numLinks][numVehicleTypes][numTime];
 		}
 		public int getNumLinks() {

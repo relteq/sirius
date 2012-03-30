@@ -158,31 +158,31 @@ public final class ObjectFactory {
 		S.populate(jaxbS);
 		return S;
 	}
-
+	
 	/** @y.exclude */
 	protected static _ScenarioElement createScenarioElementFromJaxb(_Scenario myScenario,ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;
 		_ScenarioElement S = new _ScenarioElement();
 		S.myScenario = myScenario;
-		S.id = jaxbS.getId();
-		S.network_id = jaxbS.getNetworkId();
+		S.setId(jaxbS.getId().trim());
+		S.setNetworkId(jaxbS.getNetworkId());
 		S.myType = _ScenarioElement.Type.valueOf(jaxbS.getType());
 		switch(S.myType){
 		case link:
-			S.reference = myScenario.getLinkWithCompositeId(S.network_id,S.id);
+			S.reference = myScenario.getLinkWithCompositeId(S.getNetworkId(),S.getId());
 			break;
 		case node:
-			S.reference = myScenario.getNodeWithCompositeId(S.network_id,S.id);
+			S.reference = myScenario.getNodeWithCompositeId(S.getNetworkId(),S.getId());
 			break;
 		case sensor:
-			S.reference = myScenario.getSensorWithCompositeId(S.network_id,S.id);
+			S.reference = myScenario.getSensorWithCompositeId(S.getNetworkId(),S.getId());
 			break;
 //		case signal:
-//			S.reference = myScenario.getSignalWithCompositeId(S.network_id,S.id);
+//			S.reference = myScenario.getSignalWithCompositeId(S.getNetworkId(),S.getId());
 //			break;
 		case controller:
-			S.reference = myScenario.getControllerWithName(S.id);
+			S.reference = myScenario.getControllerWithId(S.getId());
 			break;
 			
 		default:
@@ -190,7 +190,7 @@ public final class ObjectFactory {
 		}
 		return S;
 	}
-	
+			
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario
 	/////////////////////////////////////////////////////////////////////
@@ -265,6 +265,7 @@ public final class ObjectFactory {
             u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new _JaxbObjectFactory());            
         	S = (_Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
+        	System.out.println(je.getMessage());
         	SiriusErrorLog.setErrorHeader("Load error.");
         	SiriusErrorLog.addErrorMessage("JAXB threw an exception when loading the configuration file.");
         	if(je.getLinkedException()!=null)
@@ -321,15 +322,18 @@ public final class ObjectFactory {
         boolean registersuccess = true;
         for(_Controller controller : S._controllerset._controllers)
         	registersuccess &= controller.register();
+        for(Network network:S.getNetworkList().getNetwork())
+        	for(_Signal signal:((_Network)network)._signallist._signals)
+        		registersuccess &= signal.register();
         
         if(!registersuccess){
-        	SiriusErrorLog.setErrorHeader("Controller registration failure.");
+        	SiriusErrorLog.addErrorMessage("Controller registration failure.");
         	return null;
         }
         
         // check that load was successful        
 		if(!checkLoad(S)){
-			SiriusErrorLog.setErrorHeader("Check load error.");
+			SiriusErrorLog.addErrorMessage("Check load error.");
 			return null;
 		}
 		
@@ -584,7 +588,7 @@ public final class ObjectFactory {
 		_ScenarioElement se = new _ScenarioElement();
 		se.myScenario = node.getMyNetwork().myScenario;
 		se.myType = _ScenarioElement.Type.node;
-		se.network_id = node.myNetwork.getId();
+		se.setNetworkId(node.myNetwork.getId());
 		se.reference = node;
 		return se;
 	}
@@ -600,7 +604,7 @@ public final class ObjectFactory {
 		_ScenarioElement se = new _ScenarioElement();
 		se.myScenario = link.getMyNetwork().myScenario;
 		se.myType = _ScenarioElement.Type.link;
-		se.network_id = link.myNetwork.getId();
+		se.setNetworkId(link.myNetwork.getId());
 		se.reference = link;
 		return se;
 	}
@@ -617,7 +621,7 @@ public final class ObjectFactory {
 		se.myScenario = sensor.myScenario;
 		se.myType = _ScenarioElement.Type.sensor;
 		if(sensor.myLink!=null)
-			se.network_id = sensor.myLink.myNetwork.getId();
+			se.setNetworkId(sensor.myLink.myNetwork.getId());
 		se.reference = sensor;
 		return se;
 	}

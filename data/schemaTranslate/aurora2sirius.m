@@ -10,7 +10,11 @@ hasevents           = hasfields(scenario,'EventSet','event');
 hassplits           = hasfields(scenario,'SplitRatioProfileSet','splitratios');
 hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
 hascapacityprofile  = hasfields(scenario,'CapacityProfileSet','capacity');
-        
+hassignal           = hasfields(scenario.network,'SignalList','signal');
+
+
+blankscenarioElement = struct('ATTRIBUTE',struct('type','','id',nan));
+            
 % % remove terminal nodes
 % removethisid = [];
 % for i=1:length(scenario.network.NodeList.node)
@@ -44,8 +48,6 @@ for i=1:length(scenario.network.NodeList.node)
     nodeid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
 end
 
-
-
 % rename: demand -> demandProfile
 if(hasdemandprofile)
     scenario.DemandProfileSet = renamefield(scenario.DemandProfileSet,'demand','demandProfile');
@@ -73,7 +75,7 @@ for i=1:length(scenario.network.LinkList.link)
     FDp(i).ATTRIBUTE.link_id = scenario.network.LinkList.link(i).ATTRIBUTE.id;
     
 end
-scenario.network.LinkList.link = rmfield(scenario.network.LinkList.link,'fd');
+scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'fd');
 scenario.FundamentalDiagramProfileSet.fundamentalDiagramProfile = FDp;
 clear fundamentalDiagramProfile FD x FDp
 
@@ -95,7 +97,7 @@ if(hassensors)
         link_reference.ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links;
         scenario.network.SensorList.sensor(i).link_reference = link_reference;
     end
-    scenario.network.SensorList.sensor = rmfield(scenario.network.SensorList.sensor,'links');
+    scenario.network.SensorList.sensor = safermfield(scenario.network.SensorList.sensor,'links');
 end
 
 % display paramers put in simulation
@@ -128,46 +130,34 @@ end
 if(hassensors)
     for i=1:length(scenario.network.SensorList.sensor)
         scenario.network.SensorList.sensor(i) = adjustSensorType(scenario.network.SensorList.sensor(i));
-        if(isfield(scenario.network.SensorList.sensor(i),'data_sources'))
+        if(hasfields(scenario.network.SensorList.sensor(i),'data_sources','source'))
             for j=1:length(scenario.network.SensorList.sensor(i).data_sources.source)
                 scenario.network.SensorList.sensor(i).data_sources.source(j)=adjustDataSourceFormat(scenario.network.SensorList.sensor(i).data_sources.source(j));
             end
         end
-    
     end
 end
 
 if(hasevents)
-
     for i=1:length(scenario.EventSet.event)
         scenario.EventSet.event(i) = adjustEventType(scenario.EventSet.event(i));
     end
-    
     if(isfield(scenario.EventSet.event,'fd'))
         for i=1:length(scenario.EventSet.event)
             scenario.EventSet.event(i).fundamentalDiagram=convertFDtoFundamentalDiagram(scenario.EventSet.event(i).fd);
         end
-        scenario.EventSet.event=rmfield(scenario.EventSet.event,'fd');
-    end
-end
-
-if(hascontrollers)
-    for i=1:length(scenario.ControllerSet.controller)
-        scenario.ControllerSet.controller(i) = adjustControllerType(scenario.ControllerSet.controller(i));
+        scenario.EventSet.event=safermfield(scenario.EventSet.event,'fd');
     end
 end
 
 % remove unwanted stuff from controller
 if(hascontrollers)
-        scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'qcontroller');
-        scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'PlanSequence');
-        scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'PlanList');
-        scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'limits');
+    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'qcontroller');
+    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'limits');
 end
 
 % remove: event->network_id (can't think of use case for network specific event)
 % NOT DONE YET
-
 
 % remove: controller->network_id (controllers work on collections of nodes and links).
 % NOT DONE YET
@@ -190,15 +180,48 @@ if(hasevents)
         if(isfield(A,'link_id'))
             scenarioElement.ATTRIBUTE.type = 'link';
             scenarioElement.ATTRIBUTE.id = A.link_id;
-            scenario.EventSet.event(i).ATTRIBUTE = rmfield(scenario.EventSet.event(i).ATTRIBUTE,'link_id');
+            scenario.EventSet.event(i).ATTRIBUTE = safermfield(scenario.EventSet.event(i).ATTRIBUTE,'link_id');
         end
         if(isfield(A,'node_id'))
             scenarioElement.ATTRIBUTE.type = 'node';
-            scenarioElement.ATTRIBUTE.id = A.node_id;
-            scenario.EventSet.event(i).ATTRIBUTE = rmfield(scenario.EventSet.event(i).ATTRIBUTE,'node_id');
+            scenarioElement.ATTRIBUTE.id = num2str(A.node_id);
+            scenario.EventSet.event(i).ATTRIBUTE = safermfield(scenario.EventSet.event(i).ATTRIBUTE,'node_id');
         end
         scenario.EventSet.event(i).targetElements.scenarioElement=scenarioElement;
     end
+end
+
+if(hascontrollers)
+    for i=1:length(scenario.ControllerSet.controller)
+        scenario.ControllerSet.controller(i) = adjustControllerType(scenario.ControllerSet.controller(i));
+    end
+end
+
+% fix signals
+if(hassignal)
+    signal2node = nan(1,length(scenario.network.SignalList.signal));
+    networkid = scenario.network.ATTRIBUTE.id;
+    for i=1:length(scenario.network.SignalList.signal)
+        signal2node(i) = scenario.network.SignalList.signal(i).ATTRIBUTE.node_id;
+        
+        % add signal id
+        scenario.network.SignalList.signal(i).ATTRIBUTE.id = -i;
+        
+        % links -> link_reference
+        for j=1:length(scenario.network.SignalList.signal(i).phase)
+            if(~isempty(scenario.network.SignalList.signal(i).phase(j).links))
+                links = scenario.network.SignalList.signal(i).phase(j).links;
+                link_reference = repmat(struct('ATTRIBUTE',struct('network_id',networkid,'id',nan)),1,length(links));
+                for k=1:length(links)
+                    link_reference(k).ATTRIBUTE.id = links(k);
+                end
+                scenario.network.SignalList.signal(i).phase(j).links = [];
+                scenario.network.SignalList.signal(i).phase(j).links.link_reference = link_reference;
+            end
+        end
+    end
+else
+    signal2node = [];
 end
 
 % convert controller node_id/link_id/network_id to targetElements
@@ -209,13 +232,42 @@ if(hascontrollers)
         if(isfield(A,'link_id'))
             scenarioElement.ATTRIBUTE.type = 'link';
             scenarioElement.ATTRIBUTE.id = A.link_id;
-            scenario.ControllerSet.controller(i).ATTRIBUTE = rmfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'link_id');
+            scenario.ControllerSet.controller(i).ATTRIBUTE = safermfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'link_id');
         end
         if(isfield(A,'node_id'))
             scenarioElement.ATTRIBUTE.type = 'node';
             scenarioElement.ATTRIBUTE.id = A.node_id;
-            scenario.ControllerSet.controller(i).ATTRIBUTE = rmfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'node_id');
+            scenario.ControllerSet.controller(i).ATTRIBUTE = safermfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'node_id');
         end
+        
+        % case signal controller, targets are signals
+        
+        if(strcmp(scenario.ControllerSet.controller(i).ATTRIBUTE.type(1:3),'SIG'))
+            targetnodes = [];
+            for j=1:length(scenario.ControllerSet.controller(i).PlanList.plan)
+                P = scenario.ControllerSet.controller(i).PlanList.plan(j);
+                for k=1:length(P.intersection)
+                    targetnodes = [targetnodes P.intersection(k).ATTRIBUTE.node_id];
+                end
+            end
+            targetnodes = unique(targetnodes);
+            
+            if(~all(ismember(targetnodes,signal2node)))
+               error('not all nodes that appear in signal plans have signals') 
+            end
+            
+            if(~all(ismember(targetnodes,nodeid)))
+                error('target node id not found in the node list')
+            end
+            
+            scenarioElement = repmat(blankscenarioElement,1,length(targetnodes));
+            for j=1:length(targetnodes)
+                scenarioElement(j).ATTRIBUTE.type = 'signal';
+                scenarioElement(j).ATTRIBUTE.id = scenario.network.SignalList.signal(signal2node==targetnodes(j)).ATTRIBUTE.id;
+            end
+            
+        end
+        
         scenario.ControllerSet.controller(i).targetElements.scenarioElement=scenarioElement;
     end
 end
@@ -223,7 +275,7 @@ end
 % remove usesensors from controller
 if(hascontrollers)
     for i=1:length(scenario.ControllerSet.controller)
-        scenario.ControllerSet.controller(i).ATTRIBUTE=rmfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'usesensors');
+        scenario.ControllerSet.controller(i).ATTRIBUTE=safermfield(scenario.ControllerSet.controller(i).ATTRIBUTE,'usesensors');
     end
 end
 
@@ -239,6 +291,9 @@ end
 if(hassplits)
     for i=1:length(scenario.SplitRatioProfileSet.splitratioProfile)
         srP = scenario.SplitRatioProfileSet.splitratioProfile(i);
+        if(~isfield(srP,'srm'))
+            continue;
+        end
         myNode = scenario.network.NodeList.node(nodeid==srP.ATTRIBUTE.node_id);
         numin = length(myNode.inputs.input);
         for j=1:numin
@@ -261,7 +316,7 @@ if(hassplits)
         end
         scenario.SplitRatioProfileSet.splitratioProfile(i).splitratio = splitratio;
     end
-    scenario.SplitRatioProfileSet.splitratioProfile=rmfield(scenario.SplitRatioProfileSet.splitratioProfile,'srm');
+    scenario.SplitRatioProfileSet.splitratioProfile=safermfield(scenario.SplitRatioProfileSet.splitratioProfile,'srm');
     
 end
 clear srP splitratio X myNode A scenarioElement inlink outlink c i numin numout iin iout
@@ -369,7 +424,7 @@ end
 clear inp weavingfactors c
 
 % TEMPORARY: REMOVE WEAVING FACTORS
-scenario = rmfield(scenario,'WeavingFactorsProfile');
+scenario = safermfield(scenario,'WeavingFactorsProfile');
 
 
 
@@ -390,11 +445,9 @@ scenario.network = safermfield(scenario.network,'DirectionsCache');
 
 % move: network to NetworkList
 scenario.NetworkList.network = scenario.network;
-scenario = rmfield(scenario,'network');
-
+scenario = safermfield(scenario,'network');
 
 writeToNetworkEditor(siriusfile,scenario);
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=safermfield(x,name)
@@ -428,14 +481,14 @@ x.ATTRIBUTE.type = newtype;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustDataSourceFormat(x)
 switch x.ATTRIBUTE.format
-    case {'pems','PeMS Data Clearinghouse'}
+    case {'pems','PeMS Data Clearinghouse',''}
         newtype = 'PeMS_Data_Clearinghouse';
     case {'dbx','Caltrans DBX'}
         newtype = 'Caltrans_DBX';
     case 'bhl'
         newtype = 'BHL';
     otherwise
-        warning('unsupported controller type')
+        warning(['unsupported data source type ' x.ATTRIBUTE.format])
 end
 x.ATTRIBUTE.format = newtype;
 
@@ -511,40 +564,44 @@ x.ATTRIBUTE.link_type = newtype;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustNodeType(x)
-switch x.ATTRIBUTE.type
-    case {'F','H'}
-        newtype = 'simple';
-    case 'S'
-        newtype = 'signalized_intersection';
-    case 'T'
-        newtype = 'terminal';
-    otherwise
-        warning('unsupported node type')
+if isfield(x.ATTRIBUTE, 'type')
+	switch x.ATTRIBUTE.type
+			case {'F','H'}
+					newtype = 'simple';
+			case 'S'
+					newtype = 'signalized_intersection';
+			case 'T'
+					newtype = 'terminal';
+			otherwise
+					warning('unsupported node type')
+	end
+	x.ATTRIBUTE.type = newtype;
 end
-x.ATTRIBUTE.type = newtype;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustLinkType(x)
-switch x.ATTRIBUTE.type
-    case {'FW','HW'}
-        newtype = 'freeway';
-    case {'HOV','HV','ETC'}
-        newtype = 'HOV';
-    case 'OR'
-        newtype = 'onramp';
-    case 'FR'
-        newtype = 'offramp';
-    case 'IC'
-        newtype = 'freeway_connector';
-    case 'ST'
-        newtype = 'street';
-    case 'HOT'
-        newtype = 'HOT';
-    otherwise
-        warning('unsupported link type')
+if isfield(x.ATTRIBUTE, 'type')
+	switch x.ATTRIBUTE.type
+			case {'FW','HW'}
+					newtype = 'freeway';
+			case {'HOV','HV','ETC'}
+					newtype = 'HOV';
+			case 'OR'
+					newtype = 'onramp';
+			case 'FR'
+					newtype = 'offramp';
+			case 'IC'
+					newtype = 'freeway_connector';
+			case 'ST'
+					newtype = 'street';
+			case 'HOT'
+					newtype = 'HOT';
+			otherwise
+					warning('unsupported link type')
+	end
+	x.ATTRIBUTE.type = newtype;
 end
-x.ATTRIBUTE.type = newtype;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [SR]=readMatrix(A,numin,numout)
