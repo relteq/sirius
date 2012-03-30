@@ -70,6 +70,7 @@
 		</jar>
 	</target>
 
+	<!--
 	<target name="doc" depends="xsd2java,compile" description="generate documentation">
 		<javadoc encoding="${src.encoding}"
 				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
@@ -81,7 +82,38 @@
 				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
 			</doclet>
 		</javadoc>
-	</target>
+	</target> -->
+	
+	
+	<target name="doc" depends="xsd2java,compile" description="generate documentation">
+        <javadoc 
+			encoding="${src.encoding}"
+			author="yes" 
+			use="yes" 
+			version="yes"
+			linksource="yes"
+			access="protected" 
+			destdir="${doc.dir}"
+			classpath="." 
+			sourcefiles="src/com/relteq/sirius/simulator/_Controller.java,
+ 			             src/com/relteq/sirius/simulator/ObjectFactory.java,
+ 			             src/com/relteq/sirius/simulator/_Link.java,
+ 			             src/com/relteq/sirius/simulator/_Node.java,
+ 			             src/com/relteq/sirius/simulator/_Scenario.java,
+ 			             src/com/relteq/sirius/simulator/SiriusStateTrajectory.java,
+ 			             src/com/relteq/sirius/simulator/_ScenarioElement.java,
+ 			             src/com/relteq/sirius/simulator/_Sensor.java,
+ 			             src/com/relteq/sirius/simulator/_Signal.java,
+			             src/com/relteq/sirius/simulator/_Event.java" 
+			sourcepath="src/com/relteq/sirius" >
+			<doclet 				
+				name="ydoc.doclets.YStandard"
+				path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}" >
+				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
+				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
+			</doclet>
+        </javadoc>
+    </target>
 
 	<target name="clean" description="clean up">
 		<delete file="${jar.file}"/>
