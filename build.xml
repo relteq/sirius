@@ -95,17 +95,11 @@
 			access="protected" 
 			destdir="${doc.dir}"
 			classpath="." 
-			sourcefiles="src/com/relteq/sirius/simulator/_Controller.java,
- 			             src/com/relteq/sirius/simulator/ObjectFactory.java,
- 			             src/com/relteq/sirius/simulator/_Link.java,
- 			             src/com/relteq/sirius/simulator/_Node.java,
- 			             src/com/relteq/sirius/simulator/_Scenario.java,
- 			             src/com/relteq/sirius/simulator/SiriusStateTrajectory.java,
- 			             src/com/relteq/sirius/simulator/_ScenarioElement.java,
- 			             src/com/relteq/sirius/simulator/_Sensor.java,
- 			             src/com/relteq/sirius/simulator/_Signal.java,
-			             src/com/relteq/sirius/simulator/_Event.java" 
 			sourcepath="src/com/relteq/sirius" >
+			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
+					includes="_Controller.java ObjectFactory.java _Link.java _Node.java
+						_Scenario.java SiriusStateTrajectory.java _ScenarioElement.java
+						_Sensor.java _Signal.java _Event.java"/>
 			<doclet 				
 				name="ydoc.doclets.YStandard"
 				path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}" >
