@@ -1,17 +1,17 @@
 aurora_fnam = 'I80_aurora.csv';
-sirius_fnam = 'output_%s_0.txt';
-sirius_conf = fullfile('conf', 'I80_sirius.xml');
+sirius_fnam = 'output_0.xml';
 
 fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
-sout = readSiriusOutput(sirius_fnam, sirius_conf);
+fprintf('Reading %s\n', sirius_fnam);
+sout = readSiriusOutput(sirius_fnam);
 
 linktype = 'freeway';
 
 %link id
-aid = [aout.Links.id];
-sid = sout.Links.id;
-if numel(aid) ~= numel(sid) || any(aid ~= sid), error('links differ'); end
+aid = {aout.Links.id};
+sid = {sout.Links.id};
+if numel(aid) ~= numel(sid) || ~all(strcmp(aid, sid)), error('links differ'); end
 clear aid sid;
 
 sizedens = min(size(aout.Density, 1), size(sout.density, 1));
@@ -19,18 +19,18 @@ sizeflow = min(size(aout.OutFlow, 1), size(sout.outflow, 1));
 
 %lanes
 alanes = [aout.Links.lanes];
-slanes = sout.Links.lanes;
+slanes = [sout.Links.lanes];
 
 %density [veh/mile/lane]
 adens = bsxfun(@rdivide, aout.Density(1:sizedens, :), alanes);
-sdens = bsxfun(@rdivide, sout.density(1:sizedens, :), slanes .* sout.Links.length);
+sdens = bsxfun(@rdivide, sout.density(1:sizedens, :), slanes .* [sout.Links.length]);
 
 %flow [veh/hr/lane]
 aflow = bsxfun(@rdivide, aout.OutFlow(1:sizeflow, :), alanes);
-sflow = 3600 / sout.dt * bsxfun(@rdivide, sout.outflow(1:sizeflow, :), slanes);
+sflow = 3600 * bsxfun(@rdivide, sout.outflow(1:sizeflow, :), slanes);
 
 fnsuff = '';
-ind = strcmp(linktype, sout.Links.type);
+ind = strcmp(linktype, {sout.Links.type});
 if any(ind)
 	adens = adens(:, ind);
 	sdens = sdens(:, ind);
