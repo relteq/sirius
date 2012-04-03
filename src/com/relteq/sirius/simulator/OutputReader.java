@@ -17,6 +17,8 @@ class Output {
 	public Vector<Double> t; // time
 	public Vector<Double> d; // density
 	public Vector<Double> f; // flow
+	public Vector<Double> mf; // capacity
+	public Vector<Double> fv; // free flow speed
 	public Vector<Link> getLinks() {
 		Vector<Link> res = new Vector<Link>();
 		if (null != scenario){
@@ -76,10 +78,14 @@ class OutputReader {
 							res.t = new Vector<Double>(t_incr, t_incr);
 							res.d = new Vector<Double>(d_incr, d_incr);
 							res.f = new Vector<Double>(d_incr, d_incr);
+							res.mf = new Vector<Double>(d_incr, d_incr);
+							res.fv = new Vector<Double>(d_incr, d_incr);
 						} else {
 							res.t = new Vector<Double>();
 							res.d = new Vector<Double>();
 							res.f = new Vector<Double>();
+							res.mf = new Vector<Double>();
+							res.fv = new Vector<Double>();
 						}
 						xmlsr.next();
 						while (xmlsr.hasNext()) {
@@ -99,6 +105,9 @@ class OutputReader {
 											Vector<Double> vect_f = unformat(xmlsr.getAttributeValue(null, "f"), ":");
 											for (int iii = 0; iii < vect_f.size(); ++iii) vect_f.set(iii, vect_f.get(iii) * dt);
 											res.f.addAll(vect_f);
+
+											res.mf.addAll(unformat(xmlsr.getAttributeValue(null, "mf"), ":"));
+											res.fv.addAll(unformat(xmlsr.getAttributeValue(null, "fv"), ":"));
 										}
 										xmlsr.next();
 									}

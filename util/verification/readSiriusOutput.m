@@ -19,8 +19,10 @@ data.time = java2m(out.t);
 
 nvehtypes = out.scenario.getNumVehicleTypes();
 if nvehtypes <= 0, nvehtypes = 1; end
-data.density = permute(reshape(java2m(out.d), nvehtypes, nlinks, []), [3 2 1]);
-data.outflow = permute(reshape(java2m(out.f), nvehtypes, nlinks, []), [3 2 1]);
-
+shp = @(arr) permute(reshape(java2m(arr), nvehtypes, nlinks, []), [3 2 1]);
+data.density = shp(out.d);
+data.outflow = shp(out.f);
+data.capacity = shp(out.mf);
+data.free_flow_speed = shp(out.fv);
 clear out;
 javarmpath(javapath{:});
