@@ -1,49 +1,35 @@
 clear
 close all
 
-configfile = fullfile('..', 'config', 'test_event.xml');
-fnformat = fullfile('..', '..', 'output_%s_0.txt');
+fnam = fullfile('..', '..', 'output_0.xml');
+path = {fullfile('..', 'verification', '')};
+addpath(path{:});
+fprintf('Reading %s\n', fnam);
+sout = readSiriusOutput(fnam);
+rmpath(path{:});
 
-fprintf('Reading %s\n', configfile);
-scenario = xml_read(configfile);
+disp('Processing data');
+slanes = [sout.Links.lanes];
+% veh/mile/lane
+density = bsxfun(@rdivide, sout.density, slanes .* [sout.Links.length]);
+% veh/hr/lane
+flow = 3600 * bsxfun(@rdivide, sout.outflow, slanes);
+% mile/hr
+speed = min(flow ./ density(2:end, :), sout.free_flow_speed(2:end, :));
 
-if(length(length(scenario.NetworkList.network))~=1)
-    error('simplot does not work for scenarios with multiple networks')
-end
-
-dt = round(2*scenario.NetworkList.network(1).ATTRIBUTE.dt)/2;
-
-%  temp
-outdt = dt;
-
-disp('Normalizing density');
-% density in veh/mile
-density = load(sprintf(fnformat, 'density'));
-for i=1:length(scenario.NetworkList.network(1).LinkList.link)
-    lgth = scenario.NetworkList.network(1).LinkList.link(i).ATTRIBUTE.length;
-    density(:,i) = density(:,i)/lgth;
-end
-
-disp('Normalizing flow');
-% flow in veh/hr
-flow = load(sprintf(fnformat, 'outflow'));
-flow = flow/outdt;
-
-disp('Computing speed');
-%  speed in mile/hr
-speed = flow./density(1:(end - 1),:);
-
-disp('Plotting density');
-figure;
-set(pcolor(density), 'EdgeAlpha', 0)
+disp('Plotting');
+fprops = {'DefaultSurfaceEdgeColor', 'none'};
+figure(fprops{:});
+pcolor(density);
 colorbar;
+title('Density, veh/mile/lane');
 
-disp('Plotting flow');
-figure;
-set(pcolor(flow), 'EdgeAlpha', 0);
+figure(fprops{:});
+pcolor(flow);
 colorbar;
+title('Flow, veh/hr/lane');
 
-disp('Plotting speed');
-figure;
-set(pcolor(speed), 'EdgeAlpha', 0);
+figure(fprops{:});
+pcolor(speed);
 colorbar;
+title('Speed, mph');
