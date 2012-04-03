@@ -65,9 +65,22 @@ class OutputReader {
 							exc.printStackTrace();
 						}
 					}else if ("data" == localname) {
-						res.t = new Vector<Double>();
-						res.d = new Vector<Double>();
-						res.f = new Vector<Double>();
+						if (null != res.scenario) {
+							int nvehtypes = res.scenario.getNumVehicleTypes();
+							if (nvehtypes <= 0) nvehtypes = 1;
+							int nlinks = 0;
+							for (Network network : res.scenario.getNetworkList().getNetwork())
+								nlinks += network.getLinkList().getLink().size();
+							int t_incr = 30;
+							int d_incr = t_incr * nvehtypes * nlinks;
+							res.t = new Vector<Double>(t_incr, t_incr);
+							res.d = new Vector<Double>(d_incr, d_incr);
+							res.f = new Vector<Double>(d_incr, d_incr);
+						} else {
+							res.t = new Vector<Double>();
+							res.d = new Vector<Double>();
+							res.f = new Vector<Double>();
+						}
 						xmlsr.next();
 						while (xmlsr.hasNext()) {
 							if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "data" == xmlsr.getName().getLocalPart()) break;
@@ -81,9 +94,11 @@ class OutputReader {
 									while (xmlsr.hasNext()) {
 										if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "net" == xmlsr.getName().getLocalPart()) break;
 										else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType() && "l" == xmlsr.getName().getLocalPart()) {
-											res.d.add(Double.valueOf(xmlsr.getAttributeValue(null, "d")));
-											String f_attr = xmlsr.getAttributeValue(null, "f");
-											if (null != f_attr) res.f.add(Double.valueOf(f_attr) / dt);
+											res.d.addAll(unformat(xmlsr.getAttributeValue(null, "d"), ":"));
+
+											Vector<Double> vect_f = unformat(xmlsr.getAttributeValue(null, "f"), ":");
+											for (int iii = 0; iii < vect_f.size(); ++iii) vect_f.set(iii, vect_f.get(iii) * dt);
+											res.f.addAll(vect_f);
 										}
 										xmlsr.next();
 									}
@@ -101,5 +116,15 @@ class OutputReader {
 			exc.printStackTrace();
 		}
 		return res;
+	}
+
+	private static Vector<Double> unformat(String str, String delim) {
+		if (null == str || 0 == str.length()) return new Vector<Double>(0);
+		else {
+			String [] parts = str.split(delim);
+			Vector<Double> res = new Vector<Double>(parts.length);
+			for (int iii = 0; iii < parts.length; ++iii) res.add(Double.valueOf(parts[iii]));
+			return res;
+		}
 	}
 }
