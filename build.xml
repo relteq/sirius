@@ -71,17 +71,28 @@
 	</target>
 
 	<target name="doc" depends="xsd2java,compile" description="generate documentation">
-		<javadoc encoding="${src.encoding}"
-				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
-				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
-			<doclet name="ydoc.doclets.YStandard"
-					path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}">
-				<param name="-umltypegen"/>
+        <javadoc 
+			encoding="${src.encoding}"
+			author="yes" 
+			use="yes" 
+			version="yes"
+			linksource="yes"
+			access="protected" 
+			destdir="${doc.dir}"
+			classpath="." 
+			sourcepath="src/com/relteq/sirius" >
+			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
+					includes="_Controller.java ObjectFactory.java _Link.java _Node.java
+						_Scenario.java SiriusStateTrajectory.java _ScenarioElement.java
+						_Sensor.java _Signal.java _Event.java"/>
+			<doclet 				
+				name="ydoc.doclets.YStandard"
+				path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}" >
 				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
 				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
 			</doclet>
-		</javadoc>
-	</target>
+        </javadoc>
+    </target>
 
 	<target name="clean" description="clean up">
 		<delete file="${jar.file}"/>
