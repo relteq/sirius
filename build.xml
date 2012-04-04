@@ -70,21 +70,6 @@
 		</jar>
 	</target>
 
-	<!--
-	<target name="doc" depends="xsd2java,compile" description="generate documentation">
-		<javadoc encoding="${src.encoding}"
-				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
-				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
-			<doclet name="ydoc.doclets.YStandard"
-					path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}">
-				<param name="-umltypegen"/>
-				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
-				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
-			</doclet>
-		</javadoc>
-	</target> -->
-	
-	
 	<target name="doc" depends="xsd2java,compile" description="generate documentation">
         <javadoc 
 			encoding="${src.encoding}"
