@@ -69,9 +69,9 @@ while true
 				routes(end + 1).name = row{1};
 				routes(end).links = str2double(row(2:end));
 			end
-		case {'Link ID', 'Link Length', 'Link Width'}
+		case {'Link Length', 'Link Width'}
 			linkinfo.(name) = str2double(row(2:end));
-		case 'Link Name'
+		case {'Link ID', 'Link Name'}
 			linkinfo.(name) = row(2:end);
 		case 'Link Type'
 			row = row(2:end);
@@ -132,7 +132,7 @@ while true
 end
 fclose(fid);
 
-D.Links = struct('id', num2cell(linkinfo.LinkID), ...
+D.Links = struct('id', linkinfo.LinkID, ...
 	'name', linkinfo.LinkName, 'type', num2cell(linkinfo.LinkType), ...
 	'length', num2cell(linkinfo.LinkLength), ...
 	'lanes', num2cell(linkinfo.LinkWidth), ...

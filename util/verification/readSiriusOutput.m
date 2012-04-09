@@ -1,27 +1,28 @@
-function data = readSiriusOutput(ofnam_templ, conf_path)
-fprintf('Reading %s\n', conf_path);
-scenario = xml_read(conf_path);
-
-disp('Extracting link parameters');
-if numel(scenario.NetworkList.network) > 1, error('Multiple networks'); end
-network = scenario.NetworkList.network(1);
-data = struct('Links', struct(), 'dt', network.ATTRIBUTE.dt);
-links = network.LinkList.link;
-for nam = {'lanes', 'length', 'id'}
-	data.Links.(char(nam)) = zeros(1, numel(links));
-	for iii = 1:numel(links)
-		data.Links.(char(nam))(iii) = links(iii).ATTRIBUTE.(char(nam));
-	end
-end
-for nam = {'type', 'road_name'}
-	data.Links.(char(nam)) = cell(1, numel(links));
-	for iii = 1:numel(links)
-		data.Links.(char(nam)){iii} = links(iii).ATTRIBUTE.(char(nam));
-	end
+function data = readSiriusOutput(fnam)
+data = struct;
+javapath = {fullfile('..', '..', 'sirius.jar')};
+javaaddpath(javapath{:});
+import com.relteq.sirius.simulator.*;
+out = OutputReader.Read(fnam);
+links = out.getLinks().toArray();
+nlinks = numel(links);
+data.Links = struct('id', cell(1, nlinks), 'length', 0, 'lanes', 0, 'type', '');
+for iii = 1:nlinks
+	data.Links(iii).id = char(links(iii).getId());
+	data.Links(iii).length = double(links(iii).getLength());
+	data.Links(iii).lanes = double(links(iii).getLanes());
+	data.Links(iii).type = char(links(iii).getType());
 end
 
-for nam = {'density', 'inflow', 'outflow', 'time'}
-	fnam = sprintf(ofnam_templ, char(nam));
-	fprintf('Loading %s\n', fnam);
-	data.(char(nam)) = load(fnam);
-end
+java2m = @(arr) cell2mat(arr.toArray().cell);
+data.time = java2m(out.t);
+
+nvehtypes = out.scenario.getNumVehicleTypes();
+if nvehtypes <= 0, nvehtypes = 1; end
+shp = @(arr) permute(reshape(java2m(arr), nvehtypes, nlinks, []), [3 2 1]);
+data.density = shp(out.d);
+data.outflow = shp(out.f);
+data.capacity = shp(out.mf);
+data.free_flow_speed = shp(out.fv);
+clear out;
+javarmpath(javapath{:});
