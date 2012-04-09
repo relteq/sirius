@@ -613,7 +613,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** Get a reference to a signal by the composite id of its node.
 	 * 
 	 * @param network_id String id of the network containing the signal. 
-	 * @param id String id of the node under the signal. 
+	 * @param node_id String id of the node under the signal. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
 	public _Signal getSignalForNodeId(String network_id,String node_id){
@@ -701,6 +701,32 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
+	public double [][] getInitialDensityForNetwork(String network_id){
+				
+		_Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+		_InitialDensityProfile initprofile = (_InitialDensityProfile) getInitialDensityProfile();
+
+		int i,j;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			if(initprofile==null){
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = 0d;
+			}
+			else{
+				Link link = network.getLinkList().getLink().get(i);
+				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = init_density[j];
+			}
+		}
+		return density;                         
+	}
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////

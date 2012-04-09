@@ -343,7 +343,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
 			if(myScenario.getInitialDensityProfile()!=null)
-				density = ((_InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(getId());	
+				density = ((_InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
 			else 
 				density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;
