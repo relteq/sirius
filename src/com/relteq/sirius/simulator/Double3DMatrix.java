@@ -141,6 +141,10 @@ final class Double3DMatrix {
 		return nVTypes;
 	}
 
+	public Double [][][] getData() {
+		return data;
+	}
+
 	public Double get(int i,int j,int k){
     	if(isempty)
     		return Double.NaN;

@@ -536,6 +536,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
+	/** Capacity in vehicles per hour. */
+	public double getCapacityInVPH() {
+		return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInHours();
+	}
+
 	/** Capacity in vehicle/hr/lane. */
 	public double getCapacityInVPHPL() {
 		return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
