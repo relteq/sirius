@@ -11,7 +11,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 
 	protected _Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	protected _Link [] link;					// ordered array of references
+	protected _Link [] link;				// ordered array of references
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 
@@ -86,6 +86,10 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		Double sum;
 		Double x;
 		for(i=0;i<initial_density.length;i++){
+			
+			if(link[i].issource)	// does not apply to source links
+				continue;
+			
 			sum = 0.0;
 			for(j=0;j<vehicletypeindex.length;j++){
 				x = initial_density[i][j];

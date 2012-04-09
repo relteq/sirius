@@ -21,7 +21,7 @@ public final class SiriusStateTrajectory {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SiriusStateTrajectory(_Scenario myScenario) {
+	public SiriusStateTrajectory(_Scenario myScenario,double outsteps) {
 		if(myScenario==null)
 			return;
 		if(myScenario.getNetworkList()==null)
@@ -29,11 +29,10 @@ public final class SiriusStateTrajectory {
 		if(myScenario.getNetworkList().getNetwork()==null)
 			return;
 		this.myScenario = myScenario;
-		//this.outsteps = myScenario.o
 		
 		this.numNetworks = myScenario.getNetworkList().getNetwork().size();
 		this.numVehicleTypes = myScenario.getNumVehicleTypes();
-		this.numTime = (int) Math.ceil(myScenario.getTotalTimeStepsToSimulate()/myScenario.outsteps);
+		this.numTime = (int) Math.ceil(myScenario.getTotalTimeStepsToSimulate()/outsteps);
 
 		this.networkState = new NewtorkStateTrajectory[numNetworks];
 		for(int i=0;i<numNetworks;i++){

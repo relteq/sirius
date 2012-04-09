@@ -59,4 +59,12 @@ final class Clock {
 	}
 	
 	
+	public double getStartTime(){
+		return to;
+	}
+
+	public double getEndTime(){
+		return maxt;
+	}
+	
 }

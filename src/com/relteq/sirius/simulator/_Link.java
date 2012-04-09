@@ -13,7 +13,6 @@ import com.relteq.sirius.jaxb.FundamentalDiagram;
 */
 public final class _Link extends com.relteq.sirius.jaxb.Link {
 
-	// /** @y.exclude */ 	protected _Link.Type myType;
 	/** @y.exclude */ 	protected _Network myNetwork;
 	/** @y.exclude */ 	protected _Node begin_node;
 	/** @y.exclude */ 	protected _Node end_node;
@@ -48,22 +47,6 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
 	/** @y.exclude */ 	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
 	/** @y.exclude */ 	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
-
-//	/** */ 
-//	public static enum Type	{  
-//		/** Freeway mainline 			 */	freeway,
-//		/** High occupancy lane 		 */	HOV,
-//	    /** High occupancy / Toll lane 	 */ HOT,
-//	    /** Freeway onramp 				 */ onramp,
-//	    /** Freeeay offramp 			 */ offramp,
-//	    /** Freeway-to-freeway connector */ freeway_connector,
-//	    /** Urban street 				 */ street,
-//	    /** Link feeding an intersection */ intersection_apporach,
-//	    /** None of the above 			 */	other };	
-
-//public static enum DynamicsType	{NULL, CTM,
-//					   region_tracking,
-//					   discrete_departure };
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -105,11 +88,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		}
 	}
 
-	/** @y.exclude */
+	/** @y.exclude 
 	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
 		this.sourcedemand = sourcedemand;		
-	}
-
+	} */
+	
 	/** @y.exclude */
 	protected void setInflow(Double[] inflow) {
 		this.inflow = inflow;
@@ -330,11 +313,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected void resetState() {
+	protected void resetState(_Scenario.ModeType simulationMode) {
 		
 		_Scenario myScenario = myNetwork.myScenario;
 		
-		switch(myScenario.simulationMode){
+		switch(simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
 			density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
@@ -402,12 +385,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	
 	// Link geometry ....................
 	
-//	/** link type */
-//	public _Link.Type getMyType() {
-//		return myType;
-//	}
-
-	/** network that containts this link */
+	/** network that contains this link */
 	public _Network getMyNetwork() {
 		return myNetwork;
 	}
@@ -559,6 +537,14 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/** Congestion wave speed in mile/hr. */
 	public double getWInMPH() {
 		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
+	}
+	
+	/** Set input flow for source links.
+	 *  [This is API call is being made available for implementation of path-based DTA.
+	 *  The goal is to replace it later with an internal solution.]
+	 */
+	public void setSourcedemandFromVeh(Double[] sourcedemand) {
+		this.sourcedemand = sourcedemand;		
 	}
 	
 }
