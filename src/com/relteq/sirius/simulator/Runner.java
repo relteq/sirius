@@ -25,7 +25,7 @@ final class Runner {
 		}
 
 		// load configuration file ................................
-		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename,outputfileprefix,timestart,timeend,outdt);
+		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
 		if(SiriusErrorLog.haserror()){
@@ -35,9 +35,8 @@ final class Runner {
 
 		// run scenario ...........................................
 		try {
-			scenario.run(numRepetitions);
+			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
 		} catch (SiriusException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

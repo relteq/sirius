@@ -17,7 +17,6 @@ import com.relteq.sirius.control.*;
 import com.relteq.sirius.event.*;
 import com.relteq.sirius.sensor.*;
 import com.relteq.sirius.jaxb.Controller;
-import com.relteq.sirius.jaxb.DemandProfile;
 import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.jaxb.Network;
 import com.relteq.sirius.jaxb.ScenarioElement;
@@ -222,13 +221,12 @@ public final class ObjectFactory {
 	 * </table> 
 	 * 
 	 * @param configfilename		The name of the XML configuration file.
-	 * @param outputfileprefix		A prefix to be used for all simulation output files.
 	 * @param timestart				The start time of the simulation in seconds after midnight.
 	 * @param timeend				The end time of the simulation in seconds after midnight.
 	 * @param outdt					The period in seconds at which simulation output is written. 
 	 * @return scenario				_Scenario object.
 	 */
-	public static _Scenario createAndLoadScenario(String configfilename,String outputfileprefix,double timestart,double timeend,double outdt) {
+	public static _Scenario createAndLoadScenario(String configfilename) {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -284,12 +282,6 @@ public final class ObjectFactory {
 
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
-		if(outputfileprefix.endsWith(".csv"))
-			outputfileprefix = outputfileprefix.substring(0,outputfileprefix.length()-4);
-		S.outputfileprefix = outputfileprefix;
-        S.timestart = timestart;
-        S.timeend = timeend;
-        S.outdt = outdt;
         
         // copy data to static variables ..............................................
         S.global_control_on = true;
@@ -297,17 +289,10 @@ public final class ObjectFactory {
         S.simdtinhours = S.simdtinseconds/3600.0;
         S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
-        S.outsteps = SiriusMath.round(S.outdt/S.simdtinseconds);
         S.numVehicleTypes = 1;
         if(S.getSettings().getVehicleTypes()!=null)
             if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
         		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-        
-        // simulation mode
-        setSimulationMode(S);
-
-		// create the clock
-        S.clock = new Clock(S.timestart,S.timeend,S.simdtinseconds);
 
         // populate the scenario ....................................................
         try{
@@ -330,12 +315,6 @@ public final class ObjectFactory {
         	SiriusErrorLog.addErrorMessage("Controller registration failure.");
         	return null;
         }
-        
-        // check that load was successful        
-		if(!checkLoad(S)){
-			SiriusErrorLog.addErrorMessage("Check load error.");
-			return null;
-		}
 		
 		// validate scenario ......................................
 		if(!S.validate()){
@@ -681,50 +660,6 @@ public final class ObjectFactory {
 			tengcd = SiriusMath.gcd( SiriusMath.round(dt*10.0) , tengcd );
 		}
     	return ((double)tengcd)/10.0;
-	}
-	
-	// Simulation mode is normal <=> start time == initial profile time stamp
-	private static void setSimulationMode(_Scenario scenario){
-
-		if(scenario==null)
-			return;
-		
-		scenario.simulationMode = null;
-		
-        double time_ic;
-        if(scenario.getInitialDensityProfile()!=null)
-        	time_ic = ((_InitialDensityProfile)scenario.getInitialDensityProfile()).timestamp;
-        else
-        	time_ic = 0.0;
-       
-		if(scenario.timestart==time_ic){
-			scenario.simulationMode = _Scenario.ModeType.normal;
-		}
-		else{
-			// it is a warmup. we need to decide on start and end times
-			scenario.timeend = scenario.timestart;
-			if(time_ic<scenario.timestart){	// go from ic to timestart
-				scenario.timestart = time_ic;
-				scenario.simulationMode = _Scenario.ModeType.warmupFromIC;
-			}
-			else{							// start at earliest demand profile
-				scenario.timestart = Double.POSITIVE_INFINITY;
-				for(DemandProfile D : scenario.getDemandProfileSet().getDemandProfile())
-					scenario.timestart = Math.min(scenario.timestart,D.getStartTime().doubleValue());
-				scenario.simulationMode = _Scenario.ModeType.warmupFromZero;
-			}		
-		}
-	}
-	
-	private static boolean checkLoad(_Scenario scenario){
-		
-		// check timestart < timeend (depends on simulation mode)
-		if(scenario.timestart>=scenario.timeend){
-			SiriusErrorLog.addErrorMessage("Empty simulation period.");
-			return false;
-		}
-		
-		return true;
 	}
 	
 }

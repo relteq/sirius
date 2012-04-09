@@ -80,15 +80,6 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 		_knob = getKnob().doubleValue();
 		
-		// read start time, convert to stepinitial
-		double starttime;	// [sec]
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();
-		else
-			starttime = 0f;
-
-		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
-		
 	}
 
 	protected boolean validate() {
@@ -129,6 +120,15 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
 	protected void reset() {
 		isdone = false;
+		
+		// read start time, convert to stepinitial
+		double starttime;	// [sec]
+		if( getStartTime()!=null)
+			starttime = getStartTime().floatValue();
+		else
+			starttime = 0f;
+
+		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		// set knob back to its original value
 		_knob = getKnob().doubleValue();	

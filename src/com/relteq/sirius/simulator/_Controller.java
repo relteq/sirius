@@ -25,7 +25,7 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	
 	/** Id of the controller. */
 	protected String id;
-	
+										
 	/** Controller type. */
 	protected _Controller.Type myType;
 	

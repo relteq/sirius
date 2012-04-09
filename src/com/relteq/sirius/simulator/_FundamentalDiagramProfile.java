@@ -45,6 +45,10 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		
 		// required
 		myLink = myScenario.getLinkWithCompositeId(getNetworkId(), getLinkId());
+		
+		if(myLink==null)
+			return;
+		
 		myLink.setFundamentalDiagramProfile(this);
 		
 		// optional dt
@@ -72,25 +76,6 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
 		}
-	
-		// read start time, convert to stepinitial
-		double starttime;	// [sec]
-		if( getStartTime()!=null){
-			starttime = getStartTime().floatValue();
-//			if(starttime>0 && starttime<=24){
-//				System.out.printlnX("Warning: Initial time given in hours. Changing to seconds.");
-//				starttime *= 3600f;
-//			}
-		}
-		else
-			starttime = 0f;
-
-		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
-		
-		// update so that the link gets the first value of the parameters.
-		// this is need so that the initial density profile can validate. 
-		update();	
-		
 		
 	}
 	
@@ -123,11 +108,21 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	protected void reset() throws SiriusException {
 		isdone = false;
 		
+		// read start time, convert to stepinitial
+		double profile_starttime;	// [sec]
+		if( getStartTime()!=null){
+			profile_starttime = getStartTime().floatValue();
+		}
+		else
+			profile_starttime = 0f;
+
+		stepinitial = SiriusMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		
 		for(_FundamentalDiagram fd : FD)
 			fd.reset(myScenario.uncertaintyModel);
 		
 		// assign the fundamental diagram to the link
-		update();	
+		//update();	
 		
 	}
 
