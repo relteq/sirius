@@ -80,7 +80,7 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		return true;
 	}
 
-	protected void reset() throws SiriusException {
+	protected void reset(_Scenario.ModeType simulationMode) throws SiriusException {
 		
 //		// node list
 //		if(getNodeList()!=null)
@@ -91,8 +91,8 @@ final class _Network extends com.relteq.sirius.jaxb.Network {
 		if(getLinkList()!=null)
 			for (Link link : getLinkList().getLink()){
 				_Link _link = (_Link) link;
-				_link.resetLanes();				
-				_link.resetState();
+				_link.resetLanes();		
+				_link.resetState(simulationMode);
 				_link.resetFD();
 			}
 

@@ -65,15 +65,6 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 			}
 		}
 		
-		// read start time, convert to stepinitial
-		double starttime;
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();	// assume given in seconds
-		else
-			starttime = 0f;
-
-		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
-		
 		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
 		int in_index,out_index;
 		laststep = 0;
@@ -95,6 +86,15 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	}
 
 	protected void reset() {
+		
+		// read start time, convert to stepinitial
+		double starttime;
+		if( getStartTime()!=null)
+			starttime = getStartTime().floatValue();	// assume given in seconds
+		else
+			starttime = 0f;
+		
+		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 	}
 
 	protected boolean validate() {

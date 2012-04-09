@@ -11,7 +11,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 
 	protected _Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	protected _Link [] link;					// ordered array of references
+	protected _Link [] link;				// ordered array of references
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 
@@ -86,6 +86,10 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		Double sum;
 		Double x;
 		for(i=0;i<initial_density.length;i++){
+			
+			if(link[i].issource)	// does not apply to source links
+				continue;
+			
 			sum = 0.0;
 			for(j=0;j<vehicletypeindex.length;j++){
 				x = initial_density[i][j];
@@ -114,10 +118,10 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double [] getDensityForLinkIdInVeh(String linkid){
+	public Double [] getDensityForLinkIdInVeh(String network_id,String linkid){
 		Double [] d = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
-			if(link[i].getId().equals(linkid)){
+			if(link[i].getId().equals(linkid) && link[i].myNetwork.getId().equals(network_id)){
 				for(int j=0;j<vehicletypeindex.length;j++)
 					d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
 				return d;

@@ -42,13 +42,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
-	/** @y.exclude */	protected double outdt;				// [sec] output sampling time
-	/** @y.exclude */	protected int outsteps;				// [-] number of simulation steps per output step
-	/** @y.exclude */	protected double timestart;			// [sec] start of the simulation
-	/** @y.exclude */	protected double timeend;			// [sec] end of the simulation
-	/** @y.exclude */	protected String outputfileprefix;
 	/** @y.exclude */	protected Random random = new Random();
-	/** @y.exclude */	protected _Scenario.ModeType simulationMode;
 	/** @y.exclude */	protected _Scenario.UncertaintyType uncertaintyModel;
 	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
@@ -123,14 +117,14 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @throws SiriusException 
 	 * @y.exclude
 	 */
-	protected boolean reset() throws SiriusException {
+	protected boolean reset(_Scenario.ModeType simulationMode) throws SiriusException {
 		
 		// reset the clock
 		clock.reset();
 		
 		// reset network
 		for(Network network : getNetworkList().getNetwork())
-			((_Network)network).reset();
+			((_Network)network).reset(simulationMode);
 		
 		// reset demand profiles
 		if(getDemandProfileSet()!=null)
@@ -196,10 +190,14 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * 
 	 */
 	protected _Network getNetworkWithId(String id){
-		if(id==null)
-			return null;
 		if(getNetworkList()==null)
 			return null;
+		if(getNetworkList().getNetwork()==null)
+			return null;
+		if(id==null && getNetworkList().getNetwork().size()>1)
+			return null;
+		if(id==null && getNetworkList().getNetwork().size()==1)
+			return (_Network) getNetworkList().getNetwork().get(0);
 		id.replaceAll("\\s","");
 		for(Network network : getNetworkList().getNetwork()){
 			if(network.getId().equals(id))
@@ -260,17 +258,6 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	
 	/** @y.exclude */
 	public boolean validate() {
-					
-		if(this.simulationMode==null){
-			SiriusErrorLog.addErrorMessage("Null simulation mode.");
-			return false;
-		}
-		
-		// check that outdt is a multiple of simdt
-		if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds)){
-			SiriusErrorLog.addErrorMessage("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-			return false;
-		}
 		
 		// validate network
 		if( getNetworkList()!=null)
@@ -280,12 +267,14 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 					return false;
 				}
 
+		
+		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
-		if(getInitialDensityProfile()!=null)
-			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate()){
-				SiriusErrorLog.addErrorMessage("InitialDensityProfile validation failure.");
-				return false;
-			}
+//		if(getInitialDensityProfile()!=null)
+//			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate()){
+//				SiriusErrorLog.addErrorMessage("InitialDensityProfile validation failure.");
+//				return false;
+//			}
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacitySet()!=null)
@@ -335,11 +324,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
+	 * @param outputfileprefix 	String prefix for all output files.
 	 * @param numRepetitions 	The integer number of simulations to run.
 	 * @throws SiriusException 
 	 */
-	public void run(int numRepetitions) throws SiriusException{
-		run_internal(numRepetitions,true,false);
+	public void run(String outputfileprefix,Double timestart,Double timeend,double outdt,int numRepetitions) throws SiriusException{
+		RunParameters param = new RunParameters(outputfileprefix,timestart,timeend,outdt,simdtinseconds);
+		run_internal(param,numRepetitions,true,false);
 	}
 
 	/** Run the scenario once, return the state trajectory.
@@ -347,8 +338,9 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @return An object with the history of densities and flows for all links in the scenario.
 	 * @throws SiriusException 
 	 */
-	public SiriusStateTrajectory run() throws SiriusException{
-		return run_internal(1,false,true);
+	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
+		RunParameters param = new RunParameters(null,timestart,timeend,outdt,simdtinseconds);
+		return run_internal(param,1,false,true);
 	}
 	
 	/** Advance the simulation <i>n</i> steps.
@@ -356,18 +348,19 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * <p> This function moves the simulation forward <i>n</i> time steps and stops.
 	 * The first parameter provides the number of time steps to advance. The second parameter
 	 * is a boolean that resets the clock and the scenario.  
-	 * @param n Number of simulation steps to advance.
-	 * @param fromstart <code>true</code> to reset the scenario before advancing, <code>false</code> otherwise. 
-	 * @return <code>true</code> if the simulation advanced without problem; <code>false</code> A problem was encountered, or the end of the simulation was reached. 
+	 * @param n Number of seconds to advance.
+	 * @param fromstart <code>true</code> to reset the scenario to the initial density profile before advancing, <code>false</code> otherwise. 
 	 * @throws SiriusException 
 	 */
-	public boolean advanceNSteps(int n,boolean fromstart) throws SiriusException{
+	public void advanceNSeconds(double nsec) throws SiriusException{	
 		
-		 // Allow only if simulation is running
-		 if(!scenariolocked)
-			 throw new SiriusException("Lock the scenario first.");
-		 
-		return advanceNSteps_internal(n,fromstart,false,false,null,null);
+		if(!scenariolocked)
+			throw new SiriusException("Run not initialized. Use initialize_run() first.");
+		
+		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
+			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+		int nsteps = SiriusMath.round(nsec/simdtinseconds);		
+		advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
 	}
 
 	/** Save the scenario to XML.
@@ -397,7 +390,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getT();
 	}
 	
-	/** Time elapsed since the begining of the simulation in seconds.
+	/** Time elapsed since the beginning of the simulation in seconds.
 	 * @return Simulation time in seconds after start time.
 	 */
 	public double getTimeElapsedInSeconds() {
@@ -484,18 +477,14 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return simdtinhours;
 	}
 
-	/** Size of the output time step in seconds.
-	 * @return Output time step in seconds. 
-	 */
-	public double getOutDt() {
-		return outdt;
-	}
-
 	/** Start time of the simulation.
 	 * @return Start time in seconds. 
 	 */
 	public double getTimeStart() {
-		return timestart;
+		if(clock==null)
+			return Double.NaN;
+		else
+			return this.clock.getStartTime();
 	}
 
 	/** End time of the simulation.
@@ -503,7 +492,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @return			XXX
 	 */
 	public double getTimeEnd() {
-		return timeend;
+		if(clock==null)
+			return Double.NaN;
+		else
+			return this.clock.getEndTime();
 	}
 
 	/** Get a reference to a controller by its id.
@@ -613,7 +605,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** Get a reference to a signal by the composite id of its node.
 	 * 
 	 * @param network_id String id of the network containing the signal. 
-	 * @param id String id of the node under the signal. 
+	 * @param node_id String id of the node under the signal. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
 	public _Signal getSignalForNodeId(String network_id,String node_id){
@@ -701,30 +693,98 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
+	public double [][] getInitialDensityForNetwork(String network_id){
+				
+		_Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+		_InitialDensityProfile initprofile = (_InitialDensityProfile) getInitialDensityProfile();
+
+		int i,j;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			if(initprofile==null){
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = 0d;
+			}
+			else{
+				Link link = network.getLinkList().getLink().get(i);
+				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = init_density[j];
+			}
+		}
+		return density;                         
+	}
+	
+	public double [][] getDensityForNetwork(String network_id){
+		
+		_Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+
+		int i,j;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			_Link link = (_Link) network.getLinkList().getLink().get(i);
+			Double [] linkdensity = link.getDensityInVeh();
+			for(j=0;j<numVehicleTypes;j++)
+				density[i][j] = linkdensity[j];
+		}
+		return density;           
+		
+	}
+	
+	// used only if the scenario is to be run with advanceNSeconds
+	public void initialize_run() throws SiriusException{
+
+		if(scenariolocked)
+			throw new SiriusException("Run in progress.");
+			
+		// use RunParameters constructor to determine the timestart
+		RunParameters param = new RunParameters("",Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,0,simdtinseconds);
+
+		// create the clock
+		clock = new Clock(param.timestart,Double.POSITIVE_INFINITY,simdtinseconds);
+		
+		// reset the simulation
+		if(!reset(ModeType.normal))
+			throw new SiriusException("Reset failed.");
+		
+		// lock the scenario
+        scenariolocked = true;	
+	
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// private
-	/////////////////////////////////////////////////////////////////////
-
-	private SiriusStateTrajectory run_internal(int numRepetitions,boolean writefiles,boolean returnstate) throws SiriusException{
-		
+	/////////////////////////////////////////////////////////////////////	
+	
+	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate) throws SiriusException{
+			
 		if(returnstate && numRepetitions>1)
 			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
 		
 		SiriusStateTrajectory state = null;
+
+		// create the clock
+		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
 		
 		// lock the scenario
-        scenariolocked = true;
-
+        scenariolocked = true;	
+        
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
 
 			OutputWriter outputwriter  = null;
 			
 			// open output files
-	        if( writefiles && simulationMode.compareTo(_Scenario.ModeType.normal)==0 ){
+	        if( writefiles && param.simulationMode.compareTo(_Scenario.ModeType.normal)==0 ){
 	        	outputwriter = new OutputWriter(this);
 				try {
-					outputwriter.open(outputfileprefix,String.format("%d",i));
+					outputwriter.open(param.outputfileprefix,String.format("%d",i));
 				} catch (FileNotFoundException e) {
 					throw new SiriusException("Unable to open output file.");
 				}
@@ -732,21 +792,22 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	        
 	        // allocate state
 	        if(returnstate)
-	        	state = new SiriusStateTrajectory(this);
+	        	state = new SiriusStateTrajectory(this,param.outsteps);
 	
 			// reset the simulation
-			advanceNSteps_internal(0,true,writefiles,returnstate,outputwriter,state);
-			
+			if(!reset(param.simulationMode))
+				throw new SiriusException("Reset failed.");
+						
 			// advance to end of simulation
-			while( advanceNSteps_internal(1,false,writefiles,returnstate,outputwriter,state) ){					
+			while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
 			}
 			
             // close output files
 	        if(writefiles){
-	        	if(simulationMode.compareTo(_Scenario.ModeType.normal)==0)
+	        	if(param.simulationMode.compareTo(_Scenario.ModeType.normal)==0)
 		        	outputwriter.close();
 				// or save scenario (in warmup mode)
-		        if(simulationMode.compareTo(_Scenario.ModeType.warmupFromIC)==0 || simulationMode.compareTo(_Scenario.ModeType.warmupFromZero)==0 ){
+		        if(param.simulationMode.compareTo(_Scenario.ModeType.warmupFromIC)==0 || param.simulationMode.compareTo(_Scenario.ModeType.warmupFromZero)==0 ){
 		    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
 		    		//	    		Utils.save(scenario, outfile);
 		        }
@@ -771,20 +832,15 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws ....
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(int n,boolean doreset,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state) throws SiriusException{
-		
-		// reset
-		if(doreset)
-			if(!reset())
-				throw new SiriusException("Reset failed.");
-        
+	private boolean advanceNSteps_internal(_Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
+
 		// advance n steps
 		for(int k=0;k<n;k++){
 
 			// export initial condition
-	        if(simulationMode.compareTo(ModeType.normal)==0)
+	        if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
 	        	if( clock.getCurrentstep()==0 )
-	        		recordstate(writefiles,returnstate,outputwriter,state,false);
+	        		recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
 	               	
         	// update scenario
         	update();
@@ -792,9 +848,9 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
             // update time (before write to output)
         	clock.advance();
         	
-            if(simulationMode.compareTo(ModeType.normal)==0 )
+            if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
 	        	if( clock.getCurrentstep()%outsteps == 0 )
-	        		recordstate(writefiles,returnstate,outputwriter,state,true);
+	        		recordstate(writefiles,returnstate,outputwriter,state,true,outsteps);
         	
         	if(clock.expired())
         		return false;
@@ -803,11 +859,68 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,boolean exportflows) throws SiriusException {
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
+	}
+	
+	private class RunParameters{
+		public String outputfileprefix;
+		public double timestart;			// [sec] start of the simulation
+		public double timeend;				// [sec] end of the simulation
+		public int outsteps;				// [-] number of simulation steps per output step
+		public _Scenario.ModeType simulationMode;
+		
+		// input parameter outdt [sec] output sampling time
+		public RunParameters(String outputfileprefix,double timestart,double timeend,double outdt,double simdtinseconds) throws SiriusException{
+			
+			// check timestart < timeend
+			if(timestart>=timeend)
+				throw new SiriusException("Empty simulation period.");
+
+			// check that outdt is a multiple of simdt
+			if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds))
+				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+			
+			this.outputfileprefix = outputfileprefix;
+			this.timestart = timestart;
+			this.timeend = timeend;
+	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
+
+			// Simulation mode is normal <=> start time == initial profile time stamp
+			simulationMode = null;
+			
+	        double time_ic;
+	        if(getInitialDensityProfile()!=null)
+	        	time_ic = ((_InitialDensityProfile)getInitialDensityProfile()).timestamp;
+	        else
+	        	time_ic = 0.0;
+	       
+			if(timestart==time_ic){
+				simulationMode = _Scenario.ModeType.normal;
+			}
+			else{
+				// it is a warmup. we need to decide on start and end times
+				timeend = timestart;
+				if(time_ic<timestart){	// go from ic to timestart
+					timestart = time_ic;
+					simulationMode = _Scenario.ModeType.warmupFromIC;
+				}
+				else{							// start at earliest demand profile
+					timestart = Double.POSITIVE_INFINITY;
+					if(getDemandProfileSet()!=null)
+						for(DemandProfile D : getDemandProfileSet().getDemandProfile())
+							timestart = Math.min(timestart,D.getStartTime().doubleValue());
+					else
+						timestart = 0.0;
+					simulationMode = _Scenario.ModeType.warmupFromZero;
+				}		
+			}
+			
+		}
+
 	}
 
 }
