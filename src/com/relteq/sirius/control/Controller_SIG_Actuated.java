@@ -1,9 +1,9 @@
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Scenario;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Scenario;
 
-public class Controller_SIG_Actuated extends _Controller {
+public class Controller_SIG_Actuated extends Controller {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -13,7 +13,7 @@ public class Controller_SIG_Actuated extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Controller_SIG_Actuated(_Scenario myScenario) {
+	public Controller_SIG_Actuated(Scenario myScenario) {
 		// TODO Auto-generated constructor stub
 	}
 

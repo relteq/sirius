@@ -5,10 +5,10 @@
 
 package com.relteq.sirius.simulator;
 
-final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
+final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
-	protected _Scenario myScenario;
-	protected _Link myLinkOrigin;
+	protected Scenario myScenario;
+	protected Link myLinkOrigin;
 	protected double dtinseconds;			// not really necessary
 	protected int samplesteps;
 	protected Double2DMatrix demand_nominal;	// [veh]
@@ -34,7 +34,7 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
 		
@@ -160,7 +160,7 @@ final class _DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((_DemandProfileSet)myScenario.getDemandProfileSet()).vehicletypeindex;
+			vehicletypeindex = ((DemandProfileSet)myScenario.getDemandProfileSet()).vehicletypeindex;
 		
 		Double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
 		

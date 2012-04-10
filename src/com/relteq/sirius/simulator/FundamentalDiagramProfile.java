@@ -7,15 +7,13 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.FundamentalDiagram;
+final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.FundamentalDiagramProfile {
 
-final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.FundamentalDiagramProfile {
-
-	protected _Scenario myScenario;
-	protected _Link myLink;
+	protected Scenario myScenario;
+	protected Link myLink;
 	protected double dtinseconds;			// not really necessary
 	protected int samplesteps;
-	protected ArrayList<_FundamentalDiagram> FD;
+	protected ArrayList<FundamentalDiagram> FD;
 	protected boolean isdone; 
 	protected int stepinitial;
 
@@ -38,7 +36,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate(_Scenario myScenario) throws SiriusException {
+	protected void populate(Scenario myScenario) throws SiriusException {
 		
 		this.myScenario = myScenario;
 		isdone = false;
@@ -69,9 +67,9 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		}
 		
 		//  read fundamental diagrams
-		FD = new ArrayList<_FundamentalDiagram>();
-		for(FundamentalDiagram fd : getFundamentalDiagram()){
-			_FundamentalDiagram _fd = new _FundamentalDiagram(myLink);	// create empty fd
+		FD = new ArrayList<FundamentalDiagram>();
+		for(com.relteq.sirius.jaxb.FundamentalDiagram fd : getFundamentalDiagram()){
+			FundamentalDiagram _fd = new FundamentalDiagram(myLink);	// create empty fd
 	        _fd.settoDefault();					// set to default
 			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
@@ -98,7 +96,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 		}
 		
 		// check fundamental diagrams
-		for(_FundamentalDiagram fd : FD)
+		for(FundamentalDiagram fd : FD)
 			if(!fd.validate())
 				return false;
 
@@ -118,7 +116,7 @@ final class _FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamenta
 
 		stepinitial = SiriusMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
-		for(_FundamentalDiagram fd : FD)
+		for(FundamentalDiagram fd : FD)
 			fd.reset(myScenario.uncertaintyModel);
 		
 		// assign the fundamental diagram to the link

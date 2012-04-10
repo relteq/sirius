@@ -1,10 +1,10 @@
 
 package com.relteq.sirius.sensor;
 
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._Sensor;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.Sensor;
 
-public class SensorFloating extends _Sensor {
+public class SensorFloating extends Sensor {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -13,12 +13,12 @@ public class SensorFloating extends _Sensor {
 	public SensorFloating(){
 	}
 	
-	public SensorFloating(_Scenario myScenario,String networkId,String linkId){
+	public SensorFloating(Scenario myScenario,String networkId,String linkId){
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
 		// this.id = GENERATE AN ID;
-	    this.myType = _Sensor.Type.moving_point;
+	    this.myType = Sensor.Type.moving_point;
 	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
 	}
 		

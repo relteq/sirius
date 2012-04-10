@@ -7,52 +7,50 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.Controller;
+final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
-final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
-
-	protected _Scenario myScenario;
-	protected ArrayList<_Controller> _controllers = new ArrayList<_Controller>();
+	protected Scenario myScenario;
+	protected ArrayList<Controller> controllers = new ArrayList<Controller>();
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected ArrayList<_Controller> get_Controllers(){
-		return _controllers;
+	protected ArrayList<Controller> get_Controllers(){
+		return controllers;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
 		
 		if(myScenario.getControllerSet()!=null){
-			for(Controller controller : myScenario.getControllerSet().getController()){
+			for(com.relteq.sirius.jaxb.Controller controller : myScenario.getControllerSet().getController()){
 	
 				// assign type
-				_Controller.Type myType;
+				Controller.Type myType;
 		    	try {
-					myType = _Controller.Type.valueOf(controller.getType());
+					myType = Controller.Type.valueOf(controller.getType());
 				} catch (IllegalArgumentException e) {
 					continue;
 				}	
 				
 				// generate controller
 				if(myType!=null){
-					_Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
+					Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
 					if(C!=null)
-						_controllers.add(C);
+						controllers.add(C);
 				}
 			}
 		}
 	}
 
 	protected boolean validate() {
-		for(_Controller controller : _controllers)
+		for(Controller controller : controllers)
 			if(!controller.validate()){
 				SiriusErrorLog.addErrorMessage("Controller validation failure, controller " + controller.getId());
 				return false;
@@ -61,12 +59,12 @@ final class _ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	}
 
 	protected void reset() {
-		for(_Controller controller : _controllers)
+		for(Controller controller : controllers)
 			controller.reset();
 	}
 
 	protected void update() throws SiriusException {
-    	for(_Controller controller : _controllers)
+    	for(Controller controller : controllers)
     		if(controller.ison && myScenario.clock.istimetosample(controller.samplesteps,0))
     			controller.update();
 	}

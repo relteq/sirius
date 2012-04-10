@@ -8,7 +8,7 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public final class _Signal extends com.relteq.sirius.jaxb.Signal {
+public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
 	public static enum CommandType {hold,forceoff};
 	protected static enum BulbColor {GREEN,YELLOW,RED,DARK};
@@ -16,9 +16,9 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	
 	protected HashMap<NEMA,SignalPhase> nema2phase;
 	
-	protected _Network myNetwork;
+	protected Network myNetwork;
 
-	protected _Node myNode;
+	protected Node myNode;
 	protected PhaseController myPhaseController;	// used to control capacity on individual links
 	
 	protected SignalPhase [] phase;
@@ -32,7 +32,7 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */	
-	protected void populate(_Scenario myScenario,_Network myNetwork) {
+	protected void populate(Scenario myScenario,Network myNetwork) {
 		
 		this.myNetwork = myNetwork;
 		this.myNode = myNetwork.getNodeWithId(getNodeId());
@@ -212,9 +212,9 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 
 		// Remove serviced commands 
 		for(SignalPhase pA: phase){
-			if(pA.bulbcolor.compareTo(_Signal.BulbColor.GREEN)==0)
+			if(pA.bulbcolor.compareTo(Signal.BulbColor.GREEN)==0)
 				pA.hold_requested = false;
-			if(pA.bulbcolor.compareTo(_Signal.BulbColor.YELLOW)==0 || pA.bulbcolor.compareTo(_Signal.BulbColor.RED)==0 )
+			if(pA.bulbcolor.compareTo(Signal.BulbColor.YELLOW)==0 || pA.bulbcolor.compareTo(Signal.BulbColor.RED)==0 )
 				pA.forceoff_requested = false;
 		}
 	
@@ -230,11 +230,11 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 				case GREEN:
 				case YELLOW:
 					if(p.isthrough && o.permissive)
-						o.setPhaseColor(_Signal.BulbColor.YELLOW);
+						o.setPhaseColor(Signal.BulbColor.YELLOW);
 					break;
 				case RED:
 					if(!o.protectd)
-						o.setPhaseColor(_Signal.BulbColor.RED);
+						o.setPhaseColor(Signal.BulbColor.RED);
 					break;
 			}
 		}
@@ -271,24 +271,24 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	// Each signal communicates with links via a PhaseController.
 	// Phase controller does two things: a) it registers the signal control,
 	// and b) it implements the phase indication. 
-	class PhaseController extends _Controller {
+	class PhaseController extends Controller {
 
-		private HashMap<_Link,Integer> target2index;
-		private HashMap<_Signal.NEMA,Integer[]> nema2indices;
+		private HashMap<Link,Integer> target2index;
+		private HashMap<Signal.NEMA,Integer[]> nema2indices;
 
-		public PhaseController(_Signal mySignal){
+		public PhaseController(Signal mySignal){
 			
 			int i,j;
 			
 			// populate target2index
 			int index = 0;
-			target2index = new HashMap<_Link,Integer>();
+			target2index = new HashMap<Link,Integer>();
 			for(i=0;i<mySignal.phase.length;i++)
 				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
 					target2index.put(mySignal.phase[i].targetlinks[j],index++);
 			
 			// populate nema2indices
-			nema2indices = new HashMap<_Signal.NEMA,Integer[]>();
+			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
 			for(i=0;i<mySignal.phase.length;i++){
 				Integer [] indices = new Integer[mySignal.phase[i].targetlinks.length];
 				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
@@ -304,13 +304,13 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 
 		@Override
 		public boolean register() {
-	        for(_Link link : target2index.keySet())
+	        for(Link link : target2index.keySet())
 	        	if(!link.registerFlowController(this,target2index.get(link)))
 	        		return false;
 			return true;
 		}
 		
-		protected void setPhaseColor(_Signal.NEMA nema,_Signal.BulbColor color){
+		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
 			
 			Integer [] indices = nema2indices.get(nema);
 			if(indices==null)
@@ -342,12 +342,12 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 	
-	public SignalPhase getPhaseByNEMA(_Signal.NEMA nema){
+	public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
 		return nema2phase.get(nema);
 	}
 
-	public void requestCommand(ArrayList<_Signal.Command> command){
-		for(_Signal.Command c : command){
+	public void requestCommand(ArrayList<Signal.Command> command){
+		for(Signal.Command c : command){
 			SignalPhase p = nema2phase.get(c.nema);
 			if(p==null)
 				continue;
@@ -378,27 +378,27 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	// static NEMA methods
 	/////////////////////////////////////////////////////////////////////
 	
-	public static _Signal.NEMA String2NEMA(String str){
+	public static Signal.NEMA String2NEMA(String str){
 		if(str==null)
-			return _Signal.NEMA.NULL;
+			return Signal.NEMA.NULL;
 		if(str.isEmpty())
-			return _Signal.NEMA.NULL;
+			return Signal.NEMA.NULL;
 		if(!str.startsWith("_"))
 			str = "_"+str;
-		_Signal.NEMA nema;
+		Signal.NEMA nema;
 		try{
-			nema = _Signal.NEMA.valueOf(str);
+			nema = Signal.NEMA.valueOf(str);
 		}
 		catch(IllegalArgumentException  e){
-			nema = _Signal.NEMA.NULL;
+			nema = Signal.NEMA.NULL;
 		}
 		return nema;
 	}
 	
 	public static boolean isCompatible(SignalPhase pA,SignalPhase pB)
 	{
-		_Signal.NEMA nemaA = pA.myNEMA;
-		_Signal.NEMA nemaB = pB.myNEMA;
+		Signal.NEMA nemaA = pA.myNEMA;
+		Signal.NEMA nemaB = pB.myNEMA;
 		
 		if(nemaA.compareTo(nemaB)==0)
 			return true;
@@ -437,13 +437,13 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 	
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
-		public _Signal.CommandType type;
-		public _Signal.NEMA nema;
+		public Signal.CommandType type;
+		public Signal.NEMA nema;
 		public float time;
 		public float yellowtime;
 		public float redcleartime;
 
-		public Command(_Signal.CommandType type,_Signal.NEMA phase,float time){
+		public Command(Signal.CommandType type,Signal.NEMA phase,float time){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -451,7 +451,7 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 			this.redcleartime = -1f;
 		}
 		
-		public Command(_Signal.CommandType type,_Signal.NEMA phase,float time,float yellowtime,float redcleartime){
+		public Command(Signal.CommandType type,Signal.NEMA phase,float time,float yellowtime,float redcleartime){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -476,8 +476,8 @@ public final class _Signal extends com.relteq.sirius.jaxb.Signal {
 				return compare;
 
 			// second ordering by phase
-			_Signal.NEMA thistphase = this.nema;
-			_Signal.NEMA thattphase = that.nema;
+			Signal.NEMA thistphase = this.nema;
+			Signal.NEMA thattphase = that.nema;
 			compare = thistphase.compareTo(thattphase);
 			if(compare!=0)
 				return compare;

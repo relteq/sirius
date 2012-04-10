@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._ScenarioElement;
-import com.relteq.sirius.simulator._Signal;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.ScenarioElement;
+import com.relteq.sirius.simulator.Signal;
 
 public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 	
@@ -17,9 +17,9 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 	protected boolean [] havesignaltarget;	// true if this intersection is in the target list
 	protected double _cyclelength;	
 
-	ArrayList<_Signal.Command> commandlist = new ArrayList<_Signal.Command>();
+	ArrayList<Signal.Command> commandlist = new ArrayList<Signal.Command>();
 
-	public void populate(Controller_SIG_Pretimed myController,_Scenario myScenario,com.relteq.sirius.jaxb.Plan jaxbplan) {
+	public void populate(Controller_SIG_Pretimed myController,Scenario myScenario,com.relteq.sirius.jaxb.Plan jaxbplan) {
 		
 		this.myController = myController;
 		
@@ -36,12 +36,12 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 
 				// check whether the signal is in the target list
 				com.relteq.sirius.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
-				_Signal mySignal = myScenario.getSignalForNodeId(jaxbi.getNetworkId(),jaxbi.getNodeId());
+				Signal mySignal = myScenario.getSignalForNodeId(jaxbi.getNetworkId(),jaxbi.getNodeId());
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;
-				for(_ScenarioElement se : myController.getTargets()){
-					if( se.getMyType().compareTo(_ScenarioElement.Type.signal)==0 &&
+				for(ScenarioElement se : myController.getTargets()){
+					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 &&
 						se.getNetworkId().compareTo(jaxbi.getNetworkId())==0 && 
 						se.getId().compareTo(mySignal.getId())==0 ){
 						haveit=true;
@@ -75,7 +75,7 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 		
 		// plan includes all targets
 		boolean foundit;
-		for(_ScenarioElement se : myController.getTargets()){
+		for(ScenarioElement se : myController.getTargets()){
 			foundit = false;
 			for(int i=0;i<intersplan.length;i++){
 				if(se.getNetworkId().equals(intersplan[i].mySignal.getMyNetworkId()) && se.getId().equals(intersplan[i].mySignal.getId())){

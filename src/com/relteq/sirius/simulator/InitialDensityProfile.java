@@ -5,13 +5,11 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.Density;
+final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
-final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
-
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	protected _Link [] link;				// ordered array of references
+	protected Link [] link;				// ordered array of references
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 
@@ -19,7 +17,7 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate(_Scenario myScenario){
+	protected void populate(Scenario myScenario){
 		
 		int i;
 		
@@ -28,12 +26,12 @@ final class _InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensity
 		// allocate
 		int numLinks = getDensity().size();
 		initial_density = new Double [numLinks][];
-		link = new _Link [numLinks];
+		link = new Link [numLinks];
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
 		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){
-			Density density = getDensity().get(i);
+			com.relteq.sirius.jaxb.Density density = getDensity().get(i);
 			link[i] = myScenario.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
 			Double1DVector D = new Double1DVector(density.getContent(),":");
 			initial_density[i] = D.getData();

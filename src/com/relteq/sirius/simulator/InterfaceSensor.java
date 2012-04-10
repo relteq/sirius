@@ -15,7 +15,7 @@ public interface InterfaceSensor {
 	 * 
 	 * <p> The output array contains measured densities.
 	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
 	 * 
 	 * @return Array of densities.
 	 */
@@ -34,7 +34,7 @@ public interface InterfaceSensor {
 	 * 
 	 * <p> The output array contains measured flows.
 	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
 	 * 
 	 * @return Array of flows.
 	 */

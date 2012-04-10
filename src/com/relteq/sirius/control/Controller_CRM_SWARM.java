@@ -1,9 +1,9 @@
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Scenario;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Scenario;
 
-public class Controller_CRM_SWARM extends _Controller {
+public class Controller_CRM_SWARM extends Controller {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -13,7 +13,7 @@ public class Controller_CRM_SWARM extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Controller_CRM_SWARM(_Scenario myScenario) {
+	public Controller_CRM_SWARM(Scenario myScenario) {
 		// TODO Auto-generated constructor stub
 	}
 

@@ -25,7 +25,7 @@ final class Runner {
 		}
 
 		// load configuration file ................................
-		_Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
+		Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
 		if(SiriusErrorLog.haserror()){

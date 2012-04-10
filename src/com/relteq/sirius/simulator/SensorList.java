@@ -7,22 +7,22 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
+final class SensorList extends com.relteq.sirius.jaxb.SensorList {
 
-	protected ArrayList<_Sensor> _sensors = new ArrayList<_Sensor>();
+	protected ArrayList<Sensor> sensors = new ArrayList<Sensor>();
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Network myNetwork) {
+	protected void populate(Network myNetwork) {
 		if(myNetwork.getSensorList()!=null){
 			for(com.relteq.sirius.jaxb.Sensor sensor : myNetwork.getSensorList().getSensor()){
 	
 				// assign type
-				_Sensor.Type myType;
+				Sensor.Type myType;
 		    	try {
-					myType = _Sensor.Type.valueOf(sensor.getType());
+					myType = Sensor.Type.valueOf(sensor.getType());
 				} catch (IllegalArgumentException e) {
 					SiriusErrorLog.addErrorMessage("Warning: sensor has wrong type. Ignoring.");
 					continue;
@@ -30,16 +30,16 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 				
 				// generate sensor
 				if(myType!=null){
-					_Sensor S = ObjectFactory.createSensorFromJaxb(myNetwork.myScenario,sensor,myType);
+					Sensor S = ObjectFactory.createSensorFromJaxb(myNetwork.myScenario,sensor,myType);
 					if(S!=null)
-						_sensors.add(S);
+						sensors.add(S);
 				}
 			}
 		}
 	}
 
 	protected boolean validate() {
-		for(_Sensor sensor : _sensors)
+		for(Sensor sensor : sensors)
 			if(!sensor.validate()){
 				SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
 				return false;
@@ -48,12 +48,12 @@ final class _SensorList extends com.relteq.sirius.jaxb.SensorList {
 	}
 
 	protected void reset() throws SiriusException {
-		for(_Sensor sensor : _sensors)
+		for(Sensor sensor : sensors)
 			sensor.reset();
 	}
 
 	protected void update() throws SiriusException {
-    	for(_Sensor sensor : _sensors)
+    	for(Sensor sensor : sensors)
     		sensor.update();
 	}
 	

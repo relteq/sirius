@@ -1,19 +1,17 @@
 
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.jaxb.Parameter;
-import com.relteq.sirius.jaxb.ScenarioElement;
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Link;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._Sensor;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Link;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.Sensor;
 
-public class Controller_IRM_Alinea extends _Controller {
+public class Controller_IRM_Alinea extends Controller {
 
-	private _Link onramplink = null;
-	private _Link mainlinelink = null;
-	private _Sensor mainlinesensor = null;
-	private _Sensor queuesensor = null;
+	private Link onramplink = null;
+	private Link mainlinelink = null;
+	private Sensor mainlinesensor = null;
+	private Sensor queuesensor = null;
 	private double gain;				// [-]
 	
 	private double targetvehicles;		// [veh]
@@ -31,7 +29,7 @@ public class Controller_IRM_Alinea extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Controller_IRM_Alinea(_Scenario myScenario,_Link onramplink,_Link mainlinelink,_Sensor mainlinesensor,_Sensor queuesensor,double gain_in_mph){
+	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
 
 		this.myScenario = myScenario;
 		this.onramplink 	= onramplink;
@@ -54,7 +52,7 @@ public class Controller_IRM_Alinea extends _Controller {
 		// normalize the gain 
 		double linklength;
 		if(usesensor){
-			 _Link mylink = mainlinesensor.getMyLink();
+			 Link mylink = mainlinesensor.getMyLink();
 			 if(mylink==null)
 				 return;
 			 linklength = mylink.getLengthInMiles();
@@ -92,14 +90,14 @@ public class Controller_IRM_Alinea extends _Controller {
 		
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+			com.relteq.sirius.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
 		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
-			for(ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(com.relteq.sirius.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
 				
 				if(s.getUsage()==null)
 					return;
@@ -135,7 +133,7 @@ public class Controller_IRM_Alinea extends _Controller {
 		// read parameters
 		double gain_in_mph = 50.0;
 		if(jaxbc.getParameters()!=null)
-			for(Parameter p : jaxbc.getParameters().getParameter())
+			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter())
 				if(p.getName().equals("gain"))
 					gain_in_mph = Double.parseDouble(p.getValue());
 
@@ -143,7 +141,7 @@ public class Controller_IRM_Alinea extends _Controller {
 		// normalize the gain and set target to critical density
 		double linklength;
 		if(usesensor){
-			 _Link mylink = mainlinesensor.getMyLink();
+			 Link mylink = mainlinesensor.getMyLink();
 			 if(mylink==null)
 				 return;
 			 linklength = mylink.getLengthInMiles();

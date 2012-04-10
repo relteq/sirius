@@ -5,10 +5,10 @@
 
 package com.relteq.sirius.simulator;
 
-final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
+final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 
-	protected _Scenario myScenario;
-	protected _Link myLink;
+	protected Scenario myScenario;
+	protected Link myLink;
 	protected double dtinseconds;			// not really necessary
 	protected int samplesteps;
 	protected Double1DVector capacity;		// [veh]
@@ -19,7 +19,7 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 		if(myScenario==null)
 			return;
 		this.myScenario = myScenario;

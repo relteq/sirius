@@ -5,9 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.Sensor;
-
-/** Simple implementation of {@link InterfaceSensor}.
+/** Base implementation of {@link InterfaceSensor}.
  * 
  * <p> This is the base class for all sensors contained in a scenario. 
  * It provides a full default implementation of <code>InterfaceSensor</code>
@@ -15,25 +13,26 @@ import com.relteq.sirius.jaxb.Sensor;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
+public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
    			
 	/** The scenario that contains this sensor. */
-	protected _Scenario myScenario;	
+	protected Scenario myScenario;	
 
 	/** Unique identifier.  */
 	protected String id;
 
 	/** Sensor type. */
-	protected _Sensor.Type myType;
+	protected Sensor.Type myType;
 	
 	/** Current link where the sensor is located. */
-	protected _Link myLink = null;
+	protected Link myLink = null;
 
+	/** Type of sensor. */
 	public static enum Type	{  
-		/** fixed point detector station, such as a loop detector station.*/	static_point,
-		/** fixed area detector, such as a camera or radar detector.	  */	static_area,
-		/** moving detector, such as a probe vehicle or cell phone.		  */	moving_point };
-	   	   	   		
+	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	static_point,
+	                                                            static_area,
+	/** see {@link ObjectFactory#createSensor_Floating} 	*/  moving_point };
+	   	   
 //	protected static enum DataSourceType {NULL, PeMSDataClearinghouse,
 //										        CaltransDBX,
 //										        BHL };
@@ -43,7 +42,7 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _Sensor(){}		  
+	protected Sensor(){}		  
 
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
@@ -95,7 +94,7 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/** The scenario that contains this sensor.
 	 * @return id String
 	 * */
-	public _Scenario getMyScenario() {
+	public Scenario getMyScenario() {
 		return myScenario;
 	}
 	
@@ -109,7 +108,7 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/** Sensor type. 
 	 * @return type _Sensor.Type
 	 * */
-	public _Sensor.Type getMyType() {
+	public Sensor.Type getMyType() {
 		return myType;
 	}
 
@@ -117,7 +116,7 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	 * <p> This value may change in time if the sensor is mobile.
 	 * @return link  _Link
 	 * */
-	public _Link getMyLink() {
+	public Link getMyLink() {
 		return myLink;
 	}
 
@@ -126,7 +125,7 @@ public abstract class _Sensor implements InterfaceComponent,InterfaceSensor {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
-	protected final void populateFromJaxb(_Scenario myScenario,Sensor s,_Sensor.Type myType){
+	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Sensor s,Sensor.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.id = s.getId();

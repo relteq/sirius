@@ -7,18 +7,18 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-/** Node model.
+/** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class _Node extends com.relteq.sirius.jaxb.Node {
+public final class Node extends com.relteq.sirius.jaxb.Node {
 		   
-	/** @y.exclude */ 	protected _Network myNetwork;
+	/** @y.exclude */ 	protected Network myNetwork;
 	// /** @y.exclude */ 	protected _Node.Type myType;
 
 	// network references
-	/** @y.exclude */ 	protected _Link [] output_link;
-	/** @y.exclude */ 	protected _Link [] input_link;
+	/** @y.exclude */ 	protected Link [] output_link;
+	/** @y.exclude */ 	protected Link [] input_link;
 	
 	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
 	/** @y.exclude */ 	protected Double3DMatrix splitratio;
@@ -62,7 +62,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _Node(){}
+	protected Node(){}
 							  
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -124,7 +124,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
     
 	/** @y.exclude */ 	
-	protected void populate(_Network myNetwork) {
+	protected void populate(Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
 		this.myNetwork = myNetwork;
@@ -139,7 +139,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		nOut = 0;
 		if(getOutputs()!=null){
 			nOut = getOutputs().getOutput().size();
-			output_link = new _Link[nOut];
+			output_link = new Link[nOut];
 			for(int i=0;i<nOut;i++){
 				com.relteq.sirius.jaxb.Output output = getOutputs().getOutput().get(i);
 				output_link[i] = myNetwork.getLinkWithId(output.getLinkId());
@@ -149,7 +149,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 		nIn = 0;
 		if(getInputs()!=null){
 			nIn = getInputs().getInput().size();
-			input_link = new _Link[nIn];
+			input_link = new Link[nIn];
 			for(int i=0;i<nIn;i++){
 				com.relteq.sirius.jaxb.Input input = getInputs().getInput().get(i);
 				input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
@@ -186,7 +186,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 			return true;
 		
 		if(output_link!=null)
-			for(_Link link : output_link){
+			for(Link link : output_link){
 				if(link==null){
 					SiriusErrorLog.addErrorMessage("Incorrect output link id.");
 					return false;
@@ -194,7 +194,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 			}
 
 		if(input_link!=null)
-			for(_Link link : input_link){
+			for(Link link : input_link){
 				if(link==null){
 					SiriusErrorLog.addErrorMessage("Incorrect input link id.");
 					return false;
@@ -640,7 +640,7 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 
 	/** network that containts this node */ 	
-	public _Network getMyNetwork() {
+	public Network getMyNetwork() {
 		return myNetwork;
 	}
 	
@@ -650,12 +650,12 @@ public final class _Node extends com.relteq.sirius.jaxb.Node {
 //	}
     
     /** List of links exiting this node */ 
-    public _Link[] getOutput_link() {
+    public Link[] getOutput_link() {
 		return output_link;
 	}
 
     /** List of links entering this node */ 
-	public _Link[] getInput_link() {
+	public Link[] getInput_link() {
 		return input_link;
 	}
 

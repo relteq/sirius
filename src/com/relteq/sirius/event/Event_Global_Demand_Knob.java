@@ -1,11 +1,10 @@
 package com.relteq.sirius.event;
 
-import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator._Event;
-import com.relteq.sirius.simulator._Scenario;
+import com.relteq.sirius.simulator.Event;
+import com.relteq.sirius.simulator.Scenario;
 
-public class Event_Global_Demand_Knob extends _Event {
+public class Event_Global_Demand_Knob extends Event {
 
 	protected boolean resetToNominal;
 	protected Double newknob;
@@ -17,7 +16,7 @@ public class Event_Global_Demand_Knob extends _Event {
 	public Event_Global_Demand_Knob(){
 	}
 	
-	public Event_Global_Demand_Knob(_Scenario myScenario,double newknob) {
+	public Event_Global_Demand_Knob(Scenario myScenario,double newknob) {
 		this.myScenario = myScenario;
 		this.newknob = newknob;
 	}
@@ -28,7 +27,7 @@ public class Event_Global_Demand_Knob extends _Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		Event jaxbe = (Event) jaxbobject;
+		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
 		this.resetToNominal = jaxbe.isResetToNominal();
 		if(jaxbe.getKnob()!=null)
 			newknob = jaxbe.getKnob().getValue().doubleValue();

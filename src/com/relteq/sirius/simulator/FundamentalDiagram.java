@@ -7,10 +7,10 @@ package com.relteq.sirius.simulator;
 
 import java.util.Random;
 
-final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
+final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
 
 	//protected _Scenario myScenario;
-	protected _Link myLink;
+	protected Link myLink;
 	protected double lanes;
 	protected Double _densityJam;     		// [veh] 
 	protected Double _capacity_nominal;   	// [veh] 
@@ -25,7 +25,9 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 	// construction 
 	/////////////////////////////////////////////////////////////////////
 
-	public _FundamentalDiagram(_Link myLink){
+	public FundamentalDiagram(){};
+	
+	public FundamentalDiagram(Link myLink){
 		if(myLink==null)
 			return;
 		this.myLink = myLink;
@@ -115,7 +117,7 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
 	}
 
  	// copy per lane parameters from _FundamentalDiagram 
-	protected void copyfrom(_FundamentalDiagram that){
+	protected void copyfrom(FundamentalDiagram that){
 
 		if(that==null)
 			return;
@@ -193,7 +195,7 @@ final class _FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagra
         
 	}
 	
-	protected void reset(_Scenario.UncertaintyType uncertaintyModel){
+	protected void reset(Scenario.UncertaintyType uncertaintyModel){
 	
 		Random random = myLink.myNetwork.myScenario.random;
 			

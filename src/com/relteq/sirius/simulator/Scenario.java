@@ -14,9 +14,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import com.relteq.sirius.jaxb.*;
-
-/** This class provides methods for loading, manipulating, and running scenarios. 
+/** Load, manipulate, and run scenarios. 
  * <p>
  * A scenario is a collection of,
  * <ul>
@@ -38,20 +36,20 @@ import com.relteq.sirius.jaxb.*;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
-public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
+public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
 	/** @y.exclude */	protected Random random = new Random();
-	/** @y.exclude */	protected _Scenario.UncertaintyType uncertaintyModel;
+	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
 	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
 	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
 	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
 	/** @y.exclude */	protected double simdtinhours;			// [hr]  simulation time step 	
 	/** @y.exclude */	protected boolean scenariolocked=false;		// true when the simulation is running
-	/** @y.exclude */	protected _ControllerSet _controllerset = new _ControllerSet();
-	/** @y.exclude */	protected _EventSet _eventset = new _EventSet();	// holds time sorted list of events
+	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
+	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events
 	/** @y.exclude */	protected static enum ModeType {  normal, 
 								    					  warmupFromZero , 
 								    					  warmupFromIC };
@@ -63,7 +61,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _Scenario(){}
+	protected Scenario(){}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -79,33 +77,33 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// network list
 		if(getNetworkList()!=null)
-			for( Network network : getNetworkList().getNetwork() )
-				((_Network) network).populate(this);
+			for( com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork() )
+				((Network) network).populate(this);
 	
 		// split ratio profile set (must follow network)
 		if(getSplitRatioProfileSet()!=null)
-			((_SplitRatioProfileSet) getSplitRatioProfileSet()).populate(this);
+			((SplitRatioProfileSet) getSplitRatioProfileSet()).populate(this);
 		
 		// boundary capacities (must follow network)
 		if(getDownstreamBoundaryCapacitySet()!=null)
-			for( CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile() )
-				((_CapacityProfile) capacityProfile).populate(this);
+			for( com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile() )
+				((CapacityProfile) capacityProfile).populate(this);
 
 		if(getDemandProfileSet()!=null)
-			((_DemandProfileSet) getDemandProfileSet()).populate(this);
+			((DemandProfileSet) getDemandProfileSet()).populate(this);
 		
 		// fundamental diagram profiles 
 		if(getFundamentalDiagramProfileSet()!=null)
-			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				((_FundamentalDiagramProfile) fd).populate(this);
+			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+				((FundamentalDiagramProfile) fd).populate(this);
 		
 		// initial density profile 
 		if(getInitialDensityProfile()!=null)
-			((_InitialDensityProfile) getInitialDensityProfile()).populate(this);
+			((InitialDensityProfile) getInitialDensityProfile()).populate(this);
 		
 		// initialize controllers and events
-		_controllerset.populate(this);
-		_eventset.populate(this);
+		controllerset.populate(this);
+		eventset.populate(this);
 		
 	}
 
@@ -117,30 +115,30 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @throws SiriusException 
 	 * @y.exclude
 	 */
-	protected boolean reset(_Scenario.ModeType simulationMode) throws SiriusException {
+	protected boolean reset(Scenario.ModeType simulationMode) throws SiriusException {
 		
 		// reset the clock
 		clock.reset();
 		
 		// reset network
-		for(Network network : getNetworkList().getNetwork())
-			((_Network)network).reset(simulationMode);
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+			((Network)network).reset(simulationMode);
 		
 		// reset demand profiles
 		if(getDemandProfileSet()!=null)
-			((_DemandProfileSet)getDemandProfileSet()).reset();
+			((DemandProfileSet)getDemandProfileSet()).reset();
 
 		// reset fundamental diagrams
 		if(getFundamentalDiagramProfileSet()!=null)
-			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				((_FundamentalDiagramProfile)fd).reset();
+			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+				((FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
 		global_control_on = true;
-		_controllerset.reset();
+		controllerset.reset();
 
 		// reset events
-		_eventset.reset();
+		eventset.reset();
 		
 		return true;
 		
@@ -154,29 +152,29 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
         // sample profiles .............................	
     	if(getDownstreamBoundaryCapacitySet()!=null)
-        	for(CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
-        		((_CapacityProfile) capacityProfile).update();
+        	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+        		((CapacityProfile) capacityProfile).update();
 
     	if(getDemandProfileSet()!=null)
-    		((_DemandProfileSet)getDemandProfileSet()).update();
+    		((DemandProfileSet)getDemandProfileSet()).update();
 
     	if(getSplitRatioProfileSet()!=null)
-    		((_SplitRatioProfileSet) getSplitRatioProfileSet()).update();        		
+    		((SplitRatioProfileSet) getSplitRatioProfileSet()).update();        		
 
     	if(getFundamentalDiagramProfileSet()!=null)
-        	for(FundamentalDiagramProfile fdProfile : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-        		((_FundamentalDiagramProfile) fdProfile).update();
+        	for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdProfile : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+        		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update controllers
     	if(global_control_on)
-    		_controllerset.update();
+    		controllerset.update();
 
     	// update events
-    	_eventset.update();
+    	eventset.update();
     	
         // update the network state......................
-		for(Network network : getNetworkList().getNetwork())
-			((_Network) network).update();
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+			((Network) network).update();
         
 	}
 
@@ -189,7 +187,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
 	 * 
 	 */
-	protected _Network getNetworkWithId(String id){
+	protected Network getNetworkWithId(String id){
 		if(getNetworkList()==null)
 			return null;
 		if(getNetworkList().getNetwork()==null)
@@ -197,11 +195,11 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(id==null && getNetworkList().getNetwork().size()>1)
 			return null;
 		if(id==null && getNetworkList().getNetwork().size()==1)
-			return (_Network) getNetworkList().getNetwork().get(0);
+			return (Network) getNetworkList().getNetwork().get(0);
 		id.replaceAll("\\s","");
-		for(Network network : getNetworkList().getNetwork()){
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork()){
 			if(network.getId().equals(id))
-				return (_Network) network;
+				return (Network) network;
 		}
 		return null;
 	}
@@ -211,7 +209,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	public Integer [] getVehicleTypeIndices(VehicleTypeOrder vtypeorder){
+	public Integer [] getVehicleTypeIndices(com.relteq.sirius.jaxb.VehicleTypeOrder vtypeorder){
 		
 		Integer [] vehicletypeindex;
 		
@@ -245,7 +243,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		for(i=0;i<numTypesInOrder;i++){
 			String vtordername = vtypeorder.getVehicleType().get(i).getName();
-			List<VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			List<com.relteq.sirius.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
 			for(j=0;j<settingsname.size();j++){
 				if(settingsname.get(j).getName().equals(vtordername)){
 					vehicletypeindex[i] =  j;
@@ -261,8 +259,8 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// validate network
 		if( getNetworkList()!=null)
-			for(Network network : getNetworkList().getNetwork())
-				if(!((_Network)network).validate()){
+			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+				if(!((Network)network).validate()){
 					SiriusErrorLog.addErrorMessage("Network validation failure.");
 					return false;
 				}
@@ -278,36 +276,36 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacitySet()!=null)
-			for(CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
-				if(!((_CapacityProfile)capacityProfile).validate()){
+			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+				if(!((CapacityProfile)capacityProfile).validate()){
 					SiriusErrorLog.addErrorMessage("DownstreamBoundaryCapacitySet validation failure.");
 					return false;
 				}
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
-			if(!((_DemandProfileSet)getDemandProfileSet()).validate()){
+			if(!((DemandProfileSet)getDemandProfileSet()).validate()){
 				SiriusErrorLog.addErrorMessage("DemandProfileSet validation failure.");
 				return false;
 			}
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
-			if(!((_SplitRatioProfileSet)getSplitRatioProfileSet()).validate()){
+			if(!((SplitRatioProfileSet)getSplitRatioProfileSet()).validate()){
 				SiriusErrorLog.addErrorMessage("SplitRatioProfileSet validation failure.");
 				return false;
 			}
 
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
-			for(FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				if(!((_FundamentalDiagramProfile)fd).validate()){
+			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+				if(!((FundamentalDiagramProfile)fd).validate()){
 					SiriusErrorLog.addErrorMessage("FundamentalDiagramProfileSet validation failure.");
 					return false;
 				}
 
 		// validate controllers
-		if(!_controllerset.validate())
+		if(!controllerset.validate())
 			return false;
 
 		return true;
@@ -348,8 +346,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * <p> This function moves the simulation forward <i>n</i> time steps and stops.
 	 * The first parameter provides the number of time steps to advance. The second parameter
 	 * is a boolean that resets the clock and the scenario.  
-	 * @param n Number of seconds to advance.
-	 * @param fromstart <code>true</code> to reset the scenario to the initial density profile before advancing, <code>false</code> otherwise. 
+	 * @param nsec Number of seconds to advance.
 	 * @throws SiriusException 
 	 */
 	public void advanceNSeconds(double nsec) throws SiriusException{	
@@ -502,10 +499,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
-	public _Controller getControllerWithId(String id){
-		if(_controllerset==null)
+	public Controller getControllerWithId(String id){
+		if(controllerset==null)
 			return null;
-		for(_Controller c : _controllerset.get_Controllers()){
+		for(Controller c : controllerset.get_Controllers()){
 			if(c.id.equals(id))
 				return c;
 		}
@@ -516,10 +513,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id Id of the event.
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
-	public _Event getEventWithId(String id){
-		if(_eventset==null)
+	public Event getEventWithId(String id){
+		if(eventset==null)
 			return null;
-		for(_Event e : _eventset._sortedevents){
+		for(Event e : eventset.sortedevents){
 			if(e.getId().equals(id))
 				return e;
 		}
@@ -532,13 +529,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id String id of the node. 
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
-	public _Node getNodeWithCompositeId(String network_id,String id){
+	public Node getNodeWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
 			return null;
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			if(getNetworkList().getNetwork().size()==1)
-				return ((_Network) getNetworkList().getNetwork().get(0)).getNodeWithId(id);
+				return ((Network) getNetworkList().getNetwork().get(0)).getNodeWithId(id);
 			else
 				return null;
 		else	
@@ -551,13 +548,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public _Link getLinkWithCompositeId(String network_id,String id){
+	public Link getLinkWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
 			return null;
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			if(getNetworkList().getNetwork().size()==1)
-				return ((_Network) getNetworkList().getNetwork().get(0)).getLinkWithId(id);
+				return ((Network) getNetworkList().getNetwork().get(0)).getLinkWithId(id);
 			else
 				return null;
 		else	
@@ -570,13 +567,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id String id of the sensor. 
 	 * @return Reference to the sensor if it exists, <code>null</code> otherwise
 	 */
-	public _Sensor getSensorWithCompositeId(String network_id,String id){
+	public Sensor getSensorWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
 			return null;
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			if(getNetworkList().getNetwork().size()==1)
-				return ((_Network) getNetworkList().getNetwork().get(0)).getSensorWithId(id);
+				return ((Network) getNetworkList().getNetwork().get(0)).getSensorWithId(id);
 			else
 				return null;
 		else	
@@ -589,13 +586,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param id String id of the signal. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public _Signal getSignalWithCompositeId(String network_id,String id){
+	public Signal getSignalWithCompositeId(String network_id,String id){
 		if(getNetworkList()==null)
 			return null;
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			if(getNetworkList().getNetwork().size()==1)
-				return ((_Network) getNetworkList().getNetwork().get(0)).getSignalWithId(id);
+				return ((Network) getNetworkList().getNetwork().get(0)).getSignalWithId(id);
 			else
 				return null;
 		else	
@@ -608,13 +605,13 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param node_id String id of the node under the signal. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public _Signal getSignalForNodeId(String network_id,String node_id){
+	public Signal getSignalForNodeId(String network_id,String node_id){
 		if(getNetworkList()==null)
 			return null;
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			if(getNetworkList().getNetwork().size()==1)
-				return ((_Network) getNetworkList().getNetwork().get(0)).getSignalWithNodeId(node_id);
+				return ((Network) getNetworkList().getNetwork().get(0)).getSignalWithNodeId(node_id);
 			else
 				return null;
 		else	
@@ -628,7 +625,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param C The controller
 	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
 	 */
-	public boolean addController(_Controller C){
+	public boolean addController(Controller C){
 		if(scenariolocked)
 			return false;
 		if(C==null)
@@ -641,7 +638,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// add
-		_controllerset._controllers.add(C);
+		controllerset.controllers.add(C);
 		
 		return true;
 	}
@@ -652,7 +649,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param E The event
 	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
 	 */
-	public boolean addEvent(_Event E){
+	public boolean addEvent(Event E){
 		if(scenariolocked)
 			return false;
 		if(E==null)
@@ -661,7 +658,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// add event to list
-		_eventset.addEvent(E);
+		eventset.addEvent(E);
 		
 		return true;
 	}
@@ -673,7 +670,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param S The sensor
 	 * @return <code>true</code> if the sensor was successfully added, <code>false</code> otherwise. 
 	 */
-	public boolean addSensor(_Sensor S){
+	public boolean addSensor(Sensor S){
 		if(S==null)
 			return false;
 		if(S.myType==null)
@@ -688,19 +685,19 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// add sensor to list
-		S.myLink.myNetwork._sensorlist._sensors.add(S);
+		S.myLink.myNetwork.sensorlist.sensors.add(S);
 		
 		return true;
 	}
 
 	public double [][] getInitialDensityForNetwork(String network_id){
 				
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			return null;
 		
 		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		_InitialDensityProfile initprofile = (_InitialDensityProfile) getInitialDensityProfile();
+		InitialDensityProfile initprofile = (InitialDensityProfile) getInitialDensityProfile();
 
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -709,7 +706,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 					density[i][j] = 0d;
 			}
 			else{
-				Link link = network.getLinkList().getLink().get(i);
+				com.relteq.sirius.jaxb.Link link = network.getLinkList().getLink().get(i);
 				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
 				for(j=0;j<numVehicleTypes;j++)
 					density[i][j] = init_density[j];
@@ -720,7 +717,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	
 	public double [][] getDensityForNetwork(String network_id){
 		
-		_Network network = getNetworkWithId(network_id);
+		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			return null;
 		
@@ -728,7 +725,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
-			_Link link = (_Link) network.getLinkList().getLink().get(i);
+			Link link = (Link) network.getLinkList().getLink().get(i);
 			Double [] linkdensity = link.getDensityInVeh();
 			for(j=0;j<numVehicleTypes;j++)
 				density[i][j] = linkdensity[j];
@@ -781,7 +778,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			OutputWriter outputwriter  = null;
 			
 			// open output files
-	        if( writefiles && param.simulationMode.compareTo(_Scenario.ModeType.normal)==0 ){
+	        if( writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0 ){
 	        	outputwriter = new OutputWriter(this);
 				try {
 					outputwriter.open(param.outputfileprefix,String.format("%d",i));
@@ -804,10 +801,10 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			
             // close output files
 	        if(writefiles){
-	        	if(param.simulationMode.compareTo(_Scenario.ModeType.normal)==0)
+	        	if(param.simulationMode.compareTo(Scenario.ModeType.normal)==0)
 		        	outputwriter.close();
 				// or save scenario (in warmup mode)
-		        if(param.simulationMode.compareTo(_Scenario.ModeType.warmupFromIC)==0 || param.simulationMode.compareTo(_Scenario.ModeType.warmupFromZero)==0 ){
+		        if(param.simulationMode.compareTo(Scenario.ModeType.warmupFromIC)==0 || param.simulationMode.compareTo(Scenario.ModeType.warmupFromZero)==0 ){
 		    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
 		    		//	    		Utils.save(scenario, outfile);
 		        }
@@ -832,7 +829,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws ....
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(_Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -871,7 +868,7 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
 		public int outsteps;				// [-] number of simulation steps per output step
-		public _Scenario.ModeType simulationMode;
+		public Scenario.ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(String outputfileprefix,double timestart,double timeend,double outdt,double simdtinseconds) throws SiriusException{
@@ -894,28 +891,28 @@ public final class _Scenario extends com.relteq.sirius.jaxb.Scenario {
 			
 	        double time_ic;
 	        if(getInitialDensityProfile()!=null)
-	        	time_ic = ((_InitialDensityProfile)getInitialDensityProfile()).timestamp;
+	        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
 	        else
 	        	time_ic = 0.0;
 	       
 			if(timestart==time_ic){
-				simulationMode = _Scenario.ModeType.normal;
+				simulationMode = Scenario.ModeType.normal;
 			}
 			else{
 				// it is a warmup. we need to decide on start and end times
 				timeend = timestart;
 				if(time_ic<timestart){	// go from ic to timestart
 					timestart = time_ic;
-					simulationMode = _Scenario.ModeType.warmupFromIC;
+					simulationMode = Scenario.ModeType.warmupFromIC;
 				}
 				else{							// start at earliest demand profile
 					timestart = Double.POSITIVE_INFINITY;
 					if(getDemandProfileSet()!=null)
-						for(DemandProfile D : getDemandProfileSet().getDemandProfile())
+						for(com.relteq.sirius.jaxb.DemandProfile D : getDemandProfileSet().getDemandProfile())
 							timestart = Math.min(timestart,D.getStartTime().doubleValue());
 					else
 						timestart = 0.0;
-					simulationMode = _Scenario.ModeType.warmupFromZero;
+					simulationMode = Scenario.ModeType.warmupFromZero;
 				}		
 			}
 			
