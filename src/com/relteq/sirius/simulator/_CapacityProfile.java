@@ -28,15 +28,6 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		isdone = false;
 		
-		// read start time, convert to stepinitial
-		double starttime;
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();
-		else
-			starttime = 0f;
-
-		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
-		
 		// read capacity and convert to vehicle units
 		String str = getContent();
 		if(!str.isEmpty()){
@@ -81,6 +72,16 @@ final class _CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 
 	protected void reset() {
 		isdone = false;
+		
+		// read start time, convert to stepinitial
+		double starttime;
+		if( getStartTime()!=null)
+			starttime = getStartTime().floatValue();
+		else
+			starttime = 0f;
+
+		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+
 	}
 	
 	protected void update() {

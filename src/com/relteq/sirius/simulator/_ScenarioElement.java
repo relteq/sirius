@@ -21,12 +21,14 @@ public final class _ScenarioElement extends ScenarioElement {
 	/** @y.exclude 	protected String id; */
 	/** @y.exclude */	protected Object reference;
 
-	public static enum Type {  link, 
-							   node, 
-							   controller,
-							   sensor,
-							   event,
-							   signal };
+	/** Type of scenario element. */
+	public static enum Type {  
+	/** see {@link _Link} 		*/ link, 
+	/** see {@link _Node} 		*/ node, 
+	/** see {@link _Controller} */ controller,
+	/** see {@link _Sensor} 	*/ sensor,
+	/** see {@link _Event} 		*/ event,
+	/** see {@link _Signal} 	*/ signal };
 							   
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
