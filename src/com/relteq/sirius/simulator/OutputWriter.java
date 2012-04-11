@@ -71,7 +71,7 @@ final class OutputWriter {
 	protected void recordstate(double time,boolean exportflows,int outsteps) throws SiriusException {
 		boolean firststep = 0 == myScenario.clock.getCurrentstep();
 		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
-		String dt = String.format(SEC_FORMAT, firststep ? .0d : myScenario.getOutDt());
+		String dt = String.format(SEC_FORMAT, firststep ? .0d : myScenario.getSimDtInSeconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
