@@ -685,7 +685,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// add sensor to list
-		S.myLink.myNetwork.sensorlist.sensors.add(S);
+		S.myLink.myNetwork.getSensorList().getSensor().add(S);
 		
 		return true;
 	}
@@ -771,6 +771,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         scenariolocked = true;	
 	
 	}
+	
+//	/** Load sensor data for all sensors in the scenario.
+//	 */
+//	public void loadSensorData() throws SiriusException{
+//		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+//			((Network) network).loadSensorData();
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// private

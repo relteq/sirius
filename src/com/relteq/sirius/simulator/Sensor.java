@@ -13,13 +13,13 @@ package com.relteq.sirius.simulator;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
+public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceComponent,InterfaceSensor {
    			
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
 
 	/** Unique identifier.  */
-	protected String id;
+	//protected String id;
 
 	/** Sensor type. */
 	protected Sensor.Type myType;
@@ -42,7 +42,8 @@ public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected Sensor(){}		  
+	protected Sensor(){
+	}		  
 
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
@@ -101,9 +102,9 @@ public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
 	/** Unique identifier. 
 	 * @return id String
 	 * */
-	public String getId() {
-		return id;
-	}
+//	public String getId() {
+//		return id;
+//	}
 
 	/** Sensor type. 
 	 * @return type _Sensor.Type
@@ -120,6 +121,12 @@ public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
 		return myLink;
 	}
 
+	/** Load sensor data from its data source.
+	 */
+	public void loadData() throws SiriusException{
+
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// populate
 	/////////////////////////////////////////////////////////////////////
@@ -131,6 +138,26 @@ public abstract class Sensor implements InterfaceComponent,InterfaceSensor {
 		this.id = s.getId();
 		if(s.getLinkReference()!=null)
 			myLink = myScenario.getLinkWithCompositeId(s.getLinkReference().getNetworkId(),s.getLinkReference().getId());
+	}
+
+	@Override
+	public void populate(Object jaxbobject) {
+		return;
+	}
+
+	@Override
+	public boolean validate() {
+		return true;
+	}
+
+	@Override
+	public void reset() throws SiriusException {
+		return;
+	}
+
+	@Override
+	public void update() throws SiriusException {
+		return;
 	}
 	
 }

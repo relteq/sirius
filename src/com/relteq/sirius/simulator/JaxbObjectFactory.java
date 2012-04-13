@@ -68,11 +68,6 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.SensorList createSensorList() {
-		return new SensorList();
-	}
-
-	@Override
 	public com.relteq.sirius.jaxb.Signal createSignal() {
 		return new Signal();
 	}
@@ -86,5 +81,10 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 	public com.relteq.sirius.jaxb.SplitRatioProfileSet createSplitRatioProfileSet() {
 		return new SplitRatioProfileSet();
 	}
-	
+
+	@Override
+	public com.relteq.sirius.jaxb.Sensor createSensor() {
+		return new Sensor();
+	}
+
 }

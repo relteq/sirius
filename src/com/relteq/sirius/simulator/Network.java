@@ -22,7 +22,6 @@ import java.util.List;
 public final class Network extends com.relteq.sirius.jaxb.Network {
 
 	protected Scenario myScenario;
-	protected SensorList sensorlist = new SensorList();
 	protected SignalList signallist = new SignalList();
 	
 	/////////////////////////////////////////////////////////////////////
@@ -41,11 +40,17 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 			for (com.relteq.sirius.jaxb.Link link : getLinkList().getLink())
 				((Link) link).populate(this);
 		
-		sensorlist.populate(this);
-		signallist.populate(myScenario,this);
+		// replace jaxb.Sensor with simulator.Sensor
+		if(getSensorList()!=null)
+			for(int i=0;i<getSensorList().getSensor().size();i++){
+				com.relteq.sirius.jaxb.Sensor sensor = getSensorList().getSensor().get(i);
+				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
+				getSensorList().getSensor().set(i,ObjectFactory.createSensorFromJaxb(myScenario,sensor,myType));
+			}
 		
+		signallist.populate(myScenario,this);	
 	}
-
+	
 	protected boolean validate() {
 
 		if(myScenario.getSimDtInSeconds()<=0){
@@ -70,9 +75,12 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				}
 
 		// sensor list
-		if(!sensorlist.validate())
-			return false;
-
+		if(getSensorList()!=null)
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				if( !((Sensor) sensor).validate() ){
+					SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
+					return false;
+				}
 
 		// signal list
 		if(!signallist.validate())
@@ -101,9 +109,10 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 			}
 
 		// sensor list
-		sensorlist.reset();
-
-		
+		if(getSensorList()!=null)
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor) sensor).reset();
+			
 		// signal list
 		signallist.reset();
 		
@@ -122,7 +131,9 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
         }
         
         // update sensor readings .......................
-        sensorlist.update();
+		if(getSensorList()!=null)
+			for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor)sensor).update();
         
         // update signals ...............................
         signallist.update();
@@ -148,11 +159,14 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	 * @return The list of sensors located in the link.
 	 */
 	public ArrayList<Sensor> getSensorWithLinkId(String linkid){
+		if(getSensorList()==null)
+			return null;
 		ArrayList<Sensor> result = new ArrayList<Sensor>();
-		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.myLink!=null){
-				if(sensor.myLink.getId().equals(linkid)){
-					result.add(sensor);
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			Sensor s = (Sensor) sensor;
+			if(s.myLink!=null){
+				if(s.myLink.getId().equals(linkid)){
+					result.add(s);
 					break;
 				}	
 			}
@@ -165,10 +179,13 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	 * @return The first sensor found to be contained in the link. 
 	 */
 	public Sensor getFirstSensorWithLinkId(String linkid){
-		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.myLink!=null){
-				if(sensor.myLink.getId().equals(linkid)){
-					return sensor;
+		if(getSensorList()==null)
+			return null;
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			Sensor s = (Sensor) sensor;
+			if(s.myLink!=null){
+				if(s.myLink.getId().equals(linkid)){
+					return s;
 				}
 			}
 		}
@@ -180,10 +197,12 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(String id){
+		if(getSensorList()==null)
+			return null;
 		id.replaceAll("\\s","");
-		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.id.equals(id))
-				return sensor;
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			if(sensor.getId().equals(id))
+				return (Sensor) sensor;
 		}
 		return null;
 	}
