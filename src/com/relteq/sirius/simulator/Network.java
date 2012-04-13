@@ -22,7 +22,6 @@ import java.util.List;
 public final class Network extends com.relteq.sirius.jaxb.Network {
 
 	protected Scenario myScenario;
-	protected SignalList signallist = new SignalList();
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -48,7 +47,10 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				getSensorList().getSensor().set(i,ObjectFactory.createSensorFromJaxb(myScenario,sensor,myType));
 			}
 		
-		signallist.populate(myScenario,this);	
+		if(getSignalList()!=null)
+			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal) signal).populate(myScenario,this);
+		
 	}
 	
 	protected boolean validate() {
@@ -83,16 +85,12 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				}
 
 		// signal list
-		if(!signallist.validate())
-			return false;
-		
-//		// signal list
-//		if(getSignalList()!=null)
-//			for (Signal signal : getSignalList().getSignal())
-//				if( !((_Signal)signal).validate() ){
-//					SiriusErrorLog.addErrorMessage("Signal validation failure.");
-//					return false;
-//				}
+		if(getSignalList()!=null)
+			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				if( !((Signal) signal).validate() ){
+					SiriusErrorLog.addErrorMessage("Signal validation failure, signal " + signal.getId());
+					return false;
+				}
 
 		return true;
 	}
@@ -114,12 +112,10 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				((Sensor) sensor).reset();
 			
 		// signal list
-		signallist.reset();
-		
-//		if(getSignalList()!=null)
-//			for (Signal signal : getSignalList().getSignal())
-//				((_Signal)signal).reset();
-				
+		if(getSignalList()!=null)
+			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal) signal).reset();
+						
 	}
 
 	protected void update() throws SiriusException {
@@ -136,11 +132,10 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				((Sensor)sensor).update();
         
         // update signals ...............................
-        signallist.update();
-//        if(getSignalList()!=null)
-//	        for(Signal signal : getSignalList().getSignal())
-//	        	((_Signal)signal).update();
-        
+		if(getSignalList()!=null)
+			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal)signal).update();
+		        
         // update nodes: compute flows on links .........
         for(com.relteq.sirius.jaxb.Node node : getNodeList().getNode())
             ((Node)node).update();
@@ -212,10 +207,12 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	 * @return Signal object.
 	 */
 	public Signal getSignalWithId(String id){
+		if(getSignalList()==null)
+			return null;
 		id.replaceAll("\\s","");
-		for(Signal signal : signallist.signals){
+		for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal()){
 			if(signal.getId().equals(id))
-				return signal;
+				return (Signal) signal;
 		}
 		return null;
 	}
@@ -225,10 +222,12 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	 * @return Signal object if there is one. <code>null</code> otherwise. 
 	 */
 	public Signal getSignalWithNodeId(String node_id){
+		if(getSignalList()==null)
+			return null;
 		id.replaceAll("\\s","");
-		for(Signal signal : signallist.signals){
+		for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal()){
 			if(signal.getNodeId().equals(node_id))
-				return signal;
+				return (Signal)signal;
 		}
 		return null;
 	}
@@ -286,7 +285,6 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	/** Get the list of sensors in this network.
 	 * @return List of all sensors. 
 	 */
-
 	public List<com.relteq.sirius.jaxb.Sensor> getListOfSensors() {
 		if(getSensorList()==null)
 			return null;
@@ -296,10 +294,10 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	/** Get the list of signals in this network.
 	 * @return List of all signals. 
 	 */
-	public ArrayList<Signal> getListOfSignals() {
-		if(signallist==null)
+	public List<com.relteq.sirius.jaxb.Signal> getListOfSignals() {
+		if(getSignalList()==null)
 			return null;
-		return signallist.signals;
+		return getSignalList().getSignal();
 	}
 
 	/** Load sensor data for all sensors in the network.
