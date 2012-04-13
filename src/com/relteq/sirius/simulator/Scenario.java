@@ -690,6 +690,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
+	/** Get the initial density state for the network with given id.
+	 * @param nework_id String id of the network
+	 * @return A two-dimensional array of doubles where the first dimension is the
+	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+	 */
 	public double [][] getInitialDensityForNetwork(String network_id){
 				
 		Network network = getNetworkWithId(network_id);
@@ -714,7 +720,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return density;                         
 	}
-	
+
+	/** Get the current density state for the network with given id.
+	 * @param nework_id String id of the network
+	 * @return A two-dimensional array of doubles where the first dimension is the
+	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+	 */
 	public double [][] getDensityForNetwork(String network_id){
 		
 		Network network = getNetworkWithId(network_id);
@@ -734,7 +746,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}
 	
-	// used only if the scenario is to be run with advanceNSeconds
+	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
+	 * 
+	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
+	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
+	 * rolling back all profiles and clocks. 
+	 */
 	public void initialize_run() throws SiriusException{
 
 		if(scenariolocked)
