@@ -88,6 +88,14 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 		return Double.NaN;
 	}
 	
+	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVeh()} 
+	 * @return <code>Double.NaN</code>
+	 * */
+	@Override
+	public double getTotalDensityInVeh() {
+		return Double.NaN;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////

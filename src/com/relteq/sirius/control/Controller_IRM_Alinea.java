@@ -12,13 +12,13 @@ public class Controller_IRM_Alinea extends Controller {
 	private Link mainlinelink = null;
 	private Sensor mainlinesensor = null;
 	private Sensor queuesensor = null;
-	private double gain_in_mph;				// [mph]
+	private double gain_normalized;			// [-]
 	
 	private boolean targetdensity_given; 	// true if the user specifies the target density in the configuration file.
 											// In this case the this value is used and kept constant
 											// Otherwise it is assigned the critical density, which may change with fd profile.  
 	
-	private double targetdensity;			// [veh/mile/lane]
+	private double targetvehicles;			// [veh/mile/lane]
 	private boolean usesensor;
 	
 	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
@@ -40,7 +40,6 @@ public class Controller_IRM_Alinea extends Controller {
 		this.mainlinelink 	= mainlinelink;
 		this.mainlinesensor = mainlinesensor;
 		this.queuesensor 	= queuesensor;
-		this.gain_in_mph 			= gain_in_mph;
 		
 		hasmainlinelink   = mainlinelink!=null;
 		hasmainlinesensor = mainlinesensor!=null;
@@ -57,6 +56,8 @@ public class Controller_IRM_Alinea extends Controller {
 		// need the sensor's link for target density
 		if(usesensor)
 			mainlinelink = mainlinesensor.getMyLink();
+		
+		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 		
 	}
 	
@@ -128,19 +129,27 @@ public class Controller_IRM_Alinea extends Controller {
 		if(usesensor)
 			mainlinelink = mainlinesensor.getMyLink();
 		
+		if(mainlinelink==null)
+			return;
+		
 		// read parameters
-		gain_in_mph = 50.0;
+		double gain_in_mph = 50.0;
 		targetdensity_given = false;
 		if(jaxbc.getParameters()!=null)
 			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
-				if(p.getName().equals("gain"))
+				if(p.getName().equals("gain")){
 					gain_in_mph = Double.parseDouble(p.getValue());
+				}
 
 				if(p.getName().equals("targetdensity")){
-					targetdensity = Double.parseDouble(p.getValue());
+					targetvehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
+					targetvehicles *= mainlinelink.get_Lanes()*mainlinelink.getLengthInMiles();		// now in [veh]
 					targetdensity_given = true;
 				}
-			}		
+			}	
+		
+		// normalize the gain
+		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 	}
 	
 	@Override
@@ -177,7 +186,7 @@ public class Controller_IRM_Alinea extends Controller {
 			return false;
 			
 		// negative gain
-		if(gain_in_mph<=0f)
+		if(gain_normalized<=0f)
 			return false;
 		
 		return true;
@@ -192,18 +201,19 @@ public class Controller_IRM_Alinea extends Controller {
 	public void update() {
 		
 		// get mainline density either from sensor or from link
-		double mainlinedensity;		// [vpm]
+		double mainlinevehicles;		// [veh]
 		if(usesensor)
-			mainlinedensity = mainlinesensor.getTotalDensityInVPM()*mainlinesensor.getMyLink().getLengthInMiles();
+			mainlinevehicles = mainlinesensor.getTotalDensityInVeh();
 		else
-			mainlinedensity = mainlinelink.getTotalDensityInVeh();
-		
+			mainlinevehicles = mainlinelink.getTotalDensityInVeh();
+				
 		// need to read target density each time if not given
 		if(!targetdensity_given)
-			targetdensity = mainlinelink.getDensityCriticalInVPMPL();
+			targetvehicles = mainlinelink.getDensityCriticalInVeh();
 		
 		// metering rate
-		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain_in_mph*(targetdensity*mainlinelink.get_Lanes()-mainlinedensity)*myScenario.getSimDtInHours();
+		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain_normalized*(targetvehicles-mainlinevehicles);
+
 	}
 
 	@Override

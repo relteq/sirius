@@ -54,6 +54,11 @@ public class SensorLoopStation extends Sensor {
 	}
 	
 	@Override
+	public double getTotalDensityInVeh() {
+		return myLink.getTotalDensityInVeh();
+	}
+	
+	@Override
 	public double getTotalDensityInVPM() {
 		return myLink.getTotalDensityInVeh()/myLink.getLengthInMiles();
 	}
