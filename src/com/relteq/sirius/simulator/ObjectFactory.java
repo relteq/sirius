@@ -300,8 +300,9 @@ public final class ObjectFactory {
         for(Controller controller : S.controllerset.controllers)
         	registersuccess &= controller.register();
         for(com.relteq.sirius.jaxb.Network network:S.getNetworkList().getNetwork())
-        	for(com.relteq.sirius.jaxb.Signal signal:network.getSignalList().getSignal())
-        		registersuccess &= ((Signal)signal).register();
+        	if(network.getSignalList()!=null)
+	        	for(com.relteq.sirius.jaxb.Signal signal:network.getSignalList().getSignal())
+	        		registersuccess &= ((Signal)signal).register();
         
         if(!registersuccess){
         	SiriusErrorLog.addErrorMessage("Controller registration failure.");
