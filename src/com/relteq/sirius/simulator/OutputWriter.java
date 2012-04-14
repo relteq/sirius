@@ -36,6 +36,7 @@ final class OutputWriter {
 			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + suffix + ".xml"), "utf-8");
 			xmlsw.writeStartDocument("utf-8", "1.0");
 			xmlsw.writeStartElement("scenario_output");
+			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
 			if (null != myScenario) try {
 				JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
