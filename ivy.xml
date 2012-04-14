@@ -3,8 +3,13 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 	<info organisation="com.relteq" module="sirius" status="integration"/>
-	<dependencies>
+	<configurations>
+		<conf name="build"/>
+		<conf name="test" extends="build" visibility="private"/>
+	</configurations>
+	<dependencies defaultconf="build" defaultconfmapping="build->*;test->*">
 		<dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2"/>
+		<dependency org="junit" name="junit" rev="4.5" conf="test"/>
 	</dependencies>
 </ivy-module>
 
