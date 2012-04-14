@@ -61,7 +61,7 @@ class OutputReader {
 						try {
 							jaxbc = JAXBContext.newInstance(com.relteq.sirius.jaxb.ObjectFactory.class);
 							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
-							unmrsh.setProperty("com.sun.xml.internal.bind.ObjectFactory", new _JaxbObjectFactory());
+							ObjectFactory.setObjectFactory(unmrsh, new _JaxbObjectFactory());
 							res.scenario = (_Scenario) unmrsh.unmarshal(xmlsr);
 						} catch (JAXBException exc) {
 							exc.printStackTrace();
