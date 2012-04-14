@@ -95,16 +95,16 @@
 			access="protected" 
 			destdir="${doc.dir}"
 			classpath="." 
-			sourcefiles="src/com/relteq/sirius/simulator/_Controller.java,
+			sourcefiles="src/com/relteq/sirius/simulator/Controller.java,
  			             src/com/relteq/sirius/simulator/ObjectFactory.java,
- 			             src/com/relteq/sirius/simulator/_Link.java,
- 			             src/com/relteq/sirius/simulator/_Node.java,
- 			             src/com/relteq/sirius/simulator/_Scenario.java,
+ 			             src/com/relteq/sirius/simulator/Link.java,
+ 			             src/com/relteq/sirius/simulator/Node.java,
+ 			             src/com/relteq/sirius/simulator/Scenario.java,
  			             src/com/relteq/sirius/simulator/SiriusStateTrajectory.java,
- 			             src/com/relteq/sirius/simulator/_ScenarioElement.java,
- 			             src/com/relteq/sirius/simulator/_Sensor.java,
- 			             src/com/relteq/sirius/simulator/_Signal.java,
-			             src/com/relteq/sirius/simulator/_Event.java" 
+ 			             src/com/relteq/sirius/simulator/ScenarioElement.java,
+ 			             src/com/relteq/sirius/simulator/Sensor.java,
+ 			             src/com/relteq/sirius/simulator/Signal.java,
+			             src/com/relteq/sirius/simulator/Event.java" 
 			sourcepath="src/com/relteq/sirius" >
 			<doclet 				
 				name="ydoc.doclets.YStandard"

@@ -1,15 +1,14 @@
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.LinkReference;
-import com.relteq.sirius.simulator._Signal.NEMA;
+import com.relteq.sirius.simulator.Signal.NEMA;
 
 public class SignalPhase {
 	
 	// references ....................................................
 	//private AbstractNodeComplex myNetwork;
-	protected _Node myNode;
-	protected _Signal mySignal;
-	protected _Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
+	protected Node myNode;
+	protected Signal mySignal;
+	protected Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
 	
@@ -22,7 +21,7 @@ public class SignalPhase {
 	// dual ring structure
 	protected int myRingGroup		= -1;
 	protected SignalPhase opposingPhase;
-	protected _Signal.NEMA myNEMA   = _Signal.NEMA.NULL;
+	protected Signal.NEMA myNEMA   = Signal.NEMA.NULL;
 	
 	// Basic timing parameters
 	protected float mingreen 			= 0f;
@@ -35,7 +34,7 @@ public class SignalPhase {
 	protected Clock bulbtimer;
 
 	// State
-	protected _Signal.BulbColor bulbcolor;
+	protected Signal.BulbColor bulbcolor;
 	
 	//protected int [] myControlIndex;
 
@@ -61,25 +60,25 @@ public class SignalPhase {
 
 	protected int numapproachloops = 0;	
 	
-	public SignalPhase(_Node myNode,_Signal mySignal,double dt){
+	public SignalPhase(Node myNode,Signal mySignal,double dt){
 		this.myNode = myNode;
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);
 	}
 	
-	protected final void populateFromJaxb(_Scenario myScenario,com.relteq.sirius.jaxb.Phase jaxbPhase){
+	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Phase jaxbPhase){
 	
 		int numlinks = jaxbPhase.getLinks().getLinkReference().size();
-		this.targetlinks = new _Link[numlinks];
+		this.targetlinks = new Link[numlinks];
 		for(int i=0;i<numlinks;i++){
-			LinkReference linkref = jaxbPhase.getLinks().getLinkReference().get(i);
+			com.relteq.sirius.jaxb.LinkReference linkref = jaxbPhase.getLinks().getLinkReference().get(i);
 			targetlinks[i] = myScenario.getLinkWithCompositeId(linkref.getNetworkId(),linkref.getId());
 		}
 		
 		if(jaxbPhase.getNema()!=null)
-			myNEMA = _Signal.String2NEMA(jaxbPhase.getNema().toString());
+			myNEMA = Signal.String2NEMA(jaxbPhase.getNema().toString());
 		else
-			myNEMA = _Signal.NEMA.NULL;
+			myNEMA = Signal.NEMA.NULL;
 		
 		if(jaxbPhase.getMinGreenTime()!=null)
 			this.mingreen = jaxbPhase.getMinGreenTime().floatValue();
@@ -164,7 +163,7 @@ public class SignalPhase {
 		permitopposinghold 	= true;
 		permithold			= true;
 
-		setPhaseColor(_Signal.BulbColor.RED);
+		setPhaseColor(Signal.BulbColor.RED);
 		bulbtimer.reset();
 		
 	}
@@ -182,7 +181,7 @@ public class SignalPhase {
 
 		
 		// myNEMA is valid
-		if(myNEMA.compareTo(_Signal.NEMA.NULL)==0)
+		if(myNEMA.compareTo(Signal.NEMA.NULL)==0)
 			return false;
 		
 		// numbers are positive
@@ -201,7 +200,7 @@ public class SignalPhase {
 			if(permissive)
 				return;
 			else{
-				setPhaseColor(_Signal.BulbColor.RED);
+				setPhaseColor(Signal.BulbColor.RED);
 				return;
 			}
 		}
@@ -217,12 +216,12 @@ public class SignalPhase {
 			// .............................................................................................
 			case GREEN:
 	
-				setPhaseColor(_Signal.BulbColor.GREEN);
+				setPhaseColor(Signal.BulbColor.GREEN);
 				permitopposinghold = false;
 	
 				// Force off 
 				if( forceoff_approved ){ 
-					setPhaseColor(_Signal.BulbColor.YELLOW);
+					setPhaseColor(Signal.BulbColor.YELLOW);
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;
@@ -235,7 +234,7 @@ public class SignalPhase {
 			// .............................................................................................
 			case YELLOW:
 				
-				setPhaseColor(_Signal.BulbColor.YELLOW);
+				setPhaseColor(Signal.BulbColor.YELLOW);
 				permitopposinghold = false;
 	
 				// set permitopposinghold one step ahead of time so that other phases update correctly next time.
@@ -245,7 +244,7 @@ public class SignalPhase {
 
 				// yellow time over, go immediately to red if redcleartime==0
 				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime) ){
-					setPhaseColor(_Signal.BulbColor.RED);
+					setPhaseColor(Signal.BulbColor.RED);
 					bulbtimer.reset();
 					done = redcleartime>0;
 				}
@@ -256,7 +255,7 @@ public class SignalPhase {
 			// .............................................................................................
 			case RED:
 	
-				setPhaseColor(_Signal.BulbColor.RED);
+				setPhaseColor(Signal.BulbColor.RED);
 	
 				//if( SiriusMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
 				if( SiriusMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
@@ -266,7 +265,7 @@ public class SignalPhase {
 	
 				// if hold, set to green, go to green, etc.
 				if( hold_approved ){ 
-					setPhaseColor(_Signal.BulbColor.GREEN);
+					setPhaseColor(Signal.BulbColor.GREEN);
 					bulbtimer.reset();
 	
 					// Unregister calls (for reading conflicting calls)
@@ -283,7 +282,7 @@ public class SignalPhase {
 		}
 	}
 	
-	protected void setPhaseColor(_Signal.BulbColor color){
+	protected void setPhaseColor(Signal.BulbColor color){
 		mySignal.myPhaseController.setPhaseColor(myNEMA,color);
 		bulbcolor = color;
 	}
@@ -300,7 +299,7 @@ public class SignalPhase {
 		return mingreen;
 	}
 
-	public _Signal.NEMA getMyNEMA() {
+	public Signal.NEMA getMyNEMA() {
 		return myNEMA;
 	}
 	
@@ -321,7 +320,7 @@ public class SignalPhase {
 	}
 
 	
-	public _Signal.BulbColor getBulbcolor() {
+	public Signal.BulbColor getBulbcolor() {
 		return bulbcolor;
 	}
 	

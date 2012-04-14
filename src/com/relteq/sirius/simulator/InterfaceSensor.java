@@ -15,7 +15,7 @@ public interface InterfaceSensor {
 	 * 
 	 * <p> The output array contains measured densities.
 	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
 	 * 
 	 * @return Array of densities.
 	 */
@@ -30,11 +30,19 @@ public interface InterfaceSensor {
 	 */
 	public double getTotalDensityInVPM();
 
+	/** Measured total density in veh/link. 
+	 * 
+	 * <p> Returns the total density measured by the sensor averaged over the links it's in.
+	 * 
+	 * @return A double with the total measured density in veh/link.	 
+	 */
+	public double getTotalDensityInVeh();
+	
 	/** Measured flow per vehicle type in veh/hr. 
 	 * 
 	 * <p> The output array contains measured flows.
 	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link _Scenario#getVehicleTypeNames}).
+	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
 	 * 
 	 * @return Array of flows.
 	 */

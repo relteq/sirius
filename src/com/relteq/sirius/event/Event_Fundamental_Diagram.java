@@ -4,20 +4,18 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.jaxb.FundamentalDiagram;
 import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator._Event;
-import com.relteq.sirius.simulator._Link;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._ScenarioElement;
+import com.relteq.sirius.simulator.Event;
+import com.relteq.sirius.simulator.Link;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.ScenarioElement;
 
-public class Event_Fundamental_Diagram extends _Event {
+public class Event_Fundamental_Diagram extends Event {
 
 	protected boolean resetToNominal;
-	protected FundamentalDiagram FD;
+	protected com.relteq.sirius.jaxb.FundamentalDiagram FD;
 	  
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -26,8 +24,8 @@ public class Event_Fundamental_Diagram extends _Event {
 	public Event_Fundamental_Diagram(){
 	}
 	
-	public Event_Fundamental_Diagram(_Scenario myScenario,List <_Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
-		this.FD = new FundamentalDiagram();
+	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
+		this.FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
 		this.FD.setFreeflowSpeed(new BigDecimal(freeflowSpeed));
 		this.FD.setCongestionSpeed(new BigDecimal(congestionSpeed));
 		this.FD.setCapacity(new BigDecimal(capacity));
@@ -35,14 +33,14 @@ public class Event_Fundamental_Diagram extends _Event {
 		this.FD.setCapacityDrop(new BigDecimal(capacityDrop));
 		this.FD.setStdDevCapacity(new BigDecimal(stdDevCapacity));
 		this.resetToNominal = false;
-		this.targets = new ArrayList<_ScenarioElement>();
-		for(_Link link : links)
+		this.targets = new ArrayList<ScenarioElement>();
+		for(Link link : links)
 			this.targets.add(ObjectFactory.createScenarioElement(link));
 	}
 	
-	public Event_Fundamental_Diagram(_Scenario myScenario,List <_Link> links) {		
+	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links) {		
 		this.resetToNominal = true;
-		for(_Link link : links)
+		for(Link link : links)
 			this.targets.add(ObjectFactory.createScenarioElement(link));
 	}
 
@@ -52,7 +50,7 @@ public class Event_Fundamental_Diagram extends _Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		Event jaxbe = (Event) jaxbobject;
+		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
 		this.resetToNominal = jaxbe.isResetToNominal();
 		this.FD = jaxbe.getFundamentalDiagram();
 	}
@@ -63,8 +61,8 @@ public class Event_Fundamental_Diagram extends _Event {
 			return false;
 		
 		// check each target is valid
-		for(_ScenarioElement s : targets){
-			if(s.getMyType().compareTo(_ScenarioElement.Type.link)!=0){
+		for(ScenarioElement s : targets){
+			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
 				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}
@@ -77,8 +75,8 @@ public class Event_Fundamental_Diagram extends _Event {
 
 	@Override
 	public void activate() throws SiriusException{
-		for(_ScenarioElement s : targets){
-			_Link targetlink = (_Link) s.getReference();
+		for(ScenarioElement s : targets){
+			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
 				revertLinkFundamentalDiagram(targetlink);
 			else

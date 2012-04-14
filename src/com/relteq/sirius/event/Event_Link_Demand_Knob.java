@@ -1,15 +1,13 @@
 package com.relteq.sirius.event;
 
-import com.relteq.sirius.jaxb.DemandProfile;
-import com.relteq.sirius.jaxb.Event;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator._Event;
-import com.relteq.sirius.simulator._Link;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._ScenarioElement;
+import com.relteq.sirius.simulator.Event;
+import com.relteq.sirius.simulator.Link;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.ScenarioElement;
 
-public class Event_Link_Demand_Knob extends _Event {
+public class Event_Link_Demand_Knob extends Event {
 
 	protected boolean resetToNominal;
 	protected Double newknob;
@@ -21,7 +19,7 @@ public class Event_Link_Demand_Knob extends _Event {
 	public Event_Link_Demand_Knob(){
 	}
 	
-	public Event_Link_Demand_Knob(_Scenario myScenario,double newknob) {
+	public Event_Link_Demand_Knob(Scenario myScenario,double newknob) {
 		this.myScenario = myScenario;
 		this.newknob = newknob;
 	}
@@ -32,7 +30,7 @@ public class Event_Link_Demand_Knob extends _Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		Event jaxbe = (Event) jaxbobject;
+		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
 		this.resetToNominal = jaxbe.isResetToNominal();
 		if(jaxbe.getKnob()!=null)
 			newknob = jaxbe.getKnob().getValue().doubleValue();
@@ -48,12 +46,12 @@ public class Event_Link_Demand_Knob extends _Event {
 			return false;
 		
 		// check each target is valid
-		for(_ScenarioElement s : targets){
-			if(s.getMyType().compareTo(_ScenarioElement.Type.link)!=0){
+		for(ScenarioElement s : targets){
+			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
 				SiriusErrorLog.addErrorMessage("wrong target type.");
 				return false;
 			}
-			if(!((_Link)s.getReference()).isSource()){
+			if(!((Link)s.getReference()).isSource()){
 				SiriusErrorLog.addErrorMessage("demand event attached to non-source link.");
 				return false;
 				
@@ -64,9 +62,9 @@ public class Event_Link_Demand_Knob extends _Event {
 
 	@Override
 	public void activate() throws SiriusException {
-		for(_ScenarioElement s : targets){
+		for(ScenarioElement s : targets){
 	    	if(myScenario.getDemandProfileSet()!=null){
-	        	for(DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
+	        	for(com.relteq.sirius.jaxb.DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrigin().equals(s.getId())){
 	        			if(resetToNominal)
 	        				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());

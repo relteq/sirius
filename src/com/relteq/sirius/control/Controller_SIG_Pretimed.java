@@ -2,13 +2,12 @@ package com.relteq.sirius.control;
 
 import java.util.Vector;
 
-import com.relteq.sirius.jaxb.PlanReference;
 import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._ScenarioElement;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.ScenarioElement;
 
-public class Controller_SIG_Pretimed extends _Controller {
+public class Controller_SIG_Pretimed extends Controller {
 
 	// input parameters
 	private int [] plansequence;		  // Ordered list of plans to implement 
@@ -34,7 +33,7 @@ public class Controller_SIG_Pretimed extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Controller_SIG_Pretimed(_Scenario myScenario) {
+	public Controller_SIG_Pretimed(Scenario myScenario) {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -91,7 +90,7 @@ public class Controller_SIG_Pretimed extends _Controller {
 				planstarttime = new float[numPlanReference];
 				
 				for(int i=0;i<numPlanReference;i++){
-					PlanReference ref = jaxbc.getPlanSequence().getPlanReference().get(i);
+					com.relteq.sirius.jaxb.PlanReference ref = jaxbc.getPlanSequence().getPlanReference().get(i);
 					plansequence[i] = planId2Index.indexOf(ref.getPlanId());
 					planstarttime[i] = ref.getStartTime().floatValue();
 				}
@@ -152,8 +151,8 @@ public class Controller_SIG_Pretimed extends _Controller {
 				return false;
 
 		// all targets are signals
-		for(_ScenarioElement se: targets){
-			if(se.getMyType().compareTo(_ScenarioElement.Type.signal)!=0){
+		for(ScenarioElement se: targets){
+			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0){
 				return false;
 			}
 		}
@@ -178,8 +177,5 @@ public class Controller_SIG_Pretimed extends _Controller {
 	public boolean register() {
 		return true; // signal controllers don't have to register, because the signal does this for them.
 	}
-
-	
-	
 	
 }

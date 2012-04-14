@@ -14,18 +14,14 @@ import javax.xml.bind.Marshaller;
 
 import javax.xml.stream.*;
 
-import com.relteq.sirius.jaxb.Link;
-import com.relteq.sirius.jaxb.Node;
-import com.relteq.sirius.jaxb.Network;
-
 final class OutputWriter {
 
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
 	protected static final String NUM_FORMAT = "%.4f";
 
-	public OutputWriter(_Scenario myScenario){
+	public OutputWriter(Scenario myScenario){
 		this.myScenario = myScenario;
 		//this.outsteps = osteps;
 	}
@@ -74,16 +70,16 @@ final class OutputWriter {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
 			xmlsw.writeStartElement("netl");
-			for (Network network : myScenario.getNetworkList().getNetwork()) {
+			for (com.relteq.sirius.jaxb.Network network : myScenario.getNetworkList().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
 				xmlsw.writeAttribute("dt", String.format(SEC_FORMAT, network.getDt()));
 				xmlsw.writeStartElement("ll");
-				for (Link link : network.getLinkList().getLink()) {
+				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
 					xmlsw.writeAttribute("id", link.getId());
-					_Link _link = (_Link) link;
+					Link _link = (Link) link;
 					// d = average number of vehicles during the interval of reporting dt
 					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density, invsteps), ":"));
 					// f = flow per dt, vehicles
@@ -97,10 +93,10 @@ final class OutputWriter {
 				}
 				xmlsw.writeEndElement(); // ll
 				xmlsw.writeStartElement("nl");
-				for (Node node : network.getNodeList().getNode()) {
+				for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
 					xmlsw.writeStartElement("n");
 					xmlsw.writeAttribute("id", node.getId());
-					_Node _node = (_Node) node;
+					Node _node = (Node) node;
 					Double3DMatrix srm = _node.splitratio;
 					for (int ili = 0; ili < _node.getnIn(); ++ili)
 						for (int oli = 0; oli < _node.getnOut(); ++oli) {

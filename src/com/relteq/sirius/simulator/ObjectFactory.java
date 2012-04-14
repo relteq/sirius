@@ -16,11 +16,6 @@ import org.xml.sax.SAXException;
 import com.relteq.sirius.control.*;
 import com.relteq.sirius.event.*;
 import com.relteq.sirius.sensor.*;
-import com.relteq.sirius.jaxb.Controller;
-import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.jaxb.Network;
-import com.relteq.sirius.jaxb.ScenarioElement;
-import com.relteq.sirius.jaxb.Sensor;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
  * <p>
@@ -41,10 +36,10 @@ public final class ObjectFactory {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
-	protected static _Controller createControllerFromJaxb(_Scenario myScenario,Controller jaxbC,_Controller.Type myType) {		
+	protected static Controller createControllerFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Controller jaxbC,Controller.Type myType) {		
 		if(myScenario==null)
 			return null;
-		_Controller C;
+		Controller C;
 		switch(myType){
 			case IRM_alinea:
 				C = new Controller_IRM_Alinea();
@@ -89,10 +84,10 @@ public final class ObjectFactory {
 	}
 
 	/** @y.exclude */
-	protected static _Event createEventFromJaxb(_Scenario myScenario,Event jaxbE,_Event.Type myType) {	
+	protected static Event createEventFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Event jaxbE,Event.Type myType) {	
 		if(myScenario==null)
 			return null;
-		_Event E;
+		Event E;
 		switch(myType){
 			case fundamental_diagram:
 				E = new Event_Fundamental_Diagram();
@@ -132,10 +127,10 @@ public final class ObjectFactory {
 	}
 
 	/** @y.exclude */
-	protected static _Sensor createSensorFromJaxb(_Scenario myScenario,Sensor jaxbS,_Sensor.Type myType) {	
+	protected static Sensor createSensorFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Sensor jaxbS,Sensor.Type myType) {	
 		if(myScenario==null)
 			return null;
-		_Sensor S;
+		Sensor S;
 		switch(myType){
 			case static_point:
 				S = new SensorLoopStation();
@@ -159,14 +154,14 @@ public final class ObjectFactory {
 	}
 	
 	/** @y.exclude */
-	protected static _ScenarioElement createScenarioElementFromJaxb(_Scenario myScenario,ScenarioElement jaxbS){
+	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;
-		_ScenarioElement S = new _ScenarioElement();
+		ScenarioElement S = new ScenarioElement();
 		S.myScenario = myScenario;
 		S.setId(jaxbS.getId().trim());
+		S.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
 		S.setNetworkId(jaxbS.getNetworkId());
-		S.myType = _ScenarioElement.Type.valueOf(jaxbS.getType());
 		switch(S.myType){
 		case link:
 			S.reference = myScenario.getLinkWithCompositeId(S.getNetworkId(),S.getId());
@@ -221,12 +216,9 @@ public final class ObjectFactory {
 	 * </table> 
 	 * 
 	 * @param configfilename		The name of the XML configuration file.
-	 * @param timestart				The start time of the simulation in seconds after midnight.
-	 * @param timeend				The end time of the simulation in seconds after midnight.
-	 * @param outdt					The period in seconds at which simulation output is written. 
 	 * @return scenario				_Scenario object.
 	 */
-	public static _Scenario createAndLoadScenario(String configfilename) {
+	public static Scenario createAndLoadScenario(String configfilename) {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -258,10 +250,10 @@ public final class ObjectFactory {
 			configfilename += ".xml";
 
         // read and return ...........................................................
-        _Scenario S = new _Scenario();
+        Scenario S = new Scenario();
         try {
-            u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new _JaxbObjectFactory());            
-        	S = (_Scenario) u.unmarshal( new FileInputStream(configfilename) );
+            u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new JaxbObjectFactory());            
+        	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
         	System.out.println(je.getMessage());
         	SiriusErrorLog.setErrorHeader("Load error.");
@@ -287,7 +279,7 @@ public final class ObjectFactory {
         S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
         S.simdtinhours = S.simdtinseconds/3600.0;
-        S.uncertaintyModel = _Scenario.UncertaintyType.uniform;
+        S.uncertaintyModel = Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
         S.numVehicleTypes = 1;
         if(S.getSettings().getVehicleTypes()!=null)
@@ -305,11 +297,12 @@ public final class ObjectFactory {
         
         // register controllers with their targets ..................................
         boolean registersuccess = true;
-        for(_Controller controller : S._controllerset._controllers)
+        for(Controller controller : S.controllerset.controllers)
         	registersuccess &= controller.register();
-        for(Network network:S.getNetworkList().getNetwork())
-        	for(_Signal signal:((_Network)network)._signallist._signals)
-        		registersuccess &= signal.register();
+        for(com.relteq.sirius.jaxb.Network network:S.getNetworkList().getNetwork())
+        	if(network.getSignalList()!=null)
+	        	for(com.relteq.sirius.jaxb.Signal signal:network.getSignalList().getSignal())
+	        		registersuccess &= ((Signal)signal).register();
         
         if(!registersuccess){
         	SiriusErrorLog.addErrorMessage("Controller registration failure.");
@@ -334,7 +327,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_CRM_HERO(_Scenario myScenario){
+	public static Controller createController_CRM_HERO(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_CRM_HERO(myScenario);
 	}
 
@@ -342,7 +335,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_CRM_SWARM(_Scenario myScenario){
+	public static Controller createController_CRM_SWARM(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_CRM_SWARM(myScenario);
 	}
 
@@ -363,7 +356,7 @@ public final class ObjectFactory {
 	 * @param gain				The gain for the integral controller in mile/hr.
 	 * @return					_Controller object
 	 */
-	public static _Controller createController_IRM_Alinea(_Scenario myScenario,_Link onramplink, _Link mainlinelink,_Sensor mainlinesensor,_Sensor queuesensor,double gain){
+	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
 		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
 	}
 	
@@ -371,7 +364,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_IRM_Time_of_Day(_Scenario myScenario){
+	public static Controller createController_IRM_Time_of_Day(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario);
 	}
 
@@ -379,7 +372,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_IRM_Traffic_Responsive(_Scenario myScenario){
+	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario);
 	}
 
@@ -387,7 +380,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_SIG_Actuated(_Scenario myScenario){
+	public static Controller createController_SIG_Actuated(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_SIG_Actuated(myScenario);
 	}
 
@@ -395,7 +388,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_SIG_Pretimed(_Scenario myScenario){
+	public static Controller createController_SIG_Pretimed(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_SIG_Pretimed(myScenario);
 	}
 
@@ -403,7 +396,7 @@ public final class ObjectFactory {
 	 * 
 	 * @return			_Controller object
 	 */
-	public static _Controller createController_VSL_Time_of_Day(_Scenario myScenario){
+	public static Controller createController_VSL_Time_of_Day(Scenario myScenario){
 		return  new com.relteq.sirius.control.Controller_VSL_Time_of_Day(myScenario);
 	}
 
@@ -424,7 +417,7 @@ public final class ObjectFactory {
 	 * @param ison					<code>true</code> turns controllers on, <code>false</code> turns controllers off.
 	 * @return						_Event object
 	 */
-	public static _Event createEvent_Control_Toggle(_Scenario myScenario,float timestampinseconds,List <_Controller> controllers,boolean ison) {
+	public static Event createEvent_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
 		return  new com.relteq.sirius.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
 	}	
 
@@ -444,7 +437,7 @@ public final class ObjectFactory {
 	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/hr/lane]
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Fundamental_Diagram(_Scenario myScenario,List <_Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
+	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
 		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
 	}
 	
@@ -454,7 +447,7 @@ public final class ObjectFactory {
 	 * @param links				List of _Link objects.
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Fundamental_Diagram_Revert(_Scenario myScenario,List <_Link> links) {		
+	public static Event createEvent_Fundamental_Diagram_Revert(Scenario myScenario,List <Link> links) {		
 		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links);
 	}
 	
@@ -464,7 +457,7 @@ public final class ObjectFactory {
 	 * @param myScenario		The scenario.
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Global_Control_Toggle(_Scenario myScenario,boolean ison){
+	public static Event createEvent_Global_Control_Toggle(Scenario myScenario,boolean ison){
 		return  new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario,ison);
 	}	
 	
@@ -478,7 +471,7 @@ public final class ObjectFactory {
 	 * @param newknob 			New value of the knob.
 	 * @return			_Event object
 	 */
-	public static _Event createEvent_Global_Demand_Knob(_Scenario myScenario,double newknob){
+	public static Event createEvent_Global_Demand_Knob(Scenario myScenario,double newknob){
 		return  new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario,newknob);
 	}	
 	
@@ -490,7 +483,7 @@ public final class ObjectFactory {
 	 * @param newknob 			New value of the knob.
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Link_Demand_Knob(_Scenario myScenario,double newknob){
+	public static Event createEvent_Link_Demand_Knob(Scenario myScenario,double newknob){
 		return  new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario,newknob);
 	}	
 	
@@ -501,7 +494,7 @@ public final class ObjectFactory {
 	 * @param deltalanes		Number of lanes to add to each link in the list
 	 * @return					_Event object
 	 */
-	public static _Event createEvent_Link_Lanes(_Scenario myScenario,List<_Link> links,boolean isrevert,double deltalanes){
+	public static Event createEvent_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes){
 		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
 	}	
 	
@@ -514,7 +507,7 @@ public final class ObjectFactory {
 	 * @param splits			An array of splits for every link exiting the node.
 	 * @return					_Event object
 	 */		
-	public static _Event createEvent_Node_Split_Ratio(_Scenario myScenario,_Node node,String inlink,String vehicleType,ArrayList<Double>splits){
+	public static Event createEvent_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicleType,ArrayList<Double>splits){
 		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
 	}	
 	
@@ -532,7 +525,7 @@ public final class ObjectFactory {
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return					_Sensor object
 	 */
-	public static _Sensor createSensor_LoopStation(_Scenario myScenario,String networkId,String linkId){
+	public static Sensor createSensor_LoopStation(Scenario myScenario,String networkId,String linkId){
 		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,networkId,linkId);
 	}
 
@@ -547,8 +540,8 @@ public final class ObjectFactory {
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return			XXX
 	 */
-	public static _Sensor createSensor_Floating(_Scenario myScenario,String networkId,String linkId){
-		_Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,networkId,linkId);
+	public static Sensor createSensor_Floating(Scenario myScenario,String networkId,String linkId){
+		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,networkId,linkId);
 		return S;
 	}
 
@@ -561,12 +554,12 @@ public final class ObjectFactory {
 	 * @param node		The node.
 	 * @return			ScenarioElement object
 	 */
-	public static _ScenarioElement createScenarioElement(_Node node){
+	public static ScenarioElement createScenarioElement(Node node){
 		if(node==null)
 			return null;
-		_ScenarioElement se = new _ScenarioElement();
+		ScenarioElement se = new ScenarioElement();
 		se.myScenario = node.getMyNetwork().myScenario;
-		se.myType = _ScenarioElement.Type.node;
+		se.myType = ScenarioElement.Type.node;
 		se.setNetworkId(node.myNetwork.getId());
 		se.reference = node;
 		return se;
@@ -577,12 +570,12 @@ public final class ObjectFactory {
 	 * @param link		The link.
 	 * @return			_ScenarioElement object
 	 */
-	public static _ScenarioElement createScenarioElement(_Link link){
+	public static ScenarioElement createScenarioElement(Link link){
 		if(link==null)
 			return null;
-		_ScenarioElement se = new _ScenarioElement();
+		ScenarioElement se = new ScenarioElement();
 		se.myScenario = link.getMyNetwork().myScenario;
-		se.myType = _ScenarioElement.Type.link;
+		se.myType = ScenarioElement.Type.link;
 		se.setNetworkId(link.myNetwork.getId());
 		se.reference = link;
 		return se;
@@ -593,12 +586,12 @@ public final class ObjectFactory {
 	 * @param sensor	The sensor.
 	 * @return			_ScenarioElement object
 	 */
-	public static _ScenarioElement createScenarioElement(_Sensor sensor){
+	public static ScenarioElement createScenarioElement(Sensor sensor){
 		if(sensor==null)
 			return null;
-		_ScenarioElement se = new _ScenarioElement();
+		ScenarioElement se = new ScenarioElement();
 		se.myScenario = sensor.myScenario;
-		se.myType = _ScenarioElement.Type.sensor;
+		se.myType = ScenarioElement.Type.sensor;
 		if(sensor.myLink!=null)
 			se.setNetworkId(sensor.myLink.myNetwork.getId());
 		se.reference = sensor;
@@ -610,11 +603,11 @@ public final class ObjectFactory {
 	 * @param controller	The controller.
 	 * @return			_ScenarioElement object
 	 */
-	public static _ScenarioElement createScenarioElement(_Controller controller){
+	public static ScenarioElement createScenarioElement(Controller controller){
 		if(controller==null)
 			return null;
-		_ScenarioElement se = new _ScenarioElement();
-		se.myType = _ScenarioElement.Type.controller;
+		ScenarioElement se = new ScenarioElement();
+		se.myType = ScenarioElement.Type.controller;
 		se.reference = controller;
 		return se;
 	}
@@ -624,11 +617,11 @@ public final class ObjectFactory {
 	 * @param event	The event.
 	 * @return			_ScenarioElement object
 	 */
-	public static _ScenarioElement createScenarioElement(_Event event){
+	public static ScenarioElement createScenarioElement(Event event){
 		if(event==null)
 			return null;
-		_ScenarioElement se = new _ScenarioElement();
-		se.myType = _ScenarioElement.Type.event;
+		ScenarioElement se = new ScenarioElement();
+		se.myType = ScenarioElement.Type.event;
 		se.reference = event;
 		return se;
 	}
@@ -639,7 +632,7 @@ public final class ObjectFactory {
 
 	// returns greatest common divisor among network time steps.
 	// The time steps are rounded to the nearest decisecond.
-	private static double computeCommonSimulationTimeInSeconds(_Scenario scenario){
+	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
 		
 		if(scenario.getNetworkList()==null)
 			return Double.NaN;
@@ -649,7 +642,7 @@ public final class ObjectFactory {
 			
 		// loop through networks calling gcd
 		double dt;
-		List<Network> networkList = scenario.getNetworkList().getNetwork();
+		List<com.relteq.sirius.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
 		int tengcd = 0;		// in deciseconds
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds

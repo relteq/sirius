@@ -5,24 +5,22 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.FundamentalDiagram;
-
-/** Link model.
+/** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class _Link extends com.relteq.sirius.jaxb.Link {
+public final class Link extends com.relteq.sirius.jaxb.Link {
 
-	/** @y.exclude */ 	protected _Network myNetwork;
-	/** @y.exclude */ 	protected _Node begin_node;
-	/** @y.exclude */ 	protected _Node end_node;
+	/** @y.exclude */ 	protected Network myNetwork;
+	/** @y.exclude */ 	protected Node begin_node;
+	/** @y.exclude */ 	protected Node end_node;
 
 	/** @y.exclude */ 	protected double _length;							// [miles]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
-	/** @y.exclude */ 	protected _FundamentalDiagram FD;					// current fundamental diagram
-	/** @y.exclude */ 	protected _FundamentalDiagram FDfromProfile;		// profile fundamental diagram
-	/** @y.exclude */ 	protected _FundamentalDiagram FDfromEvent;			// event fundamental diagram
-	/** @y.exclude */ 	protected _FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
+	/** @y.exclude */ 	protected FundamentalDiagram FD;					// current fundamental diagram
+	/** @y.exclude */ 	protected FundamentalDiagram FDfromProfile;		// profile fundamental diagram
+	/** @y.exclude */ 	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	/** @y.exclude */ 	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
 	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
@@ -37,8 +35,8 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
     // contoller
 	/** @y.exclude */ 	protected int control_maxflow_index;
 	/** @y.exclude */ 	protected int control_maxspeed_index;
-	/** @y.exclude */ 	protected _Controller myFlowController;
-	/** @y.exclude */ 	protected _Controller mySpeedController;
+	/** @y.exclude */ 	protected Controller myFlowController;
+	/** @y.exclude */ 	protected Controller mySpeedController;
    
 	/** @y.exclude */ 	protected Double [] density;    		// [veh]	1 x numVehTypes
 	/** @y.exclude */ 	protected double spaceSupply;        	// [veh]
@@ -53,7 +51,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _Link(){}
+	protected Link(){}
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -67,7 +65,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected boolean registerFlowController(_Controller c,int index){
+	protected boolean registerFlowController(Controller c,int index){
 		if(myFlowController!=null)
 			return false;
 		else{
@@ -78,7 +76,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected boolean registerSpeedController(_Controller c,int index){
+	protected boolean registerSpeedController(Controller c,int index){
 		if(mySpeedController!=null)
 			return false;
 		else{
@@ -104,7 +102,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-    protected void setFundamentalDiagramProfile(_FundamentalDiagramProfile fdp){
+    protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
     	if(fdp==null)
     		return;
     	myFDprofile = fdp;
@@ -112,7 +110,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @throws SiriusException 
 	 * @y.exclude */
-    protected void setFundamentalDiagramFromProfile(_FundamentalDiagram fd) throws SiriusException{
+    protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws SiriusException{
     	if(fd==null)
     		return;
 //    	if(!fd.validate())
@@ -125,11 +123,11 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @throws SiriusException 
 	 * @y.exclude */
-    protected void activateFundamentalDiagramEvent(FundamentalDiagram fd) throws SiriusException {
+    protected void activateFundamentalDiagramEvent(com.relteq.sirius.jaxb.FundamentalDiagram fd) throws SiriusException {
     	if(fd==null)
     		throw new SiriusException("Null parameter.");
     	
-    	FDfromEvent = new _FundamentalDiagram(this);
+    	FDfromEvent = new FundamentalDiagram(this);
     	FDfromEvent.copyfrom(FD);			// copy current FD
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
     	
@@ -246,7 +244,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////    
 
 	/** @y.exclude */
-	protected void populate(_Network myNetwork) {
+	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
 
@@ -313,9 +311,9 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected void resetState(_Scenario.ModeType simulationMode) {
+	protected void resetState(Scenario.ModeType simulationMode) {
 		
-		_Scenario myScenario = myNetwork.myScenario;
+		Scenario myScenario = myNetwork.myScenario;
 		
 		switch(simulationMode){
 		
@@ -326,7 +324,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
 			if(myScenario.getInitialDensityProfile()!=null)
-				density = ((_InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+				density = ((InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
 			else 
 				density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;
@@ -356,7 +354,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */
 	protected void resetFD(){
-    	FD = new _FundamentalDiagram(this);
+    	FD = new FundamentalDiagram(this);
         FD.settoDefault();		// set to default
     	activeFDevent = false;
 	}
@@ -386,17 +384,17 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	// Link geometry ....................
 	
 	/** network that contains this link */
-	public _Network getMyNetwork() {
+	public Network getMyNetwork() {
 		return myNetwork;
 	}
 
 	/** upstream node of this link  */
-	public _Node getBegin_node() {
+	public Node getBegin_node() {
 		return begin_node;
 	}
 
 	/** downstream node of this link */
-	public _Node getEnd_node() {
+	public Node getEnd_node() {
 		return end_node;
 	}
 
@@ -432,7 +430,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** Total of vehicles in normalized units (vehicles/link). 
-	 * The return value equals the sum of {@link _Link#getDensityInVeh}.
+	 * The return value equals the sum of {@link Link#getDensityInVeh}.
 	 * @return total number of vehicles in the link.
 	 */
 	public double getTotalDensityInVeh() {
@@ -454,7 +452,7 @@ public final class _Link extends com.relteq.sirius.jaxb.Link {
 
 	/** Total number of vehicles exiting the link during the current
 	 * time step.  The return value equals the sum of 
-	 * {@link _Link#getOutflowInVeh}.
+	 * {@link Link#getOutflowInVeh}.
 	 * @return total number of vehicles exiting the link in one time step.
 	 * 
 	 */

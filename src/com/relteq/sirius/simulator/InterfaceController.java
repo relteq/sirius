@@ -16,7 +16,7 @@ public interface InterfaceController {
 	 * <p> All controllers must register with their targets in order to be allowed to
 	 * manipulate them. This is to prevent clashes, in which two or 
 	 * more controllers access the same variable. Use 
-	 * {@link _Controller#registerFlowController} {@link _Controller#registerSpeedController} to register. 
+	 * {@link Controller#registerFlowController} {@link Controller#registerSpeedController} to register. 
 	 * The return value of these methods indicates whether the registration was successful.
 	 * 
 	 * @return <code>true</code> if the controller successfully registered with all of its targets; 

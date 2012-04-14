@@ -5,20 +5,16 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.ScenarioElement;
-
 /** Container class for components used as targets or feedback in controllers and events. 
  * 
  * <p>This class provides a container for links, nodes, controllers, sensors, events, and signals
  * that appear in the target or feedback list of controllers and events.
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class _ScenarioElement extends ScenarioElement {
+public final class ScenarioElement extends com.relteq.sirius.jaxb.ScenarioElement {
 	
-	/** @y.exclude */	protected _Scenario myScenario;
-	/** @y.exclude */	protected _ScenarioElement.Type myType;
-	/** @y.exclude 	protected String network_id = ""; */
-	/** @y.exclude 	protected String id; */
+	/** @y.exclude */	protected Scenario myScenario;
+	/** @y.exclude */	protected ScenarioElement.Type myType;
 	/** @y.exclude */	protected Object reference;
 
 	/** Type of scenario element. */
@@ -35,7 +31,7 @@ public final class _ScenarioElement extends ScenarioElement {
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _ScenarioElement(){}
+	protected ScenarioElement(){}
 	
 	/////////////////////////////////////////////////////////////////////
 	// API
@@ -44,7 +40,7 @@ public final class _ScenarioElement extends ScenarioElement {
 	/** The scenario that contains the referenced component.
 	 *  @return The scenario.
 	 */
-	public _Scenario getMyScenario() {
+	public Scenario getMyScenario() {
 		return myScenario;
 	}
 
@@ -52,7 +48,7 @@ public final class _ScenarioElement extends ScenarioElement {
 	 * <p> i.e. link, node, controller, sensor, event, or signal.
 	 * @return Component type. 
 	 */
-	public _ScenarioElement.Type getMyType() {
+	public ScenarioElement.Type getMyType() {
 		return myType;
 	}
 
@@ -64,10 +60,12 @@ public final class _ScenarioElement extends ScenarioElement {
 	 */
 	@Override
 	public String getNetworkId() {
-		if(myType.compareTo(_ScenarioElement.Type.link)==0 || 
-		   myType.compareTo(_ScenarioElement.Type.node)==0 || 
-		   myType.compareTo(_ScenarioElement.Type.sensor)==0 || 
-		   myType.compareTo(_ScenarioElement.Type.signal)==0 ){
+		if(myType==null && type!=null)
+			myType = ScenarioElement.Type.valueOf(type);
+		if(myType.compareTo(ScenarioElement.Type.link)==0 || 
+		   myType.compareTo(ScenarioElement.Type.node)==0 || 
+		   myType.compareTo(ScenarioElement.Type.sensor)==0 || 
+		   myType.compareTo(ScenarioElement.Type.signal)==0 ){
 			return super.getNetworkId();
 		}
 		else

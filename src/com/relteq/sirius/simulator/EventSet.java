@@ -8,27 +8,25 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.relteq.sirius.jaxb.Event;
+final class EventSet extends com.relteq.sirius.jaxb.EventSet {
 
-final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
-
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected boolean isdone;			// true if we are done with events
 	protected int currentevent;
-	protected ArrayList<_Event> _sortedevents = new ArrayList<_Event>();
+	protected ArrayList<Event> sortedevents = new ArrayList<Event>();
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unchecked")
-	protected void addEvent(_Event E){
+	protected void addEvent(Event E){
 				
 		// add event to list
-		_sortedevents.add(E);
+		sortedevents.add(E);
 		
 		// re-sort
-		Collections.sort(_sortedevents);
+		Collections.sort(sortedevents);
 
 	}
 	
@@ -37,41 +35,41 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 	/////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unchecked")
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;
 
 		if(myScenario.getEventSet()!=null){
-			for(Event event : myScenario.getEventSet().getEvent() ){
+			for(com.relteq.sirius.jaxb.Event event : myScenario.getEventSet().getEvent() ){
 				
 				// keep only enabled events
 				if(event.isEnabled()){
 	
 					// assign type
-					_Event.Type myType;
+					Event.Type myType;
 			    	try {
-						myType = _Event.Type.valueOf(event.getType());
+						myType = Event.Type.valueOf(event.getType());
 					} catch (IllegalArgumentException e) {
 						continue;
 					}	
 					
 					// generate event
 					if(myType!=null){
-						_Event E = ObjectFactory.createEventFromJaxb(myScenario,event,myType);
+						Event E = ObjectFactory.createEventFromJaxb(myScenario,event,myType);
 						if(E!=null)
-							_sortedevents.add(E);
+							sortedevents.add(E);
 					}
 				}
 			}
 		}
 		
 		// sort the events by timestamp, etc
-		Collections.sort(_sortedevents);
+		Collections.sort(sortedevents);
 	}
 
 	protected boolean validate() {
-		_Event previousevent = null;
-		for(_Event event : _sortedevents){
+		Event previousevent = null;
+		for(Event event : sortedevents){
 			if(!event.validate())
 				return false;
 			
@@ -87,7 +85,7 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 
 	protected void reset() {
 		currentevent = 0;
-		isdone = _sortedevents.isEmpty();
+		isdone = sortedevents.isEmpty();
 	}
 
 	protected void update() throws SiriusException {
@@ -95,21 +93,21 @@ final class _EventSet extends com.relteq.sirius.jaxb.EventSet {
 		if(isdone)
 			return;
 		
-		if(_sortedevents.isEmpty()){
+		if(sortedevents.isEmpty()){
 			isdone=true;
 			return;
 		}
 
 		// check whether next event is due
-		while(myScenario.clock.getCurrentstep()>=_sortedevents.get(currentevent).timestampstep){
+		while(myScenario.clock.getCurrentstep()>=sortedevents.get(currentevent).timestampstep){
 			
-			_Event event =  _sortedevents.get(currentevent);
+			Event event =  sortedevents.get(currentevent);
 			if(event.validate())
 				event.activate(); 
 			currentevent++;
 			
 			// don't come back if done
-			if(currentevent==_sortedevents.size()){
+			if(currentevent==sortedevents.size()){
 				isdone=true;
 				break;
 			}
