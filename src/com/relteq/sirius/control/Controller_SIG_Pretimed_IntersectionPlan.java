@@ -3,13 +3,12 @@ package com.relteq.sirius.control;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.relteq.sirius.jaxb.Stage;
 import com.relteq.sirius.simulator.SignalPhase;
 import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._Signal;
-import com.relteq.sirius.simulator._Signal.Command;
-import com.relteq.sirius.simulator._Signal.NEMA;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.Signal;
+import com.relteq.sirius.simulator.Signal.Command;
+import com.relteq.sirius.simulator.Signal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
@@ -17,7 +16,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	// references 
 	//private _Node myNode;
 	private Controller_SIG_Pretimed_Plan myPlan;
-	protected _Signal mySignal;
+	protected Signal mySignal;
 	
 	//SignalManager mySigMan;
 	//int myIntersectionID;
@@ -29,22 +28,22 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	//private float cyclelength;
 	
 	// list of holds and force-off points 
-	protected ArrayList<_Signal.Command> command = new ArrayList<_Signal.Command>();
+	protected ArrayList<Signal.Command> command = new ArrayList<Signal.Command>();
 	int nextcommand;
 	float lastcommandtime;
 		
 	private int numstages;
 	private Float [] greentime;
 	private Float[] stagelength;
-	private _Signal.NEMA [] movA;
-	private _Signal.NEMA [] movB;
+	private Signal.NEMA [] movA;
+	private Signal.NEMA [] movB;
 	
  	public Controller_SIG_Pretimed_IntersectionPlan(Controller_SIG_Pretimed_Plan myPlan){
 		this.myPlan = myPlan;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void populate(_Scenario myScenario,com.relteq.sirius.jaxb.Intersection jaxbi) {
+	public void populate(Scenario myScenario,com.relteq.sirius.jaxb.Intersection jaxbi) {
 								
 		if(jaxbi.getOffset()!=null)
 			this.offset = jaxbi.getOffset().floatValue();
@@ -57,18 +56,18 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			return;		
 		
 		greentime = new Float[numstages];
-		movA = new _Signal.NEMA[numstages];
-		movB = new _Signal.NEMA[numstages];
+		movA = new Signal.NEMA[numstages];
+		movB = new Signal.NEMA[numstages];
 	
 		for(int i=0;i<numstages;i++){
-			Stage stage = jaxbi.getStage().get(i);
+			com.relteq.sirius.jaxb.Stage stage = jaxbi.getStage().get(i);
 			if(stage.getGreentime()!=null)
 				greentime[i] = stage.getGreentime().floatValue();
 			else
 				greentime[i] = null;
 
-			movA[i] = _Signal.String2NEMA(stage.getMovA());
-			movB[i] = _Signal.String2NEMA(stage.getMovB());
+			movA[i] = Signal.String2NEMA(stage.getMovA());
+			movB[i] = Signal.String2NEMA(stage.getMovB());
 		}
 		
 		mySignal = myScenario.getSignalForNodeId(jaxbi.getNetworkId(),jaxbi.getNodeId());
@@ -147,12 +146,12 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 				// force off this stage
 				if(movA[k].compareTo(NEMA.NULL)!=0){
 					pA = mySignal.getPhaseByNEMA(movA[k]);					
-					command.add(new Command(_Signal.CommandType.forceoff,movA[k],etime,pA.getActualyellowtime(),pA.getActualredcleartime()));
+					command.add(new Command(Signal.CommandType.forceoff,movA[k],etime,pA.getActualyellowtime(),pA.getActualredcleartime()));
 				}
 				
 				// hold next stage
 				if(movA[nextstage].compareTo(NEMA.NULL)!=0)
-					command.add(new Command(_Signal.CommandType.hold,movA[nextstage],stime));
+					command.add(new Command(Signal.CommandType.hold,movA[nextstage],stime));
 				
 			}
 			
@@ -160,16 +159,16 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			if(movB[k].compareTo(movB[nextstage])!=0){ 
 				if(movB[k].compareTo(NEMA.NULL)!=0){
 					pB = mySignal.getPhaseByNEMA(movB[k]);		
-					command.add(new Command(_Signal.CommandType.forceoff,movB[k],etime,pB.getActualyellowtime(),pB.getActualredcleartime()));
+					command.add(new Command(Signal.CommandType.forceoff,movB[k],etime,pB.getActualyellowtime(),pB.getActualredcleartime()));
 				}
 				if(movB[nextstage].compareTo(NEMA.NULL)!=0)
-					command.add(new Command(_Signal.CommandType.hold,movB[nextstage],stime));
+					command.add(new Command(Signal.CommandType.hold,movB[nextstage],stime));
 			}
 			
 		}
 		
 		// Correction: offset is with respect to end of first stage, instead of beginning
-		for(_Signal.Command c : command){
+		for(Signal.Command c : command){
 			c.time -= greentime[0];
 			if(c.time<0)
 				c.time += myPlan._cyclelength;
@@ -239,7 +238,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //		return offset;
 //	}
 	
-	protected void getCommandForTime(double itime,ArrayList<_Signal.Command> commandlist){
+	protected void getCommandForTime(double itime,ArrayList<Signal.Command> commandlist){
 		
 		double reltime = itime - offset;		
 		if(reltime<0)

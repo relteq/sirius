@@ -2,16 +2,14 @@ package com.relteq.sirius.simulator;
 
 import java.util.List;
 
-import com.relteq.sirius.jaxb.Link;
-import com.relteq.sirius.jaxb.Network;
 
-/** Class used for storing the state trajectory of a scenario. 
+/** Storage for a scenario state trajectory. 
  * <p>
 * @author Gabriel Gomes
 */
 public final class SiriusStateTrajectory {
 
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected int numNetworks;								// number of networks in the scenario
 	protected NewtorkStateTrajectory [] networkState;		// array of states trajectories for networks
 	protected int numVehicleTypes; 							// size of 2nd dimension of networkState
@@ -21,7 +19,7 @@ public final class SiriusStateTrajectory {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SiriusStateTrajectory(_Scenario myScenario,double outsteps) {
+	public SiriusStateTrajectory(Scenario myScenario,double outsteps) {
 		if(myScenario==null)
 			return;
 		if(myScenario.getNetworkList()==null)
@@ -78,10 +76,10 @@ public final class SiriusStateTrajectory {
 		int timeindex = timestep/outsteps;
 
 		for(int netindex=0;netindex<numNetworks;netindex++){
-			Network network = myScenario.getNetworkList().getNetwork().get(netindex);
-			List<Link> links = network.getLinkList().getLink();
+			com.relteq.sirius.jaxb.Network network = myScenario.getNetworkList().getNetwork().get(netindex);
+			List<com.relteq.sirius.jaxb.Link> links = network.getLinkList().getLink();
 			for(i=0;i<networkState[netindex].getNumLinks();i++){
-				_Link link = (_Link) links.get(i);				
+				Link link = (Link) links.get(i);				
 				for(j=0;j<numVehicleTypes;j++){
 					networkState[netindex].density[i][j][timeindex] = link.cumulative_density[j]*invsteps;
 					if(exportflows)

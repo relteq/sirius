@@ -5,12 +5,10 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.Splitratio;
+final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
-final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
-
-	protected _Scenario myScenario;
-	protected _Node myNode;
+	protected Scenario myScenario;
+	protected Node myNode;
 	
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
@@ -30,7 +28,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 
 		if(getSplitratio().isEmpty())
 			return;
@@ -68,7 +66,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
 		int in_index,out_index;
 		laststep = 0;
-		for(Splitratio sr : getSplitratio()){
+		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
 			if(in_index<0 || out_index<0)
@@ -109,7 +107,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		
 		// check link ids
 		int in_index, out_index;
-		for(Splitratio sr : getSplitratio()){
+		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
 			if(in_index<0 || out_index<0){
@@ -171,7 +169,7 @@ final class _SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile 
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((_SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
+			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
 		
 		int i,j,lastk;
 		for(i=0;i<myNode.nIn;i++){

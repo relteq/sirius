@@ -30,18 +30,18 @@ public interface InterfaceComponent {
 
 	/** Prepare the component for simulation.
 	 * 
-	 * <p> Called by {@link _Scenario#run} each time a new simulation run is started.
+	 * <p> Called by {@link Scenario#run} each time a new simulation run is started.
 	 * It is used to initialize the internal state of the component.
-	 * <p> Because events are state-less, the {@link _Event} class provides a default 
+	 * <p> Because events are state-less, the {@link Event} class provides a default 
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
 	public void reset() throws SiriusException;
 
 	/** Update the state of the component.
 	 * 
-	 * <p> Called by {@link _Scenario#run} at each simulation time step.
+	 * <p> Called by {@link Scenario#run} at each simulation time step.
 	 * This function updates the internal state of the component.
-	 * <p> Because events are state-less, the {@link _Event} class provides a default 
+	 * <p> Because events are state-less, the {@link Event} class provides a default 
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
 	public void update() throws SiriusException;

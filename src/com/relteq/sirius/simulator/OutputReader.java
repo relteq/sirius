@@ -9,21 +9,18 @@ import javax.xml.bind.Unmarshaller;
 
 import javax.xml.stream.*;
 
-import com.relteq.sirius.jaxb.Link;
-import com.relteq.sirius.jaxb.Network;
-
 class Output {
-	public _Scenario scenario;
+	public Scenario scenario;
 	public Vector<Double> t; // time
 	public Vector<Double> d; // density
 	public Vector<Double> f; // flow
 	public Vector<Double> mf; // capacity
 	public Vector<Double> fv; // free flow speed
-	public Vector<Link> getLinks() {
-		Vector<Link> res = new Vector<Link>();
+	public Vector<com.relteq.sirius.jaxb.Link> getLinks() {
+		Vector<com.relteq.sirius.jaxb.Link> res = new Vector<com.relteq.sirius.jaxb.Link>();
 		if (null != scenario){
-			for (Network network : scenario.getNetworkList().getNetwork())
-				for (Link link : network.getLinkList().getLink())
+			for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork())
+				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink())
 					res.add(link);
 		}
 		return res;
@@ -61,8 +58,8 @@ class OutputReader {
 						try {
 							jaxbc = JAXBContext.newInstance(com.relteq.sirius.jaxb.ObjectFactory.class);
 							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
-							ObjectFactory.setObjectFactory(unmrsh, new _JaxbObjectFactory());
-							res.scenario = (_Scenario) unmrsh.unmarshal(xmlsr);
+							ObjectFactory.setObjectFactory(unmrsh, new JaxbObjectFactory());
+							res.scenario = (Scenario) unmrsh.unmarshal(xmlsr);
 						} catch (JAXBException exc) {
 							exc.printStackTrace();
 						}
@@ -71,7 +68,7 @@ class OutputReader {
 							int nvehtypes = res.scenario.getNumVehicleTypes();
 							if (nvehtypes <= 0) nvehtypes = 1;
 							int nlinks = 0;
-							for (Network network : res.scenario.getNetworkList().getNetwork())
+							for (com.relteq.sirius.jaxb.Network network : res.scenario.getNetworkList().getNetwork())
 								nlinks += network.getLinkList().getLink().size();
 							int t_incr = 30;
 							int d_incr = t_incr * nvehtypes * nlinks;

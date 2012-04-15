@@ -1,22 +1,24 @@
 
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.jaxb.Parameter;
-import com.relteq.sirius.jaxb.ScenarioElement;
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Link;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._Sensor;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Link;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.Sensor;
 
-public class Controller_IRM_Alinea extends _Controller {
+public class Controller_IRM_Alinea extends Controller {
 
-	private _Link onramplink = null;
-	private _Link mainlinelink = null;
-	private _Sensor mainlinesensor = null;
-	private _Sensor queuesensor = null;
-	private double gain;				// [-]
+	private Link onramplink = null;
+	private Link mainlinelink = null;
+	private Sensor mainlinesensor = null;
+	private Sensor queuesensor = null;
+	private double gain_normalized;			// [-]
 	
-	private double targetvehicles;		// [veh]
+	private boolean targetdensity_given; 	// true if the user specifies the target density in the configuration file.
+											// In this case the this value is used and kept constant
+											// Otherwise it is assigned the critical density, which may change with fd profile.  
+	
+	private double targetvehicles;			// [veh/mile/lane]
 	private boolean usesensor;
 	
 	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
@@ -31,7 +33,7 @@ public class Controller_IRM_Alinea extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Controller_IRM_Alinea(_Scenario myScenario,_Link onramplink,_Link mainlinelink,_Sensor mainlinesensor,_Sensor queuesensor,double gain_in_mph){
+	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
 
 		this.myScenario = myScenario;
 		this.onramplink 	= onramplink;
@@ -50,21 +52,12 @@ public class Controller_IRM_Alinea extends _Controller {
 			return;
 		
 		usesensor = mainlinesensor!=null;
-
-		// normalize the gain 
-		double linklength;
-		if(usesensor){
-			 _Link mylink = mainlinesensor.getMyLink();
-			 if(mylink==null)
-				 return;
-			 linklength = mylink.getLengthInMiles();
-			 targetvehicles = mylink.getDensityCriticalInVeh();
-		}
-		else{
-			linklength = mainlinelink.getLengthInMiles();
-			targetvehicles = mainlinelink.getDensityCriticalInVeh();
-		}
-		this.gain = gain_in_mph * myScenario.getSimDtInHours()/linklength;
+		
+		// need the sensor's link for target density
+		if(usesensor)
+			mainlinelink = mainlinesensor.getMyLink();
+		
+		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 		
 	}
 	
@@ -92,14 +85,14 @@ public class Controller_IRM_Alinea extends _Controller {
 		
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+			com.relteq.sirius.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
 		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
-			for(ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(com.relteq.sirius.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
 				
 				if(s.getUsage()==null)
 					return;
@@ -132,28 +125,31 @@ public class Controller_IRM_Alinea extends _Controller {
 		
 		usesensor = mainlinesensor!=null;
 		
+		// need the sensor's link for target density
+		if(usesensor)
+			mainlinelink = mainlinesensor.getMyLink();
+		
+		if(mainlinelink==null)
+			return;
+		
 		// read parameters
 		double gain_in_mph = 50.0;
+		targetdensity_given = false;
 		if(jaxbc.getParameters()!=null)
-			for(Parameter p : jaxbc.getParameters().getParameter())
-				if(p.getName().equals("gain"))
+			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
+				if(p.getName().equals("gain")){
 					gain_in_mph = Double.parseDouble(p.getValue());
+				}
 
+				if(p.getName().equals("targetdensity")){
+					targetvehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
+					targetvehicles *= mainlinelink.get_Lanes()*mainlinelink.getLengthInMiles();		// now in [veh]
+					targetdensity_given = true;
+				}
+			}	
 		
-		// normalize the gain and set target to critical density
-		double linklength;
-		if(usesensor){
-			 _Link mylink = mainlinesensor.getMyLink();
-			 if(mylink==null)
-				 return;
-			 linklength = mylink.getLengthInMiles();
-			 targetvehicles = mylink.getDensityCriticalInVeh();
-		}
-		else{
-			linklength = mainlinelink.getLengthInMiles();
-			targetvehicles = mainlinelink.getDensityCriticalInVeh();
-		}
-		gain = gain_in_mph * myScenario.getSimDtInHours() /linklength;
+		// normalize the gain
+		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 	}
 	
 	@Override
@@ -163,10 +159,6 @@ public class Controller_IRM_Alinea extends _Controller {
 
 		// must have exactly one target
 		if(targets.size()!=1)
-			return false;
-		
-		// bad mainline link id
-		if(hasmainlinelink && mainlinelink==null)
 			return false;
 
 		// bad mainline sensor id
@@ -178,7 +170,7 @@ public class Controller_IRM_Alinea extends _Controller {
 			return false;		
 		
 		// both link and sensor feedback
-		if(mainlinelink==null && mainlinesensor==null)
+		if(hasmainlinelink && hasmainlinesensor)
 			return false;
 		
 		// sensor is disconnected
@@ -186,7 +178,7 @@ public class Controller_IRM_Alinea extends _Controller {
 			 return false;
 		
 		// no feedback
-		if(mainlinelink!=null  && mainlinesensor!=null)
+		if(mainlinelink==null)
 			return false;
 		
 		// Target link id not found, or number of targets not 1.
@@ -194,7 +186,7 @@ public class Controller_IRM_Alinea extends _Controller {
 			return false;
 			
 		// negative gain
-		if(gain<=0f)
+		if(gain_normalized<=0f)
 			return false;
 		
 		return true;
@@ -208,13 +200,20 @@ public class Controller_IRM_Alinea extends _Controller {
 	@Override
 	public void update() {
 		
-		double mainlinedensity;
+		// get mainline density either from sensor or from link
+		double mainlinevehicles;		// [veh]
 		if(usesensor)
-			mainlinedensity = mainlinesensor.getTotalDensityInVPM()*mainlinesensor.getMyLink().getLengthInMiles();
+			mainlinevehicles = mainlinesensor.getTotalDensityInVeh();
 		else
-			mainlinedensity = mainlinelink.getTotalDensityInVeh();
+			mainlinevehicles = mainlinelink.getTotalDensityInVeh();
+				
+		// need to read target density each time if not given
+		if(!targetdensity_given)
+			targetvehicles = mainlinelink.getDensityCriticalInVeh();
+		
+		// metering rate
+		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain_normalized*(targetvehicles-mainlinevehicles);
 
-		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain*(targetvehicles-mainlinedensity);
 	}
 
 	@Override

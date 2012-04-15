@@ -7,10 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.Controller;
-import com.relteq.sirius.jaxb.ScenarioElement;
-
-/** Simple implementation of {@link InterfaceController}.
+/** Base implementation of {@link InterfaceController}.
  * 
  * <p> This is the base class for all controllers contained in a scenario. 
  * It provides a full default implementation of <code>InterfaceController</code>
@@ -18,22 +15,22 @@ import com.relteq.sirius.jaxb.ScenarioElement;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class _Controller implements InterfaceComponent,InterfaceController {
+public abstract class Controller implements InterfaceComponent,InterfaceController {
 	
 	/** Scenario that contains this controller */
-	protected _Scenario myScenario;										       								       
+	protected Scenario myScenario;										       								       
 	
 	/** Id of the controller. */
 	protected String id;
 										
 	/** Controller type. */
-	protected _Controller.Type myType;
+	protected Controller.Type myType;
 	
 	/** List of scenario elements affected by this controller */
-	protected ArrayList<_ScenarioElement> targets;
+	protected ArrayList<ScenarioElement> targets;
 	
 	/** List of scenario elements that provide input to this controller */
-	protected ArrayList<_ScenarioElement> feedbacks;
+	protected ArrayList<ScenarioElement> feedbacks;
 	
 	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
 	protected Double [] control_maxflow;
@@ -78,10 +75,10 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	 protected _Controller(){}
+	 protected Controller(){}
 	
 	/** @y.exclude */
-	 protected _Controller(ArrayList<_ScenarioElement> targets){
+	 protected Controller(ArrayList<ScenarioElement> targets){
 		 this.targets = targets;
 		 this.control_maxflow  = new Double [targets.size()];
 		 this.control_maxspeed = new Double [targets.size()];
@@ -99,7 +96,7 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
    	 * @param index The index of the link in the controller's list of targets.
    	 * @return A boolean indicating success of the registration. 
    	 */
-	protected boolean registerFlowController(_Link link,int index){
+	protected boolean registerFlowController(Link link,int index){
 		if(link==null)
 			return false;
 		else
@@ -113,7 +110,7 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
    	 * @param index The index of the link in the controller's list of targets.
    	 * @return A boolean indicating success of the registration. 
    	 */
-	protected boolean registerSpeedController(_Link link,int index){
+	protected boolean registerSpeedController(Link link,int index){
 		if(link==null)
 			return false;
 		else
@@ -136,7 +133,7 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected final void populateFromJaxb(_Scenario myScenario,Controller c,_Controller.Type myType){
+	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Controller c,Controller.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.id = c.getId();
@@ -145,10 +142,10 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 
 		// store targets ......
-		targets = new ArrayList<_ScenarioElement>();
+		targets = new ArrayList<ScenarioElement>();
 		if(c.getTargetElements()!=null)
-			for(ScenarioElement s : c.getTargetElements().getScenarioElement() ){
-				_ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
+			for(com.relteq.sirius.jaxb.ScenarioElement s : c.getTargetElements().getScenarioElement() ){
+				ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
 				if(se!=null)
 					targets.add(se);
 			}
@@ -157,10 +154,10 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 		control_maxspeed = new Double [targets.size()];
 
 		// store feedbacks ......
-		feedbacks = new ArrayList<_ScenarioElement>();
+		feedbacks = new ArrayList<ScenarioElement>();
 		if(c.getFeedbackElements()!=null)
-			for(ScenarioElement s : c.getFeedbackElements().getScenarioElement()){
-				_ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
+			for(com.relteq.sirius.jaxb.ScenarioElement s : c.getFeedbackElements().getScenarioElement()){
+				ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
 				if(se!=null)
 					feedbacks.add(se);	
 			}
@@ -203,15 +200,15 @@ public abstract class _Controller implements InterfaceComponent,InterfaceControl
 		return id;
 	}	
 
-	public _Controller.Type getMyType() {
+	public Controller.Type getMyType() {
 		return myType;
 	}
 
-	public ArrayList<_ScenarioElement> getTargets() {
+	public ArrayList<ScenarioElement> getTargets() {
 		return targets;
 	}
 
-	public ArrayList<_ScenarioElement> getFeedbacks() {
+	public ArrayList<ScenarioElement> getFeedbacks() {
 		return feedbacks;
 	}
 	

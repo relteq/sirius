@@ -1,9 +1,9 @@
 package com.relteq.sirius.control;
 
-import com.relteq.sirius.simulator._Controller;
-import com.relteq.sirius.simulator._Scenario;
+import com.relteq.sirius.simulator.Controller;
+import com.relteq.sirius.simulator.Scenario;
 
-public class Controller_VSL_Time_of_Day extends _Controller {
+public class Controller_VSL_Time_of_Day extends Controller {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -13,7 +13,7 @@ public class Controller_VSL_Time_of_Day extends _Controller {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Controller_VSL_Time_of_Day(_Scenario myScenario) {
+	public Controller_VSL_Time_of_Day(Scenario myScenario) {
 		this.myScenario = myScenario;
 	}
 

@@ -2,10 +2,10 @@
 package com.relteq.sirius.sensor;
 
 import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator._Scenario;
-import com.relteq.sirius.simulator._Sensor;
+import com.relteq.sirius.simulator.Scenario;
+import com.relteq.sirius.simulator.Sensor;
 
-public class SensorLoopStation extends _Sensor {
+public class SensorLoopStation extends Sensor {
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -14,12 +14,12 @@ public class SensorLoopStation extends _Sensor {
 	public  SensorLoopStation(){
 	}
 
-	public SensorLoopStation(_Scenario myScenario,String networkId,String linkId){
+	public SensorLoopStation(Scenario myScenario,String networkId,String linkId){
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
 		// this.id = GENERATE AN ID;
-	    this.myType = _Sensor.Type.static_point;
+	    this.myType = Sensor.Type.static_point;
 	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
 	}
 	
@@ -51,6 +51,11 @@ public class SensorLoopStation extends _Sensor {
 	@Override
 	public Double[] getDensityInVPM() {
 		return SiriusMath.times(myLink.getDensityInVeh(),1/myLink.getLengthInMiles());
+	}
+	
+	@Override
+	public double getTotalDensityInVeh() {
+		return myLink.getTotalDensityInVeh();
 	}
 	
 	@Override

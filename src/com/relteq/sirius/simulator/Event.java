@@ -7,12 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.DemandProfile;
-import com.relteq.sirius.jaxb.Event;
-import com.relteq.sirius.jaxb.FundamentalDiagram;
-import com.relteq.sirius.jaxb.ScenarioElement;
-
-/** Simple implementation of {@link InterfaceEvent}.
+/** Base implementation of {@link InterfaceEvent}.
  * 
  * <p> This is the base class for all events contained in a scenario. 
  * It provides a full default implementation of <code>InterfaceEvent</code>
@@ -21,21 +16,21 @@ import com.relteq.sirius.jaxb.ScenarioElement;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("rawtypes")
-public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
+public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
 
 	/** Scenario that contains this event */
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	
 	/** Event type. */
-	protected _Event.Type myType;
+	protected Event.Type myType;
 	
 	/** Activation time of the event, in number of simulation time steps. */
 	protected int timestampstep;
 	
 	/** List of targets for the event. */
-	protected ArrayList<_ScenarioElement> targets;
+	protected ArrayList<ScenarioElement> targets;
 	
-	/** Possible event type. */
+	/** Type of event. */
 	public static enum Type	{  
 		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
 		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
@@ -50,20 +45,20 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
-	protected _Event(){}
+	protected Event(){}
 							  
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
-	protected void populateFromJaxb(_Scenario myScenario,Event jaxbE,_Event.Type myType){
+	protected void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Event jaxbE,Event.Type myType){
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
-		this.targets = new ArrayList<_ScenarioElement>();
+		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
-			for(ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
+			for(com.relteq.sirius.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
 				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
 	}
 
@@ -79,14 +74,14 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		}
 			
 		// check that there are targets assigned to non-global events
-		if(myType.compareTo(_Event.Type.global_control_toggle)!=0 && myType.compareTo(_Event.Type.global_demand_knob)!=0)
+		if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
 			if(targets.isEmpty()){
 				SiriusErrorLog.addErrorMessage("No targets assigned.");
 				return false;
 			}
 		
 		// check each target is valid
-		for(_ScenarioElement s : targets){
+		for(ScenarioElement s : targets){
 			if(s.reference==null){
 				SiriusErrorLog.addErrorMessage("Invalid target.");
 				return false;
@@ -116,7 +111,7 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 			return 1;
 		
 		int compare;
-		_Event that = ((_Event) arg0);
+		Event that = ((Event) arg0);
 		
 		// first ordering by time stamp
 		Integer thiststamp = this.timestampstep;
@@ -126,8 +121,8 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 			return compare;
 
 		// second ordering by event type
-		_Event.Type thiseventtype = this.myType;
-		_Event.Type thateventtype = that.myType;
+		Event.Type thiseventtype = this.myType;
+		Event.Type thateventtype = that.myType;
 		compare = thiseventtype.compareTo(thateventtype);
 		if(compare!=0)
 			return compare;
@@ -141,8 +136,8 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		
 		// fourth ordering by target type
 		for(int i=0;i<thisnumtargets;i++){
-			_ScenarioElement.Type thistargettype = this.targets.get(i).myType;
-			_ScenarioElement.Type thattargettype = that.targets.get(i).myType;
+			ScenarioElement.Type thistargettype = this.targets.get(i).myType;
+			ScenarioElement.Type thattargettype = that.targets.get(i).myType;
 			compare = thistargettype.compareTo(thattargettype);
 			if(compare!=0)
 				return compare;		
@@ -165,7 +160,7 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		if(obj==null)
 			return false;
 		else
-			return this.compareTo((_Event) obj)==0;
+			return this.compareTo((Event) obj)==0;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -176,31 +171,31 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		myScenario.global_control_on = ison;
 	}
 	
-	protected void setControllerIsOn(_Controller c,boolean ison){
+	protected void setControllerIsOn(Controller c,boolean ison){
 		if(c==null)
 			return;
 		c.ison = ison;
 	}
 
-    protected void setLinkLanes(_Link link,double lanes) throws SiriusException{
+    protected void setLinkLanes(Link link,double lanes) throws SiriusException{
 		if(link==null)
 			return;
     	link.set_Lanes(lanes);
     }
     	
-	protected void setLinkFundamentalDiagram(_Link link,FundamentalDiagram newFD) throws SiriusException{
+	protected void setLinkFundamentalDiagram(Link link,com.relteq.sirius.jaxb.FundamentalDiagram newFD) throws SiriusException{
 		if(link==null)
 			return;
 		link.activateFundamentalDiagramEvent(newFD);
 	}
 	
-    protected void revertLinkFundamentalDiagram(_Link link) throws SiriusException{
+    protected void revertLinkFundamentalDiagram(Link link) throws SiriusException{
     	if(link==null)
     		return;
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(_Node node,int inputindex,int vehicletypeindex,ArrayList<Double> splitrow) {
+	protected void setNodeEventSplitRatio(Node node,int inputindex,int vehicletypeindex,ArrayList<Double> splitrow) {
 		if(node==null)
 			return;
 		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
@@ -213,7 +208,7 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		node.hasactivesplitevent = true;
 	}
 
-	protected void revertNodeEventSplitRatio(_Node node) {
+	protected void revertNodeEventSplitRatio(Node node) {
 		if(node==null)
 			return;
 		if(node.hasactivesplitevent){
@@ -222,12 +217,12 @@ public abstract class _Event extends com.relteq.sirius.jaxb.Event implements Com
 		}
 	}
 	
-    protected void setDemandProfileEventKnob(DemandProfile profile,Double knob){
+    protected void setDemandProfileEventKnob(com.relteq.sirius.jaxb.DemandProfile profile,Double knob){
 		if(profile==null)
 			return;
 		if(knob.isNaN())
 			return;
-		((_DemandProfile) profile).set_knob(knob);
+		((DemandProfile) profile).set_knob(knob);
     }
     
     protected void setGlobalDemandEventKnob(Double knob){

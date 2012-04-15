@@ -5,19 +5,16 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.SplitRatioProfileSet;
-import com.relteq.sirius.jaxb.SplitratioProfile;
+final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfileSet {
 
-final class _SplitRatioProfileSet extends SplitRatioProfileSet {
-
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
 		
@@ -26,8 +23,8 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
-		for(SplitratioProfile sr : getSplitratioProfile())
-			((_SplitRatioProfile) sr).populate(myScenario);
+		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+			((SplitRatioProfile) sr).populate(myScenario);
 	}
 
 	protected boolean validate() {
@@ -38,16 +35,16 @@ final class _SplitRatioProfileSet extends SplitRatioProfileSet {
 			return false;
 		}
 		
-		for(SplitratioProfile sr : getSplitratioProfile())
-			if(!((_SplitRatioProfile)sr).validate())
+		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+			if(!((SplitRatioProfile)sr).validate())
 				return false;
 		
 		return true;
 	}
 
 	protected void update() {
-    	for(SplitratioProfile sr : getSplitratioProfile())
-    		((_SplitRatioProfile) sr).update();	
+    	for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+    		((SplitRatioProfile) sr).update();	
 	}
 	
 }

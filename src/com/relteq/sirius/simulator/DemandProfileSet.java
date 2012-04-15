@@ -5,19 +5,16 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.DemandProfile;
-import com.relteq.sirius.jaxb.DemandProfileSet;
+final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
 
-final class _DemandProfileSet extends DemandProfileSet {
-
-	protected _Scenario myScenario;
+	protected Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(_Scenario myScenario) {
+	protected void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;;
 
@@ -26,13 +23,13 @@ final class _DemandProfileSet extends DemandProfileSet {
 
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
-		for(DemandProfile dp : getDemandProfile())
-			((_DemandProfile) dp).populate(myScenario);
+		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+			((DemandProfile) dp).populate(myScenario);
 	}
 
 	protected void reset() {
-		for(DemandProfile dp : getDemandProfile())
-			((_DemandProfile) dp).reset();
+		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+			((DemandProfile) dp).reset();
 	}
 	
 	protected boolean validate() {
@@ -43,16 +40,16 @@ final class _DemandProfileSet extends DemandProfileSet {
 			return false;
 		}
 		
-		for(DemandProfile dp : getDemandProfile())
-			if(!((_DemandProfile)dp).validate())
+		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+			if(!((DemandProfile)dp).validate())
 				return false;
 		
 		return true;
 	}
 
 	protected void update() {
-    	for(DemandProfile dp : getDemandProfile())
-    		((_DemandProfile) dp).update(false);	
+    	for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+    		((DemandProfile) dp).update(false);	
 	}
 	
 }
