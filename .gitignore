@@ -6,4 +6,5 @@ sirius.jar
 src/com/relteq/sirius/jaxb/
 output_*.xml
 *.asv
+*.class
 

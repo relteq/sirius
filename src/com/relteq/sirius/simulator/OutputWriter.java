@@ -32,6 +32,7 @@ final class OutputWriter {
 			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + suffix + ".xml"), "utf-8");
 			xmlsw.writeStartDocument("utf-8", "1.0");
 			xmlsw.writeStartElement("scenario_output");
+			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
 			if (null != myScenario) try {
 				JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
@@ -65,7 +66,9 @@ final class OutputWriter {
 	}
 
 	protected void recordstate(double time,boolean exportflows,int outsteps) throws SiriusException {
-		double invsteps = (1 == myScenario.clock.getCurrentstep()) ? 1f : 1f / (double) outsteps;
+		boolean firststep = 0 == myScenario.clock.getCurrentstep();
+		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
+		String dt = String.format(SEC_FORMAT, firststep ? .0d : myScenario.getSimDtInSeconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
@@ -74,7 +77,7 @@ final class OutputWriter {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
-				xmlsw.writeAttribute("dt", String.format(SEC_FORMAT, network.getDt()));
+				xmlsw.writeAttribute("dt", dt);
 				xmlsw.writeStartElement("ll");
 				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");

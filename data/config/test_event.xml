@@ -21,7 +21,8 @@
    </SplitRatioProfileSet>
    
    <ControllerSet>
-      <controller dt="300" type="IRM_alinea" name="c1">
+   <!--
+      <controller id="0" dt="300" type="IRM_alinea" name="c1">
          <targetElements>
             <scenarioElement id="-6" type="link"/>
          </targetElements>
@@ -30,24 +31,24 @@
             <scenarioElement id="-2" type="link" usage="mainlinelink"/>
          </feedbackElements>
       </controller>
-	  
+	  -->
    </ControllerSet>   
    
    <EventSet>
    
-      <event enabled="true" tstamp="42300" type="global_control_toggle">
+	  <!--
+   
+      <event id="0" enabled="true" tstamp="42300" type="global_control_toggle">
 		 <on_off_switch value="off"/>
       </event>
 	  
-      <event enabled="true" tstamp="60000" type="global_control_toggle">
+      <event id="1" enabled="true" tstamp="60000" type="global_control_toggle">
 		 <on_off_switch value="on"/>
       </event>
    
-	  <!--
-   
    
 	  
-      <event enabled="true" tstamp="42300" type="node_split_ratio">
+      <event id="2" enabled="true" tstamp="42300" type="node_split_ratio">
          <targetElements>
             <scenarioElement id="-4" type="node"/>
          </targetElements>
@@ -57,51 +58,54 @@
 		 </splitratioEvent>
       </event>
 	  
-      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="node_split_ratio">
+      <event id="3" enabled="true" tstamp="60000" reset_to_nominal="true" type="node_split_ratio">
          <targetElements>
             <scenarioElement id="-4" type="node"/>
          </targetElements>
       </event>
 	  
-      <event enabled="true" tstamp="42300" type="global_demand_knob">
+      <event id="4" enabled="true" tstamp="42300" type="global_demand_knob">
 		 <knob value="2"/>
       </event>
+	  -->
 	  
-      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="global_demand_knob"/>
+      <event id="5" enabled="true" tstamp="60000" reset_to_nominal="true" type="global_demand_knob"/>
 	  
-      <event enabled="true" tstamp="42300" type="link_demand_knob">
+	  <!--
+      <event id="6" enabled="true" tstamp="42300" type="link_demand_knob">
 		 <knob value="2"/>
          <targetElements>
             <scenarioElement id="-1" type="link"/>
          </targetElements>
       </event>
 	  
-      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="link_demand_knob">
+      <event id="7" enabled="true" tstamp="60000" reset_to_nominal="true" type="link_demand_knob">
          <targetElements>
             <scenarioElement id="-1" type="link"/>
          </targetElements>
       </event>
    
-      <event enabled="true" tstamp="42300" type="fundamental_diagram">
+      <event id="8" enabled="true" tstamp="42300" type="fundamental_diagram">
          <fundamentalDiagram capacity="150" capacityDrop="0" congestion_speed="15" densityJam="25" freeflow_speed="60"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
 	  
-      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="fundamental_diagram">
+      <event id="9" enabled="true" tstamp="60000" reset_to_nominal="true" type="fundamental_diagram">
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
 	  
 	  
-      <event enabled="true" tstamp="60000" reset_to_nominal="true" type="link_lanes">
+      <event id="10" enabled="true" tstamp="60000" reset_to_nominal="true" type="link_lanes">
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
       </event>
-      <event enabled="true" tstamp="42300" type="link_lanes">
+	  
+      <event id="11" enabled="true" tstamp="42300" type="link_lanes">
          <lane_count_change  delta = "-0.9"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>

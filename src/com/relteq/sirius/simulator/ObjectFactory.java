@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -252,7 +253,7 @@ public final class ObjectFactory {
         // read and return ...........................................................
         Scenario S = new Scenario();
         try {
-            u.setProperty("com.sun.xml.internal.bind.ObjectFactory",new JaxbObjectFactory());            
+        	setObjectFactory(u, new JaxbObjectFactory());
         	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
         	System.out.println(je.getMessage());
@@ -317,6 +318,14 @@ public final class ObjectFactory {
 		
         return S;
 		
+	}
+
+	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
+		final String classname = unmrsh.getClass().getName();
+		String propnam = classname.startsWith("com.sun.xml.internal") ?//
+				"com.sun.xml.internal.bind.ObjectFactory" ://
+				"com.sun.xml.bind.ObjectFactory";
+		unmrsh.setProperty(propnam, factory);
 	}
 
 	/////////////////////////////////////////////////////////////////////
