@@ -3,11 +3,13 @@
 <project name="sirius" default="jar" basedir="."
 		xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
 	<property name="src.dir" value="${basedir}/src"/>
+	<property name="test.dir" value="${basedir}/test"/>
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="bin.dir" value="${basedir}/bin"/>
 	<property name="src.encoding" value="ISO-8859-1"/>
 
 	<property name="javac.optimize" value="on"/>
+	<property name="javac.debug" value="on"/>
 	<property name="javac.deprecation" value="off"/>
 	<property name="javac.version" value="1.6"/>
 	<property name="javac.args" value=""/>
@@ -23,6 +25,9 @@
 
 	<property name="ivy.lib.dir" value="${basedir}/lib"/>
 
+	<property name="ivy.build.conf" value="build"/>
+	<property name="ivy.test.conf" value="test"/>
+
 	<path id="lib.path">
 		<fileset dir="${ivy.lib.dir}"/>
 	</path>
@@ -31,8 +36,8 @@
 		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
 	</target>
 
-	<target name="all" depends="jar,doc"
-			description="build a jar and generate documentation"/>
+	<target name="all" depends="jar,doc,test"
+			description="build a jar, generate documentation, and run tests"/>
 
 	<target name="xsd2java" depends="xjctask">
 		<mkdir dir="${xjc.destdir}"/>
@@ -115,7 +120,7 @@
         </javadoc>
     </target>
 
-	<target name="clean" description="clean up">
+	<target name="clean" description="clean up" depends="clean-test">
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
@@ -124,7 +129,7 @@
 	</target>
 
 	<target name="deps" description="resolve dependencies" depends="init-ivy">
-		<ivy:retrieve/>
+		<ivy:retrieve conf="${ivy.build.conf}"/>
 	</target>
 
 	<property name="ivy.install.version" value="2.1.0-rc2"/>
@@ -147,6 +152,37 @@
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml"
 				uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+	</target>
+
+	<target name="deps-test" depends="init-ivy">
+		<ivy:retrieve conf="${ivy.test.conf}"/>
+	</target>
+
+	<path id="classpath.test">
+		<path refid="lib.path"/>
+		<pathelement location="${jar.file}"/>
+		<pathelement location="${test.dir}"/>
+	</path>
+
+	<target name="compile-test" depends="deps-test,jar">
+		<javac encoding="${src.encoding}" includeantruntime="no" debug="on"
+				srcdir="${test.dir}" includes="**/*.java">
+			<classpath refid="classpath.test"/>
+		</javac>
+	</target>
+
+	<target name="test" description="run tests" depends="compile-test">
+		<junit haltonfailure="on">
+			<classpath refid="classpath.test"/>
+			<formatter type="plain" usefile="false"/>
+			<test name="com.relteq.sirius.simulator.OutputWriterTest"/>
+		</junit>
+	</target>
+
+	<target name="clean-test">
+		<delete verbose="on">
+			<fileset dir="${test.dir}" includes="**/*.class" />
+		</delete>
 	</target>
 </project>
 
