@@ -75,21 +75,6 @@
 		</jar>
 	</target>
 
-	<!--
-	<target name="doc" depends="xsd2java,compile" description="generate documentation">
-		<javadoc encoding="${src.encoding}"
-				sourcepath="${src.dir}" packagenames="**/*.*" destdir="${doc.dir}"
-				protected="yes" author="yes" use="yes" version="yes" linksource="yes">
-			<doclet name="ydoc.doclets.YStandard"
-					path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}">
-				<param name="-umltypegen"/>
-				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
-				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
-			</doclet>
-		</javadoc>
-	</target> -->
-	
-	
 	<target name="doc" depends="xsd2java,compile" description="generate documentation">
         <javadoc 
 			encoding="${src.encoding}"
@@ -100,17 +85,11 @@
 			access="protected" 
 			destdir="${doc.dir}"
 			classpath="." 
-			sourcefiles="src/com/relteq/sirius/simulator/Controller.java,
- 			             src/com/relteq/sirius/simulator/ObjectFactory.java,
- 			             src/com/relteq/sirius/simulator/Link.java,
- 			             src/com/relteq/sirius/simulator/Node.java,
- 			             src/com/relteq/sirius/simulator/Scenario.java,
- 			             src/com/relteq/sirius/simulator/SiriusStateTrajectory.java,
- 			             src/com/relteq/sirius/simulator/ScenarioElement.java,
- 			             src/com/relteq/sirius/simulator/Sensor.java,
- 			             src/com/relteq/sirius/simulator/Signal.java,
-			             src/com/relteq/sirius/simulator/Event.java" 
 			sourcepath="src/com/relteq/sirius" >
+			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
+					includes="Controller.java ObjectFactory.java Link.java Node.java
+						Scenario.java SiriusStateTrajectory.java ScenarioElement.java
+						Sensor.java Signal.java Event.java"/>
 			<doclet 				
 				name="ydoc.doclets.YStandard"
 				path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}" >
