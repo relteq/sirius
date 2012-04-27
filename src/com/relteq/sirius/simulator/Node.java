@@ -694,5 +694,27 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return hascontroller;
 	}
 	
-	
+	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
+	 * @throws SiriusException */
+	public void setSplitRatioMatrix(double [][][] x) throws SiriusException {
+		if(x.length!=splitratio.getnIn())
+			throw new SiriusException("Node.setSplitRatioMatrix, bad first dimension.");
+		if(x[0].length!=splitratio.getnOut())
+			throw new SiriusException("Node.setSplitRatioMatrix, bad second dimension.");
+		if(x[0][0].length!=splitratio.getnVTypes())
+			throw new SiriusException("Node.setSplitRatioMatrix, bad third dimension.");
+		int i,j,k;
+		for(i=0;i<splitratio.getnIn();i++)
+			for(j=0;j<splitratio.getnOut();j++)
+				for(k=0;k<splitratio.getnVTypes();k++)
+					splitratio.set(i, j, k, x[i][j][k]);
+		normalizeSplitRatioMatrix(splitratio);
+	}
+
+	public Double [][][] getSplitRatio(){
+		if(splitratio==null)
+			return null;
+		else
+			return splitratio.getData();
+	}
 }
