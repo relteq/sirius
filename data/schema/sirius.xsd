@@ -129,9 +129,9 @@
         <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
 		<xs:element ref="ODList" minOccurs="0"  maxOccurs="1" />
-		<xs:element ref="PathSegements" minOccurs="0"  maxOccurs="1" />
+		<xs:element ref="PathSegments" minOccurs="0"  maxOccurs="1" />
 		<xs:element ref="DecisionPoints" minOccurs="0"  maxOccurs="1" />
-		<xs:element ref="ODDemandPofileSet" minOccurs="0"  maxOccurs="1" />
+		<xs:element ref="ODDemandProfileSet" minOccurs="0"  maxOccurs="1" />
       </xs:all>
       <xs:attribute name="id" type="xs:string" use="optional" />
       <xs:attribute name="name" type="xs:string" use="optional" />
@@ -948,9 +948,9 @@
 				</xs:simpleType>
 			  </xs:element>
 			  
-  <!-- PathSegements ............................................................. -->
+  <!-- PathSegments ............................................................. -->
 
-	  <xs:element name="PathSegements">
+	  <xs:element name="PathSegments">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="path_segment" minOccurs="0" maxOccurs="unbounded" />
@@ -998,9 +998,9 @@
 				</xs:complexType>
 			  </xs:element>
 		  
-  <!-- ODDemandPofileSet ......................................................... -->
+  <!-- ODDemandProfileSet ......................................................... -->
 
-	  <xs:element name="ODDemandPofileSet">
+	  <xs:element name="ODDemandProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
