@@ -19,30 +19,60 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 public class OutputWriterTest {
+	private static String OUT_PREFIX = "output_";
+	private static String OUT_SUFFIX = "_0.xml";
+	private static String CONF_SUFFIX = ".xml";
 
 	@Test
 	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError {
-		String prefix = "output";
-		String suffix = "_0.xml";
-		File outfile = File.createTempFile(prefix, suffix);
-		String abspath = outfile.getAbsolutePath();
-		if (!abspath.endsWith(suffix)) fail("Incorrect temporary file path: " + abspath);
-		System.out.println("Output file: " + abspath);
-		String [] args = {"data" + File.separator + "config" + File.separator + "test_event.xml", abspath.substring(0, abspath.length() - suffix.length())};
-		System.out.println("args: " + args[0] + " " + args[1]);
-		Runner.main(args);
-		System.out.println("Output done");
-
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		Schema schema = factory.newSchema(new File("data" + File.separator + "schema" + File.separator + "sirius_output.xsd"));
-		System.out.println("Schema loaded");
-		Validator validator = schema.newValidator();
+		String schemadir = "data" + File.separator + "schema";
+		Schema ischema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
+		Schema oschema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
 
-		XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(abspath));
+		File confdir = new File("data" + File.separator + "config");
+		File [] conffile = confdir.listFiles();
+		for (int iii = 0; iii < conffile.length; ++iii) {
+			String confname = conffile[iii].getName();
+			if (confname.endsWith(CONF_SUFFIX)) {
+				System.out.println("CONFIG: " + conffile[iii].getPath());
+				validate(conffile[iii], ischema);
+				System.out.println("Config " + confname + " validated");
+
+				String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
+				File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
+				runSirius(conffile[iii].getPath(), outfile.getAbsolutePath());
+
+				validate(outfile, oschema);
+				System.out.println("Output validated");
+
+				outfile.delete();
+				System.out.println(outfile.getAbsolutePath() + " removed");
+			}
+		}
+	}
+
+	/** Validate an XML file
+	 * @throws FactoryConfigurationError
+	 * @throws XMLStreamException
+	 * @throws IOException
+	 * @throws SAXException
+	 * */
+	protected void validate(File xmlfile, Schema schema) throws XMLStreamException, FactoryConfigurationError, SAXException, IOException {
+		Validator validator = schema.newValidator();
+		XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(xmlfile));
 		validator.validate(new StAXSource(xmlsr));
-		System.out.println("Output validated");
-		outfile.delete();
-		System.out.println(abspath + " removed");
+	}
+
+	/** Run Sirius */
+	protected void runSirius(String confpath, String outpath) {
+		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
+		String [] args = {confpath, outpath.substring(0, outpath.length() - OUT_SUFFIX.length()), //
+				String.format("%d", 0), String.format("%d", 3600), String.format("%d", 600)};
+		System.out.print("ARGS:");
+		for (int iii = 0; iii < args.length; ++ iii) System.out.print(" " + args[iii]);
+		System.out.println();
+		Runner.main(args);
 	}
 
 }
