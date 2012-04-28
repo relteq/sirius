@@ -7,11 +7,9 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
+import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
 final class OutputWriter {
@@ -23,7 +21,6 @@ final class OutputWriter {
 
 	public OutputWriter(Scenario myScenario){
 		this.myScenario = myScenario;
-		//this.outsteps = osteps;
 	}
 
 	protected boolean open(String prefix,String suffix) throws FileNotFoundException {
@@ -34,13 +31,32 @@ final class OutputWriter {
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
-			if (null != myScenario) try {
-				JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
-				Marshaller mrsh = jaxbc.createMarshaller();
-				mrsh.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-				mrsh.marshal(myScenario, xmlsw);
-			} catch (JAXBException exc) {
-				SiriusErrorLog.addErrorMessage(exc.toString());
+			if (null != myScenario) {
+				String conffnam = myScenario.getConfigFilename();
+				XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(conffnam));
+				while (xmlsr.hasNext()) {
+					switch (xmlsr.getEventType()) {
+					case XMLStreamConstants.START_ELEMENT:
+						QName ename = xmlsr.getName();
+						xmlsw.writeStartElement(ename.getPrefix(), ename.getLocalPart(), ename.getNamespaceURI());
+						for (int iii = 0; iii < xmlsr.getAttributeCount(); ++iii) {
+							QName aname = xmlsr.getAttributeName(iii);
+							xmlsw.writeAttribute(aname.getPrefix(), aname.getNamespaceURI(), aname.getLocalPart(), xmlsr.getAttributeValue(iii));
+						}
+						break;
+					case XMLStreamConstants.END_ELEMENT:
+						xmlsw.writeEndElement();
+						break;
+					case XMLStreamConstants.CHARACTERS:
+						if (!xmlsr.isWhiteSpace()) xmlsw.writeCharacters(xmlsr.getText());
+						break;
+					case XMLStreamConstants.CDATA:
+						if (!xmlsr.isWhiteSpace()) xmlsw.writeCData(xmlsr.getText());
+						break;
+					}
+					xmlsr.next();
+				}
+				xmlsr.close();
 			}
 			// report
 			xmlsw.writeStartElement("report");

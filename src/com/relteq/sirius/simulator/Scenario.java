@@ -944,4 +944,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	}
 
+	/** Get configuration file name */
+	public String getConfigFilename() {
+		return configfilename;
+	}
+
 }
