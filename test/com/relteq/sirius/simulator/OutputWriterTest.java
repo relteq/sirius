@@ -1,12 +1,18 @@
 package com.relteq.sirius.simulator;
 
 import static org.junit.Assert.*;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
@@ -18,38 +24,55 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+@RunWith(Parameterized.class)
 public class OutputWriterTest {
 	private static String OUT_PREFIX = "output_";
 	private static String OUT_SUFFIX = "_0.xml";
 	private static String CONF_SUFFIX = ".xml";
 
-	@Test
-	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError {
+	private File conffile;
+	private static Schema ischema;
+	private static Schema oschema;
+
+	@BeforeClass public static void loadSchemas() throws SAXException {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		String schemadir = "data" + File.separator + "schema";
-		Schema ischema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
-		Schema oschema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
+		ischema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
+		oschema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
+	}
 
+	public OutputWriterTest(File conffile) {
+		this.conffile = conffile;
+	}
+
+	@Parameters
+	public static Vector<Object[]> conffiles() {
 		File confdir = new File("data" + File.separator + "config");
-		File [] conffile = confdir.listFiles();
-		for (int iii = 0; iii < conffile.length; ++iii) {
-			String confname = conffile[iii].getName();
-			if (confname.endsWith(CONF_SUFFIX)) {
-				System.out.println("CONFIG: " + conffile[iii].getPath());
-				validate(conffile[iii], ischema);
-				System.out.println("Config " + confname + " validated");
-
-				String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
-				File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
-				runSirius(conffile[iii].getPath(), outfile.getAbsolutePath());
-
-				validate(outfile, oschema);
-				System.out.println("Output validated");
-
-				outfile.delete();
-				System.out.println(outfile.getAbsolutePath() + " removed");
-			}
+		File [] files = confdir.listFiles();
+		Vector<Object[]> res = new Vector<Object[]>(files.length);
+		for (int iii = 0; iii < files.length; ++iii) {
+			if (files[iii].getName().endsWith(CONF_SUFFIX))
+				res.add(new Object[] {files[iii]});
 		}
+		return res;
+	}
+
+	@Test
+	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError {
+		System.out.println("CONFIG: " + conffile.getPath());
+		validate(conffile, ischema);
+		String confname = conffile.getName();
+		System.out.println("Config " + confname + " validated");
+
+		String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
+		File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
+		runSirius(conffile.getPath(), outfile.getAbsolutePath());
+
+		validate(outfile, oschema);
+		System.out.println("Output validated");
+
+		outfile.delete();
+		System.out.println(outfile.getAbsolutePath() + " removed");
 	}
 
 	/** Validate an XML file
@@ -58,7 +81,7 @@ public class OutputWriterTest {
 	 * @throws IOException
 	 * @throws SAXException
 	 * */
-	protected void validate(File xmlfile, Schema schema) throws XMLStreamException, FactoryConfigurationError, SAXException, IOException {
+	protected static void validate(File xmlfile, Schema schema) throws XMLStreamException, FactoryConfigurationError, SAXException, IOException {
 		Validator validator = schema.newValidator();
 		XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(xmlfile));
 		validator.validate(new StAXSource(xmlsr));
