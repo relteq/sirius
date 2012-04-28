@@ -121,6 +121,24 @@ final class Double3DMatrix {
 		
     }
      
+    public Double3DMatrix(double [][][] x){
+    	nIn = x.length;
+    	if(nIn==0)
+    		return;
+    	nOut = x[0].length;
+    	if(nOut==0)
+    		return;
+    	nVTypes = x[0][0].length;
+    	if(nVTypes==0)
+    		return;
+    	data = new Double[nIn][nOut][nVTypes];
+    	for(int i=0;i<nIn;i++)
+        	for(int j=0;j<nOut;j++)
+            	for(int k=0;k<nVTypes;k++)
+            		data[i][j][k] = x[i][j][k];
+    	isempty = false;
+    }
+    
 	/////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////  
