@@ -367,7 +367,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
-        	JAXBContext context = JAXBContext.newInstance("aurora.jaxb");
+        	JAXBContext context = JAXBContext.newInstance("com.relteq.sirius.jaxb");
         	Marshaller m = context.createMarshaller();
         	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         	m.marshal(this,new FileOutputStream(filename));
