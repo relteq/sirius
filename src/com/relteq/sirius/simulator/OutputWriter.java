@@ -72,6 +72,9 @@ final class OutputWriter {
 			xmlsw.writeStartElement("node_report");
 			xmlsw.writeAttribute("srm_report", "true");
 			xmlsw.writeEndElement(); // node_report
+			xmlsw.writeStartElement("signal_report");
+			xmlsw.writeAttribute("cycle_report", "true");
+			xmlsw.writeEndElement(); // signal_report
 			xmlsw.writeEndElement(); // report
 			// data
 			xmlsw.writeStartElement("data");
@@ -94,6 +97,7 @@ final class OutputWriter {
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
 				xmlsw.writeAttribute("dt", dt);
+				// link list
 				xmlsw.writeStartElement("ll");
 				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
@@ -111,6 +115,7 @@ final class OutputWriter {
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
+				// node list
 				xmlsw.writeStartElement("nl");
 				for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
 					xmlsw.writeStartElement("n");
@@ -128,6 +133,16 @@ final class OutputWriter {
 					xmlsw.writeEndElement(); // n
 				}
 				xmlsw.writeEndElement(); // nl
+				// signal list
+				if (null != network.getSignalList()) {
+					xmlsw.writeStartElement("sigl");
+					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
+						xmlsw.writeStartElement("sig");
+						xmlsw.writeAttribute("id", signal.getId());
+						xmlsw.writeEndElement(); // sig
+					}
+					xmlsw.writeEndElement(); // sigl
+				}
 				xmlsw.writeEndElement(); // net
 			}
 			xmlsw.writeEndElement(); // netl
@@ -148,6 +163,11 @@ final class OutputWriter {
 		}
 	}
 
+	/** Join the elements of an array into a string.
+	 * @param V      an array to be serialized
+	 * @param delim  the string used to separate the elements of the array
+	 * @return a string containing the array values
+	 */
 	protected String format(Double [] V,String delim){
 		if (0 == V.length) return "";
 		else if (1 == V.length) return String.format(NUM_FORMAT, V[0]);
