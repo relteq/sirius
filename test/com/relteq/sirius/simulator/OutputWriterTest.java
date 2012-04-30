@@ -50,9 +50,9 @@ public class OutputWriterTest {
 		File confdir = new File("data" + File.separator + "config");
 		File [] files = confdir.listFiles();
 		Vector<Object[]> res = new Vector<Object[]>(files.length);
-		for (int iii = 0; iii < files.length; ++iii) {
-			if (files[iii].getName().endsWith(CONF_SUFFIX))
-				res.add(new Object[] {files[iii]});
+		for (File file : files) {
+			if (file.getName().endsWith(CONF_SUFFIX))
+				res.add(new Object[] {file});
 		}
 		return res;
 	}
