@@ -228,18 +228,8 @@
 					  <xs:attribute name="id" type="xs:string" use="required"/>
 					</xs:complexType>
 				  </xs:element>
-				  
-				    <!-- Cycle .................................................................. -->
-				    <xs:element name="cycle">
-				      <xs:complexType>
-					    <xs:sequence>
-				          <xs:element maxOccurs="16" minOccurs="0" ref="ph"/>
-			            </xs:sequence>
-					    <xs:attribute name="len" type="xs:decimal" use="required"/> <!-- length in seconds -->
-					  </xs:complexType>
-				    </xs:element>
-					
-					 <!-- Phase .................................................................. -->
+
+					<!-- Phase .................................................................. -->
 				    <xs:element name="ph">
 				      <xs:complexType>
 					    <xs:attribute name="i" use="required"> <!-- phase number -->
