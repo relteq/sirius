@@ -223,7 +223,7 @@
 				  <xs:element name="sig">
 				    <xs:complexType>
 					  <xs:sequence>
-				        <xs:element maxOccurs="unbounded" minOccurs="0" ref="cycle"/>
+				        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ph"/>
 			          </xs:sequence>
 					  <xs:attribute name="id" type="xs:string" use="required"/>
 					</xs:complexType>
