@@ -96,6 +96,12 @@ public class OutputWriterTest {
 		for (int iii = 0; iii < args.length; ++ iii) System.out.print(" " + args[iii]);
 		System.out.println();
 		Runner.main(args);
+		if (SiriusErrorLog.haserror()) {
+			System.out.println("==== ERRORS ====");
+			SiriusErrorLog.printErrorMessage();
+			System.out.println("================");
+			SiriusErrorLog.clearErrorMessage();
+		}
 	}
 
 }
