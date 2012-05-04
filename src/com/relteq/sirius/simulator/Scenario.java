@@ -691,7 +691,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 
 	/** Get the initial density state for the network with given id.
-	 * @param nework_id String id of the network
+	 * @param network_id String id of the network
 	 * @return A two-dimensional array of doubles where the first dimension is the
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
@@ -722,7 +722,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 
 	/** Get the current density state for the network with given id.
-	 * @param nework_id String id of the network
+	 * @param network_id String id of the network
 	 * @return A two-dimensional array of doubles where the first dimension is the
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})

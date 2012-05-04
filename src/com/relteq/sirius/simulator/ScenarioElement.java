@@ -19,12 +19,12 @@ public final class ScenarioElement extends com.relteq.sirius.jaxb.ScenarioElemen
 
 	/** Type of scenario element. */
 	public static enum Type {  
-	/** see {@link _Link} 		*/ link, 
-	/** see {@link _Node} 		*/ node, 
-	/** see {@link _Controller} */ controller,
-	/** see {@link _Sensor} 	*/ sensor,
-	/** see {@link _Event} 		*/ event,
-	/** see {@link _Signal} 	*/ signal };
+	/** see {@link Link} 		*/ link,
+	/** see {@link Node} 		*/ node,
+	/** see {@link Controller} */ controller,
+	/** see {@link Sensor} 	*/ sensor,
+	/** see {@link Event} 		*/ event,
+	/** see {@link Signal} 	*/ signal };
 							   
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
