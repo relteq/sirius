@@ -97,6 +97,11 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 
 	protected void reset(Scenario.ModeType simulationMode) throws SiriusException {
 
+		// node list
+		if(getNodeList()!=null)
+			for (com.relteq.sirius.jaxb.Node node : getNodeList().getNode())
+				((Node) node).reset();
+
 		// link list
 		if(getLinkList()!=null)
 			for (com.relteq.sirius.jaxb.Link link : getLinkList().getLink()){
@@ -127,11 +132,15 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
         }
         
         // update sensor readings .......................
+        // NOTE: ensembles have not been implemented for sensors. They do not apply
+        // to the loop sensor, but would make a difference for floating sensors.
 		if(getSensorList()!=null)
 			for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
 				((Sensor)sensor).update();
         
         // update signals ...............................
+		// NOTE: ensembles have not been implemented for signals. They do not apply
+		// to pretimed control, but would make a differnece for feedback control. 
 		if(getSignalList()!=null)
 			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
 				((Signal)signal).update();

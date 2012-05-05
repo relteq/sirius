@@ -7,6 +7,8 @@ package com.relteq.sirius.simulator;
 
 final class Runner {
 	
+	private static Scenario scenario;
+		
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
@@ -25,7 +27,7 @@ final class Runner {
 		}
 
 		// load configuration file ................................
-		Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
+		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
 		if(SiriusErrorLog.haserror()){
@@ -33,13 +35,12 @@ final class Runner {
 			return;
 		}
 
-		// run scenario ...........................................
-		try {
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
-		} catch (SiriusException e) {
-			e.printStackTrace();
-		}
-
+//		runMultiple();
+//
+//		runReturnState();
+		
+		runAdvance(20,30,3600);
+		
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
 
@@ -114,6 +115,39 @@ final class Runner {
 
 		return true;
 	}
-	
-	
+
+	private static void runMultiple(){
+		try {
+			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
+		} catch (SiriusException e) {
+			e.printStackTrace();
+		}	
+	}
+
+	private static void runReturnState(){
+		try {
+			SiriusStateTrajectory state = scenario.run(timestart,timeend,outdt);
+		} catch (SiriusException e) {
+			e.printStackTrace();
+		} 
+	}
+
+	private static void runAdvance(int numEnsemble,double dt,double endtime){
+		
+		try {
+			scenario.initialize_run(numEnsemble);
+			Link link = scenario.getLinkWithCompositeId(null,"-1");
+			int e;
+			while(scenario.clock.getT()<=endtime){	
+				scenario.advanceNSeconds(dt);
+				
+				for(e=0;e<scenario.numEnsemble;e++)
+					System.out.println(e+"\t"+link.getTotalDensityInVeh(e));
+				
+			}			
+		} catch (SiriusException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

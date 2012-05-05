@@ -84,14 +84,14 @@ final class OutputWriter {
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density, invsteps), ":"));
+					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density[0], invsteps), ":"));
 					// f = flow per dt, vehicles
-					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow, ":"));
+					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow[0], ":"));
 					_link.reset_cumulative();
 					// mf = capacity, vehicles per hour
-					xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, _link.getCapacityInVPH()));
+					xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, _link.getCapacityInVPH(0)));
 					// fv = free flow speed, miles per hour
-					xmlsw.writeAttribute("fv", String.format(NUM_FORMAT, _link.getVfInMPH()));
+					xmlsw.writeAttribute("fv", String.format(NUM_FORMAT, _link.getVfInMPH(0)));
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
