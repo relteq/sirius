@@ -150,7 +150,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** Get sensors on a given link.
-	 * @param String id of the link.
+	 * @param linkid String id of the link.
 	 * @return The list of sensors located in the link.
 	 */
 	public ArrayList<Sensor> getSensorWithLinkId(String linkid){
@@ -170,7 +170,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get one sensor in the given link.
-	 * @param String id of the link.
+	 * @param linkid String id of the link.
 	 * @return The first sensor found to be contained in the link. 
 	 */
 	public Sensor getFirstSensorWithLinkId(String linkid){
@@ -188,7 +188,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get sensor with given id.
-	 * @param String id of the sensor.
+	 * @param id String id of the sensor.
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(String id){
@@ -203,7 +203,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get signal with given id.
-	 * @param String id of the signal.
+	 * @param id String id of the signal.
 	 * @return Signal object.
 	 */
 	public Signal getSignalWithId(String id){
@@ -218,7 +218,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get signal on the node with given id.
-	 * @param String id of the node.
+	 * @param node_id String id of the node.
 	 * @return Signal object if there is one. <code>null</code> otherwise. 
 	 */
 	public Signal getSignalWithNodeId(String node_id){
@@ -233,7 +233,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get link with given id.
-	 * @param String id of the link.
+	 * @param id String id of the link.
 	 * @return Link object.
 	 */
 	public Link getLinkWithId(String id){
@@ -246,7 +246,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 	}
 
 	/** Get node with given id.
-	 * @param String id of the node.
+	 * @param id String id of the node.
 	 * @return Node object.
 	 */
 	public Node getNodeWithId(String id){

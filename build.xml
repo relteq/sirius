@@ -83,9 +83,9 @@
 			version="yes"
 			linksource="yes"
 			access="protected" 
+			excludepackagenames="com.relteq.sirius.*"
 			destdir="${doc.dir}"
-			classpath="." 
-			sourcepath="src/com/relteq/sirius" >
+			sourcepath="${src.dir}">
 			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
 					includes="Controller.java ObjectFactory.java Link.java Node.java
 						Scenario.java SiriusStateTrajectory.java ScenarioElement.java
