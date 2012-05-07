@@ -5,7 +5,6 @@ import com.relteq.sirius.simulator.Signal.NEMA;
 public class SignalPhase {
 	
 	// references ....................................................
-	//private AbstractNodeComplex myNetwork;
 	protected Node myNode;
 	protected Signal mySignal;
 	protected Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
@@ -64,6 +63,8 @@ public class SignalPhase {
 		this.myNode = myNode;
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);
+		
+System.out.println("new phase on signal " + mySignal.getId());
 	}
 	
 	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Phase jaxbPhase){
@@ -148,7 +149,8 @@ public class SignalPhase {
 			myRingGroup = 1;
 			break;
 		}
-		
+
+System.out.println("populate phase " + myNEMA + " g=" + this.mingreen + " y="+this.yellowtime + " r=" + this.redcleartime);
 		
 	}
 	
@@ -160,8 +162,8 @@ public class SignalPhase {
 		conflictingcalltime	= 0f;
 		hold_requested 		= false;
 		forceoff_requested	= false;
-		permitopposinghold 	= true;
 		permithold			= true;
+		permitopposinghold  = false;
 
 		setPhaseColor(Signal.BulbColor.RED);
 		bulbtimer.reset();
@@ -192,6 +194,28 @@ public class SignalPhase {
 	}
 	
 //	 -------------------------------------------------------------------------------------------------
+	
+	protected void updatePermitOpposingHold(){
+	
+		switch(bulbcolor){
+
+		case GREEN:
+			// iff I am about to go off and there is no transition time
+			permitopposinghold = forceoff_requested && actualyellowtime==0 && redcleartime==0;
+			break;
+		case YELLOW:
+			// iff near end yellow time and there is no red clear time
+			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.dt) && redcleartime==0 ;
+			break;
+		case RED:	
+			// iff near end of red clear time and not starting again.
+			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
+			break;
+		}	
+
+		
+	}
+
 	protected void update(boolean hold_approved,boolean forceoff_approved)
 	{
 		double bulbt = bulbtimer.getT();
@@ -217,11 +241,13 @@ public class SignalPhase {
 			case GREEN:
 	
 				setPhaseColor(Signal.BulbColor.GREEN);
-				permitopposinghold = false;
-	
+				
+//				permitopposinghold = false;
+					
 				// Force off 
 				if( forceoff_approved ){ 
 					setPhaseColor(Signal.BulbColor.YELLOW);
+					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA,bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;
@@ -235,12 +261,13 @@ public class SignalPhase {
 			case YELLOW:
 				
 				setPhaseColor(Signal.BulbColor.YELLOW);
-				permitopposinghold = false;
-	
+				
 				// set permitopposinghold one step ahead of time so that other phases update correctly next time.
-				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0){
-					permitopposinghold = true;
-				}
+//				permitopposinghold = false;
+				
+				
+//				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0)
+//					permitopposinghold = true;
 
 				// yellow time over, go immediately to red if redcleartime==0
 				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime) ){
@@ -258,10 +285,10 @@ public class SignalPhase {
 				setPhaseColor(Signal.BulbColor.RED);
 	
 				//if( SiriusMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
-				if( SiriusMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
-					permitopposinghold = true;
-				else
-					permitopposinghold = false;
+//				if( SiriusMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
+//					permitopposinghold = true;
+//				else
+//					permitopposinghold = false;
 	
 				// if hold, set to green, go to green, etc.
 				if( hold_approved ){ 
@@ -319,11 +346,8 @@ public class SignalPhase {
 		this.actualredcleartime = actualredcleartime;
 	}
 
-	
 	public Signal.BulbColor getBulbcolor() {
 		return bulbcolor;
 	}
-	
-	
-	
+		
 }

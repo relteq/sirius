@@ -21,12 +21,14 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	protected Node myNode;
 	protected PhaseController myPhaseController;	// used to control capacity on individual links
 	
-	protected SignalPhase [] phase;
+	protected SignalPhase [] phase;	
 	
 	// local copy of the command, subject to checks
 	protected boolean [] hold_approved;
 	protected boolean [] forceoff_approved;
 	
+	protected ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -158,6 +160,9 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 			hasconflictingcall[i] = currentconflictcall[i];
 		}	
 */	
+
+		for(SignalPhase pA:phase)
+			pA.updatePermitOpposingHold();
 		
 		// 3) Update permitted holds ............................................
 		for(SignalPhase pA:phase){
@@ -204,8 +209,8 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		for(i=0;i<phase.length;i++)
 			if( phase[i].bulbcolor.compareTo(BulbColor.GREEN)==0  && SiriusMath.lessthan(phase[i].bulbtimer.getT(),phase[i].mingreen) )
 				forceoff_approved[i] = false;
-
 		
+			
 		// Update all phases
 		for(i=0;i<phase.length;i++)
 			phase[i].update(hold_approved[i],forceoff_approved[i]);
@@ -238,12 +243,6 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 					break;
 			}
 		}
-		
-		System.out.print(myNetwork.myScenario.getTimeInSeconds() + "\t");
-		for(SignalPhase pA:phase){
-			System.out.print(pA.myNEMA+":"+pA.getBulbcolor().toString() + "\t");
-		}
-		System.out.println("");
 		
 	}
 
@@ -515,6 +514,20 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		}
 		
 	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// internal class
+	/////////////////////////////////////////////////////////////////////
+	
+	protected class PhaseData{
+		public NEMA nema;
+		public double greentime;
+		public PhaseData(NEMA nema,double greentime){
+			this.nema = nema;
+			this.greentime = greentime;
+		}
+	}
+	
 	
 }
 
