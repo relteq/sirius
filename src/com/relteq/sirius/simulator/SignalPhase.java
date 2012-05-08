@@ -62,9 +62,7 @@ public class SignalPhase {
 	public SignalPhase(Node myNode,Signal mySignal,double dt){
 		this.myNode = myNode;
 		this.mySignal = mySignal;
-		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);
-		
-System.out.println("new phase on signal " + mySignal.getId());
+		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
 	}
 	
 	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Phase jaxbPhase){
@@ -148,10 +146,7 @@ System.out.println("new phase on signal " + mySignal.getId());
 			isthrough = true;
 			myRingGroup = 1;
 			break;
-		}
-
-System.out.println("populate phase " + myNEMA + " g=" + this.mingreen + " y="+this.yellowtime + " r=" + this.redcleartime);
-		
+		}		
 	}
 	
 	protected void reset() {
