@@ -521,9 +521,11 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	
 	protected class PhaseData{
 		public NEMA nema;
+		public double starttime;
 		public double greentime;
-		public PhaseData(NEMA nema,double greentime){
+		public PhaseData(NEMA nema, double starttime, double greentime){
 			this.nema = nema;
+			this.starttime = starttime;
 			this.greentime = greentime;
 		}
 	}
