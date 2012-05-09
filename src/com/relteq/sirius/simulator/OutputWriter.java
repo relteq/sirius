@@ -7,11 +7,10 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.util.ArrayList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
+import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
 final class OutputWriter {
@@ -23,7 +22,6 @@ final class OutputWriter {
 
 	public OutputWriter(Scenario myScenario){
 		this.myScenario = myScenario;
-		//this.outsteps = osteps;
 	}
 
 	protected boolean open(String prefix,String suffix) throws FileNotFoundException {
@@ -34,13 +32,32 @@ final class OutputWriter {
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
-			if (null != myScenario) try {
-				JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
-				Marshaller mrsh = jaxbc.createMarshaller();
-				mrsh.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-				mrsh.marshal(myScenario, xmlsw);
-			} catch (JAXBException exc) {
-				SiriusErrorLog.addErrorMessage(exc.toString());
+			if (null != myScenario) {
+				String conffnam = myScenario.getConfigFilename();
+				XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(conffnam));
+				while (xmlsr.hasNext()) {
+					switch (xmlsr.getEventType()) {
+					case XMLStreamConstants.START_ELEMENT:
+						QName ename = xmlsr.getName();
+						xmlsw.writeStartElement(ename.getPrefix(), ename.getLocalPart(), ename.getNamespaceURI());
+						for (int iii = 0; iii < xmlsr.getAttributeCount(); ++iii) {
+							QName aname = xmlsr.getAttributeName(iii);
+							xmlsw.writeAttribute(aname.getPrefix(), aname.getNamespaceURI(), aname.getLocalPart(), xmlsr.getAttributeValue(iii));
+						}
+						break;
+					case XMLStreamConstants.END_ELEMENT:
+						xmlsw.writeEndElement();
+						break;
+					case XMLStreamConstants.CHARACTERS:
+						if (!xmlsr.isWhiteSpace()) xmlsw.writeCharacters(xmlsr.getText());
+						break;
+					case XMLStreamConstants.CDATA:
+						if (!xmlsr.isWhiteSpace()) xmlsw.writeCData(xmlsr.getText());
+						break;
+					}
+					xmlsr.next();
+				}
+				xmlsr.close();
 			}
 			// report
 			xmlsw.writeStartElement("report");
@@ -56,6 +73,9 @@ final class OutputWriter {
 			xmlsw.writeStartElement("node_report");
 			xmlsw.writeAttribute("srm_report", "true");
 			xmlsw.writeEndElement(); // node_report
+			xmlsw.writeStartElement("signal_report");
+			xmlsw.writeAttribute("cycle_report", "true");
+			xmlsw.writeEndElement(); // signal_report
 			xmlsw.writeEndElement(); // report
 			// data
 			xmlsw.writeStartElement("data");
@@ -78,6 +98,7 @@ final class OutputWriter {
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
 				xmlsw.writeAttribute("dt", dt);
+				// link list
 				xmlsw.writeStartElement("ll");
 				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
@@ -95,6 +116,7 @@ final class OutputWriter {
 					xmlsw.writeEndElement(); // l
 				}
 				xmlsw.writeEndElement(); // ll
+				// node list
 				xmlsw.writeStartElement("nl");
 				for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
 					xmlsw.writeStartElement("n");
@@ -112,6 +134,25 @@ final class OutputWriter {
 					xmlsw.writeEndElement(); // n
 				}
 				xmlsw.writeEndElement(); // nl
+				// signal list
+				if (null != network.getSignalList()) {
+					xmlsw.writeStartElement("sigl");
+					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
+						xmlsw.writeStartElement("sig");
+						xmlsw.writeAttribute("id", signal.getId());
+						ArrayList<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
+						for (Signal.PhaseData ph : phdata) {
+							xmlsw.writeStartElement("ph");
+							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
+							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));
+							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
+							xmlsw.writeEndElement(); // ph
+						}
+						phdata.clear();
+						xmlsw.writeEndElement(); // sig
+					}
+					xmlsw.writeEndElement(); // sigl
+				}
 				xmlsw.writeEndElement(); // net
 			}
 			xmlsw.writeEndElement(); // netl
@@ -132,6 +173,11 @@ final class OutputWriter {
 		}
 	}
 
+	/** Join the elements of an array into a string.
+	 * @param V      an array to be serialized
+	 * @param delim  the string used to separate the elements of the array
+	 * @return a string containing the array values
+	 */
 	protected String format(Double [] V,String delim){
 		if (0 == V.length) return "";
 		else if (1 == V.length) return String.format(NUM_FORMAT, V[0]);
