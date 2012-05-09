@@ -119,10 +119,6 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			totphaselength += greentime[k]+y+r;
 		}
 		
-		// check cycles are long enough .....................................	
-		if(!SiriusMath.equals(myPlan._cyclelength,totphaselength))
-			return;
-		
 		// compute hold and forceoff points ............................................
 		float stime, etime;
 		int nextstage;
@@ -207,6 +203,13 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 				if(!SiriusMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
 					return false;
 		}
+
+		// check cycles are long enough .....................................	
+		float totphaselength=0;
+		for(int k=0;k<numstages;k++)
+			totphaselength += stagelength[k];
+		if(!SiriusMath.equals(myPlan._cyclelength,totphaselength))
+			return false;
 		
 		// first two commands have zero timestamp
 		if(command.get(0).time!=0.0)
@@ -218,6 +221,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	public void reset(){
 		nextcommand = 0;
 	}
+	
 	public boolean InNextStage(SignalPhase thisphase,int stageindex)
 	{
 		int nextstage;

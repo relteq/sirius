@@ -153,7 +153,7 @@
 				      <xs:complexType mixed="true">
 					    <xs:attribute name="il" type="xs:string" use="required"/>
 						<xs:attribute name="ol" type="xs:string" use="required"/>
-						<xs:attribute name="r" type="xs:decimal" use="optional"/>
+						<xs:attribute name="r" type="xs:string" use="optional"/>
 					  </xs:complexType>
 				    </xs:element>
 				
