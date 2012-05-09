@@ -30,9 +30,8 @@ public class Controller_IRM_Alinea extends Controller {
 	/////////////////////////////////////////////////////////////////////
 
 	public Controller_IRM_Alinea() {
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
 
 		this.myScenario = myScenario;
@@ -60,11 +59,11 @@ public class Controller_IRM_Alinea extends Controller {
 		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 		
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-
+	
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -203,17 +202,16 @@ public class Controller_IRM_Alinea extends Controller {
 		// get mainline density either from sensor or from link
 		double mainlinevehicles;		// [veh]
 		if(usesensor)
-			mainlinevehicles = mainlinesensor.getTotalDensityInVeh();
+			mainlinevehicles = mainlinesensor.getTotalDensityInVeh(0);
 		else
-			mainlinevehicles = mainlinelink.getTotalDensityInVeh();
+			mainlinevehicles = mainlinelink.getTotalDensityInVeh(0);
 				
 		// need to read target density each time if not given
 		if(!targetdensity_given)
-			targetvehicles = mainlinelink.getDensityCriticalInVeh();
+			targetvehicles = mainlinelink.getDensityCriticalInVeh(0);
 		
 		// metering rate
-		control_maxflow[0] = onramplink.getTotalOutflowInVeh() + gain_normalized*(targetvehicles-mainlinevehicles);
-
+		control_maxflow[0] = onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles);
 	}
 
 	@Override

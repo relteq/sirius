@@ -97,10 +97,13 @@ final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityP
 				}
 				sum += x;
 			}
-			if(sum>link[i].getDensityJamInVPMPL()){
-				SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
-				return false;
-			}
+			
+			// NOTE: REMOVED THIS CHECK TEMPORARILY. NEED TO DECIDE HOW TO DO IT 
+			// WITH ENSEMBLE FUNDAMENTAL DIAGRAMS
+//			if(sum>link[i].getDensityJamInVPMPL()){
+//				SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
+//				return false;
+//			}
 		}
 		
 		return true;

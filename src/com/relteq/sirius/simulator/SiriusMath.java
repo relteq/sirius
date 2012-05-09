@@ -6,11 +6,20 @@ public final class SiriusMath {
 	
 	private static final double EPSILON = (double) 1e-4;
 	
- 	public static Double [] zeros(int n){
-		Double [] answ = new Double [n];
-		for(int i=0;i<n;i++)
+ 	public static Double [] zeros(int n1){
+		Double [] answ = new Double [n1];
+		for(int i=0;i<n1;i++)
 			answ[i] = 0.0;
 		return answ;	
+	}
+ 	
+ 	public static Double [][] zeros(int n1,int n2){
+		Double [][] answ = new Double [n1][n2];
+		int i,j;
+		for(i=0;i<n1;i++)
+			for(j=0;j<n2;j++)
+				answ[i][j] = 0.0;
+		return answ;
 	}
 	
 	public static Double sum(Double [] V){
@@ -19,6 +28,37 @@ public final class SiriusMath {
 			if(V[i]!=null)
 				answ += V[i];
 		return answ;
+	}
+	
+	public static Double [] sum(Double [][] V,int dim){
+		if(V==null)
+			return null;
+		if(V.length==0)
+			return null;
+		if(V[0].length==0)
+			return null;
+		Double [] answ;
+		int i,j;
+		int n1 = V.length;
+		int n2 = V[0].length;
+		switch(dim){
+		case 1:
+			answ = new Double[n2];
+			for(i=0;i<V.length;i++)
+				for(j=0;j<V[i].length;j++)
+					if(V[i][j]!=null)
+						answ[j] += V[i][j];
+			return answ;
+		case 2:
+			answ = new Double[n1];
+			for(i=0;i<V.length;i++)
+				for(j=0;j<V[i].length;j++)
+					if(V[i][j]!=null)
+						answ[i] += V[i][j];
+			return answ;
+		default:
+			return null;
+		}
 	}
 	
 	public static Double [] times(Double [] V,double a){

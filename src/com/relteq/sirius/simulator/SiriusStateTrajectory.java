@@ -81,9 +81,9 @@ public final class SiriusStateTrajectory {
 			for(i=0;i<networkState[netindex].getNumLinks();i++){
 				Link link = (Link) links.get(i);				
 				for(j=0;j<numVehicleTypes;j++){
-					networkState[netindex].density[i][j][timeindex] = link.cumulative_density[j]*invsteps;
+					networkState[netindex].density[i][j][timeindex] = link.cumulative_density[0][j]*invsteps;
 					if(exportflows)
-						networkState[netindex].flow[i][j][timeindex-1] = link.cumulative_outflow[j]*invsteps;
+						networkState[netindex].flow[i][j][timeindex-1] = link.cumulative_outflow[0][j]*invsteps;
 				}
 			}
 			netindex++;

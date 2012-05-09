@@ -17,20 +17,20 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */ 	protected double _length;							// [miles]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
-	/** @y.exclude */ 	protected FundamentalDiagram FD;					// current fundamental diagram
-	/** @y.exclude */ 	protected FundamentalDiagram FDfromProfile;		// profile fundamental diagram
+//	/** @y.exclude */ 	protected FundamentalDiagram FD;					// current fundamental diagram
+	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
 	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
     // flow into the link
-	/** @y.exclude */ 	protected Double [] inflow;    			// [veh]	1 x numVehTypes
-	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	numVehTypes
     
     // demand and actual flow out of the link   
-	/** @y.exclude */ 	protected Double [] outflowDemand;   	// [veh] 	1 x numVehTypes
-	/** @y.exclude */ 	protected Double [] outflow;    		// [veh]	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
     
     // contoller
 	/** @y.exclude */ 	protected int control_maxflow_index;
@@ -38,13 +38,13 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Controller myFlowController;
 	/** @y.exclude */ 	protected Controller mySpeedController;
    
-	/** @y.exclude */ 	protected Double [] density;    		// [veh]	1 x numVehTypes
-	/** @y.exclude */ 	protected double spaceSupply;        	// [veh]
+	/** @y.exclude */ 	protected Double [][] density;    		// [veh]	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double []spaceSupply;        	// [veh]	numEnsemble
 	/** @y.exclude */ 	protected boolean issource; 			// [boolean]
 	/** @y.exclude */ 	protected boolean issink;     			// [boolean]
-	/** @y.exclude */ 	protected Double [] cumulative_density;	// [veh] 	1 x numVehTypes
-	/** @y.exclude */ 	protected Double [] cumulative_inflow;	// [veh] 	1 x numVehTypes
-	/** @y.exclude */ 	protected Double [] cumulative_outflow;	// [veh] 	1 x numVehTypes
+	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -59,9 +59,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */
 	protected void reset_cumulative(){
-    	cumulative_density = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
-    	cumulative_inflow  = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
-    	cumulative_outflow = SiriusMath.zeros(myNetwork.myScenario.getNumVehicleTypes());
+		int n1 = myNetwork.myScenario.numEnsemble;
+		int n2 = myNetwork.myScenario.getNumVehicleTypes();
+    	cumulative_density = SiriusMath.zeros(n1,n2);
+    	cumulative_inflow  = SiriusMath.zeros(n1,n2);
+    	cumulative_outflow = SiriusMath.zeros(n1,n2);
 	}
 
 	/** @y.exclude */
@@ -92,15 +94,18 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	} */
 	
 	/** @y.exclude */
-	protected void setInflow(Double[] inflow) {
-		this.inflow = inflow;
-	}
+//	protected void setInflow(Double[][] inflow) {
+//		this.inflow = inflow;
+//	}
 
 	/** @y.exclude */
-	protected void setOutflow(Double[] outflow) {
-		this.outflow = outflow;
+	protected FundamentalDiagram currentFD(int ensemble){
+		if(activeFDevent)
+			return FDfromEvent;
+		else
+			return FDfromProfile[ensemble];
 	}
-
+	
 	/** @y.exclude */
     protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
     	if(fdp==null)
@@ -113,12 +118,13 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws SiriusException{
     	if(fd==null)
     		return;
-//    	if(!fd.validate())
-//			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
-    		
-    	FDfromProfile = fd;				// update the profile pointer
-    	if(!activeFDevent)				
-    		FD = FDfromProfile;			// update the fd pointer
+    	
+    	// sample the fundamental digram
+    	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+    		FDfromProfile[e] = fd.perturb();
+    	
+//    	if(!activeFDevent)				
+//    		FD = FDfromProfile;				// point to the profile
     }
 
 	/** @throws SiriusException 
@@ -128,13 +134,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     		throw new SiriusException("Null parameter.");
     	
     	FDfromEvent = new FundamentalDiagram(this);
-    	FDfromEvent.copyfrom(FD);			// copy current FD
+    	FDfromEvent.copyfrom(currentFD(0));			// copy current FD 
+    	// note: we are copying from the zeroth FD for simplicity. The alternative is to 
+    	// carry numEnsemble event FDs.
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
     	
 		if(!FDfromEvent.validate())
 			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+		
 		activeFDevent = true;
-	    FD = FDfromEvent;
+//	    FD = FDfromEvent;
     }
 
 	/** @throws SiriusException 
@@ -142,26 +151,31 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     protected void revertFundamentalDiagramEvent() throws SiriusException{
     	if(!activeFDevent)
     		return;
-    	
-    	if(!FDfromProfile.validate())
-			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
- 
     	activeFDevent = false;
-		FD = FDfromProfile;				// point the fd back at the profile
-		FDfromEvent = null;
-    	
+//		FD = FDfromProfile;				// point the fd back at the profile    	
     }
 
 	/** @throws SiriusException 
 	 * @y.exclude */
 	protected void set_Lanes(double newlanes) throws SiriusException{
-		if(getDensityJamInVeh()*newlanes/get_Lanes() < getTotalDensityInVeh())
-			throw new SiriusException("ERROR: Lanes could not be set.");
+		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
+				throw new SiriusException("ERROR: Lanes could not be set.");
 
 		myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
-		if(FDfromEvent!=null)
-			FDfromEvent.setLanes(newlanes);	// adjust the event fd.
+		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+			FDfromProfile[e].setLanes(newlanes);
+//		FD.setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
+	}
+	
+	// this is used by CapacityProfile only.
+	// no FDs in this link may have capacities that exceed c.
+	protected void setCapacityFromVeh(double c) {
+		for(FundamentalDiagram fd : FDfromProfile)
+			fd._capacity = fd._capacity<c ? fd._capacity : c;
+		if(FDfromEvent!=null)
+			FDfromEvent._capacity = FDfromEvent._capacity<c ? FDfromEvent._capacity : c;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -173,70 +187,66 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 		
-		////////////////////////////////////////
-    	// GG: This is to match aurora2, but should be removed
-    	// Aurora2 has a different link model for sources than for regular links.
-// 		if(issource){
-// 			outflowDemand = sourcedemand.clone();
-// 			double sum = 0d;
-// 			for(int k=0;k<numVehicleTypes;k++){
-// 				outflowDemand[k] += density[k];
-// 				sum += outflowDemand[k];
-// 			}
-// 			if(sum>FD._getCapacityInVeh()){
-// 				double ratio = FD._getCapacityInVeh()/sum;
-// 				for(int k=0;k<numVehicleTypes;k++)
-// 					outflowDemand[k] *= ratio;
-// 			}
-// 			return;
-// 		}
- 		////////////////////////////////////
- 		
-        double totaldensity = SiriusMath.sum(density);
-        
-        // case empty link
-        if( SiriusMath.lessorequalthan(totaldensity,0d) ){
-        	outflowDemand =  SiriusMath.zeros(numVehicleTypes);        		
-        	return;
-        }
-        
-        // compute total flow leaving the link in the absence of flow control
+		double totaldensity;
         double totaloutflow;
-        if( totaldensity < FD.getDensityCriticalInVeh() ){
-        	if(mySpeedController!=null && mySpeedController.ison){
-        		// speed control sets a bound on freeflow speed
-            	double control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
-        		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
-        	}
-        	else
-        		totaloutflow = totaldensity * FD.getVfNormalized();
-        }
-        else{
-        	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-            if(mySpeedController!=null && mySpeedController.ison){	// speed controller
-            	double control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
-            	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
-            }
-        }
+        double control_maxspeed;
+        double control_maxflow;
         
-        // flow controller
-        if(myFlowController!=null && myFlowController.ison){
-        	double control_maxflow = myFlowController.control_maxflow[control_maxflow_index];
-        	totaloutflow = Math.min( totaloutflow , control_maxflow );
+        FundamentalDiagram FD;
+        
+        for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+
+        	FD = currentFD(e);
+        	
+            totaldensity = SiriusMath.sum(density[e]);
+
+            // case empty link
+            if( SiriusMath.lessorequalthan(totaldensity,0d) ){
+            	outflowDemand[e] =  SiriusMath.zeros(numVehicleTypes);        		
+            	continue;
+            }
+
+            // compute total flow leaving the link in the absence of flow control
+            if( totaldensity < FD.getDensityCriticalInVeh() ){
+            	if(mySpeedController!=null && mySpeedController.ison){
+            		// speed control sets a bound on freeflow speed
+                	control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
+            		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
+            	}
+            	else
+            		totaloutflow = totaldensity * FD.getVfNormalized();
+            }
+            else{
+            	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
+                if(mySpeedController!=null && mySpeedController.ison){	// speed controller
+                	control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
+                	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
+                }
+            }
+
+            // flow controller
+            if(myFlowController!=null && myFlowController.ison){
+            	control_maxflow = myFlowController.control_maxflow[control_maxflow_index];
+            	totaloutflow = Math.min( totaloutflow , control_maxflow );
+            }    
+
+            // split among types
+            outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity);
         }
 
-        
-        // split among types
-        outflowDemand = SiriusMath.times(density,totaloutflow/totaldensity);
-        
         return;
     }
 
 	/** @y.exclude */
     protected void updateSpaceSupply(){
-    	double totaldensity = SiriusMath.sum(density);
-        spaceSupply = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
-        spaceSupply = Math.min(spaceSupply,FD._getCapacityInVeh());
+		double totaldensity;
+		FundamentalDiagram FD;
+    	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+    		FD = currentFD(e);
+        	totaldensity = SiriusMath.sum(density[e]);
+            spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
+            spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
+    	}
     }
 	
 	/////////////////////////////////////////////////////////////////////
@@ -247,14 +257,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
-
-//		// assign type
-//    	try {
-//			myType = _Link.Type.valueOf(getType());
-//		} catch (IllegalArgumentException e) {
-//			myType = null;
-//			return;
-//		}
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -271,17 +273,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			_lanes = getLanes().doubleValue();
 		if(getLength()!=null)
 			_length = getLength().doubleValue();
-        
-        // initial density, demand, and capacity
-		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
-        density 			= new Double[numVehicleTypes];
-        inflow 				= new Double[numVehicleTypes];
-        outflow 			= new Double[numVehicleTypes];
-        sourcedemand 		= new Double[numVehicleTypes];
-        cumulative_density 	= new Double[numVehicleTypes];
-        cumulative_inflow 	= new Double[numVehicleTypes];
-        cumulative_outflow 	= new Double[numVehicleTypes];
-		
 	}
 
 	/** @y.exclude */
@@ -315,18 +306,23 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		
 		Scenario myScenario = myNetwork.myScenario;
 		
+		int n1 = myScenario.numEnsemble;
+		int n2 = myScenario.getNumVehicleTypes();
+		
 		switch(simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
+			density = SiriusMath.zeros(n1,n2);
 			break;
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			if(myScenario.getInitialDensityProfile()!=null)
-				density = ((InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
-			else 
-				density = SiriusMath.zeros(myScenario.getNumVehicleTypes());
+			density = new Double[n1][n2];
+			for(int i=0;i<n1;i++)
+				if(myScenario.getInitialDensityProfile()!=null)
+					density[i] = ((InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+				else 
+					density[i] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;
 			
 		default:
@@ -335,14 +331,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		}
 
 		// reset other quantities
-		for(int j=0;j<myScenario.getNumVehicleTypes();j++){
-			inflow[j] = 0d;
-			outflow[j] = 0d;
-			sourcedemand[j] = 0d;
-			cumulative_density[j] = 0d;
-			cumulative_inflow[j] = 0d;
-			cumulative_outflow[j] = 0d;
-		}
+        inflow 				= SiriusMath.zeros(n1,n2);
+        outflow 			= SiriusMath.zeros(n1,n2);
+        sourcedemand 		= SiriusMath.zeros(n2);
+        outflowDemand 		= SiriusMath.zeros(n1,n2);
+        spaceSupply 		= SiriusMath.zeros(n1);
+        
+        // for correct export of initial condition
+        cumulative_density 	= density;
+        cumulative_inflow 	= SiriusMath.zeros(n1,n2);
+        cumulative_outflow 	= SiriusMath.zeros(n1,n2);
 
 		return;
 	}
@@ -354,8 +352,9 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */
 	protected void resetFD(){
-    	FD = new FundamentalDiagram(this);
-        FD.settoDefault();		// set to default
+//    	FD = new FundamentalDiagram(this);
+ //       FD.settoDefault();		// set to default
+		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.numEnsemble];
     	activeFDevent = false;
 	}
 
@@ -365,16 +364,19 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         if(issink)
             outflow = outflowDemand;
         
-        if(issource)
-            inflow = sourcedemand.clone();
-        
-        for(int j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){
-        	density[j] += inflow[j] - outflow[j];
-        	cumulative_density[j] += density[j];
-        	cumulative_inflow[j] += inflow[j];
-        	cumulative_outflow[j] += outflow[j];
+        if(issource){
+        	for(int e=0;e<this.myNetwork.myScenario.numEnsemble;e++)
+        		inflow[e] = sourcedemand.clone();
         }
-
+                
+        for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+        	  for(int j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){
+              	density[e][j] += inflow[e][j] - outflow[e][j];
+              	cumulative_density[e][j] += density[e][j];
+              	cumulative_inflow[e][j] += inflow[e][j];
+              	cumulative_outflow[e][j] += outflow[e][j];
+              }
+        }
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -422,32 +424,45 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** Density of vehicles per vehicle type in normalized units (vehicles/link/type). 
 	 * The return array is indexed by vehicle type in the order given in the 
-	 * <code>settings</code> portion of the input file. 
-	 * @return number of vehicles of each type in the link. 
+	 * <code>settings</code> portion of the input file.
+	 * @param ensemble Ensemble number 
+	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getDensityInVeh() {
-		return density;
+	public Double[] getDensityInVeh(int ensemble) {
+		try{
+			return density[ensemble];
+		} catch(Exception e){
+			return null;
+		}
 	}
 
 	/** Total of vehicles in normalized units (vehicles/link). 
 	 * The return value equals the sum of {@link Link#getDensityInVeh}.
-	 * @return total number of vehicles in the link.
+	 * @return total number of vehicles in the link. 0 if something goes wrong.
 	 */
-	public double getTotalDensityInVeh() {
-		if(density!=null)
-			return SiriusMath.sum(density);
-		else
+	public double getTotalDensityInVeh(int ensemble) {
+		try{
+			if(density!=null)
+				return SiriusMath.sum(density[ensemble]);
+			else
+				return 0d;
+		} catch(Exception e){
 			return 0d;
+		}
 	}
 	
 	/** Number of vehicles per vehicle type exiting the link 
 	 * during the current time step. The return array is indexed by 
 	 * vehicle type in the order given in the <code>settings</code> 
 	 * portion of the input file. 
-	 * @return array of exiting flows per vehicle type. 
+	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getOutflowInVeh() {
-		return outflow;
+	public Double[] getOutflowInVeh(int ensemble) {
+		try{
+			return outflow[ensemble];
+		} catch(Exception e){
+			return null;
+		}
 	}
 
 	/** Total number of vehicles exiting the link during the current
@@ -456,90 +471,150 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * @return total number of vehicles exiting the link in one time step.
 	 * 
 	 */
-	public double getTotalOutflowInVeh() {
-		return SiriusMath.sum(outflow);
+	public double getTotalOutflowInVeh(int ensemble) {
+		try{
+			return SiriusMath.sum(outflow[ensemble]);
+		} catch(Exception e){
+			return 0d;
+		}
 	}
 
 	/** Average speed of traffic in the link in mile/hour. 
 	 * The return value is computed by dividing the total outgoing 
 	 * link flow by the total link density. 
-	 * @return average link speed.
+	 * @return average link speed. 0  if something goes wrong.
 	 */
-	public double computeSpeedInMPH(){
-		double totaldensity = SiriusMath.sum(density);
-		double speed;
-		if( SiriusMath.greaterthan(totaldensity,0d) )
-			speed = SiriusMath.sum(outflow)/totaldensity;
-		else
-			speed = FD.getVfNormalized();
-		return speed*_length/myNetwork.myScenario.getSimDtInHours();
+	public double computeSpeedInMPH(int ensemble){
+		try{
+			double totaldensity = SiriusMath.sum(density[ensemble]);
+			double speed;
+			if( SiriusMath.greaterthan(totaldensity,0d) )
+				speed = SiriusMath.sum(outflow[ensemble])/totaldensity;
+			else
+				speed = currentFD(ensemble).getVfNormalized();
+			return speed*_length/myNetwork.myScenario.getSimDtInHours();
+		} catch(Exception e){
+			return 0d;
+		}
 	}
 
 	// Fundamental diagram ....................
 	
 	/** Jam density in vehicle/link. */
-	public double getDensityJamInVeh() {
-		return FD._getDensityJamInVeh();
+	public double getDensityJamInVeh(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getDensityJamInVeh();
 	}
 
 	/** Critical density in vehicle/link. */
-	public double getDensityCriticalInVeh() {
-		return FD.getDensityCriticalInVeh();
+	public double getDensityCriticalInVeh(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else		
+			return FD.getDensityCriticalInVeh();
 	}
 
 	/** Capacity drop in vehicle/simulation time step */
-	public double getCapacityDropInVeh() {
-		return FD._getCapacityDropInVeh();
+	public double getCapacityDropInVeh(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getCapacityDropInVeh();
 	}
 
 	/** Capacity in vehicle/simulation time step */
-	public double getCapacityInVeh() {
-		return FD._getCapacityInVeh();
+	public double getCapacityInVeh(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getCapacityInVeh();
 	}
 
 	/** Jam density in vehicle/mile/lane. */
-	public double getDensityJamInVPMPL() {
-		return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
+	public double getDensityJamInVPMPL(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
 	}
 
 	/** Critical density in vehicle/mile/lane. */
-	public double getDensityCriticalInVPMPL() {
-		return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
+	public double getDensityCriticalInVPMPL(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
 	}
 
 	/** Capacity drop in vehicle/hr/lane. */
-	public double getCapacityDropInVPHPL() {
-		return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
+	public double getCapacityDropInVPHPL(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
 	/** Capacity in vehicles per hour. */
-	public double getCapacityInVPH() {
-		return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInHours();
+	public double getCapacityInVPH(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInHours();
 	}
 
 	/** Capacity in vehicle/hr/lane. */
-	public double getCapacityInVPHPL() {
-		return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
+	public double getCapacityInVPHPL(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
 	}
 
 	/** Freeflow speed in normalized units (link/time step). */
-	public double getNormalizedVf() {
-		return FD.getVfNormalized();
+	public double getNormalizedVf(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD.getVfNormalized();
 	}
 
 	/** Freeflow speed in mile/hr. */
-	public double getVfInMPH() {
-		return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
+	public double getVfInMPH(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 
 	/** Congestion wave speed in normalized units (link/time step). */
-	public double getNormalizedW() {
-		return FD.getWNormalized();
+	public double getNormalizedW(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD.getWNormalized();
 	}
 
 	/** Congestion wave speed in mile/hr. */
-	public double getWInMPH() {
-		return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
+	public double getWInMPH(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if(FD==null)
+			return Double.NaN;
+		else
+			return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
 	
 	/** Set input flow for source links.
