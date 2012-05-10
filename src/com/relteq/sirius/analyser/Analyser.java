@@ -30,7 +30,7 @@ public class Analyser {
 			analyser.Run();
 		}
 	}
-	private _Scenario scenario;
+	private Scenario scenario;
 	private XMLStreamReader xmlsr;
 	private XMLStreamWriter xmlsw;
 	public Analyser(String ifnam, String ofnam) throws FileNotFoundException {
@@ -57,8 +57,8 @@ public class Analyser {
 						try {
 							jaxbc = JAXBContext.newInstance(com.relteq.sirius.jaxb.ObjectFactory.class);
 							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
-							unmrsh.setProperty("com.sun.xml.internal.bind.ObjectFactory", new _JaxbObjectFactory());
-							scenario = (_Scenario) unmrsh.unmarshal(xmlsr);
+							unmrsh.setProperty("com.sun.xml.internal.bind.ObjectFactory", new JaxbObjectFactory());
+							scenario = (Scenario) unmrsh.unmarshal(xmlsr);
 						} catch (JAXBException exc) {
 							exc.printStackTrace();
 						}
@@ -98,7 +98,7 @@ public class Analyser {
 														if (Math.abs(factor * d.get(iii) - f.get(iii)) > EPSILON) SiriusErrorLog.addErrorMessage("speeds differ");
 												}
 											}
-											_Link link = null == scenario ? null : scenario.getLinkWithCompositeId(network_id, xmlsr.getAttributeValue(null, "id"));
+											Link link = null == scenario ? null : scenario.getLinkWithCompositeId(network_id, xmlsr.getAttributeValue(null, "id"));
 											Double dx = null != link && null != link.getLength() ? link.getLength().doubleValue() : null;
 											Double nlanes = null != link && null != link.getLanes()  ? link.getLanes().doubleValue() : null;
 											if (null == v && null != cum_f && null != cum_d && cum_d > 0 && null != dx) {
