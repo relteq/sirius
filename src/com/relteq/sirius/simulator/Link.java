@@ -17,7 +17,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */ 	protected double _length;							// [miles]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
-//	/** @y.exclude */ 	protected FundamentalDiagram FD;					// current fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
@@ -87,16 +86,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			return true;
 		}
 	}
-
-	/** @y.exclude 
-	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
-		this.sourcedemand = sourcedemand;		
-	} */
-	
-	/** @y.exclude */
-//	protected void setInflow(Double[][] inflow) {
-//		this.inflow = inflow;
-//	}
 
 	/** @y.exclude */
 	protected FundamentalDiagram currentFD(int ensemble){
@@ -338,7 +327,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         spaceSupply 		= SiriusMath.zeros(n1);
         
         // for correct export of initial condition
-        cumulative_density 	= density;
+        cumulative_density 	= SiriusMath.makecopy(density);
         cumulative_inflow 	= SiriusMath.zeros(n1,n2);
         cumulative_outflow 	= SiriusMath.zeros(n1,n2);
 
@@ -468,7 +457,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** Total number of vehicles exiting the link during the current
 	 * time step.  The return value equals the sum of 
 	 * {@link Link#getOutflowInVeh}.
-	 * @return total number of vehicles exiting the link in one time step.
+	 * @return total number of vehicles exiting the link in one time step. 0 if something goes wrong.
 	 * 
 	 */
 	public double getTotalOutflowInVeh(int ensemble) {

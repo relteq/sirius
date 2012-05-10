@@ -158,4 +158,19 @@ public final class SiriusMath {
 		return gcd(q, p % q);
 	}
 
+	// deep copy a double array
+	public static Double[][] makecopy(Double [][]x){
+		if(x.length==0)
+			return null;
+		if(x[0].length==0)
+			return null;
+		int n1 = x.length;
+		int n2 = x[0].length;
+		Double [][] y = new Double[n1][n2];
+		int i,j;
+		for(i=0;i<n1;i++)
+			for(j=0;j<n2;j++)
+				y[i][j]=x[i][j];
+		return y;
+	}
 }
