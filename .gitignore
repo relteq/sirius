@@ -7,4 +7,5 @@ src/com/relteq/sirius/jaxb/
 output_*.xml
 *.asv
 *.class
+torque/
 

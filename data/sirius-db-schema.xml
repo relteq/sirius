@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE database SYSTEM
+	"http://db.apache.org/torque/dtd/database_3_3.dtd">
+
+<database name="sirius">
+	<table name="link_data_total">
+		<column name="link_id" primaryKey="true" type="VARCHAR" size="255"/>
+		<column name="network_id" primaryKey="true" type="VARCHAR" size="255"/>
+		<column name="scenario_id" primaryKey="true" type="VARCHAR" size="255"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" type="VARCHAR" size="8"/>
+		<column name="in_flow" type="DECIMAL"/>
+		<column name="out_flow" type="DECIMAL"/>
+		<column name="density" type="DECIMAL"/>
+		<column name="occupancy" type="DECIMAL"/>
+		<column name="speed" type="DECIMAL"/>
+		<column name="free_flow_speed" type="DECIMAL"/>
+		<column name="congestion_speed" type="DECIMAL"/>
+		<column name="capacity" type="DECIMAL"/>
+		<column name="capacity_drop" type="DECIMAL"/>
+		<column name="jam_density" type="DECIMAL"/>
+	</table>
+</database>
+

@@ -27,6 +27,10 @@
 
 	<property name="ivy.build.conf" value="build"/>
 	<property name="ivy.test.conf" value="test"/>
+	<property name="ivy.db.conf" value="db"/>
+
+	<property name="torque.buildfile" value="build-torque.xml"/>
+	<property name="torque.properties" value="torque.properties"/>
 
 	<path id="lib.path">
 		<fileset dir="${ivy.lib.dir}"/>
@@ -99,7 +103,7 @@
         </javadoc>
     </target>
 
-	<target name="clean" description="clean up" depends="clean-test">
+	<target name="clean" description="clean up" depends="clean-test,clean-db">
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
@@ -162,6 +166,19 @@
 		<delete verbose="on">
 			<fileset dir="${test.dir}" includes="**/*.class" />
 		</delete>
+	</target>
+
+	<target name="deps-db" depends="init-ivy">
+		<ivy:retrieve conf="${ivy.db.conf}"/>
+	</target>
+
+	<target name="db" description="generate DB schema" depends="deps-db">
+		<ant antfile="${torque.buildfile}" target="sql"/>
+	</target>
+
+	<target name="clean-db">
+		<property file="${torque.properties}"/>
+		<delete dir="${torque.output.dir}"/>
 	</target>
 </project>
 

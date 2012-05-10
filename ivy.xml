@@ -6,10 +6,12 @@
 	<configurations>
 		<conf name="build"/>
 		<conf name="test" extends="build" visibility="private"/>
+		<conf name="db"/>
 	</configurations>
-	<dependencies defaultconf="build" defaultconfmapping="build->*;test->*">
+	<dependencies defaultconf="build" defaultconfmapping="build->*;test->*;db->*">
 		<dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2"/>
 		<dependency org="junit" name="junit" rev="4.5" conf="test"/>
+		<dependency org="org.apache.torque" name="torque-generator" rev="3.3" conf="db"/>
 	</dependencies>
 </ivy-module>
 
