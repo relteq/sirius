@@ -824,11 +824,11 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
 
-			OutputWriter_simple outputwriter  = null;
+			OutputWriter outputwriter  = null;
 			
 			// open output files
 	        if( writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0 ){
-	        	outputwriter = new OutputWriter_simple(this);
+	        	outputwriter = new OutputWriter(this);
 				try {
 					outputwriter.open(param.outputfileprefix,String.format("%d",i));
 				} catch (FileNotFoundException e) {
@@ -878,9 +878,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws 
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter_simple outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
-		System.out.println(clock.getT());
 		// advance n steps
 		for(int k=0;k<n;k++){
 
@@ -888,7 +887,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	        if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
 	        	if( clock.getCurrentstep()==0 )
 	        		recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
-	               	
+        	
         	// update scenario
         	update();
 
@@ -906,7 +905,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter_simple outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)

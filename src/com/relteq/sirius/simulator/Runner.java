@@ -35,11 +35,11 @@ final class Runner {
 			return;
 		}
 
-//		runMultiple();
-//
-//		runReturnState();
-		
-		runAdvance(20,30,3600);
+		try {
+			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
+		} catch (SiriusException e) {
+			e.printStackTrace();
+		}	
 		
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
@@ -114,40 +114,6 @@ final class Runner {
 			numRepetitions = 1;
 
 		return true;
-	}
-
-	private static void runMultiple(){
-		try {
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
-		} catch (SiriusException e) {
-			e.printStackTrace();
-		}	
-	}
-
-	private static void runReturnState(){
-		try {
-			SiriusStateTrajectory state = scenario.run(timestart,timeend,outdt);
-		} catch (SiriusException e) {
-			e.printStackTrace();
-		} 
-	}
-
-	private static void runAdvance(int numEnsemble,double dt,double endtime){
-		
-		try {
-			scenario.initialize_run(numEnsemble);
-			Link link = scenario.getLinkWithCompositeId(null,"-1");
-			int e;
-			while(scenario.clock.getT()<=endtime){	
-				scenario.advanceNSeconds(dt);
-				
-				for(e=0;e<scenario.numEnsemble;e++)
-					System.out.println(e+"\t"+link.getTotalDensityInVeh(e));
-				
-			}			
-		} catch (SiriusException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
