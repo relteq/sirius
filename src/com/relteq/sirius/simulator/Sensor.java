@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import com.relteq.sirius.jaxb.DataSource;
+
 /** Base implementation of {@link InterfaceSensor}.
  * 
  * <p> This is the base class for all sensors contained in a scenario. 
@@ -53,7 +55,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>null</code>
 	 * */
 	@Override
-	public Double[] getDensityInVPM() {
+	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
@@ -61,7 +63,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>Double.NaN</code>
 	 * */
 	@Override
-	public double getTotalDensityInVPM() {
+	public double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
@@ -69,7 +71,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>null</code>
 	 * */
 	@Override
-	public Double[] getFlowInVPH() {
+	public Double[] getFlowInVPH(int ensemble) {
 		return null;
 	}
 
@@ -77,14 +79,15 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>Double.NaN</code>
 	 * */
 	@Override
-	public double getTotalFlowInVPH() {
+	public double getTotalFlowInVPH(int ensemble) {
 		return Double.NaN;
 	}
 
 	/** Default implementation of {@link InterfaceSensor#getSpeedInMPH()} 
 	 * @return <code>Double.NaN</code>
 	 * */
-	public double getSpeedInMPH() {
+	@Override
+	public double getSpeedInMPH(int ensemble) {
 		return Double.NaN;
 	}
 	
@@ -92,7 +95,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>Double.NaN</code>
 	 * */
 	@Override
-	public double getTotalDensityInVeh() {
+	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
 	}
 	
@@ -132,7 +135,14 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	/** Load sensor data from its data source.
 	 */
 	public void loadData() throws SiriusException{
-
+		if(getDataSources()==null)
+			return;
+		for(DataSource datasource : getDataSources().getDataSource()){
+//			datasource.getDt()
+//			datasource.getFormat()
+//			datasource.getUrl()
+		}
+		
 	}
 	
 	/////////////////////////////////////////////////////////////////////

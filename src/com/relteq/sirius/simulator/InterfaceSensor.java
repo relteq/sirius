@@ -19,7 +19,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of densities.
 	 */
-	public Double[] getDensityInVPM();
+	public Double[] getDensityInVPM(int ensemble);
 	
 	/** Measured total density in veh/mile. 
 	 * 
@@ -28,7 +28,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return A double with the total measured density in veh/mile.	 
 	 */
-	public double getTotalDensityInVPM();
+	public double getTotalDensityInVPM(int ensemble);
 
 	/** Measured total density in veh/link. 
 	 * 
@@ -36,7 +36,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return A double with the total measured density in veh/link.	 
 	 */
-	public double getTotalDensityInVeh();
+	public double getTotalDensityInVeh(int ensemble);
 	
 	/** Measured flow per vehicle type in veh/hr. 
 	 * 
@@ -46,7 +46,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of flows.
 	 */
-	public Double[] getFlowInVPH();
+	public Double[] getFlowInVPH(int ensemble);
 	
 	/** Measured total flow in veh/hr. 
 	 * 
@@ -55,7 +55,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return A double with the total measured flow in veh/hr.	 
 	 */
-	public double getTotalFlowInVPH();
+	public double getTotalFlowInVPH(int ensemble);
 	
 	/** Measured speed in mile/hr. 
 	 * 
@@ -63,6 +63,6 @@ public interface InterfaceSensor {
 	 * 
 	 * @return A double with the measured speed in mile/hr.	 
 	 */
-	public double getSpeedInMPH();
+	public double getSpeedInMPH(int ensemble);
 	
 }

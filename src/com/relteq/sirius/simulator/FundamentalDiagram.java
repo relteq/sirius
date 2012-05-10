@@ -9,12 +9,10 @@ import java.util.Random;
 
 final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
 
-	//protected _Scenario myScenario;
 	protected Link myLink;
 	protected double lanes;
 	protected Double _densityJam;     		// [veh] 
-	protected Double _capacity_nominal;   	// [veh] 
-	protected Double _capacity_actual;   	// [veh] 
+	protected Double _capacity;   			// [veh] 
 	protected Double _capacityDrop;     	// [veh] 
 	protected Double _vf;                	// [-]
 	protected Double _w;                	// [-]
@@ -33,8 +31,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		this.myLink = myLink;
 		this.lanes = myLink._lanes;
 		_densityJam 	  = Double.NaN;  
-	    _capacity_nominal = Double.NaN; 
-	    _capacity_actual  = Double.NaN;
+	    _capacity  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
@@ -56,7 +53,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 
 	protected Double _getCapacityInVeh() {
-		return _capacity_actual;
+		return _capacity;
 	}
 
 	protected Double _getCapacityDropInVeh() {
@@ -79,19 +76,14 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-	// used by CapacityProfile
-	protected void setCapacityFromVeh(double c) {
-		_capacity_actual = c*lanes*myLink.myNetwork.myScenario.getSimDtInHours();
-		_capacity_nominal = _capacity_actual;
-	}
-
 	protected void setLanes(double newlanes){
 		if(newlanes<=0)
 			return;
+		if(SiriusMath.equals(newlanes,lanes))
+			return;
 		double alpha = newlanes/lanes;
 		_densityJam 	  *= alpha; 
-		_capacity_actual  *= alpha; 
-		_capacity_nominal *= alpha; 
+		_capacity  *= alpha; 
 		_capacityDrop 	  *= alpha; 
 		density_critical  *= alpha;
 		lanes = newlanes;
@@ -108,12 +100,11 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
 		double lengthInMiles = myLink.getLengthInMiles();
 		_densityJam 	  = Defaults.densityJam		*lanes*myLink.getLengthInMiles();
-		_capacity_nominal = Defaults.capacity		*lanes*simDtInHours;
-		_capacity_actual  = Defaults.capacity		*lanes*simDtInHours;
+		_capacity  = Defaults.capacity		*lanes*simDtInHours;
 		_capacityDrop 	  = Defaults.capacityDrop	*lanes*simDtInHours;
 		_vf = Defaults.vf * simDtInHours / lengthInMiles;
         _w  = Defaults.w  * simDtInHours / lengthInMiles;
-        density_critical =  _capacity_actual / _vf;
+        density_critical =  _capacity / _vf;
 	}
 
  	// copy per lane parameters from _FundamentalDiagram 
@@ -127,11 +118,8 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		if(that._densityJam!=null)
 			this._densityJam = that._densityJam;
 
-		if(that._capacity_nominal!=null)
-			this._capacity_nominal = that._capacity_nominal;
-
-		if(that._capacity_actual!=null)
-			this._capacity_actual = that._capacity_actual;
+		if(that._capacity!=null)
+			this._capacity = that._capacity;
 
 		if(that.std_dev_capacity!=null)
 			this.std_dev_capacity = that.std_dev_capacity;
@@ -145,7 +133,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		if(that._w!=null)
 			this._w = that._w;
 
-		this.density_critical =  this._capacity_actual / this._vf;
+		this.density_critical =  this._capacity / this._vf;
         
 	}
 	
@@ -167,8 +155,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 
 		if(fd.getCapacity()!=null){
 			value = fd.getCapacity().doubleValue();			// [veh/hr/lane]
-			_capacity_nominal = value * lanes*simDtInHours;
-			_capacity_actual = _capacity_nominal;
+			_capacity = value * lanes*simDtInHours;
 		} 
 		
 		if(fd.getStdDevCapacity()!=null){
@@ -191,49 +178,64 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 			_w = value * simDtInHours / myLink.getLengthInMiles();
 		}
 
-		density_critical =  _capacity_actual / _vf;
+		density_critical =  _capacity / _vf;
         
 	}
 	
 	protected void reset(Scenario.UncertaintyType uncertaintyModel){
-	
-		Random random = myLink.myNetwork.myScenario.random;
-			
 		// set lanes back to original value
 		setLanes(myLink.get_Lanes());
+	}
+	
+	// produce a sample fundamental diagram with this one as expected value.
+	protected FundamentalDiagram perturb(){
 		
-		// sample the capacity distribution
-		_capacity_actual = _capacity_nominal;
+		// make a copy of this fundamental diagram
+		FundamentalDiagram samp = new FundamentalDiagram(myLink);
+		samp.copyfrom(this);
+		
+		// perturb it
 		if(!std_dev_capacity.isNaN()){
-			switch(uncertaintyModel){
+			Random random = myLink.myNetwork.myScenario.random;
+			switch(myLink.myNetwork.myScenario.uncertaintyModel){
 			case uniform:
-				_capacity_actual += std_dev_capacity*Math.sqrt(3)*(2*random.nextDouble()-1);
+				samp._capacity += std_dev_capacity*Math.sqrt(3)*(2*random.nextDouble()-1);
 				break;
 
 			case gaussian:
-				_capacity_actual += std_dev_capacity*random.nextGaussian();
+				samp._capacity += std_dev_capacity*random.nextGaussian();
 				break;
 			}			
 		}
 		
+		// adjustments to sampled fd:
+		
 		// non-negativity
-		_capacity_actual = Math.max(_capacity_actual,0.0);
+		samp._capacity = Math.max(samp._capacity,0.0);
+		
+		// density_critical no greater than dens_crit_congestion
+		double dens_crit_congestion = samp._densityJam-samp._capacity/samp._w;	// [veh]
+		if(SiriusMath.greaterthan(samp.density_critical,dens_crit_congestion)){
+			samp.density_critical = dens_crit_congestion;
+			samp._capacity = samp._vf * samp.density_critical;
+		}
 
+		return samp;
 	}
 	
 	protected boolean validate(){
-		if(_vf<0 || _w<0 || _densityJam<0 || _capacity_nominal<0 || _capacity_actual<0 || _capacityDrop<0){
+		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0){
 			SiriusErrorLog.addErrorMessage("Fundamental diagram parameters must be non-negative.");
 			return false;
 		}
-		
-		double dens_crit_congestion = _densityJam-_capacity_nominal/_w;	// [veh]
+
+		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
 		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion)){
 			SiriusErrorLog.addErrorMessage("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
 			return false;
 		}
-        	
+		
 		if(_vf>1){
 			SiriusErrorLog.addErrorMessage("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
 			return false;
@@ -244,10 +246,11 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 			return false;
 		}
 		
-		if(myLink.getTotalDensityInVeh()>_densityJam){
-			SiriusErrorLog.addErrorMessage("XXX");
-			return false;
-		}
+		for(int e=0;e<this.myLink.myNetwork.myScenario.numEnsemble;e++)
+			if(myLink.getTotalDensityInVeh(e)>_densityJam){
+				SiriusErrorLog.addErrorMessage("XXX");
+				return false;
+			}
 		
 		return true;
 	}

@@ -95,9 +95,9 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			int n = capacity.getLength()-1;
 			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
 			if(step<n)
-				myLink.FD.setCapacityFromVeh( capacity.get(step) );
+				myLink.setCapacityFromVeh(capacity.get(step));
 			if(step>=n && !isdone){
-				myLink.FD.setCapacityFromVeh( capacity.get(n) );
+				myLink.setCapacityFromVeh(capacity.get(n));
 				isdone = true;
 			}
 		}

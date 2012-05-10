@@ -56,6 +56,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
           														gaussian }
 	
+	/** @y.exclude */	protected int numEnsemble;
+
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
@@ -328,6 +330,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	public void run(String outputfileprefix,Double timestart,Double timeend,double outdt,int numRepetitions) throws SiriusException{
 		RunParameters param = new RunParameters(outputfileprefix,timestart,timeend,outdt,simdtinseconds);
+		numEnsemble = 1;
 		run_internal(param,numRepetitions,true,false);
 	}
 
@@ -338,18 +341,19 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
 		RunParameters param = new RunParameters(null,timestart,timeend,outdt,simdtinseconds);
+		numEnsemble = 1;
 		return run_internal(param,1,false,true);
 	}
 	
-	/** Advance the simulation <i>n</i> steps.
+	/** Advance the simulation <i>nsec</i> seconds.
 	 * 
-	 * <p> This function moves the simulation forward <i>n</i> time steps and stops.
-	 * The first parameter provides the number of time steps to advance. The second parameter
-	 * is a boolean that resets the clock and the scenario.  
+	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
+	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
+	 * if the end of the simulation is reached.
 	 * @param nsec Number of seconds to advance.
 	 * @throws SiriusException 
 	 */
-	public void advanceNSeconds(double nsec) throws SiriusException{	
+	public boolean advanceNSeconds(double nsec) throws SiriusException{	
 		
 		if(!scenariolocked)
 			throw new SiriusException("Run not initialized. Use initialize_run() first.");
@@ -357,7 +361,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 		int nsteps = SiriusMath.round(nsec/simdtinseconds);		
-		advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
 	}
 
 	/** Save the scenario to XML.
@@ -727,7 +731,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
 	 */
-	public double [][] getDensityForNetwork(String network_id){
+	public double [][] getDensityForNetwork(String network_id,int ensemble){
 		
 		Network network = getNetworkWithId(network_id);
 		if(network==null)
@@ -738,7 +742,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
 			Link link = (Link) network.getLinkList().getLink().get(i);
-			Double [] linkdensity = link.getDensityInVeh();
+			Double [] linkdensity = link.getDensityInVeh(ensemble);
 			for(j=0;j<numVehicleTypes;j++)
 				density[i][j] = linkdensity[j];
 		}
@@ -751,33 +755,54 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
 	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
 	 * rolling back all profiles and clocks. 
+	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void initialize_run() throws SiriusException{
+	public void initialize_run(int numEnsemble) throws SiriusException{
 
 		if(scenariolocked)
 			throw new SiriusException("Run in progress.");
 			
-		// use RunParameters constructor to determine the timestart
-		RunParameters param = new RunParameters("",Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,0,simdtinseconds);
+		this.numEnsemble = numEnsemble;
+		
+		// check that no controllers are used 
+		if(global_control_on && numEnsemble>1 && getControllerSet()!=null){
+			if(!getControllerSet().getController().isEmpty()){
+				System.out.println("Warning! This scenario has controllers. " +
+						"Currently ensemble runs work only with control turned off. " +
+						"Deactivting control and continuing");
+				global_control_on = false;
+			}
+		}
+		
+        double time_ic;
+        if(getInitialDensityProfile()!=null)
+        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
+        else
+        	time_ic = 0.0;
+        
+        double timestart = time_ic;			// start at the initial condition time
+        Scenario.ModeType simulationMode = Scenario.ModeType.normal;
 
+		if(numEnsemble<=0)
+			throw new SiriusException("Number of ensemble runs must be at least 1.");
+		
 		// create the clock
-		clock = new Clock(param.timestart,Double.POSITIVE_INFINITY,simdtinseconds);
+		clock = new Clock(timestart,Double.POSITIVE_INFINITY,simdtinseconds);
 		
 		// reset the simulation
-		if(!reset(ModeType.normal))
+		if(!reset(simulationMode))
 			throw new SiriusException("Reset failed.");
 		
 		// lock the scenario
         scenariolocked = true;	
-	
 	}
 	
-//	/** Load sensor data for all sensors in the scenario.
-//	 */
-//	public void loadSensorData() throws SiriusException{
-//		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-//			((Network) network).loadSensorData();
-//	}
+	/** Load sensor data for all sensors in the scenario.
+	 */
+	public void loadSensorData() throws SiriusException{
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+			((Network) network).loadSensorData();
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// private
@@ -851,7 +876,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// returns....
 	// true if scenario advanced n steps without error
 	// false if scenario reached t_end without error before completing n steps
-	// throws ....
+	// throws 
 	// SiriusException for all errors
 	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
@@ -862,7 +887,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	        if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
 	        	if( clock.getCurrentstep()==0 )
 	        		recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
-	               	
+        	
         	// update scenario
         	update();
 
@@ -895,10 +920,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		public Scenario.ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
-		public RunParameters(String outputfileprefix,double timestart,double timeend,double outdt,double simdtinseconds) throws SiriusException{
+		public RunParameters(String outputfileprefix,double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
 			
 			// check timestart < timeend
-			if(timestart>=timeend)
+			if(tstart>=tend)
 				throw new SiriusException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
@@ -906,8 +931,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
 			this.outputfileprefix = outputfileprefix;
-			this.timestart = timestart;
-			this.timeend = timeend;
+			this.timestart = tstart;
+			this.timeend = tend;
 	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
 
 			// Simulation mode is normal <=> start time == initial profile time stamp
@@ -919,7 +944,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	        else
 	        	time_ic = 0.0;
 	       
-			if(timestart==time_ic){
+			if(SiriusMath.equals(timestart,time_ic)){
 				simulationMode = Scenario.ModeType.normal;
 			}
 			else{
@@ -939,7 +964,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 					simulationMode = Scenario.ModeType.warmupFromZero;
 				}		
 			}
-			
+			if( timeend < timestart )
+				timeend = timestart;
 		}
 
 	}
