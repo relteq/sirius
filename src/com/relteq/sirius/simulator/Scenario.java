@@ -150,6 +150,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	protected void update() throws SiriusException {	
 
+		System.out.println("HELLO!");
+		
         // sample profiles .............................	
     	if(getDownstreamBoundaryCapacitySet()!=null)
         	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
