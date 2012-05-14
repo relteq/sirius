@@ -8,4 +8,5 @@ output_*.xml
 *.asv
 *.class
 torque/
+velocity.log
 
