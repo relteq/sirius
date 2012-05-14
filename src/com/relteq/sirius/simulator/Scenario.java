@@ -149,8 +149,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @y.exclude
 	 */
 	protected void update() throws SiriusException {	
-
-		System.out.println("HELLO!");
 		
         // sample profiles .............................	
     	if(getDownstreamBoundaryCapacitySet()!=null)
