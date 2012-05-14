@@ -49,33 +49,33 @@ public class SensorLoopStation extends Sensor {
 	}
 
 	@Override
-	public Double[] getDensityInVPM() {
-		return SiriusMath.times(myLink.getDensityInVeh(),1/myLink.getLengthInMiles());
+	public Double[] getDensityInVPM(int ensemble) {
+		return SiriusMath.times(myLink.getDensityInVeh(ensemble),1/myLink.getLengthInMiles());
+	}
+
+	@Override
+	public double getTotalDensityInVeh(int ensemble) {
+		return myLink.getTotalDensityInVeh(ensemble);
 	}
 	
 	@Override
-	public double getTotalDensityInVeh() {
-		return myLink.getTotalDensityInVeh();
-	}
-	
-	@Override
-	public double getTotalDensityInVPM() {
-		return myLink.getTotalDensityInVeh()/myLink.getLengthInMiles();
+	public double getTotalDensityInVPM(int ensemble) {
+		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles();
 	}
 
 	@Override
-	public Double[] getFlowInVPH() {
-		return SiriusMath.times(myLink.getOutflowInVeh(),1/myScenario.getSimDtInHours());
+	public Double[] getFlowInVPH(int ensemble) {
+		return SiriusMath.times(myLink.getOutflowInVeh(ensemble),1/myScenario.getSimDtInHours());
 	}
 
 	@Override
-	public double getTotalFlowInVPH() {
-		return myLink.getTotalOutflowInVeh()/myScenario.getSimDtInHours();
+	public double getTotalFlowInVPH(int ensemble) {
+		return myLink.getTotalOutflowInVeh(ensemble)/myScenario.getSimDtInHours();
 	}
 
 	@Override
-	public double getSpeedInMPH() {
-		return myLink.computeSpeedInMPH();
+	public double getSpeedInMPH(int ensemble) {
+		return myLink.computeSpeedInMPH(ensemble);
 	}
 		
 }

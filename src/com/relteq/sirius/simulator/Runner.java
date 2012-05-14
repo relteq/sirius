@@ -7,6 +7,8 @@ package com.relteq.sirius.simulator;
 
 final class Runner {
 	
+	private static Scenario scenario;
+		
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
@@ -25,7 +27,7 @@ final class Runner {
 		}
 
 		// load configuration file ................................
-		Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
+		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
 		if(SiriusErrorLog.haserror()){
@@ -33,13 +35,12 @@ final class Runner {
 			return;
 		}
 
-		// run scenario ...........................................
 		try {
 			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
 		} catch (SiriusException e) {
 			e.printStackTrace();
-		}
-
+		}	
+		
 		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
 
@@ -114,6 +115,5 @@ final class Runner {
 
 		return true;
 	}
-	
-	
+
 }

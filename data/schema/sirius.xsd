@@ -129,9 +129,9 @@
         <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
 		<xs:element ref="ODList" minOccurs="0"  maxOccurs="1" />
-		<xs:element ref="PathSegements" minOccurs="0"  maxOccurs="1" />
+		<xs:element ref="PathSegments" minOccurs="0"  maxOccurs="1" />
 		<xs:element ref="DecisionPoints" minOccurs="0"  maxOccurs="1" />
-		<xs:element ref="ODDemandPofileSet" minOccurs="0"  maxOccurs="1" />
+		<xs:element ref="ODDemandProfileSet" minOccurs="0"  maxOccurs="1" />
       </xs:all>
       <xs:attribute name="id" type="xs:string" use="optional" />
       <xs:attribute name="name" type="xs:string" use="optional" />
@@ -236,35 +236,35 @@
 				</xs:complexType>
 			  </xs:element>
 			  
-			  <xs:element name="postmile" type="xs:decimal" />
-			  
-			  <xs:element name="outputs">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="output" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				</xs:complexType>
-			  </xs:element>
+				  <xs:element name="postmile" type="xs:decimal" />
+				  
+				  <xs:element name="outputs">
+					<xs:complexType>
+					  <xs:sequence>
+						<xs:element ref="output" minOccurs="0" maxOccurs="unbounded" />
+					  </xs:sequence>
+					</xs:complexType>
+				  </xs:element>
 
-			  <xs:element name="output">
-				<xs:complexType>
-				  <xs:attribute name="link_id" type="xs:string" use="required" />
-				</xs:complexType>
-			  </xs:element>
+				  <xs:element name="output">
+					<xs:complexType>
+					  <xs:attribute name="link_id" type="xs:string" use="required" />
+					</xs:complexType>
+				  </xs:element>
 
-			  <xs:element name="inputs">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="input" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				</xs:complexType>
-			  </xs:element>
-			  
-			  <xs:element name="input">
-				<xs:complexType>
-				  <xs:attribute name="link_id" type="xs:string" use="required" />
-				</xs:complexType>
-			  </xs:element>		  
+				  <xs:element name="inputs">
+					<xs:complexType>
+					  <xs:sequence>
+						<xs:element ref="input" minOccurs="0" maxOccurs="unbounded" />
+					  </xs:sequence>
+					</xs:complexType>
+				  </xs:element>
+				  
+				  <xs:element name="input">
+					<xs:complexType>
+					  <xs:attribute name="link_id" type="xs:string" use="required" />
+					</xs:complexType>
+				  </xs:element>		  
 		  
   <!-- LinkList .................................................................. -->
 
@@ -298,30 +298,29 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="record" type="xs:boolean" use="optional"
-					default="true" />
+				  <xs:attribute name="record" type="xs:boolean" use="optional" default="true" />
 				</xs:complexType>
 			  </xs:element>
 
-			  <xs:element name="dynamics">
-				<xs:complexType>
-				  <xs:attribute name="type" use="required">
-					<xs:simpleType>
-					  <xs:restriction base="xs:string">
-						<xs:pattern value="CTM|region_tracking|discrete_departure"/>
-					  </xs:restriction>
-					</xs:simpleType>
-				  </xs:attribute>
-				</xs:complexType>
-			  </xs:element>
+				  <xs:element name="dynamics">
+					<xs:complexType>
+					  <xs:attribute name="type" use="required">
+						<xs:simpleType>
+						  <xs:restriction base="xs:string">
+							<xs:pattern value="CTM|region_tracking|discrete_departure"/>
+						  </xs:restriction>
+						</xs:simpleType>
+					  </xs:attribute>
+					</xs:complexType>
+				  </xs:element>
 
-			  <xs:element name="LinkGeometry">
-				<xs:complexType>
-				  <xs:choice>
-					<xs:element ref="EncodedPolyline" />
-				  </xs:choice>
-				</xs:complexType>
-			  </xs:element>
+				  <xs:element name="LinkGeometry">
+					<xs:complexType>
+					  <xs:choice>
+						<xs:element ref="EncodedPolyline" />
+					  </xs:choice>
+					</xs:complexType>
+				  </xs:element>
 
   <!-- SignalList ................................................................ -->
 
@@ -559,7 +558,6 @@
 			</xs:complexType>
 		  </xs:element>
 
- 
   <!-- SplitRatioProfileSet ...................................................... -->
 
 	  <xs:element name="SplitRatioProfileSet">
@@ -648,7 +646,7 @@
 		      <xs:attribute name="reset_to_nominal" type="xs:boolean" use="optional" default="false" />
 			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
-			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
+			  <!-- <xs:attribute name="link_position" type="xs:decimal" use="optional" /> -->
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -662,7 +660,7 @@
 			  <xs:element name="splitratioEvent">		<!-- split ratio matrix for one time instant, one input link, one vehicle type -->
 			    <xs:complexType mixed="true">
 				  <xs:attribute name="link_in" type="xs:string" use="required" />
-				  <xs:attribute name="vehicleTypeName" type="xs:string" use="required" />
+				  <xs:attribute name="vehicleTypeName" type="xs:string" use="optional" />
 			    </xs:complexType>
 			  </xs:element>	 
   
@@ -739,7 +737,7 @@
 				<xs:element ref="feedbackElements" minOccurs="0" />
 				<xs:element ref="parameters" minOccurs="0" />
 				<xs:element ref="qcontroller" minOccurs="0" />
-				<xs:element ref="table" minOccurs="0" />
+				<!-- <xs:element ref="table" minOccurs="0" /> -->
 				<xs:element ref="PlanSequence" minOccurs="0" />
 				<xs:element ref="PlanList" minOccurs="0" />
 			  </xs:all>
@@ -772,12 +770,11 @@
 				</xs:complexType>
 			  </xs:element>
 				  
+			<!--
 			  <xs:element name="table">
 				<xs:complexType mixed="true">
-				  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=",:" /> -->
-				  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:string" /> -->
 				</xs:complexType>
-			  </xs:element>
+			  </xs:element> -->
 
   <!-- Pretimed signal ........................................................... -->
 			  
@@ -920,6 +917,8 @@
 		  <xs:sequence>
 			<xs:element ref="od" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
+		  <xs:attribute name="id" type="xs:string" use="optional" default="" />
+		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
 
@@ -949,9 +948,9 @@
 				</xs:simpleType>
 			  </xs:element>
 			  
-  <!-- PathSegements ............................................................. -->
+  <!-- PathSegments ............................................................. -->
 
-	  <xs:element name="PathSegements">
+	  <xs:element name="PathSegments">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="path_segment" minOccurs="0" maxOccurs="unbounded" />
@@ -993,33 +992,34 @@
 		  </xs:element>
 		  
 			  <xs:element name="decision_point_split">
-				<xs:complexType>
+				<xs:complexType mixed="true">
 				  <xs:attribute name="path_segment_in" type="xs:string" use="required" />
 				  <xs:attribute name="path_segment_out" type="xs:string" use="required" />			<!-- in seconds -->
 				</xs:complexType>
 			  </xs:element>
 		  
-  <!-- ODDemandPofileSet ......................................................... -->
+  <!-- ODDemandProfileSet ......................................................... -->
 
-	  <xs:element name="ODDemandPofileSet">
+	  <xs:element name="ODDemandProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
+			<xs:element ref="description" minOccurs="0" />
+			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="od_demandProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
+		  <xs:attribute name="id" type="xs:string" use="optional" default="" />
+		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
-  
+	  
 		  <xs:element name="od_demandProfile">
-			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="VehicleTypeOrder" minOccurs="0" maxOccurs="1" />
-				<xs:element ref="decision_point_split" minOccurs="0" maxOccurs="unbounded" />
-			  </xs:sequence>
-			  <xs:attribute name="od_id" type="xs:string" use="required" />
-			  <xs:attribute name="vehicletype" type="xs:string" use="optional" />
+			<xs:complexType mixed="true">
+			  <xs:attribute name="knob" type="xs:decimal" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
-			  <xs:attribute name="knob" type="xs:decimal" use="optional" />
+			  <xs:attribute name="od_id" type="xs:string" use="required" />
+			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
+			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
 			</xs:complexType>
 		  </xs:element>
 
