@@ -174,6 +174,7 @@
 
 	<target name="db" description="generate DB schema" depends="deps-db">
 		<ant antfile="${torque.buildfile}" target="sql"/>
+		<ant antfile="${torque.buildfile}" target="om"/>
 	</target>
 
 	<target name="clean-db">
