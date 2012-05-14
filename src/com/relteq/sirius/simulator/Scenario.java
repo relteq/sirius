@@ -759,8 +759,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	public void initialize_run(int numEnsemble) throws SiriusException{
 
-		if(scenariolocked)
-			throw new SiriusException("Run in progress.");
+		scenariolocked = false;
 			
 		this.numEnsemble = numEnsemble;
 		

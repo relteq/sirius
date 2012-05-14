@@ -641,12 +641,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	public Network getMyNetwork() {
 		return myNetwork;
 	}
-	
-//	/** node type */ 
-//	public _Node.Type getMyType() {
-//		return myType;
-//	}
-    
+	    
     /** List of links exiting this node */ 
     public Link[] getOutput_link() {
 		return output_link;
@@ -712,7 +707,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	public Double [][][] getSplitRatio(){
 		if(splitratio==null)
 			return null;
-		else
-			return splitratio.getData();
+		else{
+			return splitratio.cloneData();
+		}
 	}
 }
