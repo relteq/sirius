@@ -26,25 +26,44 @@ import javax.xml.validation.Validator;
 
 @RunWith(Parameterized.class)
 public class OutputWriterTest {
+	/** output file name prefix */
 	private static String OUT_PREFIX = "output_";
+	/** output file name suffix */
 	private static String OUT_SUFFIX = "_0.xml";
+	/** configuration file name suffix */
 	private static String CONF_SUFFIX = ".xml";
 
+	/** configuration (scenario) file */
 	private File conffile;
+	/** configuration (scenario) schema */
 	private static Schema ischema;
+	/** simulator output schema */
 	private static Schema oschema;
 
-	@BeforeClass public static void loadSchemas() throws SAXException {
+	/**
+	 * Loads scenario and simulator output schemas
+	 * @throws SAXException
+	 */
+	@BeforeClass
+	public static void loadSchemas() throws SAXException {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		String schemadir = "data" + File.separator + "schema";
 		ischema = factory.newSchema(new File(schemadir + File.separator + "sirius.xsd"));
 		oschema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
 	}
 
+	/**
+	 * Initializes testing environment
+	 * @param conffile File the configuration file
+	 */
 	public OutputWriterTest(File conffile) {
 		this.conffile = conffile;
 	}
 
+	/**
+	 * Lists configuration files
+	 * @return a Vector of configuration files <code>data/config/*.xml</code>
+	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
 		File confdir = new File("data" + File.separator + "config");
@@ -57,6 +76,13 @@ public class OutputWriterTest {
 		return res;
 	}
 
+	/**
+	 * Validates the configuration file, runs Sirius, validates the output.
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws XMLStreamException
+	 * @throws FactoryConfigurationError
+	 */
 	@Test
 	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError {
 		System.out.println("CONFIG: " + conffile.getPath());
@@ -75,7 +101,10 @@ public class OutputWriterTest {
 		System.out.println(outfile.getAbsolutePath() + " removed");
 	}
 
-	/** Validate an XML file
+	/**
+	 * Validates an XML file
+	 * @param xmlfile a File to be validated
+	 * @param schema a Schema to validate against
 	 * @throws FactoryConfigurationError
 	 * @throws XMLStreamException
 	 * @throws IOException
@@ -87,7 +116,11 @@ public class OutputWriterTest {
 		validator.validate(new StAXSource(xmlsr));
 	}
 
-	/** Run Sirius */
+	/**
+	 * Runs Sirius
+	 * @param confpath String a configuration file path
+	 * @param outpath String an output file path
+	 */
 	protected void runSirius(String confpath, String outpath) {
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
 		String [] args = {confpath, outpath.substring(0, outpath.length() - OUT_SUFFIX.length()), //
