@@ -1,24 +1,30 @@
+/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
+	This source is subject to the following copyright notice:
+	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
+*/
+
 package com.relteq.sirius.calibrator;
 
-import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
 
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
 import com.relteq.sirius.sensor.DataSource;
 import com.relteq.sirius.sensor.SensorLoopStation;
 import com.relteq.sirius.simulator.*;
 
+/** Fundamental diagram calibration routine.
+ * 
+ * <p> Implements fundamental diagram fitting based on data referenced by sensors.
+* @author Gabriel Gomes
+* @version VERSION NUMBER
+*/
 public class FDCalibrator {
 	protected String configfilename;
 	protected String outputfilename;
-//	protected HashMap<String,DataSource> datasourcemap = new HashMap<String,DataSource>();
 	protected ArrayList<DataSource> datasources = new ArrayList<DataSource>();
 	protected Scenario scenario;
 	protected HashMap <Integer,FiveMinuteData> data = new HashMap <Integer,FiveMinuteData> ();
-	//protected List<SensorLoopStation> sensors;
 	
 	public FDCalibrator(String configfilename,String outputfilename){
 		this.configfilename = configfilename;
@@ -347,7 +353,7 @@ public class FDCalibrator {
 	}
 
 	// internal classes ...............................
-	public class DataPoint implements Comparable {
+	public class DataPoint implements Comparable<Object> {
 		float dty;
 		float flw;
 		float spd;
@@ -384,41 +390,6 @@ public class FDCalibrator {
 		public boolean isassigned = false; // network is divided into assigned and unassigned subnetworks
 		public GrowLink(Link l){link=l;}
 	}
-
-//	// main function .................................
-//	public static void main(String[] args) {
-//
-//		try {
-//			String configfilename,outputfilename;
-//			if(args.length < 2){
-//				System.out.println("Arguments:");
-//				System.out.println("1) Configuration file name.");
-//				System.out.println("2) Output file name.");
-//				return;
-//			}
-//			configfilename = args[0];
-//			outputfilename = args[1];
-//
-//			// basic checks
-//			if(!configfilename.endsWith(".xml")) {
-//				System.out.println("Invalid configuration file extension.");
-//				return;
-//			}
-//
-//			if (!outputfilename.endsWith(".xml")) {
-//				System.out.println("Invalid output file extension.");
-//				return;
-//			}
-//			FDCalibrator calibrator = new FDCalibrator(configfilename, outputfilename);
-//			calibrator.run();
-//		}
-//		catch(Exception e){
-//			System.out.println(e);
-//			System.exit(1);
-//		}
-//		System.out.println("Done!");
-//		System.exit(0);
-//	}
 
 	public static void main(String[] args) {
 		if(args.length<2){

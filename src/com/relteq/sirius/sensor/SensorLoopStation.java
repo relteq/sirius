@@ -7,7 +7,7 @@ import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Sensor;
 
-public class SensorLoopStation extends Sensor {
+public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	
 	private int VDS;								// PeMS vehicle detector station number
 	private ArrayList<com.relteq.sirius.sensor.DataSource> _datasources = new ArrayList<com.relteq.sirius.sensor.DataSource>();
