@@ -172,9 +172,11 @@
 		<ivy:retrieve conf="${ivy.db.conf}"/>
 	</target>
 
-	<target name="db" description="generate DB schema" depends="deps-db">
+	<target name="db" depends="deps-db"
+			description="generate sql, java classes and documentation from xml db schema">
 		<ant antfile="${torque.buildfile}" target="sql"/>
 		<ant antfile="${torque.buildfile}" target="om"/>
+		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
 
 	<target name="clean-db">
