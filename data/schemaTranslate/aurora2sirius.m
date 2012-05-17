@@ -12,7 +12,6 @@ hasdemandprofile    = hasfields(scenario,'DemandProfileSet','demand');
 hascapacityprofile  = hasfields(scenario,'CapacityProfileSet','capacity');
 hassignal           = hasfields(scenario.network,'SignalList','signal');
 
-
 blankscenarioElement = struct('ATTRIBUTE',struct('type','','id',nan));
             
 % % remove terminal nodes
@@ -101,7 +100,7 @@ if(hassensors)
 end
 
 % display paramers put in simulation
-if(isfield(scenario.settings,'display'))
+if(hasfields(scenario,'settings','display'))
 %     if(isfield(scenario.settings.display.ATTRIBUTE,'timeMax'))
 %         scenario.settings.simulation.ATTRIBUTE.timeMax = scenario.settings.display.ATTRIBUTE.timeMax;
 %     end
@@ -280,7 +279,8 @@ if(hascontrollers)
 end
 
 % rename: vtype -> vehicleType
-if(isfield(scenario.settings,'VehicleTypes'))
+
+if(hasfields(scenario,'settings','VehicleTypes'))
     scenario.settings.VehicleTypes=renamefield(scenario.settings.VehicleTypes,'vtype','vehicleType');
 end
 
@@ -482,9 +482,9 @@ x.ATTRIBUTE.type = newtype;
 function [x]=adjustDataSourceFormat(x)
 switch x.ATTRIBUTE.format
     case {'pems','PeMS Data Clearinghouse',''}
-        newtype = 'PeMS_Data_Clearinghouse';
+        newtype = 'PeMS Data Clearinghouse';
     case {'dbx','Caltrans DBX'}
-        newtype = 'Caltrans_DBX';
+        newtype = 'Caltrans DBX';
     case 'bhl'
         newtype = 'BHL';
     otherwise
@@ -577,7 +577,6 @@ if isfield(x.ATTRIBUTE, 'type')
 	end
 	x.ATTRIBUTE.type = newtype;
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustLinkType(x)

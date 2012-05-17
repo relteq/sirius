@@ -283,10 +283,13 @@ public final class ObjectFactory {
         S.uncertaintyModel = Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
         S.numVehicleTypes = 1;
-        if(S.getSettings().getVehicleTypes()!=null)
-            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
-        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-
+        
+        if(S.getSettings()!=null)
+	        if(S.getSettings().getVehicleTypes()!=null)
+	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
+	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
+	            	
+	            	
         // populate the scenario ....................................................
         try{
         	S.populate();

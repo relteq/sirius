@@ -419,7 +419,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public Double[] getDensityInVeh(int ensemble) {
 		try{
-			return density[ensemble];
+			return density[ensemble].clone();
 		} catch(Exception e){
 			return null;
 		}
@@ -440,6 +440,13 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		}
 	}
 	
+	/** Total of vehicles in (vehicles/mile). 
+	 * @return total density of vehicles in the link. 0 if something goes wrong.
+	 */
+	public double getTotalDensityInVPM(int ensemble) {
+		return getTotalDensityInVeh(ensemble)/_length;
+	}
+	
 	/** Number of vehicles per vehicle type exiting the link 
 	 * during the current time step. The return array is indexed by 
 	 * vehicle type in the order given in the <code>settings</code> 
@@ -448,7 +455,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public Double[] getOutflowInVeh(int ensemble) {
 		try{
-			return outflow[ensemble];
+			return outflow[ensemble].clone();
 		} catch(Exception e){
 			return null;
 		}
@@ -614,4 +621,17 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		this.sourcedemand = sourcedemand;		
 	}
 	
+	/** Replace link density with given values.
+	 *  [This is API call is being made available for implementation of particle filtering.
+	 *  Use with caution.]
+	 */
+	public void overrideDensityWithVeh(Double[] x,int ensemble){
+		if(ensemble<0 || ensemble>=density.length)
+			return;
+		if(x.length!=density[0].length)
+			return;
+		for(int i=0;i<x.length;i++)
+			density[ensemble][i] = x[i];
+	}
+
 }

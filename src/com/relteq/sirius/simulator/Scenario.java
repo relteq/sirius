@@ -759,8 +759,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 */
 	public void initialize_run(int numEnsemble) throws SiriusException{
 
-		if(scenariolocked)
-			throw new SiriusException("Run in progress.");
+		scenariolocked = false;
 			
 		this.numEnsemble = numEnsemble;
 		
@@ -796,14 +795,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// lock the scenario
         scenariolocked = true;	
 	}
-	
-	/** Load sensor data for all sensors in the scenario.
-	 */
-	public void loadSensorData() throws SiriusException{
-		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-			((Network) network).loadSensorData();
-	}
-	
+		
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////	

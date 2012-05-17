@@ -162,6 +162,16 @@ final class Double3DMatrix {
 	public Double [][][] getData() {
 		return data;
 	}
+	
+	public Double [][][] cloneData() {
+		Double [][][] cData = new Double [nIn][nOut][nVTypes];
+		int i,j,k;
+		for(i=0;i<nIn;i++)
+			for(j=0;j<nOut;j++)
+				for(k=0;k<nVTypes;k++)
+					cData[i][j][k] = data[i][j][k];
+		return cData;
+	}
 
 	public Double get(int i,int j,int k){
     	if(isempty)

@@ -117,7 +117,7 @@
     <xs:complexType>
       <xs:all>
         <xs:element ref="description" minOccurs="0" />
-        <xs:element ref="settings" />
+        <xs:element ref="settings" minOccurs="0"  />
         <xs:element ref="NetworkList" minOccurs="0" />
         <xs:element ref="InitialDensityProfile" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorsProfile" minOccurs="0" maxOccurs="1" />
@@ -279,10 +279,10 @@
 			  <xs:element name="link">
 				<xs:complexType>
 				  <xs:all>
-					<xs:element ref="description" minOccurs="0" />
+					<xs:element ref="description" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="begin" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="end" minOccurs="0" maxOccurs="1" />
-					<xs:element ref="dynamics" />
+					<xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="LinkGeometry" minOccurs="0" />
 				  </xs:all>
 				  <xs:attribute name="name" type="xs:string" use="optional" />
@@ -415,7 +415,7 @@
 					  <xs:attribute name="format" use="required">
 						<xs:simpleType>
 						  <xs:restriction base="xs:string">
-							<xs:pattern value="PeMS_Data_Clearinghouse|Caltrans_DBX|BHL"/>
+							<xs:pattern value="PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL"/>
 						  </xs:restriction>
 						</xs:simpleType>
 					  </xs:attribute>
