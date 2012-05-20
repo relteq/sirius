@@ -74,7 +74,7 @@
 	<target name="jar" depends="compile,resources" description="build a jar">
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
-				<attribute name="Main-Class" value="com/relteq/sirius/simulator/Runner"/>
+				<attribute name="Main-Class" value="com.relteq.sirius.Runner"/>
 			</manifest>
 		</jar>
 	</target>
