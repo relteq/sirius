@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-final class Runner {
+public final class Runner {
 	
 	private static Scenario scenario;
 		
