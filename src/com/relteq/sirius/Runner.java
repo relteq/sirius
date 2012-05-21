@@ -21,7 +21,7 @@ public class Runner {
 			} else if (cmd.equals("export") || cmd.equals("e")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
-				throw new NotImplementedException(cmd);
+				com.relteq.sirius.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
