@@ -57,7 +57,7 @@ public class Runner {
 			} else if (cmd.equals("report") || cmd.equals("r")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("init")) {
-				throw new NotImplementedException(cmd);
+				com.relteq.sirius.db.Admin.init();
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
