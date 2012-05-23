@@ -66,6 +66,8 @@ public class Runner {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_all") || cmd.equals("cla")) {
 				throw new NotImplementedException(cmd);
+			} else if (cmd.equals("version") || cmd.equals("v")) {
+				printVersion();
 			} else throw new InvalidCommandException(cmd);
 		} catch (InvalidUsageException exc) {
 			System.err.println("Usage: command [parameters]");
@@ -106,5 +108,11 @@ public class Runner {
 
 	@SuppressWarnings("serial")
 	public static class InvalidUsageException extends Exception {}
+
+	private static void printVersion() {
+		Version ver = Version.get();
+		System.out.println("schema version: " + ver.getSchemaVersion());
+		System.out.println("engine version: " + ver.getEngineVersion());
+	}
 
 }
