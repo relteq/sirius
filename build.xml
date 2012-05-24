@@ -52,7 +52,7 @@
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir,xsd2java,deps-compile">
+	<target name="compile" depends="builddir,xsd2java,deps-compile,om">
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
 				classpathref="lib.path"
@@ -201,8 +201,27 @@
 		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
 
+	<target name="om" depends="deps-generate">
+		<ant antfile="${torque.buildfile}" target="om"/>
+		<property file="${torque.properties}"/>
+		<mkdir dir="${torque.output.dir}/java"/>
+		<move todir="${torque.output.dir}/java">
+			<fileset dir="${torque.java.dir}">
+				<include name="report.*"/>
+			</fileset>
+		</move>
+	</target>
+
 	<target name="clean-db">
 		<delete dir="${torque.output.dir}"/>
+		<delete dir="${torque.java.dir}/org"/>
+		<resources id="om.package.dir">
+			<mappedresources>
+				<string value="${torque.targetPackage}"/>
+				<unpackagemapper from="*" to="${torque.java.dir}/*"/>
+			</mappedresources>
+		</resources>
+		<delete dir="${toString:om.package.dir}"/>
 	</target>
 
 	<property name="version.src.dir" value="util${file.separator}version"/>
