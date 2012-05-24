@@ -11,4 +11,6 @@ output_*.txt
 velocity.log
 /sirius/
 /derby.log
+/src/com/relteq/sirius/om/
+/src/org/apache/torque/linkage/
 
