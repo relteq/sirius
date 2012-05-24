@@ -9,4 +9,6 @@ output_*.xml
 *.class
 /torque/
 velocity.log
+/sirius/
+/derby.log
 
