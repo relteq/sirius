@@ -12,7 +12,7 @@
 	<property name="javac.deprecation" value="off"/>
 	<property name="javac.version" value="1.6"/>
 	<property name="javac.args" value=""/>
-	<property name="javac.args.warnings" value="-Xlint:unchecked"/>
+	<property name="javac.args.warnings" value="-Xlint:unchecked -Xlint:deprecation"/>
 
 	<property name="ydoc.dir" value="${basedir}/yworks-uml-doclet-3.0_01-jdk1.5"/>
 	<property name="doc.dir" value="${basedir}/doc"/>
