@@ -178,7 +178,7 @@
 	</target>
 
 	<target name="db" depends="deps-generate"
-			description="generate sql, java classes and documentation from xml db schema">
+			description="generate sql and documentation from xml db schema">
 		<ant antfile="${torque.buildfile}" target="sql"/>
 		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
