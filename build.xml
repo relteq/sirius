@@ -25,10 +25,6 @@
 
 	<property name="ivy.lib.dir" value="${basedir}/lib"/>
 
-	<property name="ivy.build.conf" value="build"/>
-	<property name="ivy.test.conf" value="test"/>
-	<property name="ivy.db.conf" value="db"/>
-
 	<property name="torque.buildfile" value="build-torque.xml"/>
 	<property name="torque.properties" value="torque.properties"/>
 
@@ -36,7 +32,7 @@
 		<fileset dir="${ivy.lib.dir}" includes="*.jar"/>
 	</path>
 
-	<target name="xjctask" depends="deps">
+	<target name="xjctask" depends="deps-generate">
 		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
 	</target>
 
@@ -56,7 +52,7 @@
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir,xsd2java,deps-db">
+	<target name="compile" depends="builddir,xsd2java,deps-compile">
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
 				classpathref="lib.path"
@@ -72,7 +68,7 @@
 		<copy file="${schema.file}" todir="${bin.dir}"/>
 	</target>
 
-	<target name="jar" depends="compile,resources" description="build a jar">
+	<target name="jar" depends="compile,resources,deps-runtime" description="build a jar">
 		<manifestclasspath property="jar.classpath" jarfile="${jar.file}">
 			<classpath refid="lib.path"/>
 		</manifestclasspath>
@@ -116,8 +112,20 @@
 		<delete dir="${xjc.destdir}"/>
 	</target>
 
-	<target name="deps" description="resolve dependencies" depends="init-ivy">
-		<ivy:retrieve conf="${ivy.build.conf}"/>
+	<target name="deps-compile" depends="init-ivy">
+		<ivy:retrieve conf="compile"/>
+	</target>
+
+	<target name="deps-generate" depends="init-ivy">
+		<ivy:retrieve conf="generate"/>
+	</target>
+
+	<target name="deps-test" depends="init-ivy">
+		<ivy:retrieve conf="test"/>
+	</target>
+
+	<target name="deps-runtime" depends="init-ivy">
+		<ivy:retrieve conf="runtime"/>
 	</target>
 
 	<property name="ivy.install.version" value="2.1.0-rc2"/>
@@ -140,10 +148,6 @@
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml"
 				uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
-	</target>
-
-	<target name="deps-test" depends="init-ivy">
-		<ivy:retrieve conf="${ivy.test.conf}"/>
 	</target>
 
 	<path id="classpath.test">
@@ -173,11 +177,7 @@
 		</delete>
 	</target>
 
-	<target name="deps-db" depends="init-ivy">
-		<ivy:retrieve conf="${ivy.db.conf}"/>
-	</target>
-
-	<target name="db" depends="deps-db"
+	<target name="db" depends="deps-generate"
 			description="generate sql, java classes and documentation from xml db schema">
 		<ant antfile="${torque.buildfile}" target="sql"/>
 		<ant antfile="${torque.buildfile}" target="doc"/>

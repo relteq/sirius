@@ -4,16 +4,18 @@
 		xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 	<info organisation="com.relteq" module="sirius" status="integration"/>
 	<configurations>
-		<conf name="build"/>
-		<conf name="test" extends="build" visibility="private"/>
-		<conf name="db"/>
+		<conf name="compile" visibility="private"/>
+		<conf name="generate" visibility="private"/>
+		<conf name="runtime" extends="compile" visibility="public"/>
+		<conf name="test" extends="runtime" visibility="private"/>
 	</configurations>
-	<dependencies defaultconf="build" defaultconfmapping="build->*;test->*;db->*">
-		<dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2"/>
+	<dependencies defaultconf="compile" defaultconfmapping="*->*">
+		<dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2" conf="generate"/>
+		<dependency org="org.apache.ant" name="ant" rev="1.8.3"/>
 		<dependency org="junit" name="junit" rev="4.5" conf="test"/>
-		<dependency org="org.apache.torque" name="torque-generator" rev="3.3" conf="db"/>
-		<dependency org="org.apache.derby" name="derby" rev="10.8.2.2" conf="db"/>
-		<dependency org="postgresql" name="postgresql" rev="9.1-901.jdbc4" conf="db"/>
+		<dependency org="org.apache.torque" name="torque-generator" rev="3.3" conf="generate"/>
+		<dependency org="org.apache.derby" name="derby" rev="10.8.2.2" conf="runtime"/>
+		<dependency org="postgresql" name="postgresql" rev="9.1-901.jdbc4" conf="runtime"/>
 	</dependencies>
 </ivy-module>
 
