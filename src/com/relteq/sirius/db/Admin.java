@@ -20,9 +20,10 @@ public class Admin {
 	 */
 	public static void init() throws SQLException {
 		SQLExec exec = new SQLExec();
-		// TODO: add SQL scripts to the JAR
-		exec.setSrc(new File("torque" + File.separator + "sql" + File.separator + "sirius-db-schema.sql"));
 		Parameters params = Parameters.get();
+		// TODO: add SQL scripts to the JAR
+		exec.setSrc(new File("torque" + File.separator + "sql" + File.separator + //
+				params.getDriver() + File.separator + "sirius-db-schema.sql"));
 		exec.setUrl(params.getUrl());
 		exec.setDriver(DriverManager.getDriver(exec.getUrl()).getClass().getName());
 		exec.setUserid(null == params.getUser() ? "" : params.getUser());

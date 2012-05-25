@@ -179,7 +179,15 @@
 
 	<target name="db" depends="deps-generate"
 			description="generate sql and documentation from xml db schema">
-		<ant antfile="${torque.buildfile}" target="sql"/>
+		<property file="${torque.properties}"/>
+		<ant antfile="${torque.buildfile}" target="sql">
+			<property name="torque.database" value="derby"/>
+			<property name="torque.sql.dir" value="${torque.output.dir}/sql/derby"/>
+		</ant>
+		<ant antfile="${torque.buildfile}" target="sql">
+			<property name="torque.database" value="postgresql"/>
+			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
+		</ant>
 		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
 
