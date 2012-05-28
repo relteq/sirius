@@ -26,7 +26,8 @@
 	<property name="ivy.lib.dir" value="${basedir}/lib"/>
 
 	<property name="torque.buildfile" value="build-torque.xml"/>
-	<property name="torque.properties" value="torque.properties"/>
+
+	<property file="torque.properties"/>
 
 	<path id="lib.path">
 		<fileset dir="${ivy.lib.dir}" includes="*.jar"/>
@@ -66,7 +67,6 @@
 	<target name="resources" depends="builddir,sql">
 		<copy file="${schema.file}" todir="${build.dir}"/>
 		<copy file="${schema.file}" todir="${bin.dir}"/>
-		<property file="${torque.properties}"/>
 		<copy todir="${build.dir}/sql">
 			<fileset dir="${torque.output.dir}/sql">
 				<include name="**/*.sql"/>
@@ -183,9 +183,12 @@
 		</delete>
 	</target>
 
-	<target name="sql" depends="deps-generate"
+	<uptodate property="sql.uptodate"
+			srcfile="${torque.schema.dir}/${torque.project}-schema.xml"
+			targetfile="${torque.output.dir}/sql/.done"/>
+
+	<target name="sql" depends="deps-generate" unless="sql.uptodate"
 			description="generate sql from xml db schema">
-		<property file="${torque.properties}"/>
 		<ant antfile="${torque.buildfile}" target="sql">
 			<property name="torque.database" value="derby"/>
 			<property name="torque.sql.dir" value="${torque.output.dir}/sql/derby"/>
@@ -194,6 +197,7 @@
 			<property name="torque.database" value="postgresql"/>
 			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
 		</ant>
+		<touch file="${torque.output.dir}/sql/.done"/>
 	</target>
 
 	<target name="doc-db" depends="deps-generate"
@@ -202,7 +206,6 @@
 	</target>
 
 	<target name="clean-db">
-		<property file="${torque.properties}"/>
 		<delete dir="${torque.output.dir}"/>
 	</target>
 </project>
