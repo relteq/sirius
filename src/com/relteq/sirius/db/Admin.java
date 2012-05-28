@@ -25,6 +25,7 @@ public class Admin {
 		exec.setSrc("sql" + File.separator + //
 				params.getDriver() + File.separator + "sirius-db-schema.sql");
 		exec.setUrl(params.getUrl());
+		System.out.println("Connection URL: " + exec.getUrl());
 		exec.setDriver(DriverManager.getDriver(exec.getUrl()).getClass().getName());
 		exec.setUserid(null == params.getUser() ? "" : params.getUser());
 		exec.setPassword(null == params.getPassword() ? "" : params.getPassword());
