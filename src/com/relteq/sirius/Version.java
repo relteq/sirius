@@ -82,4 +82,13 @@ public class Version {
 
 		return version;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("schema: ").append(getSchemaVersion());
+		sb.append("    ");
+		sb.append("engine: ").append(getEngineVersion());
+		return sb.toString();
+	}
 }

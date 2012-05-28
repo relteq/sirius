@@ -110,9 +110,7 @@ public class Runner {
 	public static class InvalidUsageException extends Exception {}
 
 	private static void printVersion() {
-		Version ver = Version.get();
-		System.out.println("schema version: " + ver.getSchemaVersion());
-		System.out.println("engine version: " + ver.getEngineVersion());
+		System.out.println(Version.get());
 	}
 
 }
