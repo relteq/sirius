@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE database SYSTEM
+	"http://db.apache.org/torque/dtd/database_3_3.dtd">
+
+<database name="sirius">
+	<domain name="STRING_ID" type="VARCHAR" size="255"/>
+	<domain name="AGGREGATION" type="VARCHAR" size="8"/>
+	<table name="link_data_total">
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" domain="AGGREGATION"/>
+		<column name="in_flow" type="DECIMAL"/>
+		<column name="out_flow" type="DECIMAL"/>
+		<column name="density" type="DECIMAL"/>
+		<column name="occupancy" type="DECIMAL"/>
+		<column name="speed" type="DECIMAL"/>
+		<column name="free_flow_speed" type="DECIMAL"/>
+		<column name="congestion_speed" type="DECIMAL"/>
+		<column name="capacity" type="DECIMAL"/>
+		<column name="capacity_drop" type="DECIMAL"/>
+		<column name="jam_density" type="DECIMAL"/>
+	</table>
+	<table name="link_data_detailed">
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="path_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="vehicle_id" type="INTEGER"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" domain="AGGREGATION"/>
+		<column name="in_flow" type="DECIMAL"/>
+		<column name="out_flow" type="DECIMAL"/>
+		<column name="density" type="DECIMAL"/>
+		<column name="occupancy" type="DECIMAL"/>
+		<column name="speed" type="DECIMAL"/>
+	</table>
+	<table name="link_performance_total">
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" domain="AGGREGATION"/>
+		<column name="vmt" type="DECIMAL"/>
+		<column name="vht" type="DECIMAL"/>
+		<column name="delay" type="DECIMAL"/>
+		<column name="travel_time" type="DECIMAL"/>
+		<column name="productivity_loss" type="DECIMAL"/>
+	</table>
+	<table name="link_performance_detailed">
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="path_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="vehicle_id" type="INTEGER"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" domain="AGGREGATION"/>
+		<column name="vmt" type="DECIMAL"/>
+		<column name="vht" type="DECIMAL"/>
+		<column name="delay" type="DECIMAL"/>
+		<column name="travel_time" type="DECIMAL"/>
+	</table>
+</database>
+
