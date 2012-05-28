@@ -1,5 +1,9 @@
 package com.relteq.sirius;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -8,7 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- *
+ * Retrieves and stores application schema and engine versions
  */
 public class Version {
 	String schemaVersion;
@@ -64,6 +68,15 @@ public class Version {
 		} catch (XMLStreamException exc) {
 			exc.printStackTrace();
 		} catch (FactoryConfigurationError exc) {
+			exc.printStackTrace();
+		}
+
+		// engine version
+		BufferedReader br = new BufferedReader(new InputStreamReader(Version.class.getClassLoader().getResourceAsStream("engine.version")));
+		try{
+			version.setEngineVersion(br.readLine());
+			br.close();
+		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
 
