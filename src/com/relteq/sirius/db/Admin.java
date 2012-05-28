@@ -33,6 +33,7 @@ public class Admin {
 		onerror.setValue("continue");
 		exec.setOnerror(onerror);
 		exec.setPrint(true);
+		exec.setAutocommit(true);
 		exec.execute();
 	}
 
