@@ -8,10 +8,18 @@ import java.util.*;
 
 import com.relteq.sirius.sensor.DataSource;
 
+/** Use the Read5minData() method of this class to read five-minute data from data sources.
+* @author Gabriel Gomes
+* @version VERSION NUMBER
+*/
 public class DataReader {
 
 	private ColumnFormat PeMSDataClearingHouse = new ColumnFormat(",",5,8,9,10,8,false);
 	private ColumnFormat CaltransDbx 		   = new ColumnFormat("\t",6,20,22,23,8,true);
+
+	/////////////////////////////////////////////////////////////////////
+	// public methods
+	/////////////////////////////////////////////////////////////////////
 	
     public void Read5minData(HashMap <Integer,FiveMinuteData> data,ArrayList<DataSource> datasources) throws Exception {
 
@@ -34,14 +42,18 @@ public class DataReader {
     	}
     	 
     }
-
+	       
+	/////////////////////////////////////////////////////////////////////
+	// private methods
+	/////////////////////////////////////////////////////////////////////
+    
     private static Date ConvertTime(final String timestr) {
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         ParsePosition pp = new ParsePosition(0);
         return formatter.parse(timestr,pp);
     }
 
-    public static void ReadDataSource(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws NumberFormatException, IOException{
+    private static void ReadDataSource(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws NumberFormatException, IOException{
 		int lane;
     	String line,str;
     	int indexof;
@@ -67,9 +79,7 @@ public class DataReader {
             
     		calendar.setTime(ConvertTime(f[0]));
     		time = calendar.getTime().getTime()/1000;
-    		
-System.out.println(time);		
-    
+    		    
         	ArrayList<Float> laneflw = new ArrayList<Float>();
 //        	ArrayList<Float> laneocc = new ArrayList<Float>();
         	ArrayList<Float> lanespd = new ArrayList<Float>();
@@ -134,10 +144,10 @@ System.out.println(time);
         fin.close();
     }
     
-    public class ColumnFormat {
+    private class ColumnFormat {
     	public int laneblocksize;
     	public int flwoffset;
-    	public int occoffset;
+    	//public int occoffset;
     	public int spdoffset;
     	public int maxlanes;
     	public boolean hasheader;
@@ -148,12 +158,11 @@ System.out.println(time);
     		this.delimiter = delimiter;	
     		this.laneblocksize = laneblocksize;
     		this.flwoffset = flwoffset;
-    		this.occoffset = occoffset;
+    		//this.occoffset = occoffset;
     		this.spdoffset = spdoffset;
     		this.maxlanes = maxlanes;
     		this.hasheader = hasheader;
     	}
     }
 
-    
 }

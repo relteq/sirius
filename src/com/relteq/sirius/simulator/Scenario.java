@@ -151,7 +151,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @y.exclude
 	 */
 	protected void update() throws SiriusException {	
-		
+
         // sample profiles .............................	
     	if(getDownstreamBoundaryCapacitySet()!=null)
         	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
@@ -795,14 +795,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// lock the scenario
         scenariolocked = true;	
 	}
-	
-	/** Load sensor data for all sensors in the scenario.
-	 */
-	public void loadSensorData() throws SiriusException{
-		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-			((Network) network).loadSensorData();
-	}
-	
+		
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////	

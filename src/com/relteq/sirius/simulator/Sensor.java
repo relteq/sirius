@@ -5,8 +5,6 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.jaxb.DataSource;
-
 /** Base implementation of {@link InterfaceSensor}.
  * 
  * <p> This is the base class for all sensors contained in a scenario. 
@@ -34,10 +32,6 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	static_point,
 	                                                            static_area,
 	/** see {@link ObjectFactory#createSensor_Floating} 	*/  moving_point };
-	   	   
-//	protected static enum DataSourceType {NULL, PeMSDataClearinghouse,
-//										        CaltransDBX,
-//										        BHL };
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -109,13 +103,6 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	public Scenario getMyScenario() {
 		return myScenario;
 	}
-	
-	/** Unique identifier. 
-	 * @return id String
-	 * */
-//	public String getId() {
-//		return id;
-//	}
 
 	/** Sensor type. 
 	 * @return type _Sensor.Type
@@ -130,19 +117,6 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * */
 	public Link getMyLink() {
 		return myLink;
-	}
-
-	/** Load sensor data from its data source.
-	 */
-	public void loadData() throws SiriusException{
-		if(getDataSources()==null)
-			return;
-		for(DataSource datasource : getDataSources().getDataSource()){
-//			datasource.getDt()
-//			datasource.getFormat()
-//			datasource.getUrl()
-		}
-		
 	}
 	
 	/////////////////////////////////////////////////////////////////////

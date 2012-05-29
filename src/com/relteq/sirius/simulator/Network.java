@@ -308,15 +308,5 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 			return null;
 		return getSignalList().getSignal();
 	}
-
-	/** Load sensor data for all sensors in the network.
-	 */
-	public void loadSensorData() throws SiriusException{
-		if(getSensorList()==null)
-			return;
-		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
-			((Sensor)sensor).loadData();
-		}
-	}
 	
 }
