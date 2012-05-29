@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.relteq.sirius.simulator.Link;
 
-final class OutputWriter_simple {
+final class OutputWriter_simple extends OutputWriter_Base {
 
 	protected Scenario myScenario;
 	protected Writer out_time = null;
