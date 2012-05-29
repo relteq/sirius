@@ -1,10 +1,14 @@
-build/
-doc/
-lib/
-bin/
+/build/
+/doc/
+/lib/
+/bin/
 sirius.jar
-src/com/relteq/sirius/jaxb/
+/src/com/relteq/sirius/jaxb/
 output_*.xml
 *.asv
 *.class
+/torque/
+velocity.log
+/sirius/
+/derby.log
 
