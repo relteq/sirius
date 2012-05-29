@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
-final class OutputWriter {
+final class OutputWriter extends OutputWriter_Base {
 
 	protected Scenario myScenario;
 	protected XMLStreamWriter xmlsw = null;

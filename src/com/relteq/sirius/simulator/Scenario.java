@@ -328,10 +328,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @param numRepetitions 	The integer number of simulations to run.
 	 * @throws SiriusException 
 	 */
-	public void run(String outputfileprefix,Double timestart,Double timeend,double outdt,int numRepetitions) throws SiriusException{
+	public void run(String outputfileprefix,Double timestart,Double timeend,double outdt,int numRepetitions,OutputWriter_Base.Type outputtype) throws SiriusException{
 		RunParameters param = new RunParameters(outputfileprefix,timestart,timeend,outdt,simdtinseconds);
 		numEnsemble = 1;
-		run_internal(param,numRepetitions,true,false);
+		run_internal(param,numRepetitions,true,false,outputtype);
 	}
 
 	/** Run the scenario once, return the state trajectory.
@@ -342,7 +342,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
 		RunParameters param = new RunParameters(null,timestart,timeend,outdt,simdtinseconds);
 		numEnsemble = 1;
-		return run_internal(param,1,false,true);
+		return run_internal(param,1,false,true,null);
 	}
 	
 	/** Advance the simulation <i>nsec</i> seconds.
@@ -800,7 +800,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// private
 	/////////////////////////////////////////////////////////////////////	
 	
-	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate) throws SiriusException{
+	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,OutputWriter_Base.Type outputtype) throws SiriusException{
 			
 		if(returnstate && numRepetitions>1)
 			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
@@ -816,11 +816,18 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
 
-			OutputWriter outputwriter  = null;
+			OutputWriter_Base outputwriter  = null;
 			
 			// open output files
 	        if( writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0 ){
-	        	outputwriter = new OutputWriter(this);
+	        	switch(outputtype){
+	        	case xml:
+	        		outputwriter = new OutputWriter(this);
+	        		break;
+	        	case tabdelim:
+	        		outputwriter = new OutputWriter_simple(this);
+	        		break;
+	        	}
 				try {
 					outputwriter.open(param.outputfileprefix,String.format("%d",i));
 				} catch (FileNotFoundException e) {
@@ -870,7 +877,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws 
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter_Base outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -897,7 +904,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter_Base outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)

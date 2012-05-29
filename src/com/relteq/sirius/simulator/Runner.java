@@ -9,6 +9,7 @@ final class Runner {
 	
 	private static Scenario scenario;
 		
+	private static OutputWriter_Base.Type outputtype = OutputWriter_Base.Type.tabdelim;
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
@@ -36,7 +37,7 @@ final class Runner {
 		}
 
 		try {
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions);
+			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
 		} catch (SiriusException e) {
 			e.printStackTrace();
 		}	
