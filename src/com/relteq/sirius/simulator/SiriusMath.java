@@ -1,6 +1,8 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public final class SiriusMath {
 	
@@ -30,6 +32,14 @@ public final class SiriusMath {
 		return answ;
 	}
 	
+	public static Double sum(Collection<Double> V) {
+		if (null == V) return null;
+		Double ans = .0d;
+		Iterator<Double> iter = V.iterator();
+		while (iter.hasNext()) ans += iter.next();
+		return ans;
+	}
+
 	public static Double [] sum(Double [][] V,int dim){
 		if(V==null)
 			return null;
@@ -60,7 +70,7 @@ public final class SiriusMath {
 			return null;
 		}
 	}
-	
+
 	public static Double [] times(Double [] V,double a){
 		Double [] answ = new Double [V.length];
 		for(int i=0;i<V.length;i++)
