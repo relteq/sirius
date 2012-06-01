@@ -5,7 +5,6 @@
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="test.dir" value="${basedir}/test"/>
 	<property name="build.dir" value="${basedir}/build"/>
-	<property name="bin.dir" value="${basedir}/bin"/>
 	<property name="src.encoding" value="ISO-8859-1"/>
 
 	<property name="javac.optimize" value="on"/>
@@ -66,7 +65,6 @@
 
 	<target name="resources" depends="builddir,sql,version">
 		<copy file="${schema.file}" todir="${build.dir}"/>
-		<copy file="${schema.file}" todir="${bin.dir}"/>
 		<copy todir="${build.dir}/sql">
 			<fileset dir="${torque.output.dir}/sql">
 				<include name="**/*.sql"/>
