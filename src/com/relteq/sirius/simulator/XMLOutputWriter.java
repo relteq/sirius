@@ -9,31 +9,34 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
-final class OutputWriter extends OutputWriter_Base {
-
-	protected Scenario myScenario;
+public final class XMLOutputWriter extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
 	protected static final String NUM_FORMAT = "%.4f";
+	private String prefix;
 
-	public OutputWriter(Scenario myScenario){
-		this.myScenario = myScenario;
+	public XMLOutputWriter(Scenario scenario, Properties props){
+		super(scenario);
+		if (null != props) prefix = props.getProperty("prefix");
+		if (null == prefix) prefix = "output";
 	}
 
-	protected boolean open(String prefix,String suffix) throws FileNotFoundException {
+	@Override
+	public void open() throws SiriusException {
 		XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
 		try {
-			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + suffix + ".xml"), "utf-8");
+			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + String.format("%d", getRunId()) + ".xml"), "utf-8");
 			xmlsw.writeStartDocument("utf-8", "1.0");
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
-			if (null != myScenario) {
-				String conffnam = myScenario.getConfigFilename();
+			if (null != scenario) {
+				String conffnam = scenario.getConfigFilename();
 				XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(conffnam));
 				while (xmlsr.hasNext()) {
 					switch (xmlsr.getEventType()) {
@@ -81,19 +84,21 @@ final class OutputWriter extends OutputWriter_Base {
 			xmlsw.writeStartElement("data");
 		} catch (XMLStreamException exc) {
 			SiriusErrorLog.addErrorMessage(exc.toString());
+		} catch (FileNotFoundException exc) {
+			throw new SiriusException(exc.getMessage());
 		}
-		return true;
 	}
 
-	protected void recordstate(double time,boolean exportflows,int outsteps) throws SiriusException {
-		boolean firststep = 0 == myScenario.clock.getCurrentstep();
+	@Override
+	public void recordstate(double time, boolean exportflows, int outsteps) {
+		boolean firststep = 0 == scenario.clock.getCurrentstep();
 		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
-		String dt = String.format(SEC_FORMAT, firststep ? .0d : myScenario.getSimDtInSeconds() * outsteps);
+		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimDtInSeconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
 			xmlsw.writeStartElement("netl");
-			for (com.relteq.sirius.jaxb.Network network : myScenario.getNetworkList().getNetwork()) {
+			for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
@@ -158,11 +163,12 @@ final class OutputWriter extends OutputWriter_Base {
 			xmlsw.writeEndElement(); // netl
 			xmlsw.writeEndElement(); // ts
 		} catch (XMLStreamException exc) {
-			throw new SiriusException(exc.getMessage());
+			exc.printStackTrace();
 		}
 	}
 
-	protected void close(){
+	@Override
+	public void close(){
 		try {
 			xmlsw.writeEndElement(); // data
 			xmlsw.writeEndElement(); // scenario_output
@@ -178,7 +184,7 @@ final class OutputWriter extends OutputWriter_Base {
 	 * @param delim  the string used to separate the elements of the array
 	 * @return a string containing the array values
 	 */
-	protected String format(Double [] V,String delim){
+	protected static String format(Double [] V, String delim) {
 		if (0 == V.length) return "";
 		else if (1 == V.length) return String.format(NUM_FORMAT, V[0]);
 		else {

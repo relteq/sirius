@@ -28,6 +28,8 @@ public class Runner {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
 				com.relteq.sirius.simulator.Runner.main(arguments);
+			} else if (cmd.equals("debug")) {
+				com.relteq.sirius.simulator.Runner.debug(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {
