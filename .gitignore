@@ -4,6 +4,7 @@
 sirius.jar
 /src/com/relteq/sirius/jaxb/
 output_*.xml
+output_*.txt
 *.asv
 *.class
 /torque/
