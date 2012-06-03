@@ -1,5 +1,7 @@
 package com.relteq.sirius;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
+
 /**
  * Implements "Sirius: Concept of Operations"
  */
@@ -69,6 +71,7 @@ public class Runner {
 			} else if (cmd.equals("version") || cmd.equals("v")) {
 				printVersion();
 			} else throw new InvalidCommandException(cmd);
+			if (SiriusErrorLog.haserror()) SiriusErrorLog.printErrorMessage();
 		} catch (InvalidUsageException exc) {
 			System.err.println("Usage: command [parameters]");
 			System.exit(1);
