@@ -190,8 +190,10 @@
 		</delete>
 	</target>
 
+	<property name="torque.schema.file" value="${torque.schema.dir}/${torque.project}-schema.xml"/>
+
 	<uptodate property="sql.uptodate"
-			srcfile="${torque.schema.dir}/${torque.project}-schema.xml"
+			srcfile="${torque.schema.file}"
 			targetfile="${torque.output.dir}/sql/.done"/>
 
 	<target name="sql" depends="deps-generate" unless="sql.uptodate"
@@ -212,7 +214,11 @@
 		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
 
-	<target name="om" depends="deps-generate">
+	<uptodate property="om.uptodate"
+			srcfile="${torque.schema.file}"
+			targetfile="${torque.output.dir}/java/.done"/>
+
+	<target name="om" depends="deps-generate" unless="om.uptodate">
 		<ant antfile="${torque.buildfile}" target="om"/>
 		<property file="${torque.properties}"/>
 		<mkdir dir="${torque.output.dir}/java"/>
@@ -221,6 +227,7 @@
 				<include name="report.*"/>
 			</fileset>
 		</move>
+		<touch file="${torque.output.dir}/java/.done"/>
 	</target>
 
 	<target name="clean-db">
