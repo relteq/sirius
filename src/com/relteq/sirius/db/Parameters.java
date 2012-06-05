@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import org.apache.commons.configuration.BaseConfiguration;
 
 public class Parameters {
 	/** The database type: <code>derby</code>, <code>postgresql</code>, etc */
@@ -157,6 +158,17 @@ public class Parameters {
 	 */
 	public Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(getUrl(), getConnectionProperties());
+	}
+
+	public org.apache.commons.configuration.Configuration toConfiguration() {
+		BaseConfiguration conf = new BaseConfiguration();
+		conf.addProperty("torque.database.default", "sirius");
+		conf.addProperty("torque.database.sirius.adapter", getDriver());
+		conf.addProperty("torque.dsfactory.sirius.factory", "org.apache.torque.dsfactory.SharedPoolDataSourceFactory");
+		conf.addProperty("torque.dsfactory.sirius.connection.url", getUrl());
+		if (null != getUser()) conf.addProperty("torque.dsfactory.sirius.connection.user", getUser());
+		if (null != getPassword()) conf.addProperty("torque.dsfactory.sirius.connection.password", getPassword());
+		return conf;
 	}
 
 }
