@@ -825,30 +825,22 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				outputwriter.setRunId(i);
 				outputwriter.open();
 			}
+			try{
+				// allocate state
+				if(returnstate)
+					state = new SiriusStateTrajectory(this,param.outsteps);
 
-	        // allocate state
-	        if(returnstate)
-	        	state = new SiriusStateTrajectory(this,param.outsteps);
-	
-			// reset the simulation
-			if(!reset(param.simulationMode))
-				throw new SiriusException("Reset failed.");
-						
-			// advance to end of simulation
-			while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
+				// reset the simulation
+				if(!reset(param.simulationMode))
+					throw new SiriusException("Reset failed.");
+
+				// advance to end of simulation
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
+				}
+			} finally {
+				if (null != outputwriter) outputwriter.close();
 			}
-			
-            // close output files
-			if (null != outputwriter) outputwriter.close();
-	        if(writefiles){
-				// or save scenario (in warmup mode)
-		        if(param.simulationMode.compareTo(Scenario.ModeType.warmupFromIC)==0 || param.simulationMode.compareTo(Scenario.ModeType.warmupFromZero)==0 ){
-		    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
-		    		//	    		Utils.save(scenario, outfile);
-		        }
-	        }
-	        
-		}		
+		}
         scenariolocked = false;
 
 		return state;
