@@ -25,7 +25,7 @@ public class Runner {
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				com.relteq.sirius.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
-				throw new NotImplementedException(cmd);
+				com.relteq.sirius.simulator.Runner.run_db(arguments);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
 				com.relteq.sirius.simulator.Runner.main(arguments);
 			} else if (cmd.equals("debug")) {

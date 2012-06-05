@@ -7,6 +7,9 @@ package com.relteq.sirius.simulator;
 
 import java.util.Properties;
 
+import org.apache.torque.Torque;
+import org.apache.torque.TorqueException;
+
 public final class Runner {
 	
 	private static Scenario scenario;
@@ -127,4 +130,14 @@ public final class Runner {
 		return true;
 	}
 
+	public static void run_db(String [] args) throws Exception {
+		outputtype = "db";
+		com.relteq.sirius.db.Parameters params = com.relteq.sirius.db.Parameters.get();
+		try {
+			Torque.init(params.toConfiguration());
+			main(args);
+		} catch (TorqueException exc) {
+			exc.printStackTrace();
+		}
+	}
 }
