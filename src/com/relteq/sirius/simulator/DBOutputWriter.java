@@ -1,7 +1,11 @@
 package com.relteq.sirius.simulator;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.Calendar;
+
+import org.apache.torque.TorqueException;
+import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.om.*;
 
@@ -9,6 +13,7 @@ import com.relteq.sirius.om.*;
  * Database output writer
  */
 public class DBOutputWriter extends OutputWriterBase {
+	private Connection conn = null;
 
 	public DBOutputWriter(Scenario scenario) {
 		super(scenario);
@@ -16,6 +21,12 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void open() throws SiriusException {
+		try {
+			conn = Transaction.begin();
+		} catch (TorqueException exc) {
+			exc.printStackTrace();
+			throw new SiriusException(exc.getMessage());
+		}
 	}
 
 	@Override
@@ -49,7 +60,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				if (!Double.isNaN(capacity)) data.setCapacity(new BigDecimal(capacity));
 				_link.reset_cumulative();
 				try {
-					data.save();
+					data.save(conn);
 				} catch (Exception exc) {
 					exc.printStackTrace();
 					throw new SiriusException(exc.getMessage());
@@ -60,6 +71,13 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void close() {
+		try {
+			Transaction.commit(conn);
+		} catch (TorqueException exc) {
+			exc.printStackTrace();
+			Transaction.safeRollback(conn);
+		}
+		conn = null;
 	}
 
 }
