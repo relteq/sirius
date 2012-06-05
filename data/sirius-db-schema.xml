@@ -12,7 +12,7 @@
 	<domain name="ENCODED_SHAPE" type="VARCHAR" size="2048"/>
 	<domain name="AGGREGATION" type="VARCHAR" size="8"/>
 	<domain name="EXE_STATUS" type="INTEGER"/>
-	
+	<domain name="BOOL" type="BOOLEANCHAR"/>
 
 
 
@@ -47,7 +47,7 @@
 		<column name="elevation" required="true" type="DECIMAL"/>
 		<column name="postmile" type="DECIMAL" description="Absolute postmile."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of node model, e.g. STANDARD."/>
-		<column name="synchronized" type="BOOLEAN" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
+		<column name="synchronized" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<foreign-key foreignTable="node_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
@@ -72,7 +72,7 @@
 		<column name="length" required="true" type="DECIMAL" description="Length in miles."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of link model, e.g. CTM."/>
 		<column name="display_lane_offset" type="DECIMAL"/>
-		<column name="synchronized" type="BOOLEAN" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
+		<column name="synchronized" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
@@ -436,10 +436,10 @@
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase_id" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
-		<column name="protected" required="true" type="BOOLEAN" description=""/>
-		<column name="permissive" required="true" type="BOOLEAN" description=""/>
-		<column name="lag" required="true" type="BOOLEAN" description=""/>
-		<column name="recall" required="true" type="BOOLEAN" description=""/>
+		<column name="protected" required="true" domain="BOOL" description=""/>
+		<column name="permissive" required="true" domain="BOOL" description=""/>
+		<column name="lag" required="true" domain="BOOL" description=""/>
+		<column name="recall" required="true" domain="BOOL" description=""/>
 		<column name="min_green_time" required="true" type="DECIMAL" description="Minimum green time in seconds."/>
 		<column name="yellow_time" required="true" type="DECIMAL" description="Yellow time in seconds."/>
 		<column name="red_clear_time" required="true" type="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
@@ -490,28 +490,28 @@
 		<foreign-key foreignTable="sensor_lists">
 			<reference local="sensor_list_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="initial_density_profiles">
-			<reference local="initial_density_profile_id" foreign="id"/>
+		<foreign-key foreignTable="initial_density_sets">
+			<reference local="initial_density_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="fundamental_diagram_profile_sets">
 			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="demand_profile_set">
-			<reference local="demand_profile_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="demand_profile_sets">
+			<reference local="demand_profile_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
 			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="split_ratio_profile_set">
+		<foreign-key foreignTable="split_ratio_profile_sets">
 			<reference local="split_ratio_profile_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="weaving_factor_profiles">
-			<reference local="weaving_factor_profile_id" foreign="id"/>
+		<foreign-key foreignTable="weaving_factor_sets">
+			<reference local="weaving_factor_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="controller_set">
+		<foreign-key foreignTable="controller_sets">
 			<reference local="controller_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="event_set">
+		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="od_lists">
@@ -523,8 +523,8 @@
 		<foreign-key foreignTable="decision_point_lists">
 			<reference local="decision_point_list_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="od_demand_profile_set">
-			<reference local="od_demand_profile_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="od_demand_profile_sets">
+			<reference local="od_demand_profile_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_lists">
 			<reference local="vehicle_type_list_id" foreign="id"/>
@@ -559,7 +559,7 @@
 		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="start_time" required="true" type="TIMESTAMP"/>
 		<column name="end_time" required="true" type="TIMESTAMP"/>
-		<column name="status" required="true" type="EXE_STATUS" description="Status of the run execution."/>
+		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
@@ -713,6 +713,26 @@
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
+	</table>
+
+	<table name="sensor_lists">
+		<column name="id" domain="STRING_ID"/>
+	</table>
+
+	<table name="controller_sets">
+		<column name="id" domain="STRING_ID"/>
+	</table>
+
+	<table name="event_sets">
+		<column name="id" domain="STRING_ID"/>
+	</table>
+
+	<table name="route_segment_lists">
+		<column name="id" domain="STRING_ID"/>
+	</table>
+
+	<table name="decision_point_lists">
+		<column name="id" domain="STRING_ID"/>
 	</table>
 </database>
 
