@@ -35,14 +35,14 @@ public class Parameters {
 	/**
 	 * @return the database name
 	 */
-	public String getDb_name() {
+	public String getDBName() {
 		return db_name;
 	}
 
 	/**
 	 * @param db_name the database name to set
 	 */
-	public void setDb_name(String db_name) {
+	public void setDBName(String db_name) {
 		this.db_name = db_name;
 	}
 
@@ -115,7 +115,7 @@ public class Parameters {
 		params.setDriver(driver);
 		String db_name = System.getenv("SIRIUS_DB_NAME");
 		if (null == db_name) db_name = default_db_name;
-		params.setDb_name(db_name);
+		params.setDBName(db_name);
 		params.setHost(System.getenv("SIRIUS_DB_HOST"));
 		params.setPort(System.getenv("SIRIUS_DB_PORT"));
 		if (null == params.getHost() && null != params.getPort())
