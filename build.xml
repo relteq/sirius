@@ -53,8 +53,19 @@
 	</target>
 
 	<target name="compile" depends="builddir,xsd2java,deps-compile,om">
+		<property name="torque.generated.sources" value="org/apache/torque/**/*.java,com/relteq/sirius/om/**/*.java"/>
 		<javac encoding="${src.encoding}" includeantruntime="no"
-				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
+				srcdir="${src.dir}" destdir="${build.dir}"
+				includes="${torque.generated.sources}"
+				classpathref="lib.path"
+				debug="${javac.debug}" optimize="${javac.optimize}"
+				target="${javac.version}" source="${javac.version}"
+				deprecation="${javac.deprecation}"
+				nowarn="yes">
+		</javac>
+		<javac encoding="${src.encoding}" includeantruntime="no"
+				srcdir="${src.dir}" destdir="${build.dir}"
+				includes="**/*.java" excludes="${torque.generated.sources}"
 				classpathref="lib.path"
 				debug="${javac.debug}" optimize="${javac.optimize}"
 				target="${javac.version}" source="${javac.version}"
