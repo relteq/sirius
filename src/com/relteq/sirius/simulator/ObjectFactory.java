@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -236,7 +237,7 @@ public final class ObjectFactory {
         
         // schema assignment ..........................................................
         try{
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
         	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
