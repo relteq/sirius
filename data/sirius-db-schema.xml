@@ -47,7 +47,7 @@
 		<column name="elevation" required="true" type="DECIMAL"/>
 		<column name="postmile" type="DECIMAL" description="Absolute postmile."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of node model, e.g. STANDARD."/>
-		<column name="synchronized" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
+		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<foreign-key foreignTable="node_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
@@ -72,7 +72,7 @@
 		<column name="length" required="true" type="DECIMAL" description="Length in miles."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of link model, e.g. CTM."/>
 		<column name="display_lane_offset" type="DECIMAL"/>
-		<column name="synchronized" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
+		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
@@ -436,7 +436,7 @@
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase_id" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
-		<column name="protected" required="true" domain="BOOL" description=""/>
+		<column name="protected" javaName="is_protected" required="true" domain="BOOL" description=""/>
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
 		<column name="recall" required="true" domain="BOOL" description=""/>
@@ -716,23 +716,23 @@
 	</table>
 
 	<table name="sensor_lists">
-		<column name="id" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="controller_sets">
-		<column name="id" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="event_sets">
-		<column name="id" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="route_segment_lists">
-		<column name="id" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="decision_point_lists">
-		<column name="id" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 </database>
 
