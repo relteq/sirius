@@ -83,6 +83,9 @@ public class Runner {
 		} catch (Exception exc) {
 			exc.printStackTrace();
 			System.exit(2);
+		} finally {
+			if (com.relteq.sirius.db.Service.isInit())
+				com.relteq.sirius.db.Service.shutdown();
 		}
 	}
 
