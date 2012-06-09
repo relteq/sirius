@@ -6,4 +6,8 @@ public class SiriusException extends Exception {
 	public SiriusException(String string){
 		super(string);
 	}
+
+	public SiriusException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
