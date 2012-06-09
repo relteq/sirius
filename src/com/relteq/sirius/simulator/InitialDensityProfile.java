@@ -5,7 +5,10 @@
 
 package com.relteq.sirius.simulator;
 
-final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
+import java.util.ArrayList;
+import java.util.List;
+
+public final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
 
 	protected Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
@@ -129,6 +132,59 @@ final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityP
 			}
 		}
 		return d;
+	}
+
+	public class Tuple {
+		private String link_id;
+		private String network_id;
+		private int vehicle_type_index;
+		private double density;
+		public Tuple(String link_id, String network_id, int vehicle_type_index,
+				double density) {
+			this.link_id = link_id;
+			this.network_id = network_id;
+			this.vehicle_type_index = vehicle_type_index;
+			this.density = density;
+		}
+		/**
+		 * @return the link id
+		 */
+		public String getLinkId() {
+			return link_id;
+		}
+		/**
+		 * @return the network id
+		 */
+		public String getNetworkId() {
+			return network_id;
+		}
+		/**
+		 * @return the vehicle type index
+		 */
+		public int getVehicleTypeIndex() {
+			return vehicle_type_index;
+		}
+		/**
+		 * @return the density, in vehicles
+		 */
+		public double getDensity() {
+			return density;
+		}
+	}
+
+	/**
+	 * Constructs a list of initial densities,
+	 * along with the corresponding link identifiers and vehicle types
+	 * @return a list of <code/><link id, network id, vehicle type index, density></code> tuples
+	 */
+	public List<Tuple> getData() {
+		List<Tuple> data = new ArrayList<Tuple>(link.length * vehicletypeindex.length);
+		for (int iii = 0; iii < link.length; ++iii)
+			for (int jjj = 0; jjj < vehicletypeindex.length; ++jjj)
+				data.add(new Tuple(link[iii].getId(), link[iii].myNetwork.getId(),
+						vehicletypeindex[iii].intValue(),
+						initial_density[iii][jjj] * link[iii].getLengthInMiles()));
+		return data;
 	}
 
 }
