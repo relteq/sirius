@@ -70,7 +70,9 @@ public class Runner {
 				printVersion();
 			} else throw new InvalidCommandException(cmd);
 		} catch (InvalidUsageException exc) {
-			System.err.println("Usage: command [parameters]");
+			String msg = exc.getMessage();
+			if (null == msg) msg = "Usage: command [parameters]";
+			System.err.println(msg);
 			System.exit(1);
 		} catch (NotImplementedException exc) {
 			System.err.println(exc.getMessage());
@@ -107,7 +109,14 @@ public class Runner {
 	}
 
 	@SuppressWarnings("serial")
-	public static class InvalidUsageException extends Exception {}
+	public static class InvalidUsageException extends Exception {
+		InvalidUsageException() {
+			super();
+		}
+		InvalidUsageException(String message) {
+			super(message);
+		}
+	}
 
 	private static void printVersion() {
 		System.out.println(Version.get());
