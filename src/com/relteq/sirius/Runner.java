@@ -30,7 +30,7 @@ public class Runner {
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {
-				throw new NotImplementedException(cmd);
+				com.relteq.sirius.db.Lister.listScenarios();
 			} else if (cmd.equals("list_runs") || cmd.equals("lr")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("load") || cmd.equals("l")) {
