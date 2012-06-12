@@ -2,6 +2,7 @@ package com.relteq.sirius.importer;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,14 @@ import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
 import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.Scenarios;
+import com.relteq.sirius.om.SplitRatioProfileSets;
+import com.relteq.sirius.om.SplitRatioProfiles;
+import com.relteq.sirius.om.SplitRatios;
 import com.relteq.sirius.om.VehicleTypeFamilies;
 import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
+import com.relteq.sirius.om.WeavingFactorSets;
+import com.relteq.sirius.simulator.Double2DMatrix;
 import com.relteq.sirius.simulator.InitialDensityProfile;
 import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator.Scenario;
@@ -93,6 +99,8 @@ public class ScenarioLoader {
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensityProfile()));
+		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorsProfile()));
+		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
 		db_scenario.save(conn);
 	}
 
@@ -195,6 +203,7 @@ public class ScenarioLoader {
 	}
 
 	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensityProfile idprofile) throws TorqueException {
+		if (null == idprofile) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setId(uuid());
 		db_idsets.setName(idprofile.getName());
@@ -208,5 +217,50 @@ public class ScenarioLoader {
 		}
 		db_idsets.save(conn);
 		return db_idsets;
+	}
+
+	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorsProfile wfprofile) throws TorqueException {
+		if (null == wfprofile) return null;
+		WeavingFactorSets db_wfset = new WeavingFactorSets();
+		db_wfset.setId(uuid());
+		db_wfset.setName(wfprofile.getName());
+		db_wfset.setDescription(wfprofile.getDescription());
+		db_wfset.save(conn);
+		return db_wfset;
+	}
+
+	private SplitRatioProfileSets save(com.relteq.sirius.jaxb.SplitRatioProfileSet srps) throws TorqueException {
+		if (null == srps) return null;
+		SplitRatioProfileSets db_srps = new SplitRatioProfileSets();
+		db_srps.setId(uuid());
+		db_srps.setName(srps.getName());
+		db_srps.setDescription(srps.getDescription());
+		db_srps.save(conn);
+		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile()) {
+			SplitRatioProfiles db_srp = new SplitRatioProfiles();
+			db_srp.setId(uuid());
+			db_srp.setSplitRatioProfileSets(db_srps);
+			db_srp.setNodeId(node_family_id.get(srp.getNodeId()));
+			db_srp.setDt(srp.getDt());
+			db_srp.setStartTime(srp.getStartTime());
+			db_srp.save(conn);
+			for (com.relteq.sirius.jaxb.Splitratio sr : srp.getSplitratio()) {
+				Double2DMatrix data = new Double2DMatrix(sr.getContent());
+				for (int t = 0; t < data.getnTime(); ++t) {
+					Time ts = new Time(t * 1000);
+					for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
+						SplitRatios db_sr = new SplitRatios();
+						db_sr.setSplitRatioProfiles(db_srp);
+						db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
+						db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
+						db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
+						db_sr.setTs(ts);
+						db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
+						db_sr.save(conn);
+					}
+				}
+			}
+		}
+		return db_srps;
 	}
 }
