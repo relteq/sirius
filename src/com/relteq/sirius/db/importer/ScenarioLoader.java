@@ -1,4 +1,4 @@
-package com.relteq.sirius.importer;
+package com.relteq.sirius.db.importer;
 
 import java.math.BigDecimal;
 import java.sql.Connection;

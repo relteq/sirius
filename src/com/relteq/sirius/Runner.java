@@ -16,7 +16,7 @@ public class Runner {
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
-				com.relteq.sirius.importer.ScenarioLoader.load(arguments[0]);
+				com.relteq.sirius.db.importer.ScenarioLoader.load(arguments[0]);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
