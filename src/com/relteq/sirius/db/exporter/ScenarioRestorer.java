@@ -71,7 +71,7 @@ public class ScenarioRestorer {
 				for (Iterator<VehicleTypes> iter = db_vtl.iterator(); iter.hasNext();) {
 					VehicleTypes db_vt = iter.next();
 					com.relteq.sirius.jaxb.VehicleType vt = factory.createVehicleType();
-					// TODO vt.setName();
+					vt.setName(db_vt.getName());
 					vt.setWeight(db_vt.getWeight());
 					vtl.add(vt);
 				}

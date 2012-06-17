@@ -119,6 +119,7 @@ public class ScenarioLoader {
 			VehicleTypes db_vtype = new VehicleTypes();
 			db_vtype.setVehicleTypeFamilies(db_vtf);
 			db_vtype.setVehicleTypeLists(db_vtl);
+			db_vtype.setName(vt.getName());
 			db_vtype.setWeight(vt.getWeight());
 			db_vtype.save(conn);
 		}
