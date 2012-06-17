@@ -5,7 +5,6 @@
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="test.dir" value="${basedir}/test"/>
 	<property name="build.dir" value="${basedir}/build"/>
-	<property name="bin.dir" value="${basedir}/bin"/>
 	<property name="src.encoding" value="ISO-8859-1"/>
 
 	<property name="javac.optimize" value="on"/>
@@ -15,7 +14,7 @@
 	<property name="javac.args" value=""/>
 	<property name="javac.args.warnings" value="-Xlint:unchecked"/>
 
-	<property name="ydoc.path" value="${basedir}/yworks-uml-doclet-3.0_01-jdk1.5"/>
+	<property name="ydoc.dir" value="${basedir}/yworks-uml-doclet-3.0_01-jdk1.5"/>
 	<property name="doc.dir" value="${basedir}/doc"/>
 
 	<property name="jar.file" value="${basedir}/sirius.jar"/>
@@ -25,14 +24,15 @@
 
 	<property name="ivy.lib.dir" value="${basedir}/lib"/>
 
-	<property name="ivy.build.conf" value="build"/>
-	<property name="ivy.test.conf" value="test"/>
+	<property name="torque.buildfile" value="build-torque.xml"/>
+
+	<property file="torque.properties"/>
 
 	<path id="lib.path">
-		<fileset dir="${ivy.lib.dir}"/>
+		<fileset dir="${ivy.lib.dir}" includes="*.jar"/>
 	</path>
 
-	<target name="xjctask" depends="deps">
+	<target name="xjctask" depends="deps-generate">
 		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
 	</target>
 
@@ -52,9 +52,10 @@
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir,xsd2java">
+	<target name="compile" depends="builddir,xsd2java,deps-compile">
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
+				classpathref="lib.path"
 				debug="${javac.debug}" optimize="${javac.optimize}"
 				target="${javac.version}" source="${javac.version}"
 				deprecation="${javac.deprecation}">
@@ -62,20 +63,28 @@
 		</javac>
 	</target>
 
-	<target name="resources" depends="builddir">
+	<target name="resources" depends="builddir,sql,version">
 		<copy file="${schema.file}" todir="${build.dir}"/>
-		<copy file="${schema.file}" todir="${bin.dir}"/>
+		<copy todir="${build.dir}/sql">
+			<fileset dir="${torque.output.dir}/sql">
+				<include name="**/*.sql"/>
+			</fileset>
+		</copy>
 	</target>
 
-	<target name="jar" depends="compile,resources" description="build a jar">
+	<target name="jar" depends="compile,resources,deps-runtime" description="build a jar">
+		<manifestclasspath property="jar.classpath" jarfile="${jar.file}">
+			<classpath refid="lib.path"/>
+		</manifestclasspath>
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
-				<attribute name="Main-Class" value="com/relteq/sirius/simulator/Runner"/>
+				<attribute name="Main-Class" value="com.relteq.sirius.Runner"/>
+				<attribute name="Class-Path" value="${jar.classpath}"/>
 			</manifest>
 		</jar>
 	</target>
 
-	<target name="doc" depends="xsd2java,compile" description="generate documentation">
+	<target name="doc" depends="xsd2java,compile,doc-db" description="generate documentation">
         <javadoc 
 			encoding="${src.encoding}"
 			author="yes" 
@@ -92,14 +101,14 @@
 						Sensor.java Signal.java Event.java"/>
 			<doclet 				
 				name="ydoc.doclets.YStandard"
-				path="${ydoc.path}/lib/ydoc.jar:${ydoc.path}/resources:${ydoc.path}/doc:${build.dir}" >
-				<param name="-filterpath" value="${ydoc.path}/lib/ydoc.jar"/>
+				path="${ydoc.dir}/lib/ydoc.jar:${ydoc.dir}/resources:${ydoc.dir}/doc:${build.dir}" >
+				<param name="-filterpath" value="${ydoc.dir}/lib/ydoc.jar"/>
 				<param name="-filter" value="ydoc.filters.ExcludeFilter"/>
 			</doclet>
         </javadoc>
     </target>
 
-	<target name="clean" description="clean up" depends="clean-test">
+	<target name="clean" description="clean up" depends="clean-test,clean-db,clean-version">
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
@@ -107,8 +116,20 @@
 		<delete dir="${xjc.destdir}"/>
 	</target>
 
-	<target name="deps" description="resolve dependencies" depends="init-ivy">
-		<ivy:retrieve conf="${ivy.build.conf}"/>
+	<target name="deps-compile" depends="init-ivy">
+		<ivy:retrieve conf="compile"/>
+	</target>
+
+	<target name="deps-generate" depends="init-ivy">
+		<ivy:retrieve conf="generate"/>
+	</target>
+
+	<target name="deps-test" depends="init-ivy">
+		<ivy:retrieve conf="test"/>
+	</target>
+
+	<target name="deps-runtime" depends="init-ivy">
+		<ivy:retrieve conf="runtime"/>
 	</target>
 
 	<property name="ivy.install.version" value="2.1.0-rc2"/>
@@ -117,24 +138,18 @@
 	</condition>
 	<property name="ivy.home" value="${user.home}/.ant"/>
 	<property name="ivy.jar.dir" value="${ivy.home}/lib"/>
-	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy-${ivy.install.version}.jar"/>
 
-	<target name="download-ivy" unless="offline">
+	<target name="download-ivy">
 		<mkdir dir="${ivy.jar.dir}"/>
 		<get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
-				dest="${ivy.jar.file}" usetimestamp="true"/>
+				dest="${ivy.jar.file}" usetimestamp="true" skipexisting="true"/>
 	</target>
 
 	<target name="init-ivy" depends="download-ivy">
-		<path id="ivy.lib.path">
-			<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
-		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml"
-				uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
-	</target>
-
-	<target name="deps-test" depends="init-ivy">
-		<ivy:retrieve conf="${ivy.test.conf}"/>
+				uri="antlib:org.apache.ivy.ant"
+				classpath="${ivy.jar.file}"/>
 	</target>
 
 	<path id="classpath.test">
@@ -161,6 +176,59 @@
 	<target name="clean-test">
 		<delete verbose="on">
 			<fileset dir="${test.dir}" includes="**/*.class" />
+		</delete>
+	</target>
+
+	<uptodate property="sql.uptodate"
+			srcfile="${torque.schema.dir}/${torque.project}-schema.xml"
+			targetfile="${torque.output.dir}/sql/.done"/>
+
+	<target name="sql" depends="deps-generate" unless="sql.uptodate"
+			description="generate sql from xml db schema">
+		<ant antfile="${torque.buildfile}" target="sql">
+			<property name="torque.database" value="derby"/>
+			<property name="torque.sql.dir" value="${torque.output.dir}/sql/derby"/>
+		</ant>
+		<ant antfile="${torque.buildfile}" target="sql">
+			<property name="torque.database" value="postgresql"/>
+			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
+		</ant>
+		<touch file="${torque.output.dir}/sql/.done"/>
+	</target>
+
+	<target name="doc-db" depends="deps-generate"
+			description="generate documentation from xml db schema">
+		<ant antfile="${torque.buildfile}" target="doc"/>
+	</target>
+
+	<target name="clean-db">
+		<delete dir="${torque.output.dir}"/>
+	</target>
+
+	<property name="version.src.dir" value="util${file.separator}version"/>
+
+	<path id="classpath.version">
+		<path refid="lib.path"/>
+		<pathelement location="${version.src.dir}"/>
+	</path>
+
+	<target name="compile-version" depends="deps-generate">
+		<javac srcdir="${version.src.dir}"
+				debug="${javac.debug}" includeantruntime="false"
+				classpathref="lib.path"/>
+	</target>
+
+	<target name="version" depends="compile-version,builddir">
+		<java classname="com.relteq.sirius.VersionGatherer"
+				classpathref="classpath.version"
+				output="${build.dir}${file.separator}engine.version"
+				logerror="true"
+				failonerror="true"/>
+	</target>
+
+	<target name="clean-version">
+		<delete verbose="on">
+			<fileset dir="${version.src.dir}" includes="**/*.class" />
 		</delete>
 	</target>
 </project>
