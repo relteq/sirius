@@ -247,17 +247,19 @@ public class ScenarioLoader {
 			db_srp.save(conn);
 			for (com.relteq.sirius.jaxb.Splitratio sr : srp.getSplitratio()) {
 				Double2DMatrix data = new Double2DMatrix(sr.getContent());
-				for (int t = 0; t < data.getnTime(); ++t) {
-					Time ts = new Time(t * 1000);
-					for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
-						SplitRatios db_sr = new SplitRatios();
-						db_sr.setSplitRatioProfiles(db_srp);
-						db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
-						db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
-						db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
-						db_sr.setTs(ts);
-						db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
-						db_sr.save(conn);
+				if (!data.isEmpty()) {
+					for (int t = 0; t < data.getnTime(); ++t) {
+						Time ts = new Time(t * 1000);
+						for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
+							SplitRatios db_sr = new SplitRatios();
+							db_sr.setSplitRatioProfiles(db_srp);
+							db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
+							db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
+							db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
+							db_sr.setTs(ts);
+							db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
+							db_sr.save(conn);
+						}
 					}
 				}
 			}
