@@ -14,6 +14,7 @@ public class Parameters {
 	private String port;
 	private String user;
 	private String password;
+	private boolean create = false;
 
 	private static final String default_db_name = "sirius";
 	private static final String default_host = "localhost";
@@ -102,6 +103,13 @@ public class Parameters {
 		this.password = password;
 	}
 
+	/**
+	 * @param create true, if the database should be created (valid for derby)
+	 */
+	public void setCreate(boolean create) {
+		this.create = create;
+	}
+
 	private Parameters() {}
 
 	/**
@@ -137,7 +145,7 @@ public class Parameters {
 			url.append("/");
 		}
 		url.append(db_name);
-		if (driver.equals("derby")) url.append(";create=true");
+		if (driver.equals("derby") && create) url.append(";create=true");
 		return url.toString();
 	}
 
