@@ -63,6 +63,8 @@
 	<table name="links">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="begin_node_id" required="true" domain="STRING_ID"/>
+		<column name="end_node_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="road_name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
@@ -78,6 +80,12 @@
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="begin_node_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="end_node_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -135,6 +143,46 @@
 		</foreign-key>
 	</table>
 
+	<table name="route_segments">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
+	</table>
+
+	<table name="route_segment_links">
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="number" required="true" type="INTEGER" description="Order of the link in the route segment."/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="route_segments">
+			<reference local="route_segment_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="od_route_segments">
+		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<foreign-key foreignTable="ods">
+			<reference local="od_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="route_segments">
+			<reference local="route_segment_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="od_decision_points">
+		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
+		<foreign-key foreignTable="ods">
+			<reference local="od_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
 
 
 	<!-- Routes TODO -->
@@ -155,6 +203,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_list_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="weight" required="true" type="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
+		<column name="name" required="true" domain="NAME_BUF"/>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
@@ -255,6 +304,50 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_type_families">
+			<reference local="vehicle_type_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+
+	<!-- Decision Point Splits -->
+
+	<table name="decision_point_split_profile_sets">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
+	</table>
+
+	<table name="decision_point_split_profiles">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="decision_point_split_profile_set_id" required="true" domain="STRING_ID"/>
+		<column name="node_id" required="true" domain="STRING_ID"/>
+		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
+		<foreign-key foreignTable="decision_point_split_profile_sets">
+			<reference local="decision_point_split_profile_set_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="decision_point_splits">
+		<column name="decision_point_split_profile_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="in_route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="enabled" required="true" domain="BOOL" description="Indicator whether this decision point is enabled for given vehicle types at given time instance."/>
+		<foreign-key foreignTable="decision_point_split_profiles">
+			<reference local="decision_point_split_profile_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="route_segments">
+			<reference local="in_route_segment_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="route_segments">
+			<reference local="out_route_segment_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -465,8 +558,7 @@
 		<column name="project_id" domain="STRING_ID"/>
 		<column name="network_connection_list_id" domain="STRING_ID"/>
 		<column name="od_list_id" domain="STRING_ID"/>
-		<column name="route_segment_list_id" domain="STRING_ID"/>
-		<column name="decision_point_list_id" domain="STRING_ID"/>
+		<column name="decision_point_split_profile_set_id" domain="STRING_ID"/>
 		<column name="vehicle_type_list_id" domain="STRING_ID"/>
 		<column name="signal_list_id" domain="STRING_ID"/>
 		<column name="sensor_list_id" domain="STRING_ID"/>
@@ -517,11 +609,8 @@
 		<foreign-key foreignTable="od_lists">
 			<reference local="od_list_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="route_segment_lists">
-			<reference local="route_segment_list_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="decision_point_lists">
-			<reference local="decision_point_list_id" foreign="id"/>
+		<foreign-key foreignTable="decision_point_split_profile_sets">
+			<reference local="decision_point_split_profile_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="od_demand_profile_sets">
 			<reference local="od_demand_profile_set_id" foreign="id"/>
@@ -553,18 +642,25 @@
 
 
 	<!-- Simulation Data -->
+
+	<table name="data_sources">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+	</table>
 	
 	<table name="simulation_runs">
 		<column name="id" primaryKey="true" type="INTEGER"/>
 		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="start_time" required="true" type="TIMESTAMP"/>
 		<column name="end_time" required="true" type="TIMESTAMP"/>
 		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
 	</table>
-	
 	
 
 
@@ -715,6 +811,47 @@
 		</foreign-key>
 	</table>
 
+
+
+
+	
+	<!-- **************************************************************************** -->
+
+
+
+	<!-- Signal Data -->
+
+	<table name="signal_data">
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
+		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
+		<foreign-key foreignTable="signals">
+			<reference local="signal_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
+		</foreign-key>
+	</table>
+	
+
+
+
+
+
+
+
+
+	<!-- TODO: temporary tables to be replaced with the actual ones -->
+
 	<table name="sensor_lists">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
@@ -727,12 +864,5 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
-	<table name="route_segment_lists">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-	</table>
-
-	<table name="decision_point_lists">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-	</table>
 </database>
 
