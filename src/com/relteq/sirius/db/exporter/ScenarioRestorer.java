@@ -10,9 +10,8 @@ import com.relteq.sirius.om.InitialDensitiesPeer;
 import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.Links;
 import com.relteq.sirius.om.LinksPeer;
-import com.relteq.sirius.om.NetworkListsPeer;
+import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
-import com.relteq.sirius.om.NetworksPeer;
 import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.NodesPeer;
 import com.relteq.sirius.om.Scenarios;
@@ -93,16 +92,13 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) {
-		Criteria crit = new Criteria();
-		crit.add(NetworkListsPeer.SCENARIO_ID, db_scenario.getId());
-		crit.addJoin(NetworkListsPeer.NETWORK_ID, NetworksPeer.ID);
 		try {
 			@SuppressWarnings("unchecked")
-			List<Networks> db_netl = NetworksPeer.doSelect(crit);
-			if (0 < db_netl.size()) {
+			List<NetworkLists> db_netll = db_scenario.getNetworkListss();
+			if (0 < db_netll.size()) {
 				com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
-				for (Networks db_net : db_netl)
-					nets.getNetwork().add(restoreNetwork(db_net));
+				for (NetworkLists db_netl : db_netll)
+					nets.getNetwork().add(restoreNetwork(db_netl.getNetworks()));
 				return nets;
 			}
 		} catch (TorqueException exc) {
