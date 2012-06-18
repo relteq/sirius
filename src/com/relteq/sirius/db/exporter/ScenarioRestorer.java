@@ -5,9 +5,13 @@ import java.util.List;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
+import com.relteq.sirius.om.Links;
+import com.relteq.sirius.om.LinksPeer;
 import com.relteq.sirius.om.NetworkListsPeer;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NetworksPeer;
+import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.NodesPeer;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
 import com.relteq.sirius.om.VehicleTypes;
@@ -106,7 +110,79 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Network net = factory.createNetwork();
 		net.setId(db_net.getId());
 		net.setDescription(db_net.getDescription());
+		net.setNodeList(restoreNodeList(db_net));
+		net.setLinkList(restoreLinkList(db_net));
 		return net;
+	}
+
+	private com.relteq.sirius.jaxb.NodeList restoreNodeList(Networks db_net) {
+		Criteria crit = new Criteria();
+		crit.add(NodesPeer.NETWORK_ID, db_net.getId());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Nodes> db_nl = NodesPeer.doSelect(crit);
+			if (0 < db_nl.size()) {
+				com.relteq.sirius.jaxb.NodeList nl = factory.createNodeList();
+				for (Nodes db_node : db_nl)
+					nl.getNode().add(restoreNode(db_node));
+				return nl;
+			}
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return null;
+	}
+
+	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
+		com.relteq.sirius.jaxb.Node node = factory.createNode();
+		node.setId(db_node.getId());
+		node.setName(db_node.getName());
+		node.setDescription(db_node.getDescription());
+		node.setType(db_node.getType());
+		com.relteq.sirius.jaxb.Point point = factory.createPoint();
+		point.setElevation(db_node.getElevation());
+		point.setLat(db_node.getLatitude());
+		point.setLng(db_node.getLongitude());
+		com.relteq.sirius.jaxb.Position pos = factory.createPosition();
+		pos.getPoint().add(point);
+		node.setPosition(pos);
+		node.setPostmile(db_node.getPostmile());
+		return node;
+	}
+
+	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) {
+		Criteria crit = new Criteria();
+		crit.add(LinksPeer.NETWORK_ID, db_net.getId());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Links> db_ll = LinksPeer.doSelect(crit);
+			if (0 < db_ll.size()) {
+				com.relteq.sirius.jaxb.LinkList ll = factory.createLinkList();
+				for (Links db_link : db_ll) {
+					ll.getLink().add(restoreLink(db_link));
+				}
+				return ll;
+			}
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return null;
+	}
+
+	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
+		com.relteq.sirius.jaxb.Link link = factory.createLink();
+		link.setId(db_link.getId());
+		link.setName(db_link.getName());
+		link.setRoadName(db_link.getRoadName());
+		link.setDescription(db_link.getDescription());
+		link.setType(db_link.getType());
+		link.setLanes(db_link.getLanes());
+		link.setLength(db_link.getLength());
+		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
+		dynamics.setType(db_link.getModel());
+		link.setDynamics(dynamics);
+		link.setLaneOffset(db_link.getDisplayLaneOffset());
+		return link;
 	}
 
 }
