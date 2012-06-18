@@ -21,7 +21,9 @@ import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
+import com.relteq.sirius.om.Signals;
 import com.relteq.sirius.om.SplitRatioProfileSets;
 import com.relteq.sirius.om.SplitRatioProfiles;
 import com.relteq.sirius.om.SplitRatios;
@@ -202,6 +204,12 @@ public class ScenarioLoader {
 		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 			save(link, db_network);
 		}
+		for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
+			save(signal, db_network);
+		}
+		for (com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()) {
+			save(sensor, db_network);
+		}
 		return db_network;
 	}
 
@@ -252,6 +260,52 @@ public class ScenarioLoader {
 		db_link.setModel(link.getDynamics().getType());
 		db_link.setDisplayLaneOffset(link.getLaneOffset());
 		db_link.save(conn);
+	}
+
+	/**
+	 * Imports a signal
+	 * @param signal
+	 * @param db_network
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Signal signal, Networks db_network) throws TorqueException {
+		Signals db_signal = new Signals();
+		db_signal.setId(uuid());
+		db_signal.setNodeId(node_family_id.get(signal.getNodeId()));
+		db_signal.save(conn);
+		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase()) {
+			save(phase, db_signal);
+		}
+	}
+
+	/**
+	 * Imports a signal phase
+	 * @param phase
+	 * @param db_signal
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Phase phase, Signals db_signal) throws TorqueException {
+		Phases db_phase = new Phases();
+		db_phase.setSignals(db_signal);
+		// TODO db_phase.setLinkId();
+		db_phase.setPhaseId(phase.getNema().intValue());
+		db_phase.setIs_protected(phase.isProtected());
+		db_phase.setPermissive(phase.isPermissive());
+		db_phase.setLag(phase.isLag());
+		db_phase.setRecall(phase.isRecall());
+		db_phase.setMinGreenTime(phase.getMinGreenTime());
+		db_phase.setYellowTime(phase.getYellowTime());
+		db_phase.setRedClearTime(phase.getRedClearTime());
+		// TODO db_phase.save(conn);
+	}
+
+	/**
+	 * Imports a sensor
+	 * @param sensor
+	 * @param db_network
+	 */
+	private void save(com.relteq.sirius.jaxb.Sensor sensor, Networks db_network) {
+		// TODO Auto-generated method stub
 	}
 
 	/**
