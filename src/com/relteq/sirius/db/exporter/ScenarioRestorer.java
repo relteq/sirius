@@ -9,11 +9,9 @@ import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitiesPeer;
 import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.Links;
-import com.relteq.sirius.om.LinksPeer;
 import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
-import com.relteq.sirius.om.NodesPeer;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
 import com.relteq.sirius.om.VehicleTypeLists;
@@ -117,11 +115,9 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.jaxb.NodeList restoreNodeList(Networks db_net) {
-		Criteria crit = new Criteria();
-		crit.add(NodesPeer.NETWORK_ID, db_net.getId());
 		try {
 			@SuppressWarnings("unchecked")
-			List<Nodes> db_nl = NodesPeer.doSelect(crit);
+			List<Nodes> db_nl = db_net.getNodess();
 			if (0 < db_nl.size()) {
 				com.relteq.sirius.jaxb.NodeList nl = factory.createNodeList();
 				for (Nodes db_node : db_nl)
@@ -152,11 +148,9 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) {
-		Criteria crit = new Criteria();
-		crit.add(LinksPeer.NETWORK_ID, db_net.getId());
 		try {
 			@SuppressWarnings("unchecked")
-			List<Links> db_ll = LinksPeer.doSelect(crit);
+			List<Links> db_ll = db_net.getLinkss();
 			if (0 < db_ll.size()) {
 				com.relteq.sirius.jaxb.LinkList ll = factory.createLinkList();
 				for (Links db_link : db_ll) {
