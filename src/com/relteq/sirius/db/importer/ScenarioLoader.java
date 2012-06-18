@@ -105,14 +105,20 @@ public class ScenarioLoader {
 	}
 
 	protected VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
-		if (null == vtypes) return null;
 		VehicleTypeLists db_vtl = new VehicleTypeLists();
 		db_vtl.setId(uuid());
 		db_vtl.save(conn);
+		if (null == vtypes) {
+			vtypes = new com.relteq.sirius.jaxb.VehicleTypes();
+			com.relteq.sirius.jaxb.VehicleType vt = new com.relteq.sirius.jaxb.VehicleType();
+			vt.setName("SOV");
+			vt.setWeight(new BigDecimal(1));
+			vtypes.getVehicleType().add(vt);
+		}
 		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
 		vehicle_type_id = new String[vtlist.size()];
 		int ind = 0;
-		for (com.relteq.sirius.jaxb.VehicleType vt : vtypes.getVehicleType()) {
+		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist) {
 			VehicleTypeFamilies db_vtf = new VehicleTypeFamilies();
 			db_vtf.setId(vehicle_type_id[ind++] = uuid());
 			db_vtf.save(conn);
