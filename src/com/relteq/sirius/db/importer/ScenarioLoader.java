@@ -197,41 +197,61 @@ public class ScenarioLoader {
 		db_network.setDescription(network.getDescription());
 		db_network.save(conn);
 		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
-			Nodes db_node = new Nodes();
-			db_node.setId(getNodeFamily(node.getId()));
-			db_node.setNetworks(db_network);
-			db_node.setName(node.getName());
-			db_node.setDescription(node.getDescription());
-			db_node.setType(node.getType());
-			Position pos = node.getPosition();
-			if (null != pos && 1 == pos.getPoint().size()) {
-				Point point = pos.getPoint().get(0);
-				db_node.setLatitude(point.getLat());
-				db_node.setLongitude(point.getLng());
-				db_node.setElevation(point.getElevation());
-			}
-			db_node.setPostmile(node.getPostmile());
-			db_node.setModel("STANDARD");
-			db_node.save(conn);
+			save(node, db_network);
 		}
 		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
-			Links db_link = new Links();
-			db_link.setId(getLinkFamily(link.getId()));
-			db_link.setNetworks(db_network);
-			db_link.setBeginNodeId(node_family_id.get(link.getBegin().getNodeId()));
-			db_link.setEndNodeId(node_family_id.get(link.getEnd().getNodeId()));
-			db_link.setName(link.getName());
-			db_link.setRoadName(link.getRoadName());
-			db_link.setDescription(link.getDescription());
-			db_link.setType(link.getType());
-			if (null != link.getLinkGeometry()) db_link.setShape(link.getLinkGeometry().toString());
-			db_link.setLanes(link.getLanes());
-			db_link.setLength(link.getLength());
-			db_link.setModel(link.getDynamics().getType());
-			db_link.setDisplayLaneOffset(link.getLaneOffset());
-			db_link.save(conn);
+			save(link, db_network);
 		}
 		return db_network;
+	}
+
+	/**
+	 * Imports a node
+	 * @param node
+	 * @param db_network
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Node node, Networks db_network) throws TorqueException {
+		Nodes db_node = new Nodes();
+		db_node.setId(getNodeFamily(node.getId()));
+		db_node.setNetworks(db_network);
+		db_node.setName(node.getName());
+		db_node.setDescription(node.getDescription());
+		db_node.setType(node.getType());
+		Position pos = node.getPosition();
+		if (null != pos && 1 == pos.getPoint().size()) {
+			Point point = pos.getPoint().get(0);
+			db_node.setLatitude(point.getLat());
+			db_node.setLongitude(point.getLng());
+			db_node.setElevation(point.getElevation());
+		}
+		db_node.setPostmile(node.getPostmile());
+		db_node.setModel("STANDARD");
+		db_node.save(conn);
+	}
+
+	/**
+	 * Imports a link
+	 * @param link
+	 * @param db_network
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Link link, Networks db_network) throws TorqueException {
+		Links db_link = new Links();
+		db_link.setId(getLinkFamily(link.getId()));
+		db_link.setNetworks(db_network);
+		db_link.setBeginNodeId(node_family_id.get(link.getBegin().getNodeId()));
+		db_link.setEndNodeId(node_family_id.get(link.getEnd().getNodeId()));
+		db_link.setName(link.getName());
+		db_link.setRoadName(link.getRoadName());
+		db_link.setDescription(link.getDescription());
+		db_link.setType(link.getType());
+		if (null != link.getLinkGeometry()) db_link.setShape(link.getLinkGeometry().toString());
+		db_link.setLanes(link.getLanes());
+		db_link.setLength(link.getLength());
+		db_link.setModel(link.getDynamics().getType());
+		db_link.setDisplayLaneOffset(link.getLaneOffset());
+		db_link.save(conn);
 	}
 
 	/**
