@@ -90,6 +90,11 @@ public class ScenarioLoader {
 		}
 	}
 
+	/**
+	 * Imports a scenario
+	 * @param scenario
+	 * @throws TorqueException
+	 */
 	protected void save(Scenario scenario) throws TorqueException {
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setId(scenario_id = uuid());
@@ -104,6 +109,12 @@ public class ScenarioLoader {
 		db_scenario.save(conn);
 	}
 
+	/**
+	 * Imports vehicle types
+	 * @param vtypes
+	 * @return the imported vehicle type list
+	 * @throws TorqueException
+	 */
 	protected VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeLists db_vtl = new VehicleTypeLists();
 		db_vtl.setId(uuid());
@@ -132,6 +143,11 @@ public class ScenarioLoader {
 		return db_vtl;
 	}
 
+	/**
+	 * Imports a network list
+	 * @param nl
+	 * @throws TorqueException
+	 */
 	protected void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
 		network_id = new HashMap<String, String>(nl.getNetwork().size());
 		link_family_id = new HashMap<String, String>();
@@ -166,6 +182,12 @@ public class ScenarioLoader {
 		return node_family_id.get(id);
 	}
 
+	/**
+	 * Imports a network
+	 * @param network
+	 * @return the imported network
+	 * @throws TorqueException
+	 */
 	protected Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
 		Networks db_network = new Networks();
 		String id = uuid();
@@ -212,6 +234,12 @@ public class ScenarioLoader {
 		return db_network;
 	}
 
+	/**
+	 * Imports initial densities
+	 * @param idprofile
+	 * @return the imported initial density set
+	 * @throws TorqueException
+	 */
 	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensityProfile idprofile) throws TorqueException {
 		if (null == idprofile) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
@@ -229,6 +257,12 @@ public class ScenarioLoader {
 		return db_idsets;
 	}
 
+	/**
+	 * Imports weaving factors
+	 * @param wfprofile
+	 * @return the imported weaving factor set
+	 * @throws TorqueException
+	 */
 	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorsProfile wfprofile) throws TorqueException {
 		if (null == wfprofile) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
@@ -236,9 +270,16 @@ public class ScenarioLoader {
 		db_wfset.setName(wfprofile.getName());
 		db_wfset.setDescription(wfprofile.getDescription());
 		db_wfset.save(conn);
+		// TODO import weaving factors
 		return db_wfset;
 	}
 
+	/**
+	 * Imports split ratio profiles
+	 * @param srps
+	 * @return the imported split ratio profile set
+	 * @throws TorqueException
+	 */
 	private SplitRatioProfileSets save(com.relteq.sirius.jaxb.SplitRatioProfileSet srps) throws TorqueException {
 		if (null == srps) return null;
 		SplitRatioProfileSets db_srps = new SplitRatioProfileSets();
