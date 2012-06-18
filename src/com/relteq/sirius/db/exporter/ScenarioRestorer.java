@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
+import com.relteq.sirius.om.InitialDensities;
+import com.relteq.sirius.om.InitialDensitiesPeer;
+import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.Links;
 import com.relteq.sirius.om.LinksPeer;
 import com.relteq.sirius.om.NetworkListsPeer;
@@ -55,6 +58,7 @@ public class ScenarioRestorer {
 			scenario.setDescription(db_scenario.getDescription());
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
+			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario));
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -183,6 +187,47 @@ public class ScenarioRestorer {
 		link.setDynamics(dynamics);
 		link.setLaneOffset(db_link.getDisplayLaneOffset());
 		return link;
+	}
+
+	private com.relteq.sirius.jaxb.InitialDensityProfile restoreInitialDensityProfile(Scenarios db_scenario) throws TorqueException {
+		InitialDensitySets db_idset = db_scenario.getInitialDensitySets();
+		if (null == db_idset) return null;
+		com.relteq.sirius.jaxb.InitialDensityProfile idprofile = factory.createInitialDensityProfile();
+		idprofile.setId(db_idset.getId());
+		idprofile.setName(db_idset.getName());
+		idprofile.setDescription(db_idset.getDescription());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
+		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
+		@SuppressWarnings("unchecked")
+		List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
+		String link_id = null;
+		StringBuilder sb = null;
+		for (InitialDensities db_id : db_idl) {
+			String density = db_id.getDensity().toPlainString();
+			if (null == link_id) { // first iteration
+				link_id = db_id.getLinkId();
+				sb = new StringBuilder(density);
+			} else if (link_id != db_id.getLinkId()) { // new link started
+				idprofile.getDensity().add(createDensity(link_id, sb.toString()));
+				link_id = db_id.getLinkId();
+				sb.setLength(0);
+				sb.append(density);
+			} else { // same link, different vehicle type
+				sb.append(":").append(density);
+			}
+		}
+		// last link
+		if (null != link_id) idprofile.getDensity().add(createDensity(link_id, sb.toString()));
+		return idprofile;
+	}
+
+	private com.relteq.sirius.jaxb.Density createDensity(String link_id, String content) {
+		com.relteq.sirius.jaxb.Density density = factory.createDensity();
+		density.setLinkId(link_id);
+		// TODO density.setNetworkId();
+		density.setContent(content);
+		return density;
 	}
 
 }
