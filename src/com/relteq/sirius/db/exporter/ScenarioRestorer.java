@@ -92,20 +92,21 @@ public class ScenarioRestorer {
 			List<Networks> db_netl = NetworksPeer.doSelect(crit);
 			if (0 < db_netl.size()) {
 				com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
-				List<com.relteq.sirius.jaxb.Network> netl = nets.getNetwork();
-				for (Iterator<Networks> iter = db_netl.iterator(); iter.hasNext();) {
-					Networks db_net = iter.next();
-					com.relteq.sirius.jaxb.Network net = factory.createNetwork();
-					net.setId(db_net.getId());
-					net.setDescription(db_net.getDescription());
-					netl.add(net);
-				}
+				for (Networks db_net : db_netl)
+					nets.getNetwork().add(restoreNetwork(db_net));
 				return nets;
 			}
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return null;
+	}
+
+	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) {
+		com.relteq.sirius.jaxb.Network net = factory.createNetwork();
+		net.setId(db_net.getId());
+		net.setDescription(db_net.getDescription());
+		return net;
 	}
 
 }
