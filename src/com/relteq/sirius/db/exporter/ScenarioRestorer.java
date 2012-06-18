@@ -66,7 +66,7 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) {
-		com.relteq.sirius.jaxb.Settings settings = (com.relteq.sirius.jaxb.Settings) factory.createSettings();
+		com.relteq.sirius.jaxb.Settings settings = factory.createSettings();
 		try {
 			VehicleTypeLists db_vtlists = db_scenario.getVehicleTypeLists();
 			if (null != db_vtlists) {
