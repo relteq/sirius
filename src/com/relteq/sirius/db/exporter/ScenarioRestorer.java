@@ -17,6 +17,7 @@ import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.NodesPeer;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
+import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
 import com.relteq.sirius.om.VehicleTypesPeer;
 import com.relteq.sirius.simulator.SiriusErrorLog;
@@ -67,15 +68,15 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) {
 		com.relteq.sirius.jaxb.Settings settings = (com.relteq.sirius.jaxb.Settings) factory.createSettings();
-		if (null != db_scenario.getVehicleTypeListId()) {
-			com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
-			List<com.relteq.sirius.jaxb.VehicleType> vtl = vts.getVehicleType();
-			Criteria crit = new Criteria();
-			crit.add(VehicleTypesPeer.VEHICLE_TYPE_LIST_ID, db_scenario.getVehicleTypeListId());
-			crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_LIST_ID);
-			try {
+		try {
+			VehicleTypeLists db_vtlists = db_scenario.getVehicleTypeLists();
+			if (null != db_vtlists) {
+				com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
+				List<com.relteq.sirius.jaxb.VehicleType> vtl = vts.getVehicleType();
+				Criteria crit = new Criteria();
+				crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_LIST_ID);
 				@SuppressWarnings("unchecked")
-				List<VehicleTypes> db_vtl = VehicleTypesPeer.doSelect(crit);
+				List<VehicleTypes> db_vtl = db_vtlists.getVehicleTypess(crit);
 				for (Iterator<VehicleTypes> iter = db_vtl.iterator(); iter.hasNext();) {
 					VehicleTypes db_vt = iter.next();
 					com.relteq.sirius.jaxb.VehicleType vt = factory.createVehicleType();
@@ -83,10 +84,10 @@ public class ScenarioRestorer {
 					vt.setWeight(db_vt.getWeight());
 					vtl.add(vt);
 				}
-			} catch (TorqueException exc) {
-				SiriusErrorLog.addErrorMessage(exc.getMessage());
+				settings.setVehicleTypes(vts);
 			}
-			settings.setVehicleTypes(vts);
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return settings;
 	}
