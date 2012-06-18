@@ -206,6 +206,7 @@ public class ScenarioLoader {
 			db_link.setLanes(link.getLanes());
 			db_link.setLength(link.getLength());
 			db_link.setModel(link.getDynamics().getType());
+			db_link.setDisplayLaneOffset(link.getLaneOffset());
 			db_link.save(conn);
 		}
 		return db_network;
