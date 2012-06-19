@@ -41,7 +41,7 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		isdone = false;
 		
 		// required
-		myLinkOrigin = myScenario.getLinkWithCompositeId(getNetworkIdOrigin(),getLinkIdOrigin());
+		myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
 
 		// sample demand distribution, convert to vehicle units
 		demand_nominal = new Double2DMatrix(getContent());

@@ -580,40 +580,34 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** Get a reference to a node by its composite id.
 	 * 
-	 * @param network_id String id of the network containing the node. 
 	 * @param id String id of the node. 
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
-	public Node getNodeWithCompositeId(String network_id,String id){
+	public Node getNodeWithId(String id){
 		if(getNetworkList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getNodeWithId(id);
-			else
-				return null;
-		else	
-			return network.getNodeWithId(id);
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork()){
+			Node node = ((com.relteq.sirius.simulator.Network) network).getNodeWithId(id);
+			if(node!=null)
+				return node;
+		}
+		return null;
 	}
 
 	/** Get a reference to a link by its composite id.
 	 * 
-	 * @param network_id String id of the network containing the link. 
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public Link getLinkWithCompositeId(String network_id,String id){
+	public Link getLinkWithId(String id){
 		if(getNetworkList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getLinkWithId(id);
-			else
-				return null;
-		else	
-			return network.getLinkWithId(id);
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork()){
+			Link link = ((com.relteq.sirius.simulator.Network) network).getLinkWithId(id);
+			if(link!=null)
+				return link;
+		}
+		return null;
 	}
 
 	/** Get sensor with given id.

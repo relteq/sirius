@@ -129,7 +129,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 		this.myType = myType;
 		this.id = s.getId();
 		if(s.getLinkReference()!=null)
-			myLink = myScenario.getLinkWithCompositeId(s.getLinkReference().getNetworkId(),s.getLinkReference().getId());
+			myLink = myScenario.getLinkWithId(s.getLinkReference().getId());
 	}
 
 	@Override

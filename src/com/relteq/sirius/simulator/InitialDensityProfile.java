@@ -32,7 +32,7 @@ final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityP
 		// copy profile information to arrays in extended object
 		for(i=0;i<numLinks;i++){
 			com.relteq.sirius.jaxb.Density density = getDensity().get(i);
-			link[i] = myScenario.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
+			link[i] = myScenario.getLinkWithId(density.getLinkId());
 			Double1DVector D = new Double1DVector(density.getContent(),":");
 			initial_density[i] = D.getData();
 		}

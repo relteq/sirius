@@ -39,7 +39,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		this.myScenario = myScenario;
 		
 		// required
-		myNode = myScenario.getNodeWithCompositeId(getNetworkId(),getNodeId());
+		myNode = myScenario.getNodeWithId(getNodeId());
 
 		isdone = false;
 		

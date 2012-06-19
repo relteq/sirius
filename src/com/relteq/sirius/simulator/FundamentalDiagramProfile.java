@@ -42,7 +42,7 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		isdone = false;
 		
 		// required
-		myLink = myScenario.getLinkWithCompositeId(getNetworkId(), getLinkId());
+		myLink = myScenario.getLinkWithId(getLinkId());
 		
 		if(myLink==null)
 			return;
