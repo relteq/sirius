@@ -116,9 +116,11 @@
   <xs:element name="scenario">
     <xs:complexType>
       <xs:all>
-        <xs:element ref="description" minOccurs="0" />
-        <xs:element ref="settings" minOccurs="0"  />
-        <xs:element ref="NetworkList" minOccurs="0" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
+        <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
+	<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
+	<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensityProfile" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorsProfile" minOccurs="0" maxOccurs="1" />
         <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
@@ -193,8 +195,6 @@
 				<xs:element ref="position" minOccurs="0" />
 				<xs:element ref="NodeList" minOccurs="0" />
 				<xs:element ref="LinkList" minOccurs="0" />
-				<xs:element ref="SignalList" minOccurs="0" />
-				<xs:element ref="SensorList" minOccurs="0" />
 				<xs:element ref="DirectionsCache" minOccurs="0" />
 				<xs:element ref="IntersectionCache" minOccurs="0" />
 			  </xs:all>
@@ -321,106 +321,6 @@
 					  </xs:choice>
 					</xs:complexType>
 				  </xs:element>
-
-  <!-- SignalList ................................................................ -->
-
-		  <xs:element name="SignalList">
-			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="signal" minOccurs="0" maxOccurs="unbounded" />
-			  </xs:sequence>
-			</xs:complexType>
-		  </xs:element>
-		  
-			  <xs:element name="signal">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="phase" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="node_id" type="xs:string" use="required" />
-				</xs:complexType>
-			  </xs:element>
-			  
-				  <xs:element name="phase">
-					<xs:complexType>
-					  <xs:all>
-						<xs:element ref="links" minOccurs="0" />
-					  </xs:all>
-					  <xs:attribute name="nema" type="xs:integer" use="required" />
-					  <xs:attribute name="protected" type="xs:boolean" use="required" />
-					  <xs:attribute name="permissive" type="xs:boolean" use="required" />
-					  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in seconds -->
-					  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-					  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-					  <xs:attribute name="lag" type="xs:boolean" use="required" />
-					  <xs:attribute name="recall" type="xs:boolean" use="required" />
-					</xs:complexType>
-				  </xs:element>
-  
-  <!-- SensorList ................................................................ -->
-  
-		  <xs:element name="SensorList">
-			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="sensor" minOccurs="0" maxOccurs="unbounded" />
-			  </xs:sequence>
-			</xs:complexType>
-		  </xs:element>
-		  
-			  <xs:element name="sensor">
-				<xs:complexType>
-				  <xs:all>
-					<xs:element ref="description" minOccurs="0" />
-					<xs:element ref="position" minOccurs="0" />
-					<xs:element ref="display_position" minOccurs="0" />
-					<xs:element ref="link_reference" minOccurs="0" />
-					<xs:element ref="parameters" minOccurs="0" />
-					<xs:element ref="data_sources" minOccurs="0" />
-				  </xs:all>
-				  
-				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
-
-				  <xs:attribute name="type" use="required">
-					<xs:simpleType>
-					  <xs:restriction base="xs:string">
-						<xs:pattern value="static_point|static_area|moving_point"/>
-					  </xs:restriction>
-					</xs:simpleType>
-				  </xs:attribute>
-
-				  <xs:attribute name="link_type" use="required">
-					<xs:simpleType>
-					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|onramp|offramp|other"/>
-					  </xs:restriction>
-					</xs:simpleType>
-				  </xs:attribute>
-				</xs:complexType>
-			  </xs:element>
-			  
-			  <xs:element name="data_sources">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="data_source" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				</xs:complexType>
-			  </xs:element>
-
-				  <xs:element name="data_source">
-					<xs:complexType>
-					  <xs:attribute name="url" type="xs:string" use="required" />
-					  <xs:attribute name="dt" type="xs:decimal" use="required" />		<!-- in seconds -->
-					  <xs:attribute name="format" use="required">
-						<xs:simpleType>
-						  <xs:restriction base="xs:string">
-							<xs:pattern value="PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL"/>
-						  </xs:restriction>
-						</xs:simpleType>
-					  </xs:attribute>
-					</xs:complexType>
-				  </xs:element>					
 								  	
   <!-- DirectionsCache ........................................................... -->
 
@@ -504,7 +404,108 @@
 				  <xs:attribute name="street2" type="xs:string" use="required" />
 				</xs:complexType>
 			  </xs:element>					  
+			  
+  <!-- SignalList ................................................................ -->
 
+	  <xs:element name="SignalList">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element ref="signal" minOccurs="0" maxOccurs="unbounded" />
+		  </xs:sequence>
+		</xs:complexType>
+	  </xs:element>
+	  
+		  <xs:element name="signal">
+			<xs:complexType>
+			  <xs:sequence>
+				<xs:element ref="phase" minOccurs="0" maxOccurs="unbounded" />
+			  </xs:sequence>
+			  <xs:attribute name="id" type="xs:string" use="required" />
+			  <xs:attribute name="node_id" type="xs:string" use="required" />
+			</xs:complexType>
+		  </xs:element>
+		  
+			  <xs:element name="phase">
+				<xs:complexType>
+				  <xs:all>
+					<xs:element ref="links" minOccurs="0" />
+				  </xs:all>
+				  <xs:attribute name="nema" type="xs:integer" use="required" />
+				  <xs:attribute name="protected" type="xs:boolean" use="required" />
+				  <xs:attribute name="permissive" type="xs:boolean" use="required" />
+				  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in seconds -->
+				  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+				  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+				  <xs:attribute name="lag" type="xs:boolean" use="required" />
+				  <xs:attribute name="recall" type="xs:boolean" use="required" />
+				</xs:complexType>
+			  </xs:element>
+  
+  <!-- SensorList ................................................................ -->
+
+	  <xs:element name="SensorList">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element ref="sensor" minOccurs="0" maxOccurs="unbounded" />
+		  </xs:sequence>
+		</xs:complexType>
+	  </xs:element>
+	  
+		  <xs:element name="sensor">
+			<xs:complexType>
+			  <xs:all>
+				<xs:element ref="description" minOccurs="0" />
+				<xs:element ref="position" minOccurs="0" />
+				<xs:element ref="display_position" minOccurs="0" />
+				<xs:element ref="link_reference" minOccurs="0" />
+				<xs:element ref="parameters" minOccurs="0" />
+				<xs:element ref="data_sources" minOccurs="0" />
+			  </xs:all>
+			  
+			  <xs:attribute name="id" type="xs:string" use="required" />
+			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
+
+			  <xs:attribute name="type" use="required">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:pattern value="static_point|static_area|moving_point"/>
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:attribute>
+
+			  <xs:attribute name="link_type" use="required">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:pattern value="freeway|HOV|onramp|offramp|other"/>
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:attribute>
+			</xs:complexType>
+		  </xs:element>
+		  
+		  <xs:element name="data_sources">
+			<xs:complexType>
+			  <xs:sequence>
+				<xs:element ref="data_source" minOccurs="0" maxOccurs="unbounded" />
+			  </xs:sequence>
+			</xs:complexType>
+		  </xs:element>
+
+			  <xs:element name="data_source">
+				<xs:complexType>
+				  <xs:attribute name="url" type="xs:string" use="required" />
+				  <xs:attribute name="dt" type="xs:decimal" use="required" />		<!-- in seconds -->
+				  <xs:attribute name="format" use="required">
+					<xs:simpleType>
+					  <xs:restriction base="xs:string">
+						<xs:pattern value="PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL"/>
+					  </xs:restriction>
+					</xs:simpleType>
+				  </xs:attribute>
+				</xs:complexType>
+			  </xs:element>		
+		  
+			  
   <!-- InitialDensityProfile ..................................................... -->
 
 	  <xs:element name="InitialDensityProfile">
@@ -702,7 +703,7 @@
 		</xs:complexType>
 	  </xs:element>
 			  
-		  <xs:element name="demandProfile">															<!-- content in [veh/hr/vehicle type] -->
+		  <xs:element name="demandProfile">									<!-- content in [veh/hr/vehicle type] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="knob" type="xs:decimal" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
