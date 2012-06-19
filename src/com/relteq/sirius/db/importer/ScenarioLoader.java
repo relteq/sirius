@@ -21,6 +21,7 @@ import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.PhaseLinks;
 import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.Signals;
@@ -287,8 +288,7 @@ public class ScenarioLoader {
 	private void save(com.relteq.sirius.jaxb.Phase phase, Signals db_signal) throws TorqueException {
 		Phases db_phase = new Phases();
 		db_phase.setSignals(db_signal);
-		// TODO db_phase.setLinkId();
-		db_phase.setPhaseId(phase.getNema().intValue());
+		db_phase.setPhase(phase.getNema().intValue());
 		db_phase.setIs_protected(phase.isProtected());
 		db_phase.setPermissive(phase.isPermissive());
 		db_phase.setLag(phase.isLag());
@@ -296,7 +296,23 @@ public class ScenarioLoader {
 		db_phase.setMinGreenTime(phase.getMinGreenTime());
 		db_phase.setYellowTime(phase.getYellowTime());
 		db_phase.setRedClearTime(phase.getRedClearTime());
-		// TODO db_phase.save(conn);
+		db_phase.save(conn);
+		for (com.relteq.sirius.jaxb.LinkReference lr : phase.getLinks().getLinkReference())
+			save(lr, db_phase);
+	}
+
+	/**
+	 * Imports a link reference (for a signal phase)
+	 * @param lr the link reference
+	 * @param db_phase the imported phase
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.LinkReference lr, Phases db_phase) throws TorqueException {
+		PhaseLinks db_lr = new PhaseLinks();
+		db_lr.setSignalId(db_phase.getSignalId());
+		db_lr.setPhase(db_phase.getPhase());
+		db_lr.setLinkId(link_family_id.get(lr.getId()));
+		db_lr.save(conn);
 	}
 
 	/**
