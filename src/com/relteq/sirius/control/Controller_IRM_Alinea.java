@@ -98,7 +98,7 @@ public class Controller_IRM_Alinea extends Controller {
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
-					mainlinesensor=myScenario.getSensorWithCompositeId(s.getNetworkId(),s.getId());
+					mainlinesensor=myScenario.getSensorWithId(s.getId());
 					hasmainlinesensor = true;
 				}
 
@@ -110,7 +110,7 @@ public class Controller_IRM_Alinea extends Controller {
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
-					queuesensor=myScenario.getSensorWithCompositeId(s.getNetworkId(),s.getId());
+					queuesensor=myScenario.getSensorWithId(s.getId());
 					hasqueuesensor = true;
 				}				
 			}

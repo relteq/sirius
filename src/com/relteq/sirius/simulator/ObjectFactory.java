@@ -171,11 +171,11 @@ public final class ObjectFactory {
 			S.reference = myScenario.getNodeWithCompositeId(S.getNetworkId(),S.getId());
 			break;
 		case sensor:
-			S.reference = myScenario.getSensorWithCompositeId(S.getNetworkId(),S.getId());
+			S.reference = myScenario.getSensorWithId(S.getId());
 			break;
-//		case signal:
-//			S.reference = myScenario.getSignalWithCompositeId(S.getNetworkId(),S.getId());
-//			break;
+		case signal:
+			S.reference = myScenario.getSignalWithId(S.getId());
+			break;
 		case controller:
 			S.reference = myScenario.getControllerWithId(S.getId());
 			break;
@@ -303,10 +303,9 @@ public final class ObjectFactory {
         boolean registersuccess = true;
         for(Controller controller : S.controllerset.controllers)
         	registersuccess &= controller.register();
-        for(com.relteq.sirius.jaxb.Network network:S.getNetworkList().getNetwork())
-        	if(network.getSignalList()!=null)
-	        	for(com.relteq.sirius.jaxb.Signal signal:network.getSignalList().getSignal())
-	        		registersuccess &= ((Signal)signal).register();
+    	if(S.getSignalList()!=null)
+        	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
+        		registersuccess &= ((Signal)signal).register();
         
         if(!registersuccess){
         	SiriusErrorLog.addErrorMessage("Controller registration failure.");

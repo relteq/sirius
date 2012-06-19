@@ -38,6 +38,12 @@ import javax.xml.bind.Marshaller;
 */
 public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
+	/** @y.exclude */	protected static enum ModeType {  normal, 
+		  warmupFromZero , 
+		  warmupFromIC };
+	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
+		  gaussian }
+
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
 	/** @y.exclude */	protected Random random = new Random();
@@ -47,15 +53,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
 	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
 	/** @y.exclude */	protected double simdtinhours;			// [hr]  simulation time step 	
-	/** @y.exclude */	protected boolean scenariolocked=false;		// true when the simulation is running
+	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
-	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events
-	/** @y.exclude */	protected static enum ModeType {  normal, 
-								    					  warmupFromZero , 
-								    					  warmupFromIC };
-	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
-          														gaussian }
-	
+	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected int numEnsemble;
 
 	/////////////////////////////////////////////////////////////////////
@@ -81,7 +81,19 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(getNetworkList()!=null)
 			for( com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork() )
 				((Network) network).populate(this);
-	
+		
+		// replace jaxb.Sensor with simulator.Sensor
+		if(getSensorList()!=null)
+			for(int i=0;i<getSensorList().getSensor().size();i++){
+				com.relteq.sirius.jaxb.Sensor sensor = getSensorList().getSensor().get(i);
+				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
+				getSensorList().getSensor().set(i,ObjectFactory.createSensorFromJaxb(this,sensor,myType));
+			}
+		
+		if(getSignalList()!=null)
+			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal) signal).populate(this);
+		
 		// split ratio profile set (must follow network)
 		if(getSplitRatioProfileSet()!=null)
 			((SplitRatioProfileSet) getSplitRatioProfileSet()).populate(this);
@@ -126,6 +138,16 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
 			((Network)network).reset(simulationMode);
 		
+		// sensor list
+		if(getSensorList()!=null)
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor) sensor).reset();
+			
+		// signal list
+		if(getSignalList()!=null)
+			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal) signal).reset();
+						
 		// reset demand profiles
 		if(getDemandProfileSet()!=null)
 			((DemandProfileSet)getDemandProfileSet()).reset();
@@ -167,6 +189,20 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         	for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdProfile : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
         		((FundamentalDiagramProfile) fdProfile).update();
     	
+        // update sensor readings .......................
+        // NOTE: ensembles have not been implemented for sensors. They do not apply
+        // to the loop sensor, but would make a difference for floating sensors.
+		if(getSensorList()!=null)
+			for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor)sensor).update();
+        
+        // update signals ...............................
+		// NOTE: ensembles have not been implemented for signals. They do not apply
+		// to pretimed control, but would make a differnece for feedback control. 
+		if(getSignalList()!=null)
+			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal)signal).update();
+
         // update controllers
     	if(global_control_on)
     		controllerset.update();
@@ -267,6 +303,21 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 					return false;
 				}
 
+		// sensor list
+		if(getSensorList()!=null)
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				if( !((Sensor) sensor).validate() ){
+					SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
+					return false;
+				}
+
+		// signal list
+		if(getSignalList()!=null)
+			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				if( !((Signal) signal).validate() ){
+					SiriusErrorLog.addErrorMessage("Signal validation failure, signal " + signal.getId());
+					return false;
+				}
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
@@ -565,61 +616,105 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return network.getLinkWithId(id);
 	}
 
-	/** Get a reference to a sensor by its composite id.
-	 * 
-	 * @param network_id String id of the network containing the sensor. 
-	 * @param id String id of the sensor. 
-	 * @return Reference to the sensor if it exists, <code>null</code> otherwise
+	/** Get sensor with given id.
+	 * @param id String id of the sensor.
+	 * @return Sensor object.
 	 */
-	public Sensor getSensorWithCompositeId(String network_id,String id){
-		if(getNetworkList()==null)
+	public Sensor getSensorWithId(String id){
+		if(getSensorList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getSensorWithId(id);
-			else
-				return null;
-		else	
-			return network.getSensorWithId(id);
+		id.replaceAll("\\s","");
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			if(sensor.getId().equals(id))
+				return (Sensor) sensor;
+		}
+		return null;
+	}
+	
+	/** Get signal with given id.
+	 * @param id String id of the signal.
+	 * @return Signal object.
+	 */
+	public Signal getSignalWithId(String id){
+		if(getSignalList()==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal()){
+			if(signal.getId().equals(id))
+				return (Signal) signal;
+		}
+		return null;
 	}
 
-	/** Get a reference to a signal by its composite id.
-	 * 
-	 * @param network_id String id of the network containing the signal. 
-	 * @param id String id of the signal. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public Signal getSignalWithCompositeId(String network_id,String id){
-		if(getNetworkList()==null)
-			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getSignalWithId(id);
-			else
-				return null;
-		else	
-			return network.getSignalWithId(id);
-	}
+//	/** Get sensors on a given link.
+//	 * @param linkid String id of the link.
+//	 * @return The list of sensors located in the link.
+//	 */
+//	public ArrayList<Sensor> getSensorWithLinkId(String linkid){
+//		if(getSensorList()==null)
+//			return null;
+//		ArrayList<Sensor> result = new ArrayList<Sensor>();
+//		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+//			Sensor s = (Sensor) sensor;
+//			if(s.myLink!=null){
+//				if(s.myLink.getId().equals(linkid)){
+//					result.add(s);
+//					break;
+//				}	
+//			}
+//		}
+//		return result;
+//	}
+
+//	/** Get one sensor in the given link.
+//	 * @param linkid String id of the link.
+//	 * @return The first sensor found to be contained in the link. 
+//	 */
+//	public Sensor getFirstSensorWithLinkId(String linkid){
+//		if(getSensorList()==null)
+//			return null;
+//		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+//			Sensor s = (Sensor) sensor;
+//			if(s.myLink!=null){
+//				if(s.myLink.getId().equals(linkid)){
+//					return s;
+//				}
+//			}
+//		}
+//		return null;
+//	}
+
+
+//	/** Get signal on the node with given id.
+//	 * @param node_id String id of the node.
+//	 * @return Signal object if there is one. <code>null</code> otherwise. 
+//	 */
+//	public Signal getSignalWithNodeId(String node_id){
+//		if(getSignalList()==null)
+//			return null;
+//		id.replaceAll("\\s","");
+//		for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal()){
+//			if(signal.getNodeId().equals(node_id))
+//				return (Signal)signal;
+//		}
+//		return null;
+//	}
 	
 	/** Get a reference to a signal by the composite id of its node.
 	 * 
-	 * @param network_id String id of the network containing the signal. 
-	 * @param node_id String id of the node under the signal. 
+	 * @param network_id String id of the network containing the node. 
+	 * @param node_id String id of the node. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public Signal getSignalForNodeId(String network_id,String node_id){
-		if(getNetworkList()==null)
+	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
+		if(getSignalList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getSignalWithNodeId(node_id);
-			else
-				return null;
-		else	
-			return network.getSignalWithNodeId(node_id);
+		id.replaceAll("\\s","");
+		for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal()){
+			if(signal.getNodeId().equals(node_id))
+				return (Signal)signal;
+		}
+		return null;
 	}
 
 	/** Add a controller to the scenario.
@@ -667,32 +762,30 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
-	/** Add a sensor to the scenario.
-	 * 
-	 * <p>Sensors can only be added if a) the scenario is not currently running, and
-	 * b) the sensor is valid. 
-	 * @param S The sensor
-	 * @return <code>true</code> if the sensor was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addSensor(Sensor S){
-		if(S==null)
-			return false;
-		if(S.myType==null)
-			return false;
-		if(S.myLink==null)
-			return false;
-		if(S.myLink.myNetwork==null)
-			return false;
- 
-		// validate
-		if(!S.validate())
-			return false;
-		
-		// add sensor to list
-		S.myLink.myNetwork.getSensorList().getSensor().add(S);
-		
-		return true;
-	}
+//	/** Add a sensor to the scenario.
+//	 * 
+//	 * <p>Sensors can only be added if a) the scenario is not currently running, and
+//	 * b) the sensor is valid. 
+//	 * @param S The sensor
+//	 * @return <code>true</code> if the sensor was successfully added, <code>false</code> otherwise. 
+//	 */
+//	public boolean addSensor(Sensor S){
+//		if(S==null)
+//			return false;
+//		if(S.myType==null)
+//			return false;
+//		if(S.myLink==null)
+//			return false;
+// 
+//		// validate
+//		if(!S.validate())
+//			return false;
+//		
+//		// add sensor to list
+//		S.getSensorList().getSensor().add(S);
+//		
+//		return true;
+//	}
 
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
