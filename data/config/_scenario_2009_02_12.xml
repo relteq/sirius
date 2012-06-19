@@ -6827,26 +6827,31 @@
                <dynamics type="CTM"/>
             </link>
          </LinkList>
-         <SensorList>
-            <sensor id="-1" link_type="other" type="static_point">
-               <description>PeMS VDS 768041 , BASELINE RD</description>
-               <position>
-                  <point elevation="0" lat="34.1215" lng="-117.6967"/>
-               </position>
-               <display_position>
-                  <point elevation="0" lat="34.1215" lng="-117.6967"/>
-               </display_position>
-               <parameters>
-                  <parameter name="length" value="0"/>
-                  <parameter name="vds" value="768041"/>
-                  <parameter name="offset_in_link" value="0"/>
-                  <parameter name="lanes" value="4"/>
-                  <parameter name="hwy_name" value="210"/>
-                  <parameter name="hwy_dir" value="E"/>
-                  <parameter name="start_time" value="0"/>
-                  <parameter name="postmile" value="52.139"/>
-                  <parameter name="data_id" value="768041"/>
-               </parameters>
+
+         <DirectionsCache/>
+      </network>
+   </NetworkList>
+
+	<SensorList>
+		<sensor id="-1" link_type="other" type="static_point">
+		   <description>PeMS VDS 768041 , BASELINE RD</description>
+		   <position>
+			  <point elevation="0" lat="34.1215" lng="-117.6967"/>
+		   </position>
+		   <display_position>
+			  <point elevation="0" lat="34.1215" lng="-117.6967"/>
+		   </display_position>
+		   <parameters>
+			  <parameter name="length" value="0"/>
+			  <parameter name="vds" value="768041"/>
+			  <parameter name="offset_in_link" value="0"/>
+			  <parameter name="lanes" value="4"/>
+			  <parameter name="hwy_name" value="210"/>
+			  <parameter name="hwy_dir" value="E"/>
+			  <parameter name="start_time" value="0"/>
+			  <parameter name="postmile" value="52.139"/>
+			  <parameter name="data_id" value="768041"/>
+		   </parameters>
                <data_sources>
                   <data_source dt="300" format="PeMS Data Clearinghouse" url="file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt"/>
                   <data_source dt="300" format="PeMS Data Clearinghouse" url="file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_03.txt"/>
@@ -11977,7 +11982,4 @@
                <link_reference id="-1"/>
             </sensor>
          </SensorList>
-         <DirectionsCache/>
-      </network>
-   </NetworkList>
 </scenario>

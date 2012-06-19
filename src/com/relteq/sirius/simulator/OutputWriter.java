@@ -135,24 +135,24 @@ final class OutputWriter extends OutputWriter_Base {
 				}
 				xmlsw.writeEndElement(); // nl
 				// signal list
-				if (null != network.getSignalList()) {
-					xmlsw.writeStartElement("sigl");
-					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
-						xmlsw.writeStartElement("sig");
-						xmlsw.writeAttribute("id", signal.getId());
-						ArrayList<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
-						for (Signal.PhaseData ph : phdata) {
-							xmlsw.writeStartElement("ph");
-							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
-							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));
-							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
-							xmlsw.writeEndElement(); // ph
-						}
-						phdata.clear();
-						xmlsw.writeEndElement(); // sig
-					}
-					xmlsw.writeEndElement(); // sigl
-				}
+//				if (null != network.getSignalList()) {
+//					xmlsw.writeStartElement("sigl");
+//					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
+//						xmlsw.writeStartElement("sig");
+//						xmlsw.writeAttribute("id", signal.getId());
+//						ArrayList<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
+//						for (Signal.PhaseData ph : phdata) {
+//							xmlsw.writeStartElement("ph");
+//							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
+//							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));
+//							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
+//							xmlsw.writeEndElement(); // ph
+//						}
+//						phdata.clear();
+//						xmlsw.writeEndElement(); // sig
+//					}
+//					xmlsw.writeEndElement(); // sigl
+//				}
 				xmlsw.writeEndElement(); // net
 			}
 			xmlsw.writeEndElement(); // netl

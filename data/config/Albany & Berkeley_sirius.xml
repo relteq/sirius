@@ -4833,6 +4833,10 @@
                <dynamics type="CTM"/>
             </link>
          </LinkList>
+
+      </network>
+   </NetworkList>
+   
          <SignalList>
 		 <!--
             <signal id="-1" node_id="-51">
@@ -5470,7 +5474,5 @@
             </signal>
          -->
 		 </SignalList>
-         <SensorList/>
-      </network>
-   </NetworkList>
+         <SensorList/>   
 </scenario>

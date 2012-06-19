@@ -6378,6 +6378,10 @@
                <dynamics type="CTM"/>
             </link>
          </LinkList>
+         <DirectionsCache/>
+      </network>
+   </NetworkList>
+   
          <SensorList>
             <sensor id="-1" link_type="other" type="static_point">
                <description>PeMS VDS 768041 , BASELINE RD</description>
@@ -11527,8 +11531,6 @@
                </data_sources>
                <link_reference id="-1"/>
             </sensor>
-         </SensorList>
-         <DirectionsCache/>
-      </network>
-   </NetworkList>
+         </SensorList>   
+   
 </scenario>
