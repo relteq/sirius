@@ -26,10 +26,10 @@ public class Event_Fundamental_Diagram extends Event {
 	
 	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
 		this.FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
-		this.FD.setFreeflowSpeed(new BigDecimal(freeflowSpeed));
+		this.FD.setFreeFlowSpeed(new BigDecimal(freeflowSpeed));
 		this.FD.setCongestionSpeed(new BigDecimal(congestionSpeed));
 		this.FD.setCapacity(new BigDecimal(capacity));
-		this.FD.setDensityJam(new BigDecimal(densityJam));
+		this.FD.setJamDensity(new BigDecimal(densityJam));
 		this.FD.setCapacityDrop(new BigDecimal(capacityDrop));
 		this.FD.setStdDevCapacity(new BigDecimal(stdDevCapacity));
 		this.resetToNominal = false;

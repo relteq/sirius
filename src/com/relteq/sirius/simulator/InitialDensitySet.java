@@ -5,7 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
-final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
+final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 
 	protected Scenario myScenario;
 	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type

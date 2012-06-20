@@ -148,8 +148,8 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		double value;
 		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
 
-		if(fd.getDensityJam()!=null){
-			value = fd.getDensityJam().doubleValue();		// [veh/mile/lane]
+		if(fd.getJamDensity()!=null){
+			value = fd.getJamDensity().doubleValue();		// [veh/mile/lane]
 			_densityJam = value *lanes*myLink.getLengthInMiles();
 		} 
 
@@ -168,8 +168,8 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 			_capacityDrop = value * lanes*simDtInHours;
 		} 
 		
-		if(fd.getFreeflowSpeed()!=null){
-			value = fd.getFreeflowSpeed().doubleValue();		// [mile/hr]
+		if(fd.getFreeFlowSpeed()!=null){
+			value = fd.getFreeFlowSpeed().doubleValue();		// [mile/hr]
 			_vf = value * simDtInHours / myLink.getLengthInMiles();
 		}
 

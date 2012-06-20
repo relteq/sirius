@@ -38,8 +38,8 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 	}	
 	
 	@Override
-	public com.relteq.sirius.jaxb.InitialDensityProfile createInitialDensityProfile() {
-		return new InitialDensityProfile();
+	public com.relteq.sirius.jaxb.InitialDensitySet createInitialDensitySet() {
+		return new InitialDensitySet();
 	}
 
 	@Override

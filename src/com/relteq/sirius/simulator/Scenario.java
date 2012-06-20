@@ -99,8 +99,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((SplitRatioProfileSet) getSplitRatioProfileSet()).populate(this);
 		
 		// boundary capacities (must follow network)
-		if(getDownstreamBoundaryCapacitySet()!=null)
-			for( com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile() )
+		if(getDownstreamBoundaryCapacityProfileSet()!=null)
+			for( com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile() )
 				((CapacityProfile) capacityProfile).populate(this);
 
 		if(getDemandProfileSet()!=null)
@@ -112,8 +112,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				((FundamentalDiagramProfile) fd).populate(this);
 		
 		// initial density profile 
-		if(getInitialDensityProfile()!=null)
-			((InitialDensityProfile) getInitialDensityProfile()).populate(this);
+		if(getInitialDensitySet()!=null)
+			((InitialDensitySet) getInitialDensitySet()).populate(this);
 		
 		// initialize controllers and events
 		controllerset.populate(this);
@@ -175,8 +175,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected void update() throws SiriusException {	
 
         // sample profiles .............................	
-    	if(getDownstreamBoundaryCapacitySet()!=null)
-        	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+    	if(getDownstreamBoundaryCapacityProfileSet()!=null)
+        	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
         		((CapacityProfile) capacityProfile).update();
 
     	if(getDemandProfileSet()!=null)
@@ -328,8 +328,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 //			}
 
 		// validate capacity profiles	
-		if(getDownstreamBoundaryCapacitySet()!=null)
-			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+		if(getDownstreamBoundaryCapacityProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
 				if(!((CapacityProfile)capacityProfile).validate()){
 					SiriusErrorLog.addErrorMessage("DownstreamBoundaryCapacitySet validation failure.");
 					return false;
@@ -794,7 +794,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return null;
 		
 		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		InitialDensityProfile initprofile = (InitialDensityProfile) getInitialDensityProfile();
+		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
 
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -861,8 +861,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		
         double time_ic;
-        if(getInitialDensityProfile()!=null)
-        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
+        if(getInitialDensitySet()!=null)
+        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
         else
         	time_ic = 0.0;
         
@@ -1025,8 +1025,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			simulationMode = null;
 			
 	        double time_ic;
-	        if(getInitialDensityProfile()!=null)
-	        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
+	        if(getInitialDensitySet()!=null)
+	        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
 	        else
 	        	time_ic = 0.0;
 	       

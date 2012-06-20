@@ -106,7 +106,7 @@
   <xs:element name="VehicleTypeOrder">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="vehicleType" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="vehicle_type" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>  
@@ -121,17 +121,17 @@
         <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
 	<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
 	<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
-        <xs:element ref="InitialDensityProfile" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="WeavingFactorsProfile" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="DownstreamBoundaryCapacitySet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="DownstreamBoundaryCapacityProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="EventSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="DemandProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="ControllerSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
 		<xs:element ref="ODList" minOccurs="0"  maxOccurs="1" />
-		<xs:element ref="PathSegments" minOccurs="0"  maxOccurs="1" />
+		<xs:element ref="RouteSegments" minOccurs="0"  maxOccurs="1" />
 		<xs:element ref="DecisionPoints" minOccurs="0"  maxOccurs="1" />
 		<xs:element ref="ODDemandProfileSet" minOccurs="0"  maxOccurs="1" />
       </xs:all>
@@ -156,12 +156,12 @@
 		  <xs:element name="VehicleTypes">
 			<xs:complexType>
 			  <xs:sequence>
-				<xs:element ref="vehicleType" maxOccurs="unbounded" />
+				<xs:element ref="vehicle_type" maxOccurs="unbounded" />
 			  </xs:sequence>
 			</xs:complexType>
 		  </xs:element>
 
-			  <xs:element name="vehicleType">
+			  <xs:element name="vehicle_type">
 				<xs:complexType>
 				  <xs:attribute name="name" type="xs:string" use="required" />
 				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
@@ -506,9 +506,9 @@
 			  </xs:element>		
 		  
 			  
-  <!-- InitialDensityProfile ..................................................... -->
+  <!-- InitialDensitySet ..................................................... -->
 
-	  <xs:element name="InitialDensityProfile">
+	  <xs:element name="InitialDensitySet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -530,7 +530,7 @@
 			</xs:complexType>
 		  </xs:element>
 
-  <!-- WeavingFactorsProfile ..................................................... 
+  <!-- WeavingFactorSet ..................................................... 
 
   NOTES:
 	+ there is no point to making weaving factors time-dependent, and this may create to much complexity.
@@ -538,7 +538,7 @@
 	+ what is the computation for weaving factors? 
 	+ If it is too complicated, consider putting it back in the network -->
 	
-	  <xs:element name="WeavingFactorsProfile">
+	  <xs:element name="WeavingFactorSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -594,9 +594,9 @@
 				</xs:complexType>
 			  </xs:element>  
   
-  <!-- DownstreamBoundaryCapacitySet ............................................. -->  
+  <!-- DownstreamBoundaryCapacityProfileSet ............................................. -->  
   
-	  <xs:element name="DownstreamBoundaryCapacitySet">
+	  <xs:element name="DownstreamBoundaryCapacityProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -872,11 +872,11 @@
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
 				  <!-- <xs:attribute name="densityCritical" type="xs:decimal" use="optional" />					[veh/mile/lane] -->
-				  <xs:attribute name="freeflow_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
+				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
 				  <xs:attribute name="congestion_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
 				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/hr/lane]   -->
-				  <xs:attribute name="densityJam" type="xs:decimal" use="optional" />						<!-- [veh/mile/lane] -->
-				  <xs:attribute name="capacityDrop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/hr/lane]   -->
+				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/mile/lane] -->
+				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/hr/lane]   -->
 				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/hr/lane]   -->
 				</xs:complexType>
 			  </xs:element>  
@@ -926,7 +926,7 @@
 		  <xs:element name="od">
 			<xs:complexType>
 			  <xs:sequence>
-				<xs:element ref="path_segments" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="route_segments" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="decision_points" minOccurs="0" maxOccurs="1" />
 			  </xs:sequence>
 			  <xs:attribute name="id" type="xs:string" use="required" />
@@ -937,7 +937,7 @@
 			</xs:complexType>
 		  </xs:element>
 
-			  <xs:element name="path_segments">
+			  <xs:element name="route_segments">
 				<xs:simpleType>
 					<xs:restriction base="xs:string" />
 				</xs:simpleType>
@@ -949,17 +949,17 @@
 				</xs:simpleType>
 			  </xs:element>
 			  
-  <!-- PathSegments ............................................................. -->
+  <!-- RouteSegments ............................................................. -->
 
-	  <xs:element name="PathSegments">
+	  <xs:element name="RouteSegments">
 		<xs:complexType>
 		  <xs:sequence>
-			<xs:element ref="path_segment" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element ref="route_segment" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
 		</xs:complexType>
 	  </xs:element>
 	  
-		  <xs:element name="path_segment">
+		  <xs:element name="route_segment">
 			<xs:complexType>
 			  <xs:sequence>
 				<xs:element ref="links" minOccurs="0" maxOccurs="unbounded" />
@@ -994,8 +994,8 @@
 		  
 			  <xs:element name="decision_point_split">
 				<xs:complexType mixed="true">
-				  <xs:attribute name="path_segment_in" type="xs:string" use="required" />
-				  <xs:attribute name="path_segment_out" type="xs:string" use="required" />			<!-- in seconds -->
+				  <xs:attribute name="route_segment_in" type="xs:string" use="required" />
+				  <xs:attribute name="route_segment_out" type="xs:string" use="required" />			<!-- in seconds -->
 				</xs:complexType>
 			  </xs:element>
 		  

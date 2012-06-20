@@ -265,8 +265,8 @@ public class FDCalibrator {
 				FD.setCapacity(new BigDecimal(S.getQ_max()));
 				FD.setCapacityDrop(new BigDecimal(0));
 				FD.setCongestionSpeed(new BigDecimal(S.getW()));
-				FD.setDensityJam(new BigDecimal(S.getRho_jam()));
-				FD.setFreeflowSpeed(new BigDecimal(S.getVf()));
+				FD.setJamDensity(new BigDecimal(S.getRho_jam()));
+				FD.setJamDensity(new BigDecimal(S.getVf()));
 				FD.setStdDevCapacity(new BigDecimal(0));
 				
 				FDprof.getFundamentalDiagram().add(FD);
