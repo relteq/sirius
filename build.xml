@@ -23,11 +23,10 @@
 	<property name="xjc.destdir" value="${src.dir}/com/relteq/sirius/jaxb"/>
 
 	<property name="lib.dir" value="${basedir}/lib"/>
-	<property name="ivy.lib.dir" value="${lib.dir}"/>
-	<property name="ivy.retrieve.pattern" value="${ivy.lib.dir}/[type]/[conf]/[artifact]-[revision].[ext]"/>
 
 	<property name="torque.buildfile" value="build-torque.xml"/>
 
+	<property file="ivy.properties"/>
 	<property file="torque.properties"/>
 
 	<path id="generate.lib.path">
@@ -157,7 +156,6 @@
 		<ivy:retrieve conf="runtime"/>
 	</target>
 
-	<property name="ivy.install.version" value="2.1.0-rc2"/>
 	<condition property="ivy.home" value="${env.IVY_HOME}">
 		<isset property="env.IVY_HOME"/>
 	</condition>
