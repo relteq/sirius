@@ -39,7 +39,7 @@ import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
- *
+ * Imports a scenario
  */
 public class ScenarioLoader {
 	Connection conn = null;
