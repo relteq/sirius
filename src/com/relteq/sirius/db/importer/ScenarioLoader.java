@@ -51,7 +51,14 @@ public class ScenarioLoader {
 		return UUID.randomUUID().toString();
 	}
 
+	private String project_id;
 	private String scenario_id = null;
+	/**
+	 * @return the project id
+	 */
+	private String getProjectId() {
+		return project_id;
+	}
 	/**
 	 * @return the generated scenario id
 	 */
@@ -62,6 +69,10 @@ public class ScenarioLoader {
 	private Map<String, String> network_id = null;
 	private Map<String, String> link_family_id = null;
 	private Map<String, String> node_family_id = null;
+
+	private ScenarioLoader() {
+		project_id = "default";
+	}
 
 	/**
 	 * Loads a scenario from a file
@@ -101,6 +112,7 @@ public class ScenarioLoader {
 	protected void save(Scenario scenario) throws TorqueException {
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setId(scenario_id = uuid());
+		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
 		db_scenario.save(conn);
@@ -121,6 +133,7 @@ public class ScenarioLoader {
 	protected VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeLists db_vtl = new VehicleTypeLists();
 		db_vtl.setId(uuid());
+		db_vtl.setProjectId(getProjectId());
 		db_vtl.save(conn);
 		if (null == vtypes) {
 			vtypes = new com.relteq.sirius.jaxb.VehicleTypes();
@@ -196,6 +209,7 @@ public class ScenarioLoader {
 		String id = uuid();
 		network_id.put(network.getId(), id);
 		db_network.setId(id);
+		db_network.setProjectId(getProjectId());
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
 		db_network.save(conn);
@@ -334,6 +348,7 @@ public class ScenarioLoader {
 		if (null == idprofile) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setId(uuid());
+		db_idsets.setProjectId(getProjectId());
 		db_idsets.setName(idprofile.getName());
 		db_idsets.setDescription(idprofile.getDescription());
 		for (InitialDensityProfile.Tuple tuple : ((InitialDensityProfile) idprofile).getData()) {
@@ -374,6 +389,7 @@ public class ScenarioLoader {
 		if (null == srps) return null;
 		SplitRatioProfileSets db_srps = new SplitRatioProfileSets();
 		db_srps.setId(uuid());
+		db_srps.setProjectId(getProjectId());
 		db_srps.setName(srps.getName());
 		db_srps.setDescription(srps.getDescription());
 		db_srps.save(conn);
