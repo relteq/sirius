@@ -25,6 +25,7 @@ import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.PhaseLinks;
 import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
+import com.relteq.sirius.om.SensorLists;
 import com.relteq.sirius.om.SignalLists;
 import com.relteq.sirius.om.Signals;
 import com.relteq.sirius.om.SplitRatioProfileSets;
@@ -250,10 +251,8 @@ public class ScenarioLoader {
 		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 			save(link, db_network);
 		}
-		for (com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()) {
-			save(sensor, db_network);
-		}
 		save(network.getSignalList());
+		save(network.getSensorList());
 		return db_network;
 	}
 
@@ -379,11 +378,29 @@ public class ScenarioLoader {
 	}
 
 	/**
+	 * Imports a sensor list
+	 * @param sl
+	 * @param db_network
+	 * @return the imported sensor list
+	 * @throws TorqueException
+	 */
+	private SensorLists save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
+		if (null == sl) return null;
+		SensorLists db_sl = new SensorLists();
+		db_sl.setId(uuid());
+		db_sl.save(conn);
+		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
+			save(sensor, db_sl);
+		}
+		return db_sl;
+	}
+
+	/**
 	 * Imports a sensor
 	 * @param sensor
-	 * @param db_network
+	 * @param db_sl
 	 */
-	private void save(com.relteq.sirius.jaxb.Sensor sensor, Networks db_network) {
+	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorLists db_sl) {
 		// TODO Auto-generated method stub
 	}
 
