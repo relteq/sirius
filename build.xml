@@ -22,18 +22,32 @@
 
 	<property name="xjc.destdir" value="${src.dir}/com/relteq/sirius/jaxb"/>
 
-	<property name="ivy.lib.dir" value="${basedir}/lib"/>
+	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="ivy.lib.dir" value="${lib.dir}"/>
+	<property name="ivy.retrieve.pattern" value="${ivy.lib.dir}/[type]/[conf]/[artifact]-[revision].[ext]"/>
 
 	<property name="torque.buildfile" value="build-torque.xml"/>
 
 	<property file="torque.properties"/>
 
-	<path id="lib.path">
-		<fileset dir="${ivy.lib.dir}" includes="*.jar"/>
+	<path id="generate.lib.path">
+		<fileset dir="${lib.dir}/jar/generate" includes="*.jar"/>
+	</path>
+
+	<path id="compile.lib.path">
+		<fileset dir="${lib.dir}/jar/compile" includes="*.jar"/>
+	</path>
+
+	<path id="runtime.lib.path">
+		<fileset dir="${lib.dir}/jar/runtime" includes="*.jar"/>
+	</path>
+
+	<path id="test.lib.path">
+		<fileset dir="${lib.dir}/jar/test" includes="*.jar"/>
 	</path>
 
 	<target name="xjctask" depends="deps-generate">
-		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="generate.lib.path"/>
 	</target>
 
 	<target name="all" depends="jar,doc,test"
@@ -57,7 +71,7 @@
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" destdir="${build.dir}"
 				includes="${torque.generated.sources}"
-				classpathref="lib.path"
+				classpathref="compile.lib.path"
 				debug="${javac.debug}" optimize="${javac.optimize}"
 				target="${javac.version}" source="${javac.version}"
 				deprecation="${javac.deprecation}"
@@ -66,7 +80,7 @@
 		<javac encoding="${src.encoding}" includeantruntime="no"
 				srcdir="${src.dir}" destdir="${build.dir}"
 				includes="**/*.java" excludes="${torque.generated.sources}"
-				classpathref="lib.path"
+				classpathref="compile.lib.path"
 				debug="${javac.debug}" optimize="${javac.optimize}"
 				target="${javac.version}" source="${javac.version}"
 				deprecation="${javac.deprecation}">
@@ -85,7 +99,7 @@
 
 	<target name="jar" depends="compile,resources,deps-runtime" description="build a jar">
 		<manifestclasspath property="jar.classpath" jarfile="${jar.file}">
-			<classpath refid="lib.path"/>
+			<classpath refid="runtime.lib.path"/>
 		</manifestclasspath>
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
@@ -123,7 +137,7 @@
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
-		<delete dir="${ivy.lib.dir}"/>
+		<delete dir="${lib.dir}"/>
 		<delete dir="${xjc.destdir}"/>
 	</target>
 
@@ -164,7 +178,7 @@
 	</target>
 
 	<path id="classpath.test">
-		<path refid="lib.path"/>
+		<path refid="test.lib.path"/>
 		<pathelement location="${jar.file}"/>
 		<pathelement location="${test.dir}"/>
 	</path>
@@ -245,14 +259,14 @@
 	<property name="version.src.dir" value="util${file.separator}version"/>
 
 	<path id="classpath.version">
-		<path refid="lib.path"/>
+		<path refid="generate.lib.path"/>
 		<pathelement location="${version.src.dir}"/>
 	</path>
 
 	<target name="compile-version" depends="deps-generate">
 		<javac srcdir="${version.src.dir}"
 				debug="${javac.debug}" includeantruntime="false"
-				classpathref="lib.path"/>
+				classpathref="generate.lib.path"/>
 	</target>
 
 	<target name="version" depends="compile-version,builddir">
