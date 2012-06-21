@@ -122,8 +122,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     	if(fd==null)
     		throw new SiriusException("Null parameter.");
     	
-    	FDfromEvent = new FundamentalDiagram(this);
-    	FDfromEvent.copyfrom(currentFD(0));			// copy current FD 
+    	FDfromEvent = new FundamentalDiagram(this,currentFD(0));		// copy current FD 
     	// note: we are copying from the zeroth FD for simplicity. The alternative is to 
     	// carry numEnsemble event FDs.
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event

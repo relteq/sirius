@@ -258,7 +258,6 @@ public class FDCalibrator {
 
 				FDprof.setLinkId(G.link.getId());
 				FDprof.setDt(new BigDecimal(300));
-//				FDprof.setNetworkId(G.link.getMyNetwork().getId());
 				FDprof.setStartTime(new BigDecimal(0));
 				
 				SensorLoopStation S = (SensorLoopStation) G.sensor;

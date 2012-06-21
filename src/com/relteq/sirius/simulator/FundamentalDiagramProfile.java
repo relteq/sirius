@@ -69,9 +69,9 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		//  read fundamental diagrams
 		FD = new ArrayList<FundamentalDiagram>();
 		for(com.relteq.sirius.jaxb.FundamentalDiagram fd : getFundamentalDiagram()){
-			FundamentalDiagram _fd = new FundamentalDiagram(myLink);	// create empty fd
-	        _fd.settoDefault();					// set to default
-			_fd.copyfrom(fd);					// copy and normalize
+			FundamentalDiagram _fd = new FundamentalDiagram(myLink,fd);	// create empty fd
+//	        _fd.settoDefault();					// set to default
+//			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
 		}
 		
