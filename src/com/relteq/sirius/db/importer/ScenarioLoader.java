@@ -25,6 +25,7 @@ import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.PhaseLinks;
 import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
+import com.relteq.sirius.om.SignalLists;
 import com.relteq.sirius.om.Signals;
 import com.relteq.sirius.om.SplitRatioProfileSets;
 import com.relteq.sirius.om.SplitRatioProfiles;
@@ -249,12 +250,10 @@ public class ScenarioLoader {
 		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 			save(link, db_network);
 		}
-		for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
-			save(signal, db_network);
-		}
 		for (com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()) {
 			save(sensor, db_network);
 		}
+		save(network.getSignalList());
 		return db_network;
 	}
 
@@ -308,15 +307,35 @@ public class ScenarioLoader {
 	}
 
 	/**
-	 * Imports a signal
-	 * @param signal
-	 * @param db_network
+	 * Imports a signal list
+	 * @param sl
+	 * @return the imported signal list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Signal signal, Networks db_network) throws TorqueException {
+	private SignalLists save(com.relteq.sirius.jaxb.SignalList sl) throws TorqueException {
+		if (null == sl) return null;
+		SignalLists db_sl = new SignalLists();
+		db_sl.setId(uuid());
+		db_sl.setProjectId(getProjectId());
+		// TODO db_sl.setName();
+		// TODO db_sl.setDescription();
+		db_sl.save(conn);
+		for (com.relteq.sirius.jaxb.Signal signal : sl.getSignal())
+			save(signal, db_sl);
+		return db_sl;
+	}
+
+	/**
+	 * Imports a signal
+	 * @param signal
+	 * @param db_sl an imported signal list
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Signal signal, SignalLists db_sl) throws TorqueException {
 		Signals db_signal = new Signals();
 		db_signal.setId(uuid());
 		db_signal.setNodeId(node_family_id.get(signal.getNodeId()));
+		db_signal.setSignalLists(db_sl);
 		db_signal.save(conn);
 		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase()) {
 			save(phase, db_signal);
