@@ -1,5 +1,4 @@
 package com.relteq.sirius.db.exporter;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.torque.TorqueException;
@@ -16,6 +15,7 @@ import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
 import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
+import com.relteq.sirius.om.VehicleTypesInListsPeer;
 import com.relteq.sirius.om.VehicleTypesPeer;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
@@ -71,22 +71,27 @@ public class ScenarioRestorer {
 				com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
 				List<com.relteq.sirius.jaxb.VehicleType> vtl = vts.getVehicleType();
 				Criteria crit = new Criteria();
-				crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_LIST_ID);
+				crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.ID);
+				crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_vtlists.getId());
+				crit.add(VehicleTypesPeer.PROJECT_ID, db_vtlists.getProjectId());
+				crit.addAscendingOrderByColumn(VehicleTypesPeer.ID);
 				@SuppressWarnings("unchecked")
-				List<VehicleTypes> db_vtl = db_vtlists.getVehicleTypess(crit);
-				for (Iterator<VehicleTypes> iter = db_vtl.iterator(); iter.hasNext();) {
-					VehicleTypes db_vt = iter.next();
-					com.relteq.sirius.jaxb.VehicleType vt = factory.createVehicleType();
-					vt.setName(db_vt.getName());
-					vt.setWeight(db_vt.getWeight());
-					vtl.add(vt);
-				}
+				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
+				for (VehicleTypes db_vt : db_vt_l)
+					vtl.add(restoreVehicleType(db_vt));
 				settings.setVehicleTypes(vts);
 			}
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return settings;
+	}
+
+	private com.relteq.sirius.jaxb.VehicleType restoreVehicleType(VehicleTypes db_vt) {
+		com.relteq.sirius.jaxb.VehicleType vt = factory.createVehicleType();
+		vt.setName(db_vt.getName());
+		vt.setWeight(db_vt.getWeight());
+		return vt;
 	}
 
 	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) {
