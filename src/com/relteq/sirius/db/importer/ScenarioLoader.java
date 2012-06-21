@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.torque.TorqueException;
+import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
@@ -31,6 +32,8 @@ import com.relteq.sirius.om.SplitRatios;
 import com.relteq.sirius.om.VehicleTypeFamilies;
 import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
+import com.relteq.sirius.om.VehicleTypesInLists;
+import com.relteq.sirius.om.VehicleTypesPeer;
 import com.relteq.sirius.om.WeavingFactorSets;
 import com.relteq.sirius.simulator.Double2DMatrix;
 import com.relteq.sirius.simulator.InitialDensityProfile;
@@ -145,18 +148,45 @@ public class ScenarioLoader {
 		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
 		vehicle_type_id = new String[vtlist.size()];
 		int ind = 0;
-		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist) {
+		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
+			vehicle_type_id[ind++] = save(vt, db_vtl).getId();
+		return db_vtl;
+	}
+
+	/**
+	 * Imports a vehicle type
+	 * @param vt the vehicle type to be imported
+	 * @param db_vtl an imported vehicle type list
+	 * @return the imported (or already existing) vehicle type
+	 * @throws TorqueException
+	 */
+	private VehicleTypes save(com.relteq.sirius.jaxb.VehicleType vt, VehicleTypeLists db_vtl) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(VehicleTypesPeer.PROJECT_ID, getProjectId());
+		crit.add(VehicleTypesPeer.NAME, vt.getName());
+		crit.add(VehicleTypesPeer.WEIGHT, vt.getWeight());
+		@SuppressWarnings("unchecked")
+		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
+		VehicleTypes db_vtype = null;
+		if (db_vt_l.isEmpty()) {
 			VehicleTypeFamilies db_vtf = new VehicleTypeFamilies();
-			db_vtf.setId(vehicle_type_id[ind++] = uuid());
+			db_vtf.setId(uuid());
 			db_vtf.save(conn);
-			VehicleTypes db_vtype = new VehicleTypes();
+			db_vtype = new VehicleTypes();
 			db_vtype.setVehicleTypeFamilies(db_vtf);
-			db_vtype.setVehicleTypeLists(db_vtl);
+			db_vtype.setProjectId(getProjectId());
 			db_vtype.setName(vt.getName());
 			db_vtype.setWeight(vt.getWeight());
 			db_vtype.save(conn);
+		} else {
+			// TODO what if db_vt_l.size() > 1
+			db_vtype = db_vt_l.get(0);
 		}
-		return db_vtl;
+		VehicleTypesInLists db_vtinl = new VehicleTypesInLists();
+		db_vtinl.setVehicleTypeLists(db_vtl);
+		db_vtinl.setVehicleTypeId(db_vtype.getId());
+		db_vtinl.save(conn);
+		return db_vtype;
 	}
 
 	/**
