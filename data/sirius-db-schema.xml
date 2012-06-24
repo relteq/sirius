@@ -355,7 +355,7 @@
 		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="enabled" required="true" domain="BOOL" description="Indicator whether this decision point is enabled for given vehicle types at given time instance."/>
+		<column name="split" required="true" type="DECIMAL" description="Split ratio between 0 and 1."/>
 		<foreign-key foreignTable="decision_point_split_profiles">
 			<reference local="decision_point_split_profile_id" foreign="id"/>
 		</foreign-key>
@@ -795,11 +795,15 @@
 		<column name="delay" type="DECIMAL"/>
 		<column name="travel_time" type="DECIMAL"/>
 		<column name="productivity_loss" type="DECIMAL"/>
+		<column name="los" type="DECIMAL" description="LOS - Level Of Service as defined in Highway Capacity Manual."/>
+		<column name="vc_ratio" type="DECIMAL" description="Volume to capacity ratio."/>
 		<column name="vmt_worst" type="DECIMAL"/>
 		<column name="vht_worst" type="DECIMAL"/>
 		<column name="delay_worst" type="DECIMAL"/>
 		<column name="travel_time_worst" type="DECIMAL"/>
 		<column name="productivity_loss_worst" type="DECIMAL"/>
+		<column name="los_worst" type="DECIMAL"/>
+		<column name="vc_ratio_worst" type="DECIMAL"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -854,11 +858,11 @@
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="phase_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
+		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -872,6 +876,32 @@
 	
 
 
+
+
+	<!-- Signal Performance -->
+
+	<table name="signal_phase_performance">
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="phase_utilization" type="DECIMAL" description="Percentage of green used."/>
+		<column name="progression_quality" type="DECIMAL" description="Percentage of vehicles arriving during green phase."/>
+		<column name="delay_per_cycle" type="DECIMAL" description="Delay per cycle for given phase."/>
+		<column name="queue_size" type="DECIMAL" description="Size of the queue waiting for green phase."/>
+		<column name="number_of_stops" type="INTEGER" description="Number of cycles needed to pass through intersection."/>
+		<foreign-key foreignTable="signals">
+			<reference local="signal_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
+	</table>
 
 
 
