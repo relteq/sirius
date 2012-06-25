@@ -14,18 +14,46 @@ import com.relteq.sirius.om.*;
  */
 public class DBOutputWriter extends OutputWriterBase {
 	private Connection conn = null;
+	private String data_source_id = null;
 
 	public DBOutputWriter(Scenario scenario) {
 		super(scenario);
 	}
 
+	private void createDataSource() throws TorqueException {
+		Connection conn = null;
+		try {
+			conn = Transaction.begin();
+
+			com.relteq.sirius.om.DataSources db_ds = new com.relteq.sirius.om.DataSources();
+			db_ds.setId(data_source_id = com.relteq.sirius.db.util.UUID.generate());
+			db_ds.save(conn);
+
+			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
+			db_sr.setDataSources(db_ds);
+			db_sr.setScenarioId(getScenario().getId());
+			db_sr.setRunNumber(getRunId());
+			db_sr.setStartTime(Calendar.getInstance().getTime());
+			db_sr.setStatus(-1);
+			db_sr.save(conn);
+
+			Transaction.commit(conn);
+			conn = null;
+		} finally {
+			if (null != conn) {
+				Transaction.safeRollback(conn);
+				data_source_id = null;
+			}
+		}
+	}
+
 	@Override
 	public void open() throws SiriusException {
 		try {
+			createDataSource();
 			conn = Transaction.begin();
 		} catch (TorqueException exc) {
-			exc.printStackTrace();
-			throw new SiriusException(exc.getMessage());
+			throw new SiriusException(exc.getMessage(), exc.getCause());
 		}
 	}
 
@@ -42,10 +70,13 @@ public class DBOutputWriter extends OutputWriterBase {
 		for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 				LinkDataTotal data = new LinkDataTotal();
-				data.setLinkId(link.getId());
-				data.setNetworkId(network.getId());
-				data.setScenarioId(scenario.getId());
-				data.setRunId(getRunId());
+				try {
+					data.setLinkId(link.getId());
+					data.setNetworkId(network.getId());
+					data.setDataSourceId(data_source_id);
+				} catch (TorqueException exc) {
+					throw new SiriusException(exc.getMessage(), exc.getCause());
+				}
 				data.setTs(ts.getTime());
 				data.setAggregation("raw");
 				Link _link = (Link) link;
@@ -70,13 +101,30 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void close() {
+		boolean success = false;
 		try {
 			Transaction.commit(conn);
+			conn = null;
+			success = true;
 		} catch (TorqueException exc) {
 			exc.printStackTrace();
-			Transaction.safeRollback(conn);
+		} finally {
+			if (null != conn) {
+				Transaction.safeRollback(conn);
+				conn = null;
+			}
 		}
-		conn = null;
+		if (null != data_source_id)
+			try {
+				com.relteq.sirius.om.SimulationRuns db_sr = com.relteq.sirius.om.SimulationRunsPeer.retrieveByPK(data_source_id);
+				db_sr.setEndTime(Calendar.getInstance().getTime());
+				db_sr.setStatus(success ? 0 : 1);
+				db_sr.save();
+			} catch (Exception exc) {
+				exc.printStackTrace();
+			} finally {
+				data_source_id = null;
+			}
 	}
 
 }
