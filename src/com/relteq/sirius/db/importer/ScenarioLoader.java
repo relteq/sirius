@@ -37,6 +37,7 @@ import com.relteq.sirius.om.VehicleTypes;
 import com.relteq.sirius.om.VehicleTypesInLists;
 import com.relteq.sirius.om.VehicleTypesPeer;
 import com.relteq.sirius.om.WeavingFactorSets;
+import com.relteq.sirius.om.WeavingFactors;
 import com.relteq.sirius.simulator.Double2DMatrix;
 import com.relteq.sirius.simulator.InitialDensityProfile;
 import com.relteq.sirius.simulator.ObjectFactory;
@@ -442,7 +443,29 @@ public class ScenarioLoader {
 		db_wfset.setDescription(wfprofile.getDescription());
 		db_wfset.save(conn);
 		// TODO import weaving factors
+		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfprofile.getWeavingfactors()) {
+			save(wf, db_wfset);
+		}
 		return db_wfset;
+	}
+
+	/**
+	 * Imports weaving factors
+	 * @param wf weaving factors to be imported
+	 * @param db_wfset an already imported weaving factor set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset) throws TorqueException {
+		com.relteq.sirius.simulator.Double1DVector factor_vector = new com.relteq.sirius.simulator.Double1DVector(wf.getContent(), ":");
+		if (factor_vector.isEmpty()) return;
+		for (Double factor : factor_vector.getData()) {
+			WeavingFactors db_wf = new WeavingFactors();
+			db_wf.setWeavingFactorSets(db_wfset);
+			// TODO db_wf.setInLinkId();
+			// TODO db_wf.setOutLinkId();
+			db_wf.setFactor(new BigDecimal(factor));
+			// TODO db_wf.save(conn);
+		}
 	}
 
 	/**
