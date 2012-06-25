@@ -61,7 +61,7 @@ public class ScenarioRestorer {
 			scenario.setDescription(db_scenario.getDescription());
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
-			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario));
+			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario.getInitialDensitySets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
@@ -191,8 +191,7 @@ public class ScenarioRestorer {
 		return link;
 	}
 
-	private com.relteq.sirius.jaxb.InitialDensityProfile restoreInitialDensityProfile(Scenarios db_scenario) throws TorqueException {
-		InitialDensitySets db_idset = db_scenario.getInitialDensitySets();
+	private com.relteq.sirius.jaxb.InitialDensityProfile restoreInitialDensityProfile(InitialDensitySets db_idset) throws TorqueException {
 		if (null == db_idset) return null;
 		com.relteq.sirius.jaxb.InitialDensityProfile idprofile = factory.createInitialDensityProfile();
 		idprofile.setId(db_idset.getId());
@@ -203,33 +202,30 @@ public class ScenarioRestorer {
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
 		@SuppressWarnings("unchecked")
 		List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
-		String link_id = null;
-		StringBuilder sb = null;
+		com.relteq.sirius.jaxb.Density density = null;
+		StringBuilder sb = new StringBuilder();
 		for (InitialDensities db_id : db_idl) {
-			String density = db_id.getDensity().toPlainString();
-			if (null == link_id) { // first iteration
-				link_id = db_id.getLinkId();
-				sb = new StringBuilder(density);
-			} else if (link_id != db_id.getLinkId()) { // new link started
-				idprofile.getDensity().add(createDensity(link_id, sb.toString()));
-				link_id = db_id.getLinkId();
-				sb.setLength(0);
-				sb.append(density);
-			} else { // same link, different vehicle type
-				sb.append(":").append(density);
+			if (null != density && !density.getLinkId().equals(db_id.getLinkId())) {
+				density.setContent(sb.toString());
+				idprofile.getDensity().add(density);
+				density = null;
 			}
+			if (null == density) { // new link
+				density = factory.createDensity();
+				density.setLinkId(db_id.getLinkId());
+				// TODO density.setNetworkId();
+				sb.setLength(0);
+			} else { // same link, different vehicle type
+				sb.append(":");
+			}
+			sb.append(db_id.getDensity().toPlainString());
 		}
 		// last link
-		if (null != link_id) idprofile.getDensity().add(createDensity(link_id, sb.toString()));
+		if (null != density) {
+			density.setContent(sb.toString());
+			idprofile.getDensity().add(density);
+		}
 		return idprofile;
-	}
-
-	private com.relteq.sirius.jaxb.Density createDensity(String link_id, String content) {
-		com.relteq.sirius.jaxb.Density density = factory.createDensity();
-		density.setLinkId(link_id);
-		// TODO density.setNetworkId();
-		density.setContent(content);
-		return density;
 	}
 
 	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
