@@ -50,14 +50,8 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.simulator.Scenario restore(String id) throws SiriusException {
-		Criteria crit = new Criteria();
-		crit.add(ScenariosPeer.ID, id);
 		try {
-			@SuppressWarnings("unchecked")
-			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(crit);
-			if (0 == db_scenarios.size()) throw new SiriusException("Scenario '" + id + "' does not exist");
-			else if (1 < db_scenarios.size()) throw new SiriusException(db_scenarios.size() + " scenarios matched");
-			Scenarios db_scenario = db_scenarios.get(0);
+			Scenarios db_scenario = ScenariosPeer.retrieveByPK(id);
 			com.relteq.sirius.simulator.Scenario scenario = (com.relteq.sirius.simulator.Scenario) factory.createScenario();
 			scenario.setId(db_scenario.getId());
 			scenario.setName(db_scenario.getName());
