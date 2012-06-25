@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.StringTokenizer;
 
-final class Double1DVector {
+public final class Double1DVector {
 	
 	private Double [] data;
     
