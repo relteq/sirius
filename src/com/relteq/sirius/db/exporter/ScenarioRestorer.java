@@ -1,4 +1,5 @@
 package com.relteq.sirius.db.exporter;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.torque.TorqueException;
@@ -13,6 +14,10 @@ import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
+import com.relteq.sirius.om.SplitRatioProfileSets;
+import com.relteq.sirius.om.SplitRatioProfiles;
+import com.relteq.sirius.om.SplitRatios;
+import com.relteq.sirius.om.SplitRatiosPeer;
 import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
 import com.relteq.sirius.om.VehicleTypesInListsPeer;
@@ -57,6 +62,7 @@ public class ScenarioRestorer {
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario));
+			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -224,6 +230,58 @@ public class ScenarioRestorer {
 		// TODO density.setNetworkId();
 		density.setContent(content);
 		return density;
+	}
+
+	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
+		if (null == db_srps) return null;
+		com.relteq.sirius.jaxb.SplitRatioProfileSet srps = factory.createSplitRatioProfileSet();
+		srps.setId(db_srps.getId());
+		srps.setName(db_srps.getName());
+		srps.setDescription(db_srps.getDescription());
+		@SuppressWarnings("unchecked")
+		List<SplitRatioProfiles> db_srp_l = db_srps.getSplitRatioProfiless();
+		for (SplitRatioProfiles db_srp : db_srp_l)
+			srps.getSplitratioProfile().add(restoreSplitRatioProfile(db_srp));
+		return srps;
+	}
+
+	private com.relteq.sirius.jaxb.SplitratioProfile restoreSplitRatioProfile(SplitRatioProfiles db_srp) throws TorqueException {
+		com.relteq.sirius.jaxb.SplitratioProfile srp = factory.createSplitratioProfile();
+		srp.setNodeId(db_srp.getNodeId());
+		srp.setDt(db_srp.getDt());
+		srp.setStartTime(db_srp.getStartTime());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.OUT_LINK_ID);
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.TS);
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.VEHICLE_TYPE_ID);
+		@SuppressWarnings("unchecked")
+		List<SplitRatios> db_sr_l = db_srp.getSplitRatioss(crit);
+		com.relteq.sirius.jaxb.Splitratio sr = null;
+		Date ts = null;
+		StringBuilder sb = new StringBuilder();
+		for (SplitRatios db_sr : db_sr_l) {
+			if (null != sr && !(sr.getLinkIn().equals(db_sr.getInLinkId()) && sr.getLinkOut().equals(db_sr.getOutLinkId()))) {
+				sr.setContent(sb.toString());
+				srp.getSplitratio().add(sr);
+				sr = null;
+			}
+			if (null == sr) { // new split ratio
+				sr = factory.createSplitratio();
+				sr.setLinkIn(db_sr.getInLinkId());
+				sr.setLinkOut(db_sr.getOutLinkId());
+				sb.setLength(0);
+			} else { // same split ratio, different time stamp (',') or vehicle type (':')
+				sb.append(ts.equals(db_sr.getTs()) ? ':' : ',');
+			}
+			ts = db_sr.getTs();
+			sb.append(db_sr.getSplitRatio().toPlainString());
+		}
+		if (null != sr) {
+			sr.setContent(sb.toString());
+			srp.getSplitratio().add(sr);
+		}
+		return srp;
 	}
 
 }
