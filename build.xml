@@ -141,19 +141,19 @@
 	</target>
 
 	<target name="deps-compile" depends="init-ivy">
-		<ivy:retrieve conf="compile"/>
+		<ivy:retrieve conf="compile" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-generate" depends="init-ivy">
-		<ivy:retrieve conf="generate"/>
+		<ivy:retrieve conf="generate" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-test" depends="init-ivy">
-		<ivy:retrieve conf="test"/>
+		<ivy:retrieve conf="test" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-runtime" depends="init-ivy">
-		<ivy:retrieve conf="runtime"/>
+		<ivy:retrieve conf="runtime" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<condition property="ivy.home" value="${env.IVY_HOME}">
