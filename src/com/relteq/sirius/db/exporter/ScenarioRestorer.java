@@ -22,6 +22,9 @@ import com.relteq.sirius.om.VehicleTypeLists;
 import com.relteq.sirius.om.VehicleTypes;
 import com.relteq.sirius.om.VehicleTypesInListsPeer;
 import com.relteq.sirius.om.VehicleTypesPeer;
+import com.relteq.sirius.om.WeavingFactorSets;
+import com.relteq.sirius.om.WeavingFactors;
+import com.relteq.sirius.om.WeavingFactorsPeer;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
@@ -62,6 +65,7 @@ public class ScenarioRestorer {
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario.getInitialDensitySets()));
+			scenario.setWeavingFactorsProfile(restoreWeavingFactorsProfile(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
@@ -226,6 +230,47 @@ public class ScenarioRestorer {
 			idprofile.getDensity().add(density);
 		}
 		return idprofile;
+	}
+
+	private com.relteq.sirius.jaxb.WeavingFactorsProfile restoreWeavingFactorsProfile(WeavingFactorSets db_wfset) throws TorqueException {
+		if (null == db_wfset) return null;
+		com.relteq.sirius.jaxb.WeavingFactorsProfile wfp = factory.createWeavingFactorsProfile();
+		wfp.setId(db_wfset.getId());
+		wfp.setName(db_wfset.getName());
+		wfp.setDescription(db_wfset.getDescription());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(WeavingFactorsPeer.IN_LINK_ID);
+		crit.addAscendingOrderByColumn(WeavingFactorsPeer.OUT_LINK_ID);
+		crit.addAscendingOrderByColumn(WeavingFactorsPeer.VEHICLE_TYPE_ID);
+		@SuppressWarnings("unchecked")
+		List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss();
+		// TODO uncomment when the XSD schema is updated
+		/*
+		com.relteq.sirius.jaxb.Weavingfactors wf = null;
+		StringBuilder sb = new StringBuilder();
+		for (WeavingFactors db_wf : db_wf_l) {
+			if (null != wf && !(wf.getLinkIn().equals(db_wf.getInLinkId()) && wf.getLinkOut().equals(db_wf.getOutLinkId()))) {
+				wf.setContent(sb.toString());
+				wfp.getWeavingfactors().add(wf);
+				wf = null;
+			}
+			if (null == wf) { // new weaving factor
+				wf = factory.createWeavingfactors();
+				wf.setLinkIn(db_wf.getInLinkId());
+				wf.setLinkOut(db_wf.getOutLinkId());
+				// TODO wf.setNetworkId();
+				sb.setLength(0);
+			} else { // same weaving factor, different vehicle type
+				sb.append(':');
+			}
+			sb.append(db_wf.getFactor().toPlainString());
+		}
+		if (null != wf) {
+			wf.setContent(sb.toString());
+			wfp.getWeavingfactors().add(wf);
+		}
+		*/
+		return wfp;
 	}
 
 	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
