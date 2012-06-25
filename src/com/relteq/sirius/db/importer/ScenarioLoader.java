@@ -95,12 +95,13 @@ public class ScenarioLoader {
 		}
 	}
 
-	protected void load(Scenario scenario) throws TorqueException {
+	public Scenarios load(Scenario scenario) throws TorqueException {
 		try {
 			conn = Transaction.begin();
-			save(scenario);
+			Scenarios db_scenario = save(scenario);
 			Transaction.commit(conn);
 			conn = null;
+			return db_scenario;
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
@@ -114,7 +115,7 @@ public class ScenarioLoader {
 	 * @param scenario
 	 * @throws TorqueException
 	 */
-	protected void save(Scenario scenario) throws TorqueException {
+	protected Scenarios save(Scenario scenario) throws TorqueException {
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setId(scenario_id = uuid());
 		db_scenario.setProjectId(getProjectId());
@@ -127,6 +128,7 @@ public class ScenarioLoader {
 		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorsProfile()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
 		db_scenario.save(conn);
+		return db_scenario;
 	}
 
 	/**
