@@ -61,9 +61,8 @@ public class DBOutputWriter extends OutputWriterBase {
 				_link.reset_cumulative();
 				try {
 					data.save(conn);
-				} catch (Exception exc) {
-					exc.printStackTrace();
-					throw new SiriusException(exc.getMessage());
+				} catch (TorqueException exc) {
+					throw new SiriusException(exc.getMessage(), exc.getCause());
 				}
 			}
 		}
