@@ -6,7 +6,6 @@ import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
@@ -54,7 +53,7 @@ public class ScenarioLoader {
 	 * @return a universally unique random string identifier
 	 */
 	protected String uuid() {
-		return UUID.randomUUID().toString();
+		return com.relteq.sirius.db.util.UUID.generate();
 	}
 
 	private String project_id;
