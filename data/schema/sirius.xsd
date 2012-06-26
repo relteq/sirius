@@ -82,7 +82,6 @@
 			  </xs:restriction>
 			</xs:simpleType>
 		  </xs:attribute>
-		  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" />	optional only if used within a network -->
 		  <xs:attribute name="id" type="xs:string" use="required" />
 		  <xs:attribute name="usage" type="xs:string" use="optional" />
 		</xs:complexType>
@@ -98,7 +97,6 @@
   
 	  <xs:element name="link_reference"> 
 		<xs:complexType>
-		  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" />	optional only if used within a network -->
 		  <xs:attribute name="id" type="xs:string" use="required" />
 		</xs:complexType>
 	  </xs:element>
@@ -148,7 +146,6 @@
 		  <xs:all>
 			<xs:element ref="VehicleTypes" minOccurs="0" />
 			<xs:element ref="units" minOccurs="1" />
-			<!-- <xs:element ref="simulation" minOccurs="1" /> -->
 		  </xs:all>
 		</xs:complexType>
 	  </xs:element>
@@ -523,10 +520,7 @@
 	  
 		  <xs:element name="density">													<!-- content in veh/mile -->
 			<xs:complexType mixed="true">
-			  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
-			  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=":" /> -->
-			  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:decimal" /> -->
 			</xs:complexType>
 		  </xs:element>
 
@@ -552,10 +546,7 @@
 
 		  <xs:element name="weavingfactors">
 			<xs:complexType mixed="true">
-			  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
-			  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=":" /> -->
-			  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:decimal" /> -->
 			</xs:complexType>
 		  </xs:element>
 
@@ -578,7 +569,6 @@
 			  <xs:sequence>
 				<xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
-			  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
@@ -589,8 +579,6 @@
 				<xs:complexType mixed="true">
 				  <xs:attribute name="link_in" type="xs:string" use="required" />
 				  <xs:attribute name="link_out" type="xs:string" use="required" />
-				  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=",:" /> -->
-				  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:decimal" /> -->
 				</xs:complexType>
 			  </xs:element>  
   
@@ -609,12 +597,9 @@
 
 		  <xs:element name="capacityProfile">
 			<xs:complexType mixed="true">
-			  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
-			  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default="," /> -->
-			  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:decimal" /> -->
 			</xs:complexType>
 		  </xs:element>
 
@@ -647,7 +632,6 @@
 		      <xs:attribute name="reset_to_nominal" type="xs:boolean" use="optional" default="false" />
 			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
-			  <!-- <xs:attribute name="link_position" type="xs:decimal" use="optional" /> -->
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -708,12 +692,9 @@
 			  <xs:attribute name="knob" type="xs:decimal" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
-			  <!-- <xs:attribute name="network_id_origin" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="link_id_origin" type="xs:string" use="required" />
 			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
 			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
-			  <!-- <xs:attribute name="delims" type="xs:string" use="optional" default=",:" /> -->
-			  <!-- <xs:attribute name="cellType" type="xs:string" use="optional" default="xs:string" /> -->
 			</xs:complexType>
 		  </xs:element>
 
@@ -818,7 +799,6 @@
 						  <xs:sequence>
 							<xs:element ref="stage" minOccurs="0" maxOccurs="unbounded" />
 						  </xs:sequence>
-						  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 						  <xs:attribute name="node_id" type="xs:string" use="required" />
 						  <xs:attribute name="offset" type="xs:decimal" use="required" />		<!-- in seconds -->
 						</xs:complexType>
@@ -862,7 +842,6 @@
 			  <xs:sequence>
 				<xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
-			  <!-- <xs:attribute name="network_id" type="xs:string" use="optional" /> -->
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
@@ -871,7 +850,6 @@
 
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <!-- <xs:attribute name="densityCritical" type="xs:decimal" use="optional" />					[veh/mile/lane] -->
 				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
 				  <xs:attribute name="congestion_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
 				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/hr/lane]   -->
