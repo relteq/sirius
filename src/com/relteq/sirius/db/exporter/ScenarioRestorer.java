@@ -1,4 +1,5 @@
 package com.relteq.sirius.db.exporter;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class ScenarioRestorer {
 			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorsProfile(restoreWeavingFactorsProfile(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
+			scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -70,6 +72,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) {
 		com.relteq.sirius.jaxb.Settings settings = factory.createSettings();
+		settings.setUnits("US");
 		try {
 			VehicleTypeLists db_vtlists = db_scenario.getVehicleTypeLists();
 			if (null != db_vtlists) {
@@ -118,7 +121,9 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) {
 		com.relteq.sirius.jaxb.Network net = factory.createNetwork();
 		net.setId(db_net.getId());
+		net.setName(db_net.getName());
 		net.setDescription(db_net.getDescription());
+		net.setDt(new BigDecimal(1)); // TODO change this when the DB schema is updated
 		net.setNodeList(restoreNodeList(db_net));
 		net.setLinkList(restoreLinkList(db_net));
 		return net;
