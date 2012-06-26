@@ -9,6 +9,7 @@ import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitiesPeer;
 import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.Links;
+import com.relteq.sirius.om.LinksPeer;
 import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
@@ -153,7 +154,53 @@ public class ScenarioRestorer {
 		pos.getPoint().add(point);
 		node.setPosition(pos);
 		node.setPostmile(db_node.getPostmile());
+		node.setInputs(restoreInputs(db_node));
+		node.setOutputs(restoreOutputs(db_node));
 		return node;
+	}
+
+	private com.relteq.sirius.jaxb.Inputs restoreInputs(Nodes db_node) {
+		com.relteq.sirius.jaxb.Inputs inputs = factory.createInputs();
+		Criteria crit = new Criteria();
+		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
+		crit.add(LinksPeer.END_NODE_ID, db_node.getId());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Links> db_link_l = LinksPeer.doSelect(crit);
+			for (Links db_link : db_link_l)
+				inputs.getInput().add(restoreInput(db_link));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return inputs;
+	}
+
+	private com.relteq.sirius.jaxb.Input restoreInput(Links db_link) {
+		com.relteq.sirius.jaxb.Input input = factory.createInput();
+		input.setLinkId(db_link.getId());
+		return input;
+	}
+
+	private com.relteq.sirius.jaxb.Outputs restoreOutputs(Nodes db_node) {
+		com.relteq.sirius.jaxb.Outputs outputs = factory.createOutputs();
+		Criteria crit = new Criteria();
+		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
+		crit.add(LinksPeer.BEGIN_NODE_ID, db_node.getId());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Links> db_link_l = LinksPeer.doSelect(crit);
+			for (Links db_link : db_link_l)
+				outputs.getOutput().add(restoreOutput(db_link));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return outputs;
+	}
+
+	private com.relteq.sirius.jaxb.Output restoreOutput(Links db_link) {
+		com.relteq.sirius.jaxb.Output output = factory.createOutput();
+		output.setLinkId(db_link.getId());
+		return output;
 	}
 
 	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) {
