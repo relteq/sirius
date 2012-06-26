@@ -1,6 +1,7 @@
 function []=aurora2sirius(aurorafile,siriusfile)
-% To do
-% + fix split ratios for multiple vehicle types
+% Translate a file from the aurora format to the sirius format
+
+addpath([fileparts(mfilename('fullpath')) filesep 'xml_io_tools_2007_07']);
 
 scenario = xml_read(aurorafile);
 
@@ -13,38 +14,36 @@ hascapacityprofile  = hasfields(scenario,'CapacityProfileSet','capacity');
 hassignal           = hasfields(scenario.network,'SignalList','signal');
 
 blankscenarioElement = struct('ATTRIBUTE',struct('type','','id',nan));
-            
-% % remove terminal nodes
-% removethisid = [];
-% for i=1:length(scenario.network.NodeList.node)
-%     removethis(i) = strcmpi(scenario.network.NodeList.node(i).ATTRIBUTE.type,'T');
-%     if(removethis(i))
-%         removethisid = [removethisid scenario.network.NodeList.node(i).ATTRIBUTE.id];
-%     end
-% end
-% scenario.network.NodeList.node(removethis)=[];
-% for i=1:length(scenario.network.LinkList.link)
-%     if(ismember(scenario.network.LinkList.link(i).begin.ATTRIBUTE.node_id,removethisid))
-%         scenario.network.LinkList.link(i).begin = [];
-%     end
-%     if(ismember(scenario.network.LinkList.link(i).xEnd.ATTRIBUTE.node_id,removethisid))
-%         scenario.network.LinkList.link(i).xEnd = [];
-%     end
-% end
-% clear removethis removethisid
+
+% removes ===========================================================
 
 % remove ODList
 scenario.network=safermfield(scenario.network,'ODList');
 
+% remove network.NetworkList
+scenario.network=safermfield(scenario.network,'NetworkList');
+
 % remove MonitorList
 scenario.network=safermfield(scenario.network,'MonitorList');
 
-% remove NetworkList
-scenario.network=safermfield(scenario.network,'NetworkList');
+% remove qmax
+scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'qmax');
 
-% collect node ids
-for i=1:length(scenario.network.NodeList.node)
-    nodeid(i) = scenario.network.NodeList.node(i).ATTRIBUTE.id;
+% remove: ml_cotrol q_control
+scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'ml_control');
+scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'q_control');
+
+% TEMPORARY: REMOVE WEAVING FACTORS
+scenario = safermfield(scenario,'WeavingFactorsProfile');
+
+% remove: everything related to monitors
+% NOT DONE YET
+
+% renames ===========================================================
+
+% rename InitialDensityProfile -> InitialDensitySet
+if(isfield(scenario,'InitialDensityProfile'))
+    scenario = renamefield(scenario,'InitialDensityProfile','InitialDensitySet');
 end
 
 % rename: demand -> demandProfile
@@ -57,123 +56,161 @@ if(hassplits)
     scenario.SplitRatioProfileSet = renamefield(scenario.SplitRatioProfileSet,'splitratios','splitratioProfile');
 end
 
-% rename: CapacityProfileSet -> DownstreamBoundaryCapacitySet
 % rename: capacity -> capacityProfile
 if(hascapacityprofile)
-    scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacitySet');
-    scenario.DownstreamBoundaryCapacitySet = renamefield(scenario.DownstreamBoundaryCapacitySet,'capacity','capacityProfile');
+    scenario = renamefield(scenario,'CapacityProfileSet','DownstreamBoundaryCapacityProfileSet');
+    scenario.DownstreamBoundaryCapacityProfileSet = renamefield(scenario.DownstreamBoundaryCapacityProfileSet,'capacity','capacityProfile');
 end
 
-% create FundamentalDiagramProfileSet
-for i=1:length(scenario.network.LinkList.link)
-    
-    if(~isfield(scenario.network.LinkList.link(i),'fd'))
-        continue
-    end
-    FDp(i).fundamentalDiagram = convertFDtoFundamentalDiagram(scenario.network.LinkList.link(i).fd);
-    FDp(i).ATTRIBUTE.link_id = scenario.network.LinkList.link(i).ATTRIBUTE.id;
-    
+if(hasfields(scenario,'settings','VehicleTypes'))
+    scenario.settings.VehicleTypes=renamefield(scenario.settings.VehicleTypes,'vtype','vehicle_type');
 end
-scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'fd');
-scenario.FundamentalDiagramProfileSet.fundamentalDiagramProfile = FDp;
-clear fundamentalDiagramProfile FD x FDp
 
-% remove qmax
-scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'qmax');
+% remove the DirectionsCache
+scenario.network = safermfield(scenario.network,'DirectionsCache');
 
-% remove: ml_cotrol q_control
-scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'ml_control');
-scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'q_control');
-
-% convert sensor links to link_reference
-if(hassensors)
-    for i=1:length(scenario.network.SensorList.sensor)
-        
-        if(length(scenario.network.SensorList.sensor(i).links)>1)
-            error('Sensors may only attach to single links');
+% remove weaving factors
+for i=1:length(scenario.network.NodeList.node)
+    if(~isempty(scenario.network.NodeList.node(i).inputs))
+        for j=1:length(scenario.network.NodeList.node(i).inputs.input)
+            X(j) = safermfield(scenario.network.NodeList.node(i).inputs.input(j),'weavingfactors');
         end
-        clear link_reference  
-        link_reference.ATTRIBUTE.id = scenario.network.SensorList.sensor(i).links;
-        scenario.network.SensorList.sensor(i).link_reference = link_reference;
+        scenario.network.NodeList.node(i).inputs.input = X;
+        clear X
     end
-    scenario.network.SensorList.sensor = safermfield(scenario.network.SensorList.sensor,'links');
 end
+
+
+% reorganize ===========================================================
+
+% put network in NetworkList
+scenario.NetworkList.network = scenario.network;
+scenario =safermfield(scenario,'network');
+
+% Move sensors to scenario
+if(hassensors)
+    scenario.SensorList = scenario.NetworkList.network.SensorList;
+end
+scenario.NetworkList.network = safermfield(scenario.NetworkList.network,'SensorList');
+
+% Move signals to scenario
+if(hassignal)
+    scenario.SignalList = scenario.NetworkList.network.SignalList;
+end
+scenario.NetworkList.network = safermfield(scenario.NetworkList.network,'SignalList');
+
+
+% collect ids ===========================================================
+
+% collect node ids
+for i=1:length(scenario.NetworkList.network.NodeList.node)
+    nodeid(i) = scenario.NetworkList.network.NodeList.node(i).ATTRIBUTE.id;
+end
+
+
+% Fix settings ========================================================
 
 % display paramers put in simulation
 if(hasfields(scenario,'settings','display'))
-%     if(isfield(scenario.settings.display.ATTRIBUTE,'timeMax'))
-%         scenario.settings.simulation.ATTRIBUTE.timeMax = scenario.settings.display.ATTRIBUTE.timeMax;
-%     end
-%     
-%     if(isfield(scenario.settings.display.ATTRIBUTE,'timeInitial'))
-%         scenario.settings.simulation.ATTRIBUTE.timeInitial = scenario.settings.display.ATTRIBUTE.timeInitial;
-%     end
-%     
-%     if(isfield(scenario.settings.display.ATTRIBUTE,'dt'))
-%         scenario.settings.simulation.ATTRIBUTE.outputDt = scenario.settings.display.ATTRIBUTE.dt;
-%     end
+    %     if(isfield(scenario.settings.display.ATTRIBUTE,'timeMax'))
+    %         scenario.settings.simulation.ATTRIBUTE.timeMax = scenario.settings.display.ATTRIBUTE.timeMax;
+    %     end
+    %
+    %     if(isfield(scenario.settings.display.ATTRIBUTE,'timeInitial'))
+    %         scenario.settings.simulation.ATTRIBUTE.timeInitial = scenario.settings.display.ATTRIBUTE.timeInitial;
+    %     end
+    %
+    %     if(isfield(scenario.settings.display.ATTRIBUTE,'dt'))
+    %         scenario.settings.simulation.ATTRIBUTE.outputDt = scenario.settings.display.ATTRIBUTE.dt;
+    %     end
     scenario.settings = safermfield(scenario.settings,'display');
 end
 
-% remove: everything related to monitors
-% NOT DONE YET
+% Fix NetworkList ========================================================
 
-for i=1:length(scenario.network.NodeList.node)
-    scenario.network.NodeList.node(i) = adjustNodeType(scenario.network.NodeList.node(i));
+for i=1:length(scenario.NetworkList.network.NodeList.node)
+    scenario.NetworkList.network.NodeList.node(i) = adjustNodeType(scenario.NetworkList.network.NodeList.node(i));
 end
 
-for i=1:length(scenario.network.LinkList.link)
-    scenario.network.LinkList.link(i) = adjustLinkType(scenario.network.LinkList.link(i));
+for i=1:length(scenario.NetworkList.network.LinkList.link)
+    scenario.NetworkList.network.LinkList.link(i) = adjustLinkType(scenario.NetworkList.network.LinkList.link(i));
 end
 
+% Fix FundamentalDiagramProfileSet ========================================================
+
+% create FundamentalDiagramProfileSet
+for i=1:length(scenario.NetworkList.network.LinkList.link)
+    
+    if(~isfield(scenario.NetworkList.network.LinkList.link(i),'fd'))
+        continue
+    end
+    FDp(i).fundamentalDiagram = convertFDtoFundamentalDiagram(scenario.NetworkList.network.LinkList.link(i).fd);
+    FDp(i).ATTRIBUTE.link_id = scenario.NetworkList.network.LinkList.link(i).ATTRIBUTE.id;
+    
+end
+scenario.NetworkList.network.LinkList.link = safermfield(scenario.NetworkList.network.LinkList.link,'fd');
+scenario.FundamentalDiagramProfileSet.fundamentalDiagramProfile = FDp;
+clear fundamentalDiagramProfile FD x FDp
+
+% Fix SensorList ========================================================
+
+% convert sensor links to link_reference
 if(hassensors)
-    for i=1:length(scenario.network.SensorList.sensor)
-        scenario.network.SensorList.sensor(i) = adjustSensorType(scenario.network.SensorList.sensor(i));
-        if(hasfields(scenario.network.SensorList.sensor(i),'data_sources','source'))
-            for j=1:length(scenario.network.SensorList.sensor(i).data_sources.source)
-                scenario.network.SensorList.sensor(i).data_sources.source(j)=adjustDataSourceFormat(scenario.network.SensorList.sensor(i).data_sources.source(j));
+    for i=1:length(scenario.SensorList.sensor)
+        
+        % display_position
+        scenario.SensorList.sensor(i).display_position = scenario.SensorList.sensor(i).position;
+        
+        % adjust type
+        scenario.SensorList.sensor(i) = adjustSensorType(scenario.SensorList.sensor(i));
+        
+        % links -> link_reference
+        if(length(scenario.SensorList.sensor(i).links)>1)
+            error('Sensors may only attach to single links');
+        end
+        clear link_reference
+        link_reference.ATTRIBUTE.id = scenario.SensorList.sensor(i).links;
+        scenario.SensorList.sensor(i).link_reference = link_reference;
+        
+        % data_sources
+        if(hasfields(scenario.SensorList.sensor(i),'data_sources','source'))
+            for j=1:length(scenario.SensorList.sensor(i).data_sources.source)
+                scenario.SensorList.sensor(i).data_sources.source(j)=adjustDataSourceFormat(scenario.SensorList.sensor(i).data_sources.source(j));
             end
         end
+        
+        % rename source -> data_source
+        if(isfield(scenario.SensorList.sensor(i),'data_sources'))
+            scenario.SensorList.sensor(i).data_sources = ...
+                renamefield(scenario.SensorList.sensor(i).data_sources,'source','data_source');
+        end
+        
     end
+    scenario.SensorList.sensor = safermfield(scenario.SensorList.sensor,'links');
 end
+
+
+% Fix EventSet ==========================================================
 
 if(hasevents)
     for i=1:length(scenario.EventSet.event)
+        
+        scenario.EventSet.event(i).ATTRIBUTE.id = i-1;
+        
+        % adjust type
         scenario.EventSet.event(i) = adjustEventType(scenario.EventSet.event(i));
-    end
-    if(isfield(scenario.EventSet.event,'fd'))
-        for i=1:length(scenario.EventSet.event)
+        
+        % adjust fundamental diagram events
+        if(strcmp(scenario.EventSet.event(i).ATTRIBUTE.type,'fundamental_diagram'))
             scenario.EventSet.event(i).fundamentalDiagram=convertFDtoFundamentalDiagram(scenario.EventSet.event(i).fd);
         end
-        scenario.EventSet.event=safermfield(scenario.EventSet.event,'fd');
-    end
-end
-
-% remove unwanted stuff from controller
-if(hascontrollers)
-    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'qcontroller');
-    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'limits');
-end
-
-% remove: event->network_id (can't think of use case for network specific event)
-% NOT DONE YET
-
-% remove: controller->network_id (controllers work on collections of nodes and links).
-% NOT DONE YET
-
-% rename: source -> data_source
-if(hassensors)
-    for i=1:length(scenario.network.SensorList.sensor)
-        if(isfield(scenario.network.SensorList.sensor(i),'data_sources'))
-            scenario.network.SensorList.sensor(i).data_sources = ...
-                renamefield(scenario.network.SensorList.sensor(i).data_sources,'source','data_source');
+        
+        if(strcmp(scenario.EventSet.event(i).ATTRIBUTE.type,'link_lanes'))
+            scenario.EventSet.event(i).ATTRIBUTE.reset_to_nominal = scenario.EventSet.event(i).lane_count_change.ATTRIBUTE.reset_to_nominal;
+            scenario.EventSet.event(i).lane_count_change.ATTRIBUTE = safermfield(scenario.EventSet.event(i).lane_count_change.ATTRIBUTE,'reset_to_nominal');
         end
-    end
-end
-
-% convert event node_id/link_id/network_id to targetElements
-if(hasevents)
-    for i=1:length(scenario.EventSet.event)
+        
+        % convert event node_id/link_id/network_id to targetElements
         A = scenario.EventSet.event(i).ATTRIBUTE;
         clear scenarioElement
         if(isfield(A,'link_id'))
@@ -187,45 +224,32 @@ if(hasevents)
             scenario.EventSet.event(i).ATTRIBUTE = safermfield(scenario.EventSet.event(i).ATTRIBUTE,'node_id');
         end
         scenario.EventSet.event(i).targetElements.scenarioElement=scenarioElement;
+        
+    end
+    
+    if(isfield(scenario.EventSet.event,'fd'))
+        scenario.EventSet.event = safermfield(scenario.EventSet.event,'fd');
     end
 end
 
-if(hascontrollers)
-    for i=1:length(scenario.ControllerSet.controller)
-        scenario.ControllerSet.controller(i) = adjustControllerType(scenario.ControllerSet.controller(i));
-    end
-end
-
-% fix signals
-if(hassignal)
-    signal2node = nan(1,length(scenario.network.SignalList.signal));
-    networkid = scenario.network.ATTRIBUTE.id;
-    for i=1:length(scenario.network.SignalList.signal)
-        signal2node(i) = scenario.network.SignalList.signal(i).ATTRIBUTE.node_id;
-        
-        % add signal id
-        scenario.network.SignalList.signal(i).ATTRIBUTE.id = -i;
-        
-        % links -> link_reference
-        for j=1:length(scenario.network.SignalList.signal(i).phase)
-            if(~isempty(scenario.network.SignalList.signal(i).phase(j).links))
-                links = scenario.network.SignalList.signal(i).phase(j).links;
-                link_reference = repmat(struct('ATTRIBUTE',struct('network_id',networkid,'id',nan)),1,length(links));
-                for k=1:length(links)
-                    link_reference(k).ATTRIBUTE.id = links(k);
-                end
-                scenario.network.SignalList.signal(i).phase(j).links = [];
-                scenario.network.SignalList.signal(i).phase(j).links.link_reference = link_reference;
-            end
-        end
-    end
-else
-    signal2node = [];
-end
+% Fix ControllerSet ==============================================
 
 % convert controller node_id/link_id/network_id to targetElements
 if(hascontrollers)
+    
+    % remove unwanted stuff from ControllerSet
+    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'qcontroller');
+    scenario.ControllerSet.controller=safermfield(scenario.ControllerSet.controller,'limits');
+    
+    
     for i=1:length(scenario.ControllerSet.controller)
+        
+        % adjust type
+        scenario.ControllerSet.controller(i) = adjustControllerType(scenario.ControllerSet.controller(i));
+        
+        % add id
+        scenario.ControllerSet.controller(i).ATTRIBUTE.id = i-1;
+        
         A = scenario.ControllerSet.controller(i).ATTRIBUTE;
         clear scenarioElement
         if(isfield(A,'link_id'))
@@ -252,7 +276,7 @@ if(hascontrollers)
             targetnodes = unique(targetnodes);
             
             if(~all(ismember(targetnodes,signal2node)))
-               error('not all nodes that appear in signal plans have signals') 
+                error('not all nodes that appear in signal plans have signals')
             end
             
             if(~all(ismember(targetnodes,nodeid)))
@@ -262,9 +286,16 @@ if(hascontrollers)
             scenarioElement = repmat(blankscenarioElement,1,length(targetnodes));
             for j=1:length(targetnodes)
                 scenarioElement(j).ATTRIBUTE.type = 'signal';
-                scenarioElement(j).ATTRIBUTE.id = scenario.network.SignalList.signal(signal2node==targetnodes(j)).ATTRIBUTE.id;
+                scenarioElement(j).ATTRIBUTE.id = scenario.SignalList.signal(signal2node==targetnodes(j)).ATTRIBUTE.id;
             end
             
+        end
+        
+        % transitition_delay should not be NaN
+        if(isfield(scenario.ControllerSet.controller(i),'PlanSequence'))
+            if(isnan(scenario.ControllerSet.controller(i).PlanSequence.ATTRIBUTE.transition_delay))
+                scenario.ControllerSet.controller(i).PlanSequence.ATTRIBUTE.transition_delay=0;
+            end
         end
         
         scenario.ControllerSet.controller(i).targetElements.scenarioElement=scenarioElement;
@@ -278,14 +309,34 @@ if(hascontrollers)
     end
 end
 
-% rename: vtype -> vehicleType
+% Fix SignalSet ====================================================
 
-if(hasfields(scenario,'settings','VehicleTypes'))
-    scenario.settings.VehicleTypes=renamefield(scenario.settings.VehicleTypes,'vtype','vehicleType');
+% fix signals
+if(hassignal)
+    signal2node = nan(1,length(scenario.SignalList.signal));
+    networkid = scenario.NetworkList.network.ATTRIBUTE.id;
+    for i=1:length(scenario.SignalList.signal)
+        signal2node(i) = scenario.SignalList.signal(i).ATTRIBUTE.node_id;
+        
+        % add signal id
+        scenario.SignalList.signal(i).ATTRIBUTE.id = -i;
+        
+        % links -> link_reference
+        for j=1:length(scenario.SignalList.signal(i).phase)
+            if(~isempty(scenario.SignalList.signal(i).phase(j).links))
+                links = scenario.SignalList.signal(i).phase(j).links;
+                link_reference = repmat(struct('ATTRIBUTE',struct('network_id',networkid,'id',nan)),1,length(links));
+                for k=1:length(links)
+                    link_reference(k).ATTRIBUTE.id = links(k);
+                end
+                scenario.SignalList.signal(i).phase(j).links = [];
+                scenario.SignalList.signal(i).phase(j).links.link_reference = link_reference;
+            end
+        end
+    end
 end
 
-% added element: linkpair
-% NOT DONE YET
+% Fix SplitRatioProfileSet ===============================================
 
 % added: link_in and link_out to splitratio
 if(hassplits)
@@ -294,7 +345,7 @@ if(hassplits)
         if(~isfield(srP,'srm'))
             continue;
         end
-        myNode = scenario.network.NodeList.node(nodeid==srP.ATTRIBUTE.node_id);
+        myNode = scenario.NetworkList.network.NodeList.node(nodeid==srP.ATTRIBUTE.node_id);
         numin = length(myNode.inputs.input);
         for j=1:numin
             inlink(j) = myNode.inputs.input(j).ATTRIBUTE.link_id;
@@ -321,6 +372,8 @@ if(hassplits)
 end
 clear srP splitratio X myNode A scenarioElement inlink outlink c i numin numout iin iout
 
+% Fix DemandProfileSet ================================================
+
 % demandProfile link_id -> link_id_origin
 if(hasdemandprofile)
     for i=1:length(scenario.DemandProfileSet.demandProfile)
@@ -329,123 +382,13 @@ if(hasdemandprofile)
     end
 end
 
-
-% remove from event: demandProfile, qmax, lkid, controller, wfm, control
-
-% added to event: on_off_switch, knob
-
-% remove elements: lkid, wfm, control
-
-% added element: on_off_switch
-
-% added element: knob
-
-% remove: SWARM specific elements (components, zones, zone, onramps, onramp). Put them into swarm.xsd
-
-% remove: usesensors from controller (this is taken care of by feedbackElements)
-
-% remove: limits from controller (put this in individual isolated controllers)
-
-% remove element: limits
-
-% remove: qmax
-
-% changed: default delims in weavingfactor from "," to ":"
-
-% changed: default delims in splitratios from ";,:" to ",:"
-
-% changed: default delims in table from ";,:" to ",:"
-
-% 	+ modified element: links
-% 		FROM
-% 			  <xs:element name="links">
-% 				<xs:complexType mixed="true">
-% 				  <xs:attribute name="delims" type="xs:string" use="optional" default="," />
-% 				  <xs:attribute name="cellType" type="xs:string" use="optional" default="link" />
-% 				</xs:complexType>
-% 			  </xs:element>
-%
-% 		TO
-% 			  <xs:element name="links">
-% 				<xs:complexType>
-% 				  <xos:sequence>
-% 					<xs:element ref="link_reference" minOccurs="0" maxOccurs="unbounded" />
-% 				  </xs:sequence>
-% 				</xs:complexType>
-% 			  </xs:element>
-
-
-
-
-% add elelement: link_reference	(advantage is that this can be used outside of a network, ie by PathSegment)
-%
-% 			  <xs:element name="link_reference">
-% 				<xs:complexType>
-% 				  <xs:attribute name="network_id" type="xs:string" use="optional" />	<!-- optional only if used within a network -->
-% 				  <xs:attribute name="id" type="xs:string" use="required" />
-% 				</xs:complexType>
-% 			  </xs:element>
-
-% remove element: PathList
-
-% remove element: path
-
-% remove: PathList from od
-
-% rename: demandProfile->network_id -> network_id_origin
-
-% rename: demandProfile->link_id -> link_id_origin
-
-% move: reset_to_nominal from lane_count_change to event
-
-% remove: ODList from network
-
-% added: ODList to scenario
-
-% weaving factors
-scenario.WeavingFactorsProfile=[];
-c=1;
-for i=1:length(scenario.network.NodeList.node)
-    for j=1:length(scenario.network.NodeList.node(i).inputs)
-        for k=1:length(scenario.network.NodeList.node(i).inputs(j).input)
-            inp = scenario.network.NodeList.node(i).inputs(j).input(k);
-            if(isfield(inp,'weavingfactors'))
-                clear weavingfactors
-                weavingfactors.ATTRIBUTE.node_id = scenario.network.NodeList.node(i).ATTRIBUTE.id;
-                weavingfactors.CONTENT = writecommaformat(inp.weavingfactors);
-                scenario.WeavingFactorsProfile.weavingfactors(c)=weavingfactors;
-                c=c+1;
-            end
-        end
-        scenario.network.NodeList.node(i).inputs(j).input = safermfield(scenario.network.NodeList.node(i).inputs(j).input,'weavingfactors');
-
-    end
-end
-clear inp weavingfactors c
-
-% TEMPORARY: REMOVE WEAVING FACTORS
-scenario = safermfield(scenario,'WeavingFactorsProfile');
-
-
-
-% added element: od_demandProfile
-
-% modify: od
-
 % make demands into comma separated string
 if(hasdemandprofile)
     for i=1:length(scenario.DemandProfileSet.demandProfile)
         scenario.DemandProfileSet.demandProfile(i).CONTENT = ...
-        writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT)
+            writecommaformat(scenario.DemandProfileSet.demandProfile(i).CONTENT);
     end
 end
-
-% remove the DirectionsCache
-scenario.network = safermfield(scenario.network,'DirectionsCache');
-
-% move: network to NetworkList
-scenario.NetworkList.network = scenario.network;
-scenario = safermfield(scenario,'network');
 
 writeToNetworkEditor(siriusfile,scenario);
 
@@ -565,41 +508,41 @@ x.ATTRIBUTE.link_type = newtype;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustNodeType(x)
 if isfield(x.ATTRIBUTE, 'type')
-	switch x.ATTRIBUTE.type
-			case {'F','H'}
-					newtype = 'simple';
-			case 'S'
-					newtype = 'signalized_intersection';
-			case 'T'
-					newtype = 'terminal';
-			otherwise
-					warning('unsupported node type')
-	end
-	x.ATTRIBUTE.type = newtype;
+    switch x.ATTRIBUTE.type
+        case {'F','H'}
+            newtype = 'simple';
+        case 'S'
+            newtype = 'signalized_intersection';
+        case 'T'
+            newtype = 'terminal';
+        otherwise
+            warning('unsupported node type')
+    end
+    x.ATTRIBUTE.type = newtype;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=adjustLinkType(x)
 if isfield(x.ATTRIBUTE, 'type')
-	switch x.ATTRIBUTE.type
-			case {'FW','HW'}
-					newtype = 'freeway';
-			case {'HOV','HV','ETC'}
-					newtype = 'HOV';
-			case 'OR'
-					newtype = 'onramp';
-			case 'FR'
-					newtype = 'offramp';
-			case 'IC'
-					newtype = 'freeway_connector';
-			case 'ST'
-					newtype = 'street';
-			case 'HOT'
-					newtype = 'HOT';
-			otherwise
-					warning('unsupported link type')
-	end
-	x.ATTRIBUTE.type = newtype;
+    switch x.ATTRIBUTE.type
+        case {'FW','HW'}
+            newtype = 'freeway';
+        case {'HOV','HV','ETC'}
+            newtype = 'HOV';
+        case 'OR'
+            newtype = 'onramp';
+        case 'FR'
+            newtype = 'offramp';
+        case 'IC'
+            newtype = 'freeway_connector';
+        case 'ST'
+            newtype = 'street';
+        case 'HOT'
+            newtype = 'HOT';
+        otherwise
+            warning('unsupported link type')
+    end
+    x.ATTRIBUTE.type = newtype;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -617,7 +560,7 @@ for k=1:length(A)
     end
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [b]=hasfields(X,a,b)
 if(~isfield(X,a))
     b=false;
@@ -625,14 +568,14 @@ if(~isfield(X,a))
 end
 b=isfield(X.(a),b);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [FD]=convertFDtoFundamentalDiagram(fd)
 
 if(isempty(fd))
     FD=[];
     return
 end
-    
+
 x = fd.ATTRIBUTE;
 
 if(isfield(x,'flowMax'))
@@ -660,7 +603,114 @@ else
 end
 
 FD.ATTRIBUTE.capacity = capacity;
-FD.ATTRIBUTE.densityJam = densityJam;
-FD.ATTRIBUTE.capacityDrop = capacityDrop;
+FD.ATTRIBUTE.jam_density = densityJam;
+FD.ATTRIBUTE.capacity_drop = capacityDrop;
 FD.ATTRIBUTE.congestion_speed = capacity/(densityJam-densityCritical);
-FD.ATTRIBUTE.freeflow_speed = capacity/densityCritical;
+FD.ATTRIBUTE.free_flow_speed = capacity/densityCritical;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [str]=writecommaformat(a,f)
+% translate a 1,2,or 3 dimensional array into a string
+
+str = '';
+
+if(~exist('f','var'))
+    f = '%f';
+end
+
+% unpack cell singleton
+if(iscell(a) && length(a)==1)
+    a = a{1};
+end
+
+% try to interpret a string
+if(ischar(a))
+    a = readcommaformat(a);
+    if(isnan(a))
+        return
+    end
+end
+
+% a must be numeric and non-empty. f must be a string.
+if(~isnumeric(a) || ~ischar(f) || isempty(a) )
+    return
+end
+
+for i=1:size(a,1)
+    clear strj
+    for j=1:size(a,2)
+        % colon separate a(i,j,:)
+        strj{j} = sprintf(f,a(i,j,1));
+        for k =2:size(a,3)
+            strj{j} = [strj{j} ':' sprintf('%f',a(i,j,k))];
+        end
+    end
+    row = strj{1};
+    for j=2:size(a,2)
+        row = [row ',' strj{j}];
+    end
+    if i==1
+        str = row;
+    else
+        str = [str ';' row];
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [X] = readcommaformat(str)
+% translate a string into a 1,2,or 3 dimensional array
+
+A  = strread(str,'%s','delimiter',';');
+numin = length(A);
+temp  = strread(A{1},'%s','delimiter',',');
+numout = length(temp);
+temp = strread(temp{1},'%s','delimiter',':');
+numtypes = length(temp);
+clear temp;
+
+X = nan(numin,numout,numtypes);
+
+for i=1:numin
+    B = strread(A{i},'%s','delimiter',',');
+    for j=1:numout
+        C = strread(B{j},'%s','delimiter',':');
+        for k=1:numtypes
+            X(i,j,k) = str2double(C{k});
+        end
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [] = writeToNetworkEditor(outputfilename,scenario)
+
+%  write it
+disp('Serializing XML');
+dom = xml_write([], scenario);
+str = xmlwrite(dom);
+
+i=0;
+
+i=i+1;
+replace(i).from = '<begin/>';
+replace(i).to   = '';
+
+i=i+1;
+replace(i).from = '<xEnd/>';
+replace(i).to   = '';
+
+i=i+1;
+replace(i).from = 'xEnd';
+replace(i).to   = 'end';
+
+for i = 1:length(replace)
+    str = strrep(str, replace(i).from, replace(i).to);
+end
+
+disp(['Writing ' outputfilename])
+[file, msg] = fopen(outputfilename, 'w');
+if msg ~= '', error(msg); end
+fprintf(file, '%s', str);
+fclose(file);
+
+
