@@ -3,15 +3,15 @@
    <settings>
       <units>US</units>
 	  <VehicleTypes>
-		<vehicleType name="car" weight="1.0"/>
-		<vehicleType name="truck" weight="2.5"/>
+		<vehicle_type name="car" weight="1.0"/>
+		<vehicle_type name="truck" weight="2.5"/>
 	  </VehicleTypes>
    </settings>
-   <InitialDensityProfile/>
+   <InitialDensitySet/>
    <SplitRatioProfileSet>
 	  <VehicleTypeOrder>
-		<vehicleType name="car"/>
-		<vehicleType name="truck"/>
+		<vehicle_type name="car"/>
+		<vehicle_type name="truck"/>
 	  </VehicleTypeOrder>
       <splitratioProfile dt="300" node_id="-2">
          <splitratio link_in="-1" link_out="-2">1:.1</splitratio>
@@ -30,7 +30,7 @@
    </SplitRatioProfileSet>
    <EventSet>
       <event enabled="true" tstamp="4" type="fundamental_diagram" id="-1">
-         <fundamentalDiagram capacity="900" capacityDrop="0" congestion_speed="15" densityJam="75" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="900" capacity_drop="0" congestion_speed="15" jam_density="75" free_flow_speed="60"/>
          <targetElements>
             <scenarioElement id="-2" type="link"/>
          </targetElements>
@@ -44,8 +44,8 @@
    </EventSet>
    <DemandProfileSet>
 	  <VehicleTypeOrder>
-		<vehicleType name="truck"/>
-		<vehicleType name="car"/>
+		<vehicle_type name="truck"/>
+		<vehicle_type name="car"/>
 	  </VehicleTypeOrder>
       <demandProfile dt="300" knob="1" link_id_origin="-6">400:200</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-1">100:50</demandProfile>
@@ -65,25 +65,25 @@
    </ControllerSet>
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-2">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-3">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-4">
-         <fundamentalDiagram capacity="300" capacityDrop="0" congestion_speed="2.5" densityJam="150" freeflow_speed="10"/>
+         <fundamentalDiagram capacity="300" capacity_drop="0" congestion_speed="2.5" jam_density="150" free_flow_speed="10"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-5">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-6">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile link_id="-7">
-         <fundamentalDiagram capacity="1800" capacityDrop="0" congestion_speed="15" densityJam="150" freeflow_speed="60"/>
+         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
    </FundamentalDiagramProfileSet>
    <NetworkList>

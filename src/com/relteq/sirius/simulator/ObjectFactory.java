@@ -162,13 +162,12 @@ public final class ObjectFactory {
 		S.myScenario = myScenario;
 		S.setId(jaxbS.getId().trim());
 		S.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
-		S.setNetworkId(jaxbS.getNetworkId());
 		switch(S.myType){
 		case link:
-			S.reference = myScenario.getLinkWithCompositeId(S.getNetworkId(),S.getId());
+			S.reference = myScenario.getLinkWithId(S.getId());
 			break;
 		case node:
-			S.reference = myScenario.getNodeWithCompositeId(S.getNetworkId(),S.getId());
+			S.reference = myScenario.getNodeWithId(S.getId());
 			break;
 		case sensor:
 			S.reference = myScenario.getSensorWithId(S.getId());
@@ -536,8 +535,8 @@ public final class ObjectFactory {
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return					_Sensor object
 	 */
-	public static Sensor createSensor_LoopStation(Scenario myScenario,String networkId,String linkId){
-		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,networkId,linkId);
+	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
+		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,linkId);
 	}
 
 	/** Create a floating detector.
@@ -551,8 +550,8 @@ public final class ObjectFactory {
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return			XXX
 	 */
-	public static Sensor createSensor_Floating(Scenario myScenario,String networkId,String linkId){
-		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,networkId,linkId);
+	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
+		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,linkId);
 		return S;
 	}
 
@@ -571,7 +570,7 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = node.getMyNetwork().myScenario;
 		se.myType = ScenarioElement.Type.node;
-		se.setNetworkId(node.myNetwork.getId());
+//		se.setNetworkId(node.myNetwork.getId());
 		se.reference = node;
 		return se;
 	}
@@ -587,7 +586,7 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = link.getMyNetwork().myScenario;
 		se.myType = ScenarioElement.Type.link;
-		se.setNetworkId(link.myNetwork.getId());
+//		se.setNetworkId(link.myNetwork.getId());
 		se.reference = link;
 		return se;
 	}
@@ -603,8 +602,8 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = sensor.myScenario;
 		se.myType = ScenarioElement.Type.sensor;
-		if(sensor.myLink!=null)
-			se.setNetworkId(sensor.myLink.myNetwork.getId());
+//		if(sensor.myLink!=null)
+//			se.setNetworkId(sensor.myLink.myNetwork.getId());
 		se.reference = sensor;
 		return se;
 	}

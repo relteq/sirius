@@ -31,12 +31,12 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		q_max = SensorLoopStation.nom_q_max;
 	}
 
-	public SensorLoopStation(Scenario myScenario,String networkId,String linkId){
+	public SensorLoopStation(Scenario myScenario,String linkId){
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
 	    this.myType = Sensor.Type.static_point;
-	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
+	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 	
 	/////////////////////////////////////////////////////////////////////

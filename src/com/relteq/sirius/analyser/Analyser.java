@@ -98,7 +98,7 @@ public class Analyser {
 														if (Math.abs(factor * d.get(iii) - f.get(iii)) > EPSILON) SiriusErrorLog.addErrorMessage("speeds differ");
 												}
 											}
-											Link link = null == scenario ? null : scenario.getLinkWithCompositeId(network_id, xmlsr.getAttributeValue(null, "id"));
+											Link link = null == scenario ? null : scenario.getLinkWithId(xmlsr.getAttributeValue(null, "id"));
 											Double dx = null != link && null != link.getLength() ? link.getLength().doubleValue() : null;
 											Double nlanes = null != link && null != link.getLanes()  ? link.getLanes().doubleValue() : null;
 											if (null == v && null != cum_f && null != cum_d && cum_d > 0 && null != dx) {

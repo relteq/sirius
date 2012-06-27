@@ -99,8 +99,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			((SplitRatioProfileSet) getSplitRatioProfileSet()).populate(this);
 		
 		// boundary capacities (must follow network)
-		if(getDownstreamBoundaryCapacitySet()!=null)
-			for( com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile() )
+		if(getDownstreamBoundaryCapacityProfileSet()!=null)
+			for( com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile() )
 				((CapacityProfile) capacityProfile).populate(this);
 
 		if(getDemandProfileSet()!=null)
@@ -112,8 +112,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				((FundamentalDiagramProfile) fd).populate(this);
 		
 		// initial density profile 
-		if(getInitialDensityProfile()!=null)
-			((InitialDensityProfile) getInitialDensityProfile()).populate(this);
+		if(getInitialDensitySet()!=null)
+			((InitialDensitySet) getInitialDensitySet()).populate(this);
 		
 		// initialize controllers and events
 		controllerset.populate(this);
@@ -175,8 +175,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected void update() throws SiriusException {	
 
         // sample profiles .............................	
-    	if(getDownstreamBoundaryCapacitySet()!=null)
-        	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+    	if(getDownstreamBoundaryCapacityProfileSet()!=null)
+        	for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
         		((CapacityProfile) capacityProfile).update();
 
     	if(getDemandProfileSet()!=null)
@@ -328,8 +328,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 //			}
 
 		// validate capacity profiles	
-		if(getDownstreamBoundaryCapacitySet()!=null)
-			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacitySet().getCapacityProfile())
+		if(getDownstreamBoundaryCapacityProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
 				if(!((CapacityProfile)capacityProfile).validate()){
 					SiriusErrorLog.addErrorMessage("DownstreamBoundaryCapacitySet validation failure.");
 					return false;
@@ -580,40 +580,34 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** Get a reference to a node by its composite id.
 	 * 
-	 * @param network_id String id of the network containing the node. 
 	 * @param id String id of the node. 
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
-	public Node getNodeWithCompositeId(String network_id,String id){
+	public Node getNodeWithId(String id){
 		if(getNetworkList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getNodeWithId(id);
-			else
-				return null;
-		else	
-			return network.getNodeWithId(id);
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork()){
+			Node node = ((com.relteq.sirius.simulator.Network) network).getNodeWithId(id);
+			if(node!=null)
+				return node;
+		}
+		return null;
 	}
 
 	/** Get a reference to a link by its composite id.
 	 * 
-	 * @param network_id String id of the network containing the link. 
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public Link getLinkWithCompositeId(String network_id,String id){
+	public Link getLinkWithId(String id){
 		if(getNetworkList()==null)
 			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			if(getNetworkList().getNetwork().size()==1)
-				return ((Network) getNetworkList().getNetwork().get(0)).getLinkWithId(id);
-			else
-				return null;
-		else	
-			return network.getLinkWithId(id);
+		for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork()){
+			Link link = ((com.relteq.sirius.simulator.Network) network).getLinkWithId(id);
+			if(link!=null)
+				return link;
+		}
+		return null;
 	}
 
 	/** Get sensor with given id.
@@ -800,7 +794,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return null;
 		
 		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		InitialDensityProfile initprofile = (InitialDensityProfile) getInitialDensityProfile();
+		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
 
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -867,8 +861,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		
         double time_ic;
-        if(getInitialDensityProfile()!=null)
-        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
+        if(getInitialDensitySet()!=null)
+        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
         else
         	time_ic = 0.0;
         
@@ -1031,8 +1025,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			simulationMode = null;
 			
 	        double time_ic;
-	        if(getInitialDensityProfile()!=null)
-	        	time_ic = ((InitialDensityProfile)getInitialDensityProfile()).timestamp;
+	        if(getInitialDensitySet()!=null)
+	        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
 	        else
 	        	time_ic = 0.0;
 	       

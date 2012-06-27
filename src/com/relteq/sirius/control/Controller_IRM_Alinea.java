@@ -85,7 +85,7 @@ public class Controller_IRM_Alinea extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
 			com.relteq.sirius.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onramplink = myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());	
+			onramplink = myScenario.getLinkWithId(s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
@@ -104,7 +104,7 @@ public class Controller_IRM_Alinea extends Controller {
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=myScenario.getLinkWithCompositeId(s.getNetworkId(),s.getId());
+					mainlinelink=myScenario.getLinkWithId(s.getId());
 					hasmainlinelink = true;
 				}
 

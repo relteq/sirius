@@ -308,8 +308,8 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		case normal:					// from the initial density profile 
 			density = new Double[n1][n2];
 			for(int i=0;i<n1;i++)
-				if(myScenario.getInitialDensityProfile()!=null)
-					density[i] = ((InitialDensityProfile)myScenario.getInitialDensityProfile()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+				if(myScenario.getInitialDensitySet()!=null)
+					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
 				else 
 					density[i] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 			break;

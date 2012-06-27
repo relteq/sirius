@@ -84,7 +84,7 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 				}
 			}
 			if(!foundit){
-				SiriusErrorLog.addErrorMessage("Controller target (network id="+se.getNetworkId()+",id="+se.getId()+") not found in pretimed signal plan id="+this.getId());
+				SiriusErrorLog.addErrorMessage("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+this.getId());
 				return false;
 			}
 		}

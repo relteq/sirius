@@ -71,7 +71,7 @@ public class SignalPhase {
 		this.targetlinks = new Link[numlinks];
 		for(int i=0;i<numlinks;i++){
 			com.relteq.sirius.jaxb.LinkReference linkref = jaxbPhase.getLinks().getLinkReference().get(i);
-			targetlinks[i] = myScenario.getLinkWithCompositeId(linkref.getNetworkId(),linkref.getId());
+			targetlinks[i] = myScenario.getLinkWithId(linkref.getId());
 		}
 		
 		if(jaxbPhase.getNema()!=null)

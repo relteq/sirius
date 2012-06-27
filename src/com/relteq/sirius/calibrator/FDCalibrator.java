@@ -258,15 +258,15 @@ public class FDCalibrator {
 
 				FDprof.setLinkId(G.link.getId());
 				FDprof.setDt(new BigDecimal(300));
-				FDprof.setNetworkId(G.link.getMyNetwork().getId());
+//				FDprof.setNetworkId(G.link.getMyNetwork().getId());
 				FDprof.setStartTime(new BigDecimal(0));
 				
 				SensorLoopStation S = (SensorLoopStation) G.sensor;
 				FD.setCapacity(new BigDecimal(S.getQ_max()));
 				FD.setCapacityDrop(new BigDecimal(0));
 				FD.setCongestionSpeed(new BigDecimal(S.getW()));
-				FD.setDensityJam(new BigDecimal(S.getRho_jam()));
-				FD.setFreeflowSpeed(new BigDecimal(S.getVf()));
+				FD.setJamDensity(new BigDecimal(S.getRho_jam()));
+				FD.setJamDensity(new BigDecimal(S.getVf()));
 				FD.setStdDevCapacity(new BigDecimal(0));
 				
 				FDprof.getFundamentalDiagram().add(FD);
