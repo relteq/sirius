@@ -325,7 +325,7 @@ if(hassignal)
         for j=1:length(scenario.SignalList.signal(i).phase)
             if(~isempty(scenario.SignalList.signal(i).phase(j).links))
                 links = scenario.SignalList.signal(i).phase(j).links;
-                link_reference = repmat(struct('ATTRIBUTE',struct('network_id',networkid,'id',nan)),1,length(links));
+                link_reference = repmat(struct('ATTRIBUTE',struct('id',nan)),1,length(links));
                 for k=1:length(links)
                     link_reference(k).ATTRIBUTE.id = links(k);
                 end
