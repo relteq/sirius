@@ -5,18 +5,23 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.Properties;
+
+import org.apache.torque.Torque;
+import org.apache.torque.TorqueException;
+
 public final class Runner {
 	
 	private static Scenario scenario;
-		
-	private static OutputWriter_Base.Type outputtype = OutputWriter_Base.Type.tabdelim;
+
+	private static String outputtype = "xml";
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
 	private static double timeend;
 	private static double outdt;
 	private static int numRepetitions;
-	
+
 	public static void main(String[] args) {
 		
 		long time = System.currentTimeMillis();
@@ -37,12 +42,20 @@ public final class Runner {
 		}
 
 		try {
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
+			Properties owr_props = new Properties();
+			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+			owr_props.setProperty("type", outputtype);
+			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
 		} catch (SiriusException e) {
 			e.printStackTrace();
 		}	
 		
 		System.out.println("done in " + (System.currentTimeMillis()-time));
+	}
+
+	public static void debug(String [] args) {
+		outputtype = "text";
+		main(args);
 	}
 
 	private static boolean parseInput(String[] args){
@@ -117,4 +130,14 @@ public final class Runner {
 		return true;
 	}
 
+	public static void run_db(String [] args) throws Exception {
+		outputtype = "db";
+		com.relteq.sirius.db.Parameters params = com.relteq.sirius.db.Parameters.get();
+		try {
+			Torque.init(params.toConfiguration());
+			main(args);
+		} catch (TorqueException exc) {
+			exc.printStackTrace();
+		}
+	}
 }
