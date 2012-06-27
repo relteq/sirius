@@ -1,10 +1,17 @@
 package com.relteq.sirius.db.exporter;
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.validation.SchemaFactory;
+
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
+import org.xml.sax.SAXException;
 
 import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitiesPeer;
@@ -34,6 +41,15 @@ import com.relteq.sirius.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioRestorer {
+	public static void export(String id, String filename) throws SiriusException, JAXBException, SAXException {
+		com.relteq.sirius.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
+		JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
+		Marshaller mrsh = jaxbc.createMarshaller();
+		SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		mrsh.setSchema(sf.newSchema(ScenarioRestorer.class.getClassLoader().getResource("sirius.xsd")));
+		mrsh.marshal(scenario, new File(filename));
+	}
+
 	/**
 	 * Load a scenario from the database
 	 * @param id a scenario id

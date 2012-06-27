@@ -20,7 +20,12 @@ public class Runner {
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
-				throw new NotImplementedException(cmd);
+				if (0 == arguments.length || 2 < arguments.length)
+					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
+				else {
+					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
+					com.relteq.sirius.db.exporter.ScenarioRestorer.export(arguments[0], filename);
+				}
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				com.relteq.sirius.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
