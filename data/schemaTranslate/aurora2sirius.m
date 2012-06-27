@@ -29,6 +29,10 @@ scenario.network=safermfield(scenario.network,'MonitorList');
 % remove qmax
 scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'qmax');
 
+% remove LinkGeometry
+scenario.network.LinkList.link = safermfield(scenario.network.LinkList.link,'LinkGeometry');
+
+
 % remove: ml_cotrol q_control
 scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'ml_control');
 scenario.network.ATTRIBUTE =safermfield(scenario.network.ATTRIBUTE,'q_control');
