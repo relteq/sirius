@@ -26,7 +26,7 @@
 
 	<table name="networks">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="seed_network_id" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
@@ -91,6 +91,7 @@
 
 	<table name="network_connection_lists">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -123,6 +124,7 @@
 
 	<table name="od_lists">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -145,6 +147,7 @@
 
 	<table name="route_segments">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -192,7 +195,7 @@
 
 	<table name="vehicle_type_lists">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="vehicle_type_families">
@@ -201,14 +204,23 @@
 
 	<table name="vehicle_types">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="vehicle_type_list_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="weight" required="true" type="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
 		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="id" foreign="id"/>
 		</foreign-key>
+	</table>
+
+	<table name="vehicle_types_in_lists">
+		<column name="vehicle_type_list_id" required="true" domain="STRING_ID"/>
+		<column name="vehicle_type_id" required="true" domain="STRING_ID"/>
 		<foreign-key foreignTable="vehicle_type_lists">
 			<reference local="vehicle_type_list_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_type_families">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -217,6 +229,7 @@
 
 	<table name="initial_density_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -242,6 +255,7 @@
 
 	<table name="weaving_factor_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -271,6 +285,7 @@
 
 	<table name="split_ratio_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -315,6 +330,7 @@
 
 	<table name="decision_point_split_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -339,7 +355,7 @@
 		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="enabled" required="true" domain="BOOL" description="Indicator whether this decision point is enabled for given vehicle types at given time instance."/>
+		<column name="split" required="true" type="DECIMAL" description="Split ratio between 0 and 1."/>
 		<foreign-key foreignTable="decision_point_split_profiles">
 			<reference local="decision_point_split_profile_id" foreign="id"/>
 		</foreign-key>
@@ -359,6 +375,7 @@
 
 	<table name="fundamental_diagram_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -396,6 +413,7 @@
 
 	<table name="demand_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -435,6 +453,7 @@
 
 	<table name="od_demand_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -478,6 +497,7 @@
 	
 	<table name="downstream_boundary_capacity_profile_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
@@ -513,22 +533,26 @@
 
 	<table name="signal_lists">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
 
 	<table name="signals">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" required="true" domain="STRING_ID"/>
+		<column name="signal_list_id" required="true" domain="STRING_ID"/>
 		<foreign-key foreignTable="node_families">
 			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="signal_lists">
+			<reference local="signal_list_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="phases">
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="phase_id" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="protected" javaName="is_protected" required="true" domain="BOOL" description=""/>
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
@@ -536,6 +560,15 @@
 		<column name="min_green_time" required="true" type="DECIMAL" description="Minimum green time in seconds."/>
 		<column name="yellow_time" required="true" type="DECIMAL" description="Yellow time in seconds."/>
 		<column name="red_clear_time" required="true" type="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
+		<foreign-key foreignTable="signals">
+			<reference local="signal_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="phase_links">
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -555,7 +588,7 @@
 
 	<table name="scenarios">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="network_connection_list_id" domain="STRING_ID"/>
 		<column name="od_list_id" domain="STRING_ID"/>
 		<column name="decision_point_split_profile_set_id" domain="STRING_ID"/>
@@ -648,17 +681,17 @@
 	</table>
 	
 	<table name="simulation_runs">
-		<column name="id" primaryKey="true" type="INTEGER"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="scenario_id" required="true" domain="STRING_ID"/>
+		<column name="run_number" required="true" type="INTEGER"/>
 		<column name="start_time" required="true" type="TIMESTAMP"/>
 		<column name="end_time" required="true" type="TIMESTAMP"/>
 		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
@@ -676,8 +709,7 @@
 	<table name="link_data_total">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
 		<column name="in_flow" type="DECIMAL"/>
@@ -702,19 +734,18 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="link_data_detailed">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="run_id" primaryKey="true" type="INTEGER"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
 		<column name="in_flow" type="DECIMAL"/>
@@ -733,8 +764,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -756,8 +787,7 @@
 	<table name="link_performance_total">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
 		<column name="vmt" type="DECIMAL"/>
@@ -765,30 +795,33 @@
 		<column name="delay" type="DECIMAL"/>
 		<column name="travel_time" type="DECIMAL"/>
 		<column name="productivity_loss" type="DECIMAL"/>
+		<column name="los" type="DECIMAL" description="LOS - Level Of Service as defined in Highway Capacity Manual."/>
+		<column name="vc_ratio" type="DECIMAL" description="Volume to capacity ratio."/>
 		<column name="vmt_worst" type="DECIMAL"/>
 		<column name="vht_worst" type="DECIMAL"/>
 		<column name="delay_worst" type="DECIMAL"/>
 		<column name="travel_time_worst" type="DECIMAL"/>
 		<column name="productivity_loss_worst" type="DECIMAL"/>
+		<column name="los_worst" type="DECIMAL"/>
+		<column name="vc_ratio_worst" type="DECIMAL"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
 	<table name="link_performance_detailed">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="run_id" primaryKey="true" type="INTEGER"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
 		<column name="vmt" type="DECIMAL"/>
@@ -803,8 +836,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -824,26 +857,51 @@
 	<table name="signal_data">
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="phase_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="run_id" primaryKey="true" type="INTEGER"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
+		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="scenarios">
-			<reference local="scenario_id" foreign="id"/>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
 
 
+
+
+	<!-- Signal Performance -->
+
+	<table name="signal_phase_performance">
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
+		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="phase_utilization" type="DECIMAL" description="Percentage of green used."/>
+		<column name="progression_quality" type="DECIMAL" description="Percentage of vehicles arriving during green phase."/>
+		<column name="delay_per_cycle" type="DECIMAL" description="Delay per cycle for given phase."/>
+		<column name="queue_size" type="DECIMAL" description="Size of the queue waiting for green phase."/>
+		<column name="number_of_stops" type="INTEGER" description="Number of cycles needed to pass through intersection."/>
+		<foreign-key foreignTable="signals">
+			<reference local="signal_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
+	</table>
 
 
 
