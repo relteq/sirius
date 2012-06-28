@@ -86,6 +86,26 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			return true;
 		}
 	}
+	
+	/** @y.exclude */
+	protected boolean deregisterFlowController(Controller c){
+		if(myFlowController!=c)
+			return false;
+		else{
+			myFlowController = null;			
+			return true;
+		}
+	}
+
+	/** @y.exclude */
+	protected boolean deregisterSpeedController(Controller c){
+		if(mySpeedController!=c)
+			return false;
+		else{
+			mySpeedController = null;			
+			return true;
+		}
+	}
 
 	/** @y.exclude */
 	protected FundamentalDiagram currentFD(int ensemble){

@@ -107,6 +107,32 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 			return link.registerFlowController(this,index);
 	}
 
+   	/** Use this method within {@link InterfaceController#deregister} to deregister
+   	 * speed control with a target link. The return value is <code>true</code> if
+   	 * the deregistration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for speed control.
+   	 * @return A boolean indicating success of the deregistration. 
+   	 */
+	protected boolean deregisterSpeedController(Link link){
+		if(link!=null)			
+			return link.deregisterSpeedController(this);
+		else
+			return false;
+	}
+	
+	/** Use this method within {@link InterfaceController#deregister} to deregister
+   	 * flow control with a target link. The return value is <code>true</code> if
+   	 * the deregistration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for flow control.
+   	 * @return A boolean indicating success of the deregistration. 
+   	 */
+	protected boolean deregisterFlowController(Link link){
+		if(link==null)
+			return false;
+		else
+			return link.deregisterFlowController(this);
+	}
+
    	/** Use this method within {@link InterfaceController#register} to register
    	 * speed control with a target link. The return value is <code>true</code> if
    	 * the registration is successful, and <code>false</code> otherwise. 
@@ -120,7 +146,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		else
 			return link.registerSpeedController(this,index);
 	}
-	
 	
 //   	/** DESCRIPTION
 //   	 * 

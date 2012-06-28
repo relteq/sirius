@@ -39,4 +39,10 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 	}
 
+	@Override
+	public boolean deregister() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

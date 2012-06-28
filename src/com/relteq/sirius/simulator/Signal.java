@@ -309,6 +309,14 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 			return true;
 		}
 		
+		@Override
+		public boolean deregister() {
+	        for(Link link : target2index.keySet())
+	        	if(!link.deregisterFlowController(this))
+	        		return false;
+			return true;
+		}
+		
 		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
 			
 			Integer [] indices = nema2indices.get(nema);

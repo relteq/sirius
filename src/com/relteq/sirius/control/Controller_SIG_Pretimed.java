@@ -177,5 +177,11 @@ public class Controller_SIG_Pretimed extends Controller {
 	public boolean register() {
 		return true; // signal controllers don't have to register, because the signal does this for them.
 	}
+
+	@Override
+	public boolean deregister() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

@@ -23,4 +23,16 @@ public interface InterfaceController {
 	 * <code>false</code> otherwise.
 	 */
 	public boolean register();
+	
+	/** deRegister the controller with its targets. 
+	 * 
+	 * <p> All controllers must deregister with their targets when they are no longer active
+	 *  This is to prevent clashes, in which two or more controllers access the same variable at different simulation periods 
+	 * . Use {@link Controller#deregisterFlowController} {@link Controller#deregisterSpeedController} to register. 
+	 * The return value of these methods indicates whether the deregistration was successful.
+	 * 
+	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
+	 * <code>false</code> otherwise.
+	 */
+	public boolean deregister();
 }

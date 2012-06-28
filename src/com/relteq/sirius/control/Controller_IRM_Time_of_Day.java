@@ -39,4 +39,10 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		
 	}
 
+	@Override
+	public boolean deregister() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
