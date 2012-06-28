@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="sirius calpath" default="jar" basedir="."
+<project name="sirius relteq" default="jar" basedir="."
 		xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="test.dir" value="${basedir}/test"/>
