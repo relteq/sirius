@@ -59,7 +59,15 @@ public class ScenarioRestorer {
 	 */
 	public static com.relteq.sirius.simulator.Scenario getScenario(String id) throws SiriusException {
 		if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
-		return new ScenarioRestorer().restore(id);
+		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
+		if (null == scenario) {
+			if (SiriusErrorLog.haserror()) {
+				SiriusErrorLog.printErrorMessage();
+				SiriusErrorLog.clearErrorMessage();
+			}
+			throw new SiriusException("Could not load the scenario");
+		}
+		return scenario;
 	}
 
 	com.relteq.sirius.simulator.JaxbObjectFactory factory = null;
