@@ -276,7 +276,16 @@ public final class ObjectFactory {
 
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
-        
+
+		return process(S);
+	}
+
+	/**
+	 * Updates a scenario loaded by JAXB
+	 * @param S a scenario
+	 * @return the updated scenario or null if an error occurred
+	 */
+	public static Scenario process(Scenario S) {
         // copy data to static variables ..............................................
         S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
