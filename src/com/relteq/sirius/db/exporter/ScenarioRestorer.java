@@ -43,6 +43,7 @@ import com.relteq.sirius.simulator.SiriusException;
 public class ScenarioRestorer {
 	public static void export(String id, String filename) throws SiriusException, JAXBException, SAXException {
 		com.relteq.sirius.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
+		scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 		JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
 		Marshaller mrsh = jaxbc.createMarshaller();
 		SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -79,7 +80,6 @@ public class ScenarioRestorer {
 			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorsProfile(restoreWeavingFactorsProfile(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
-			scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
