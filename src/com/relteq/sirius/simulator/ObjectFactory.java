@@ -298,16 +298,14 @@ public final class ObjectFactory {
         	return null;
         }
         
-        // register controllers with their targets ..................................
+        // register signals with their targets ..................................
         boolean registersuccess = true;
-        for(Controller controller : S.controllerset.controllers)
-        	registersuccess &= controller.register();
     	if(S.getSignalList()!=null)
         	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
         		registersuccess &= ((Signal)signal).register();
         
         if(!registersuccess){
-        	SiriusErrorLog.addErrorMessage("Controller registration failure.");
+        	SiriusErrorLog.addErrorMessage("Signal registration failure.");
         	return null;
         }
 		

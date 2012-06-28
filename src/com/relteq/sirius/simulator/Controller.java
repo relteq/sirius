@@ -166,17 +166,19 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.id = c.getId();
-		this.ison = c.isEnabled(); 
+		this.ison = false; //c.isEnabled(); 
 		this.activationTimes=new ArrayList<ActivationTimes>();
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		
 		// Get activation times and sort	
-		for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval()){			
-			if(tinterval!=null){				
-				activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
-			}
-		}		
+		if (c.getActivationIntervals()!=null)
+			for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval()){			
+				if(tinterval!=null){				
+					activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
+				}
+			}		
+			
 		Collections.sort(activationTimes);
 		
 		// store targets ......
@@ -241,7 +243,9 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 
 	/** @y.exclude */
 	public void reset() {
-		ison = true;
+		//switch on conroller if it is always on by default.
+		if (activationTimes==null)
+			ison = true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -311,9 +315,8 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		}
 		/////////////////////////////////////////////////////////////////////
 		// Comparable
-		/////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////		
 		
-		@Override
 		public int compareTo(Object arg0) {
 			if(arg0==null)
 				return 1;

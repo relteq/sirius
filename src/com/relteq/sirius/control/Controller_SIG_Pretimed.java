@@ -179,9 +179,8 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 
 	@Override
-	public boolean deregister() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean deregister() {		
+		return false;  // signal controllers cannot deregister, because the signal does this for them.
 	}
 	
 }
