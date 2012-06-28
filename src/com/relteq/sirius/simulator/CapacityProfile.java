@@ -14,7 +14,7 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	protected Double1DVector capacity;		// [veh]
 	protected boolean isdone;
 	protected int stepinitial;
-asd
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
