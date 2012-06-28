@@ -38,6 +38,8 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		
 		this.myScenario = myScenario;
 		this.myNode = myScenario.getNodeWithId(getNodeId());
+		
+		myNode.mySignal = this;
 
 		int i;
 		int totalphases = getPhase().size();
