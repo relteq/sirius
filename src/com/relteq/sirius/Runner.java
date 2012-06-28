@@ -117,17 +117,17 @@ public class Runner {
 		 * Constructs an <code>InvalidCommandException</code> for the specified command
 		 * @param cmd name of the command
 		 */
-		InvalidCommandException(String cmd) {
+		public InvalidCommandException(String cmd) {
 			super("Invalid command '" + cmd + "'");
 		}
 	}
 
 	@SuppressWarnings("serial")
 	public static class InvalidUsageException extends Exception {
-		InvalidUsageException() {
+		public InvalidUsageException() {
 			super();
 		}
-		InvalidUsageException(String message) {
+		public InvalidUsageException(String message) {
 			super(message);
 		}
 	}
