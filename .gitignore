@@ -10,4 +10,6 @@ output_*.xml
 velocity.log
 /sirius/
 /derby.log
+.project
+.classpath
 
