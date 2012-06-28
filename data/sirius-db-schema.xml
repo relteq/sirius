@@ -13,7 +13,7 @@
 	<domain name="AGGREGATION" type="VARCHAR" size="8"/>
 	<domain name="EXE_STATUS" type="INTEGER"/>
 	<domain name="BOOL" type="BOOLEANCHAR"/>
-
+	<domain name="DECIMAL" type="DECIMAL" size="31" scale="16"/>
 
 
 
@@ -42,10 +42,10 @@
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
-		<column name="latitude" required="true" type="DECIMAL"/>
-		<column name="longitude" required="true" type="DECIMAL"/>
-		<column name="elevation" required="true" type="DECIMAL"/>
-		<column name="postmile" type="DECIMAL" description="Absolute postmile."/>
+		<column name="latitude" required="true" domain="DECIMAL"/>
+		<column name="longitude" required="true" domain="DECIMAL"/>
+		<column name="elevation" required="true" domain="DECIMAL"/>
+		<column name="postmile" domain="DECIMAL" description="Absolute postmile."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of node model, e.g. STANDARD."/>
 		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<foreign-key foreignTable="node_families">
@@ -70,10 +70,10 @@
 		<column name="description" domain="DESCRIPTION_BUF"/>
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="shape" domain="ENCODED_SHAPE" description="Geo shape encoded in Google format."/>
-		<column name="lanes" required="true" type="DECIMAL" description="Number of lanes."/>
-		<column name="length" required="true" type="DECIMAL" description="Length in miles."/>
+		<column name="lanes" required="true" domain="DECIMAL" description="Number of lanes."/>
+		<column name="length" required="true" domain="DECIMAL" description="Length in miles."/>
 		<column name="model" required="true" domain="MODEL_TYPE" description="Type of link model, e.g. CTM."/>
-		<column name="display_lane_offset" type="DECIMAL"/>
+		<column name="display_lane_offset" domain="DECIMAL"/>
 		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="id" foreign="id"/>
@@ -205,7 +205,7 @@
 	<table name="vehicle_types">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="weight" required="true" type="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
+		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
 		<column name="name" required="true" domain="NAME_BUF"/>
 		<column name="standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
 		<foreign-key foreignTable="vehicle_type_families">
@@ -238,7 +238,7 @@
 		<column name="initial_density_set_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="density" type="DECIMAL"/>
+		<column name="density" domain="DECIMAL"/>
 		<foreign-key foreignTable="initial_density_sets">
 			<reference local="initial_density_set_id" foreign="id"/>
 		</foreign-key>
@@ -265,7 +265,7 @@
 		<column name="in_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="factor" type="DECIMAL" description="Should be greater than 1 for downstream merge weaving, or less than -1 for upstream diverge weaving. 1 and -1 represent no weaving."/>
+		<column name="factor" domain="DECIMAL" description="Should be greater than 1 for downstream merge weaving, or less than -1 for upstream diverge weaving. 1 and -1 represent no weaving."/>
 		<foreign-key foreignTable="weaving_factor_sets">
 			<reference local="weaving_factor_set_id" foreign="id"/>
 		</foreign-key>
@@ -294,8 +294,8 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="split_ratio_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="split_ratio_profile_sets">
 			<reference local="split_ratio_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -310,7 +310,7 @@
 		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="split_ratio" required="true" type="DECIMAL" description="Value between 0 and 1."/>
+		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
 		<foreign-key foreignTable="split_ratio_profiles">
 			<reference local="split_ratio_profile_id" foreign="id"/>
 		</foreign-key>
@@ -339,8 +339,8 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="decision_point_split_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="decision_point_split_profile_sets">
 			<reference local="decision_point_split_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -355,7 +355,7 @@
 		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="split" required="true" type="DECIMAL" description="Split ratio between 0 and 1."/>
+		<column name="split" required="true" domain="DECIMAL" description="Split ratio between 0 and 1."/>
 		<foreign-key foreignTable="decision_point_split_profiles">
 			<reference local="decision_point_split_profile_id" foreign="id"/>
 		</foreign-key>
@@ -384,8 +384,8 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="fundamental_diagram_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="fundamental_diagram_profile_sets">
 			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -397,12 +397,12 @@
 	<table name="fundamental_diagrams">
 		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="free_flow_speed" required="true" type="DECIMAL" description="Free flow speed in mph."/>
-		<column name="congestion_wave_speed" required="true" type="DECIMAL" description="Congestion wave speed in mph."/>
-		<column name="capacity" required="true" type="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
-		<column name="jam_density" type="DECIMAL" description="Maximum density per lane in vehicles per mile per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
-		<column name="capacity_drop" type="DECIMAL" description="Capacity drop in vphl. Optional."/>
-		<column name="std_deviation_capacity" type="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
+		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in mph."/>
+		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in mph."/>
+		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per mile per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
+		<column name="std_deviation_capacity" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
 		<foreign-key foreignTable="fundamental_diagram_profiles">
 			<reference local="fundamental_diagram_profile_id" foreign="id"/>
 		</foreign-key>
@@ -422,11 +422,11 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
-		<column name="knob" type="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
-		<column name="std_deviation_additive" type="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
-		<column name="std_deviation_multiplicative" type="DECIMAL" description="Demand uncertainty. Default value is 1."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
+		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
+		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
+		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
 		<foreign-key foreignTable="demand_profile_sets">
 			<reference local="demand_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -439,7 +439,7 @@
 		<column name="demand_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="demand" required="true" type="DECIMAL" description="Demand flow in vph."/>
+		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<foreign-key foreignTable="demand_profiles">
 			<reference local="demand_profile_id" foreign="id"/>
 		</foreign-key>
@@ -463,11 +463,11 @@
 		<column name="od_demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
 		<column name="od_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
-		<column name="knob" type="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
-		<column name="std_deviation_additive" type="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
-		<column name="std_deviation_multiplicative" type="DECIMAL" description="Demand uncertainty. Default value is 1."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
+		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
+		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
+		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
 		<foreign-key foreignTable="od_demand_profile_sets">
 			<reference local="od_demand_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -483,7 +483,7 @@
 		<column name="od_demand_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="od_demand" required="true" type="DECIMAL" description="Demand flow in vph."/>
+		<column name="od_demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<foreign-key foreignTable="od_demand_profiles">
 			<reference local="od_demand_profile_id" foreign="id"/>
 		</foreign-key>
@@ -506,8 +506,8 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" type="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" type="DECIMAL" description="Start time in seconds."/>
+		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
 			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -519,7 +519,7 @@
 	<table name="downstream_boundary_capacities">
 		<column name="downstream_boundary_capacity_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
-		<column name="downstream_boundary_capacity" required="true" type="DECIMAL" description="Maximum flow that can exit this link in vph."/>
+		<column name="downstream_boundary_capacity" required="true" domain="DECIMAL" description="Maximum flow that can exit this link in vph."/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profiles">
 			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>
 		</foreign-key>
@@ -557,9 +557,9 @@
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
 		<column name="recall" required="true" domain="BOOL" description=""/>
-		<column name="min_green_time" required="true" type="DECIMAL" description="Minimum green time in seconds."/>
-		<column name="yellow_time" required="true" type="DECIMAL" description="Yellow time in seconds."/>
-		<column name="red_clear_time" required="true" type="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
+		<column name="min_green_time" required="true" domain="DECIMAL" description="Minimum green time in seconds."/>
+		<column name="yellow_time" required="true" domain="DECIMAL" description="Yellow time in seconds."/>
+		<column name="red_clear_time" required="true" domain="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -712,22 +712,22 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="in_flow" type="DECIMAL"/>
-		<column name="out_flow" type="DECIMAL"/>
-		<column name="density" type="DECIMAL"/>
-		<column name="occupancy" type="DECIMAL"/>
-		<column name="speed" type="DECIMAL"/>
-		<column name="in_flow_worst" type="DECIMAL"/>
-		<column name="out_flow_worst" type="DECIMAL"/>
-		<column name="density_worst" type="DECIMAL"/>
-		<column name="occupancy_worst" type="DECIMAL"/>
-		<column name="speed_worst" type="DECIMAL"/>
-		<column name="free_flow_speed" type="DECIMAL" description="Free flow speed in mph."/>
-		<column name="congestion_wave_speed" type="DECIMAL" description="Congestion wave speed in mph."/>
-		<column name="capacity" type="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
-		<column name="jam_density" type="DECIMAL" description="Maximum density per lane in vehicles per mile per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
-		<column name="capacity_drop" type="DECIMAL" description="Capacity drop in vphl. Optional."/>
-		<column name="std_deviation_capacity" type="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
+		<column name="in_flow" domain="DECIMAL"/>
+		<column name="out_flow" domain="DECIMAL"/>
+		<column name="density" domain="DECIMAL"/>
+		<column name="occupancy" domain="DECIMAL"/>
+		<column name="speed" domain="DECIMAL"/>
+		<column name="in_flow_worst" domain="DECIMAL"/>
+		<column name="out_flow_worst" domain="DECIMAL"/>
+		<column name="density_worst" domain="DECIMAL"/>
+		<column name="occupancy_worst" domain="DECIMAL"/>
+		<column name="speed_worst" domain="DECIMAL"/>
+		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in mph."/>
+		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in mph."/>
+		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per mile per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
+		<column name="std_deviation_capacity" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -748,16 +748,16 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="in_flow" type="DECIMAL"/>
-		<column name="out_flow" type="DECIMAL"/>
-		<column name="density" type="DECIMAL"/>
-		<column name="occupancy" type="DECIMAL"/>
-		<column name="speed" type="DECIMAL"/>
-		<column name="in_flow_worst" type="DECIMAL"/>
-		<column name="out_flow_worst" type="DECIMAL"/>
-		<column name="density_worst" type="DECIMAL"/>
-		<column name="occupancy_worst" type="DECIMAL"/>
-		<column name="speed_worst" type="DECIMAL"/>
+		<column name="in_flow" domain="DECIMAL"/>
+		<column name="out_flow" domain="DECIMAL"/>
+		<column name="density" domain="DECIMAL"/>
+		<column name="occupancy" domain="DECIMAL"/>
+		<column name="speed" domain="DECIMAL"/>
+		<column name="in_flow_worst" domain="DECIMAL"/>
+		<column name="out_flow_worst" domain="DECIMAL"/>
+		<column name="density_worst" domain="DECIMAL"/>
+		<column name="occupancy_worst" domain="DECIMAL"/>
+		<column name="speed_worst" domain="DECIMAL"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -790,20 +790,20 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="vmt" type="DECIMAL"/>
-		<column name="vht" type="DECIMAL"/>
-		<column name="delay" type="DECIMAL"/>
-		<column name="travel_time" type="DECIMAL"/>
-		<column name="productivity_loss" type="DECIMAL"/>
-		<column name="los" type="DECIMAL" description="LOS - Level Of Service as defined in Highway Capacity Manual."/>
-		<column name="vc_ratio" type="DECIMAL" description="Volume to capacity ratio."/>
-		<column name="vmt_worst" type="DECIMAL"/>
-		<column name="vht_worst" type="DECIMAL"/>
-		<column name="delay_worst" type="DECIMAL"/>
-		<column name="travel_time_worst" type="DECIMAL"/>
-		<column name="productivity_loss_worst" type="DECIMAL"/>
-		<column name="los_worst" type="DECIMAL"/>
-		<column name="vc_ratio_worst" type="DECIMAL"/>
+		<column name="vmt" domain="DECIMAL"/>
+		<column name="vht" domain="DECIMAL"/>
+		<column name="delay" domain="DECIMAL"/>
+		<column name="travel_time" domain="DECIMAL"/>
+		<column name="productivity_loss" domain="DECIMAL"/>
+		<column name="los" domain="DECIMAL" description="LOS - Level Of Service as defined in Highway Capacity Manual."/>
+		<column name="vc_ratio" domain="DECIMAL" description="Volume to capacity ratio."/>
+		<column name="vmt_worst" domain="DECIMAL"/>
+		<column name="vht_worst" domain="DECIMAL"/>
+		<column name="delay_worst" domain="DECIMAL"/>
+		<column name="travel_time_worst" domain="DECIMAL"/>
+		<column name="productivity_loss_worst" domain="DECIMAL"/>
+		<column name="los_worst" domain="DECIMAL"/>
+		<column name="vc_ratio_worst" domain="DECIMAL"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -824,12 +824,12 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="vmt" type="DECIMAL"/>
-		<column name="vht" type="DECIMAL"/>
-		<column name="delay" type="DECIMAL"/>
-		<column name="vmt_worst" type="DECIMAL"/>
-		<column name="vht_worst" type="DECIMAL"/>
-		<column name="delay_worst" type="DECIMAL"/>
+		<column name="vmt" domain="DECIMAL"/>
+		<column name="vht" domain="DECIMAL"/>
+		<column name="delay" domain="DECIMAL"/>
+		<column name="vmt_worst" domain="DECIMAL"/>
+		<column name="vht_worst" domain="DECIMAL"/>
+		<column name="delay_worst" domain="DECIMAL"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -862,7 +862,7 @@
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
 		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
-		<column name="duration" required="true" type="DECIMAL" description="Duration of green for this phase in seconds."/>
+		<column name="duration" required="true" domain="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -887,10 +887,10 @@
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="phase_utilization" type="DECIMAL" description="Percentage of green used."/>
-		<column name="progression_quality" type="DECIMAL" description="Percentage of vehicles arriving during green phase."/>
-		<column name="delay_per_cycle" type="DECIMAL" description="Delay per cycle for given phase."/>
-		<column name="queue_size" type="DECIMAL" description="Size of the queue waiting for green phase."/>
+		<column name="phase_utilization" domain="DECIMAL" description="Percentage of green used."/>
+		<column name="progression_quality" domain="DECIMAL" description="Percentage of vehicles arriving during green phase."/>
+		<column name="delay_per_cycle" domain="DECIMAL" description="Delay per cycle for given phase."/>
+		<column name="queue_size" domain="DECIMAL" description="Size of the queue waiting for green phase."/>
 		<column name="number_of_stops" type="INTEGER" description="Number of cycles needed to pass through intersection."/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
