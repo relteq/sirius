@@ -127,10 +127,36 @@ public final class Runner {
 		return true;
 	}
 
-	public static void run_db(String [] args) throws SiriusException {
-		outputtype = "db";
+	public static void run_db(String [] args) throws SiriusException, com.relteq.sirius.Runner.InvalidUsageException {
+		if (0 == args.length) {
+			final String eol = System.getProperty("line.separator");
+			throw new com.relteq.sirius.Runner.InvalidUsageException(
+					"Usage: simulate|s scenario_id [parameters]" + eol +
+					"Parameters:" + eol +
+					"\tstart time, sec" + eol +
+					"\tduration, sec" + eol +
+					"\toutput sampling time, sec" + eol +
+					"\tnumber of simulations");
+		} else {
+			String [] auxargs = new String[args.length + 1];
+			auxargs[0] = auxargs[1] = null;
+			System.arraycopy(args, 1, auxargs, 2, args.length - 1);
+			parseInput(auxargs);
+		}
+
 		com.relteq.sirius.db.Service.init();
-		main(args);
+
+		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		if (SiriusErrorLog.haserror()) {
+			SiriusErrorLog.printErrorMessage();
+			return;
+		}
+
+		Properties owr_props = new Properties();
+		owr_props.setProperty("type", "db");
+		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
+
 		com.relteq.sirius.db.Service.shutdown();
 	}
+
 }
