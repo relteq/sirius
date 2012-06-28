@@ -254,6 +254,16 @@ public class ScenarioRestorer {
 		dynamics.setType(db_link.getModel());
 		link.setDynamics(dynamics);
 		link.setLaneOffset(db_link.getDisplayLaneOffset());
+		if (null != db_link.getBeginNodeId()) {
+			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
+			begin.setNodeId(db_link.getBeginNodeId());
+			link.setBegin(begin);
+		}
+		if (null != db_link.getEndNodeId()) {
+			com.relteq.sirius.jaxb.End end = factory.createEnd();
+			end.setNodeId(db_link.getEndNodeId());
+			link.setEnd(end);
+		}
 		return link;
 	}
 
