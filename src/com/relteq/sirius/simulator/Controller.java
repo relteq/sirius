@@ -6,6 +6,7 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /** Base implementation of {@link InterfaceController}.
  * 
@@ -46,6 +47,9 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	
 	/** On/off switch for this controller */
 	protected boolean ison;
+	
+	/** On/off switch for this controller */
+	protected ArrayList<ActivationTimes> activationTimes;
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
@@ -137,10 +141,19 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.id = c.getId();
-		this.ison = true;
+		this.ison = c.isEnabled(); 
+		this.activationTimes=new ArrayList<ActivationTimes>();
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
-
+		
+		// Get activation times and sort	
+		for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval()){			
+			if(tinterval!=null){				
+				activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
+			}
+		}		
+		Collections.sort(activationTimes);
+		
 		// store targets ......
 		targets = new ArrayList<ScenarioElement>();
 		if(c.getTargetElements()!=null)
@@ -167,7 +180,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** @y.exclude */
 	public boolean validate() {
 		
-		// check that type was reaad correctly
+		// check that type was read correctly
 		if(myType==null){
 			SiriusErrorLog.addErrorMessage("Controller has the wrong type.");
 			return false;
@@ -183,6 +196,20 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
 			SiriusErrorLog.addErrorMessage("Controller sample time must be integer multiple of simulation time step.");
 			return false;
+		}
+		
+		// check that activation times are valid.
+		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ ){
+			if(!activationTimes.get(ActTimesIndex).validate()){
+				SiriusErrorLog.addErrorMessage("ActivationTimes must have a valid time interval.");
+				return false;
+			}
+			if (ActTimesIndex<activationTimes.size()-1){
+				if(!activationTimes.get(ActTimesIndex).validateWith(activationTimes.get(ActTimesIndex+1))){
+					SiriusErrorLog.addErrorMessage("Activation Periods of the controllers must not overlap.");
+					return false;
+				}
+			}
 		}
 		return true;
 	}
@@ -219,5 +246,69 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	public boolean isIson() {
 		return ison;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	/** Creates a new class that stores begin and end times for each period of controller activation */
+	protected class ActivationTimes implements Comparable{
+		/** Start time for each activation interval */
+		protected double begintime; 
+		/** End time for each activation interval */
+		protected double endtime;
+		
+		protected ActivationTimes(double begintime, double endtime) {
+			super();
+			this.begintime = begintime;
+			this.endtime = endtime;
+		}
+		public double getBegintime() {
+			return begintime;
+		}
+		protected void setBegintime(double begintime) {
+			this.begintime = begintime;
+		}
+		public double getEndtime() {
+			return endtime;
+		}
+		protected void setEndtime(double endtime) {
+			this.endtime = endtime;
+		}		
+		
+		protected boolean validate(){			
+			if (begintime-endtime>=0)
+				return false;
+			return true;			  
+		}
+		
+		protected boolean validateWith(ActivationTimes that){			
+			if (Math.max(this.begintime-that.getEndtime(), that.getBegintime()-this.endtime)<0)  // Assumption - activation times is sorted before this is invoked, should remove this assumption later.
+				return false;
+			return true;			  
+		}
+		/////////////////////////////////////////////////////////////////////
+		// Comparable
+		/////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public int compareTo(Object arg0) {
+			if(arg0==null)
+				return 1;
+			ActivationTimes that = (ActivationTimes) arg0;
+			
+			// Order first by begintimes.
+			int compare = ((Double) this.getBegintime()).compareTo((Double) that.getBegintime());
+		
+			if (compare!=0)
+				return compare;
+				
+		    // Order next by endtimes.
+			compare = ((Double) this.getEndtime()).compareTo((Double) that.getEndtime());
+				
+			return compare;
+				
+				
+		}
+		
+	}
+	
 	
 }
