@@ -8,7 +8,6 @@ package com.relteq.sirius.simulator;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,7 +45,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
-	/** @y.exclude */	protected Random random = new Random();
 	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
 	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
@@ -58,6 +56,11 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected int numEnsemble;
 
+	// TEMPORARY FOR FLOW UNCERTAINTY MODEL
+	// MOVE THIS TO THE CONFIGURATION
+	protected double std_dev_flow = 10.0;	// [veh]
+	protected boolean has_flow_unceratinty;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
