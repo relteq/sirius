@@ -8,7 +8,7 @@ package com.relteq.sirius.simulator;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
@@ -140,7 +140,7 @@ final class OutputWriter extends OutputWriter_Base {
 					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
-						ArrayList<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
+						List<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
 						for (Signal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
