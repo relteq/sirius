@@ -85,8 +85,8 @@ public class ScenarioRestorer {
 			scenario.setDescription(db_scenario.getDescription());
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
-			scenario.setInitialDensityProfile(restoreInitialDensityProfile(db_scenario.getInitialDensitySets()));
-			scenario.setWeavingFactorsProfile(restoreWeavingFactorsProfile(db_scenario.getWeavingFactorSets()));
+			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
+			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
@@ -275,12 +275,12 @@ public class ScenarioRestorer {
 		return link;
 	}
 
-	private com.relteq.sirius.jaxb.InitialDensityProfile restoreInitialDensityProfile(InitialDensitySets db_idset) throws TorqueException {
+	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) throws TorqueException {
 		if (null == db_idset) return null;
-		com.relteq.sirius.jaxb.InitialDensityProfile idprofile = factory.createInitialDensityProfile();
-		idprofile.setId(db_idset.getId());
-		idprofile.setName(db_idset.getName());
-		idprofile.setDescription(db_idset.getDescription());
+		com.relteq.sirius.jaxb.InitialDensitySet idset = factory.createInitialDensitySet();
+		idset.setId(db_idset.getId());
+		idset.setName(db_idset.getName());
+		idset.setDescription(db_idset.getDescription());
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
@@ -291,7 +291,7 @@ public class ScenarioRestorer {
 		for (InitialDensities db_id : db_idl) {
 			if (null != density && !density.getLinkId().equals(db_id.getLinkId())) {
 				density.setContent(sb.toString());
-				idprofile.getDensity().add(density);
+				idset.getDensity().add(density);
 				density = null;
 			}
 			if (null == density) { // new link
@@ -307,17 +307,17 @@ public class ScenarioRestorer {
 		// last link
 		if (null != density) {
 			density.setContent(sb.toString());
-			idprofile.getDensity().add(density);
+			idset.getDensity().add(density);
 		}
-		return idprofile;
+		return idset;
 	}
 
-	private com.relteq.sirius.jaxb.WeavingFactorsProfile restoreWeavingFactorsProfile(WeavingFactorSets db_wfset) throws TorqueException {
+	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) throws TorqueException {
 		if (null == db_wfset) return null;
-		com.relteq.sirius.jaxb.WeavingFactorsProfile wfp = factory.createWeavingFactorsProfile();
-		wfp.setId(db_wfset.getId());
-		wfp.setName(db_wfset.getName());
-		wfp.setDescription(db_wfset.getDescription());
+		com.relteq.sirius.jaxb.WeavingFactorSet wfset = factory.createWeavingFactorSet();
+		wfset.setId(db_wfset.getId());
+		wfset.setName(db_wfset.getName());
+		wfset.setDescription(db_wfset.getDescription());
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.OUT_LINK_ID);
@@ -350,7 +350,7 @@ public class ScenarioRestorer {
 			wfp.getWeavingfactors().add(wf);
 		}
 		*/
-		return wfp;
+		return wfset;
 	}
 
 	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
