@@ -126,6 +126,8 @@ public class ScenarioLoader {
 		save(scenario.getNetworkList());
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensityProfile()));
 		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorsProfile()));
+		db_scenario.setSignalLists(save(scenario.getSignalList()));
+		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
 		db_scenario.save(conn);
 		return db_scenario;
@@ -253,8 +255,6 @@ public class ScenarioLoader {
 		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 			save(link, db_network);
 		}
-		save(network.getSignalList());
-		save(network.getSensorList());
 		return db_network;
 	}
 
