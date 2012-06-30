@@ -10,14 +10,14 @@ import java.util.HashMap;
 
 public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
+	
 	public static enum CommandType {hold,forceoff};
 	protected static enum BulbColor {GREEN,YELLOW,RED,DARK};
 	public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 	
 	protected HashMap<NEMA,SignalPhase> nema2phase;
-	
-	protected Network myNetwork;
 
+	protected Scenario myScenario;
 	protected Node myNode;
 	protected PhaseController myPhaseController;	// used to control capacity on individual links
 	
@@ -34,10 +34,12 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */	
-	protected void populate(Scenario myScenario,Network myNetwork) {
+	protected void populate(Scenario myScenario) {
 		
-		this.myNetwork = myNetwork;
-		this.myNode = myNetwork.getNodeWithId(getNodeId());
+		this.myScenario = myScenario;
+		this.myNode = myScenario.getNodeWithId(getNodeId());
+		
+		myNode.mySignal = this;
 
 		int i;
 		int totalphases = getPhase().size();
@@ -366,12 +368,12 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		}
 	}
 	
-	public String getMyNetworkId() {
-		if(myNetwork!=null)
-			return myNetwork.getId();
-		else
-			return null;
-	}
+//	public String getMyNetworkId() {
+//		if(myNetwork!=null)
+//			return myNetwork.getId();
+//		else
+//			return null;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// static NEMA methods

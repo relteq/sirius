@@ -13,13 +13,13 @@ public class SensorFloating extends Sensor {
 	public SensorFloating(){
 	}
 	
-	public SensorFloating(Scenario myScenario,String networkId,String linkId){
+	public SensorFloating(Scenario myScenario,String linkId){
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
 		// this.id = GENERATE AN ID;
 	    this.myType = Sensor.Type.moving_point;
-	    this.myLink = myScenario.getLinkWithCompositeId(networkId,linkId);
+	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 		
 	/////////////////////////////////////////////////////////////////////

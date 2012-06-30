@@ -23,7 +23,7 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 		if(myScenario==null)
 			return;
 		this.myScenario = myScenario;
-		myLink = myScenario.getLinkWithCompositeId(getNetworkId(),getLinkId());
+		myLink = myScenario.getLinkWithId(getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		isdone = false;

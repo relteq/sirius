@@ -52,25 +52,25 @@ public final class ScenarioElement extends com.relteq.sirius.jaxb.ScenarioElemen
 		return myType;
 	}
 
-	/** The string id of the network that contains the component.
-	 * <p> Returns the id of the parent network if the component is a link, node, sensor,
-	 * or signal. 
-	 * Otherwise it returns <code>null</code>.
-	 * @return Network id, or <code>null</code>.
-	 */
-	@Override
-	public String getNetworkId() {
-		if(myType==null && type!=null)
-			myType = ScenarioElement.Type.valueOf(type);
-		if(myType.compareTo(ScenarioElement.Type.link)==0 || 
-		   myType.compareTo(ScenarioElement.Type.node)==0 || 
-		   myType.compareTo(ScenarioElement.Type.sensor)==0 || 
-		   myType.compareTo(ScenarioElement.Type.signal)==0 ){
-			return super.getNetworkId();
-		}
-		else
-			return null;
-	}
+//	/** The string id of the network that contains the component.
+//	 * <p> Returns the id of the parent network if the component is a link, node, sensor,
+//	 * or signal. 
+//	 * Otherwise it returns <code>null</code>.
+//	 * @return Network id, or <code>null</code>.
+//	 */
+//	@Override
+//	public String getNetworkId() {
+//		if(myType==null && type!=null)
+//			myType = ScenarioElement.Type.valueOf(type);
+//		if(myType.compareTo(ScenarioElement.Type.link)==0 || 
+//		   myType.compareTo(ScenarioElement.Type.node)==0 || 
+//		   myType.compareTo(ScenarioElement.Type.sensor)==0 || 
+//		   myType.compareTo(ScenarioElement.Type.signal)==0 ){
+//			return super.getNetworkId();
+//		}
+//		else
+//			return null;
+//	}
 
 	/** Reference to the component.
 	 * @return A java Object.

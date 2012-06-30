@@ -71,7 +71,7 @@ public class SignalPhase {
 		this.targetlinks = new Link[numlinks];
 		for(int i=0;i<numlinks;i++){
 			com.relteq.sirius.jaxb.LinkReference linkref = jaxbPhase.getLinks().getLinkReference().get(i);
-			targetlinks[i] = myScenario.getLinkWithCompositeId(linkref.getNetworkId(),linkref.getId());
+			targetlinks[i] = myScenario.getLinkWithId(linkref.getId());
 		}
 		
 		if(jaxbPhase.getNema()!=null)
@@ -242,7 +242,7 @@ public class SignalPhase {
 				// Force off 
 				if( forceoff_approved ){ 
 					setPhaseColor(Signal.BulbColor.YELLOW);
-					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA, mySignal.myNetwork.myScenario.clock.getT() - bulbtimer.getT(), bulbtimer.getT()));
+					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA, mySignal.myScenario.clock.getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;

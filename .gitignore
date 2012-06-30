@@ -13,4 +13,6 @@ velocity.log
 /derby.log
 /src/com/relteq/sirius/om/
 /src/org/apache/torque/linkage/
+.project
+.classpath
 

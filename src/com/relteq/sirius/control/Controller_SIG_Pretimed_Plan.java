@@ -36,13 +36,13 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 
 				// check whether the signal is in the target list
 				com.relteq.sirius.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
-				Signal mySignal = myScenario.getSignalForNodeId(jaxbi.getNetworkId(),jaxbi.getNodeId());
+				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;
 				for(ScenarioElement se : myController.getTargets()){
 					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 &&
-						se.getNetworkId().compareTo(jaxbi.getNetworkId())==0 && 
+						//se.getNetworkId().compareTo(jaxbi.getNetworkId())==0 && 
 						se.getId().compareTo(mySignal.getId())==0 ){
 						haveit=true;
 					}
@@ -78,13 +78,13 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 		for(ScenarioElement se : myController.getTargets()){
 			foundit = false;
 			for(int i=0;i<intersplan.length;i++){
-				if(se.getNetworkId().equals(intersplan[i].mySignal.getMyNetworkId()) && se.getId().equals(intersplan[i].mySignal.getId())){
+				if(se.getId().equals(intersplan[i].mySignal.getId())){
 					foundit=true;
 					break;
 				}
 			}
 			if(!foundit){
-				SiriusErrorLog.addErrorMessage("Controller target (network id="+se.getNetworkId()+",id="+se.getId()+") not found in pretimed signal plan id="+this.getId());
+				SiriusErrorLog.addErrorMessage("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+this.getId());
 				return false;
 			}
 		}

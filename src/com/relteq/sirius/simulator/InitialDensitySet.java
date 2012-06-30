@@ -8,12 +8,12 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialDensityProfile {
+public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 
-	protected Scenario myScenario;
-	protected Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	protected Link [] link;				// ordered array of references
-	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
+	private Scenario myScenario;
+	private Double [][] initial_density; 	// [veh/mile] indexed by link and type
+	private Link [] link;					// ordered array of references
+	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 
 	/////////////////////////////////////////////////////////////////////
@@ -26,18 +26,32 @@ public final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialD
 		
 		this.myScenario = myScenario;
 		
-		// allocate
+		// count links in initial density list that are also in the scenario
 		int numLinks = getDensity().size();
-		initial_density = new Double [numLinks][];
-		link = new Link [numLinks];
+		int numLinks_exist = 0;
+		Link [] templink = new Link[numLinks];
+		for(i=0;i<numLinks;i++){
+			com.relteq.sirius.jaxb.Density density = getDensity().get(i);
+			templink[i] = myScenario.getLinkWithId(density.getLinkId());
+			if(templink[i]!=null)
+				numLinks_exist++;
+		}
+		
+		// allocate
+		initial_density = new Double [numLinks_exist][];
+		link = new Link [numLinks_exist];
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
 		// copy profile information to arrays in extended object
+		int c = 0;
 		for(i=0;i<numLinks;i++){
-			com.relteq.sirius.jaxb.Density density = getDensity().get(i);
-			link[i] = myScenario.getLinkWithCompositeId(density.getNetworkId(),density.getLinkId());
-			Double1DVector D = new Double1DVector(density.getContent(),":");
-			initial_density[i] = D.getData();
+			if(templink[i]!=null){
+				com.relteq.sirius.jaxb.Density density = getDensity().get(i);
+				link[c] = templink[i];
+				Double1DVector D = new Double1DVector(density.getContent(),":");
+				initial_density[c] = D.getData();
+				c++;
+			}
 		}
 		
 		// round to the nearest decisecond
@@ -62,14 +76,6 @@ public final class InitialDensityProfile extends com.relteq.sirius.jaxb.InitialD
 		for(i=0;i<vehicletypeindex.length;i++){
 			if(vehicletypeindex[i]<0){
 				SiriusErrorLog.addErrorMessage("Bad vehicle type name.");
-				return false;
-			}
-		}
-		
-		// check that links are valid
-		for(i=0;i<link.length;i++){
-			if(link[i]==null){
-				SiriusErrorLog.addErrorMessage("Bad link id");
 				return false;
 			}
 		}

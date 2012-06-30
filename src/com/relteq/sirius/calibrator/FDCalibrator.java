@@ -35,13 +35,11 @@ public class FDCalibrator {
 		loadTrafficData();									// 2. read pems 5 minute file
 		
 															// 3. run calibration routine
-		for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-			for(com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()){
-				SensorLoopStation S = (SensorLoopStation) sensor;
-				if(S.getMyType().compareTo(Sensor.Type.static_point)!=0)
-					continue;
-				calibrate(S);
-			}
+		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			if(S.getMyType().compareTo(Sensor.Type.static_point)!=0)
+				continue;
+			calibrate(S);
 		}
 		
 		propagate();									// 4. extend parameters to the rest of the network
@@ -66,25 +64,23 @@ public class FDCalibrator {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-			for(com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()){
-				if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
-					continue;
-				SensorLoopStation S = (SensorLoopStation) sensor;
-				int myVDS = S.getVDS();				
-				data.put(myVDS, new FiveMinuteData(myVDS,true));	
-				for(com.relteq.sirius.sensor.DataSource d : S.get_datasources()){
-					String myurl = d.getUrl();
-					int indexOf = uniqueurls.indexOf(myurl);
-					if( indexOf<0 ){
-						DataSource newdatasource = new DataSource(d);
-						newdatasource.add_to_for_vds(myVDS);
-						datasources.add(newdatasource);
-						uniqueurls.add(myurl);
-					}
-					else{
-						datasources.get(indexOf).add_to_for_vds(myVDS);
-					}
+		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+				continue;
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			int myVDS = S.getVDS();				
+			data.put(myVDS, new FiveMinuteData(myVDS,true));	
+			for(com.relteq.sirius.sensor.DataSource d : S.get_datasources()){
+				String myurl = d.getUrl();
+				int indexOf = uniqueurls.indexOf(myurl);
+				if( indexOf<0 ){
+					DataSource newdatasource = new DataSource(d);
+					newdatasource.add_to_for_vds(myVDS);
+					datasources.add(newdatasource);
+					uniqueurls.add(myurl);
+				}
+				else{
+					datasources.get(indexOf).add_to_for_vds(myVDS);
 				}
 			}
 		}
@@ -206,77 +202,75 @@ public class FDCalibrator {
 		
 		// create new fd profile set
 		FundamentalDiagramProfileSet FDprofileset = new FundamentalDiagramProfileSet();
-				
-		for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-			
-			// populate the grow network
-			ArrayList<GrowLink> arraygrownetwork = new ArrayList<GrowLink>();
-			HashMap<String,GrowLink> hashgrownetwork = new HashMap<String,GrowLink>();
+							
+		// populate the grow network
+		ArrayList<GrowLink> arraygrownetwork = new ArrayList<GrowLink>();
+		HashMap<String,GrowLink> hashgrownetwork = new HashMap<String,GrowLink>();
+			for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
 			for(com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()){
 				GrowLink G = new GrowLink((Link) link);
 				hashgrownetwork.put(link.getId(),G);
 				arraygrownetwork.add(G);
 			}
+		}
 
-			
-			// initialize the grow network with sensored links 
-			for(com.relteq.sirius.jaxb.Sensor sensor : network.getSensorList().getSensor()){
-				SensorLoopStation S = (SensorLoopStation) sensor;
-				if(S.getVDS()!=0 & S.getMyLink()!=null){
-					String linkid = S.getMyLink().getId();
-					GrowLink G = hashgrownetwork.get(linkid);
-					G.sensor = S;
-					G.isassigned = true;
-					G.isgrowable = true;
-				}
+		// initialize the grow network with sensored links 
+		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			if(S.getVDS()!=0 & S.getMyLink()!=null){
+				String linkid = S.getMyLink().getId();
+				GrowLink G = hashgrownetwork.get(linkid);
+				G.sensor = S;
+				G.isassigned = true;
+				G.isgrowable = true;
 			}
-			
-			// repeatedly traverse network until all assigned links cannot be grown
-			done = false;
-			while(!done){
-				done = true;
+		}
+		
+		// repeatedly traverse network until all assigned links cannot be grown
+		done = false;
+		while(!done){
+			done = true;
 
-				// step through all links
-				for(i=0;i<arraygrownetwork.size();i++) {
+			// step through all links
+			for(i=0;i<arraygrownetwork.size();i++) {
 
-					GrowLink G = arraygrownetwork.get(i);
-
-					// continue if G is assigned and not growable, or if G is unassigned
-					if( (G.isassigned & !G.isgrowable) | !G.isassigned)
-						continue;
-
-					done = false;
-
-					// so G is assigned and growable, expand to its upstream and downstream links
-					growout("up",G,hashgrownetwork);
-					growout("dn",G,hashgrownetwork);
-					G.isgrowable = false;
-				}
-			}
-
-			// copy parameters to the links
-			for(i=0;i<arraygrownetwork.size();i++){
 				GrowLink G = arraygrownetwork.get(i);
-				if(G.isassigned){
-					com.relteq.sirius.jaxb.FundamentalDiagramProfile FDprof = new com.relteq.sirius.jaxb.FundamentalDiagramProfile();
-					com.relteq.sirius.jaxb.FundamentalDiagram FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
 
-					FDprof.setLinkId(G.link.getId());
-					FDprof.setDt(new BigDecimal(300));
-					FDprof.setNetworkId(network.getId());
-					FDprof.setStartTime(new BigDecimal(0));
-					
-					SensorLoopStation S = (SensorLoopStation) G.sensor;
-					FD.setCapacity(new BigDecimal(S.getQ_max()));
-					FD.setCapacityDrop(new BigDecimal(0));
-					FD.setCongestionSpeed(new BigDecimal(S.getW()));
-					FD.setDensityJam(new BigDecimal(S.getRho_jam()));
-					FD.setFreeflowSpeed(new BigDecimal(S.getVf()));
-					FD.setStdDevCapacity(new BigDecimal(0));
-					
-					FDprof.getFundamentalDiagram().add(FD);
-					FDprofileset.getFundamentalDiagramProfile().add(FDprof);
-				}
+				// continue if G is assigned and not growable, or if G is unassigned
+				if( (G.isassigned & !G.isgrowable) | !G.isassigned)
+					continue;
+
+				done = false;
+
+				// so G is assigned and growable, expand to its upstream and downstream links
+				growout("up",G,hashgrownetwork);
+				growout("dn",G,hashgrownetwork);
+				G.isgrowable = false;
+			}
+		}
+
+		// copy parameters to the links
+		for(i=0;i<arraygrownetwork.size();i++){
+			GrowLink G = arraygrownetwork.get(i);
+			if(G.isassigned){
+				com.relteq.sirius.jaxb.FundamentalDiagramProfile FDprof = new com.relteq.sirius.jaxb.FundamentalDiagramProfile();
+				com.relteq.sirius.jaxb.FundamentalDiagram FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
+
+				FDprof.setLinkId(G.link.getId());
+				FDprof.setDt(new BigDecimal(300));
+//				FDprof.setNetworkId(G.link.getMyNetwork().getId());
+				FDprof.setStartTime(new BigDecimal(0));
+				
+				SensorLoopStation S = (SensorLoopStation) G.sensor;
+				FD.setCapacity(new BigDecimal(S.getQ_max()));
+				FD.setCapacityDrop(new BigDecimal(0));
+				FD.setCongestionSpeed(new BigDecimal(S.getW()));
+				FD.setJamDensity(new BigDecimal(S.getRho_jam()));
+				FD.setJamDensity(new BigDecimal(S.getVf()));
+				FD.setStdDevCapacity(new BigDecimal(0));
+				
+				FDprof.getFundamentalDiagram().add(FD);
+				FDprofileset.getFundamentalDiagramProfile().add(FDprof);
 			}
 		}
 		
