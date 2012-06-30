@@ -135,9 +135,10 @@ final class OutputWriter extends OutputWriter_Base {
 				}
 				xmlsw.writeEndElement(); // nl
 				// signal list
-				if (null != network.getSignalList()) {
+				List<com.relteq.sirius.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+				if (null != sigl && 0 < sigl.size()) {
 					xmlsw.writeStartElement("sigl");
-					for (com.relteq.sirius.jaxb.Signal signal : network.getSignalList().getSignal()) {
+					for (com.relteq.sirius.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
 						List<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
