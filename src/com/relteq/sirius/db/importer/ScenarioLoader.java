@@ -38,7 +38,6 @@ import com.relteq.sirius.om.VehicleTypesPeer;
 import com.relteq.sirius.om.WeavingFactorSets;
 import com.relteq.sirius.om.WeavingFactors;
 import com.relteq.sirius.simulator.Double2DMatrix;
-import com.relteq.sirius.simulator.InitialDensityProfile;
 import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.SiriusException;
@@ -124,11 +123,11 @@ public class ScenarioLoader {
 		db_scenario.save(conn);
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
-		db_scenario.setInitialDensitySets(save(scenario.getInitialDensityProfile()));
-		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorsProfile()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
 		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
+		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorSet()));
+		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -408,18 +407,19 @@ public class ScenarioLoader {
 
 	/**
 	 * Imports initial densities
-	 * @param idprofile
+	 * @param idset
 	 * @return the imported initial density set
 	 * @throws TorqueException
 	 */
-	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensityProfile idprofile) throws TorqueException {
-		if (null == idprofile) return null;
+	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
+		if (null == idset) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setId(uuid());
 		db_idsets.setProjectId(getProjectId());
-		db_idsets.setName(idprofile.getName());
-		db_idsets.setDescription(idprofile.getDescription());
-		for (InitialDensityProfile.Tuple tuple : ((InitialDensityProfile) idprofile).getData()) {
+		db_idsets.setName(idset.getName());
+		db_idsets.setDescription(idset.getDescription());
+		for (com.relteq.sirius.simulator.InitialDensitySet.Tuple tuple :
+				((com.relteq.sirius.simulator.InitialDensitySet) idset).getData()) {
 			InitialDensities db_density = new InitialDensities();
 			db_density.setInitialDensitySets(db_idsets);
 			db_density.setLinkId(link_family_id.get(tuple.getLinkId()));
@@ -432,19 +432,18 @@ public class ScenarioLoader {
 
 	/**
 	 * Imports weaving factors
-	 * @param wfprofile
+	 * @param wfset
 	 * @return the imported weaving factor set
 	 * @throws TorqueException
 	 */
-	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorsProfile wfprofile) throws TorqueException {
-		if (null == wfprofile) return null;
+	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
+		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
 		db_wfset.setId(uuid());
-		db_wfset.setName(wfprofile.getName());
-		db_wfset.setDescription(wfprofile.getDescription());
+		db_wfset.setName(wfset.getName());
+		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
-		// TODO import weaving factors
-		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfprofile.getWeavingfactors()) {
+		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors()) {
 			save(wf, db_wfset);
 		}
 		return db_wfset;
