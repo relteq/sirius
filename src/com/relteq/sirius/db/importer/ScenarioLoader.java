@@ -13,6 +13,9 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
+import com.relteq.sirius.om.FundamentalDiagramProfileSets;
+import com.relteq.sirius.om.FundamentalDiagramProfiles;
+import com.relteq.sirius.om.FundamentalDiagrams;
 import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.LinkFamilies;
@@ -128,6 +131,7 @@ public class ScenarioLoader {
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
 		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorSet()));
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
+		db_scenario.setFundamentalDiagramProfileSets(save(scenario.getFundamentalDiagramProfileSet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -510,5 +514,62 @@ public class ScenarioLoader {
 			}
 		}
 		return db_srps;
+	}
+
+	/**
+	 * Imports a fundamental diagram profile set
+	 * @param fdps
+	 * @return the imported FD profile set
+	 * @throws TorqueException
+	 */
+	private FundamentalDiagramProfileSets save(com.relteq.sirius.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
+		FundamentalDiagramProfileSets db_fdps = new FundamentalDiagramProfileSets();
+		db_fdps.setId(uuid());
+		db_fdps.setProjectId(getProjectId());
+		db_fdps.setName(fdps.getName());
+		db_fdps.setDescription(fdps.getDescription());
+		db_fdps.save(conn);
+		for (com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile : fdps.getFundamentalDiagramProfile())
+			save(fdprofile, db_fdps);
+		return db_fdps;
+	}
+
+	/**
+	 * Imports a fundamental diagram profile
+	 * @param fdprofile
+	 * @param db_fdps an already imported FD profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile, FundamentalDiagramProfileSets db_fdps) throws TorqueException {
+		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
+		db_fdprofile.setId(uuid());
+		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
+		db_fdprofile.setLinkId(link_family_id.get(fdprofile.getLinkId()));
+		db_fdprofile.setDt(fdprofile.getDt());
+		db_fdprofile.setStartTime(fdprofile.getStartTime());
+		db_fdprofile.save(conn);
+		int num = 0;
+		for (com.relteq.sirius.jaxb.FundamentalDiagram fd : fdprofile.getFundamentalDiagram())
+			save(fd, db_fdprofile, new Time(1000 * num++));
+	}
+
+	/**
+	 * Imports a fundamental diagram
+	 * @param fd
+	 * @param db_fdprofile an already imported FD profile
+	 * @param ts timestamp for sorting
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.FundamentalDiagram fd, FundamentalDiagramProfiles db_fdprofile, java.util.Date ts) throws TorqueException {
+		FundamentalDiagrams db_fd = new FundamentalDiagrams();
+		db_fd.setFundamentalDiagramProfiles(db_fdprofile);
+		db_fd.setTs(ts);
+		db_fd.setFreeFlowSpeed(fd.getFreeFlowSpeed());
+		db_fd.setCongestionWaveSpeed(fd.getCongestionSpeed());
+		db_fd.setCapacity(fd.getCapacity());
+		db_fd.setJamDensity(fd.getJamDensity());
+		db_fd.setCapacityDrop(fd.getCapacityDrop());
+		db_fd.setStdDeviationCapacity(fd.getStdDevCapacity());
+		db_fd.save(conn);
 	}
 }
