@@ -13,6 +13,10 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.om.FundamentalDiagramProfileSets;
+import com.relteq.sirius.om.FundamentalDiagramProfiles;
+import com.relteq.sirius.om.FundamentalDiagrams;
+import com.relteq.sirius.om.FundamentalDiagramsPeer;
 import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitiesPeer;
 import com.relteq.sirius.om.InitialDensitySets;
@@ -88,6 +92,7 @@ public class ScenarioRestorer {
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
+			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -405,4 +410,45 @@ public class ScenarioRestorer {
 		return srp;
 	}
 
+	com.relteq.sirius.jaxb.FundamentalDiagramProfileSet restoreFundamentalDiagramProfileSet(FundamentalDiagramProfileSets db_fdps) {
+		if (null == db_fdps) return null;
+		com.relteq.sirius.jaxb.FundamentalDiagramProfileSet fdps = factory.createFundamentalDiagramProfileSet();
+		fdps.setId(db_fdps.getId());
+		fdps.setName(db_fdps.getName());
+		fdps.setDescription(db_fdps.getDescription());
+		try {
+			@SuppressWarnings("unchecked")
+			List<FundamentalDiagramProfiles> db_fdprofile_l = db_fdps.getFundamentalDiagramProfiless();
+			for (FundamentalDiagramProfiles db_fdprofile : db_fdprofile_l)
+				fdps.getFundamentalDiagramProfile().add(restoreFundamentalDiagramProfile(db_fdprofile));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return fdps;
+	}
+
+	com.relteq.sirius.jaxb.FundamentalDiagramProfile restoreFundamentalDiagramProfile(FundamentalDiagramProfiles db_fdprofile) throws TorqueException {
+		com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile = factory.createFundamentalDiagramProfile();
+		fdprofile.setLinkId(db_fdprofile.getLinkId());
+		fdprofile.setDt(db_fdprofile.getDt());
+		fdprofile.setStartTime(db_fdprofile.getStartTime());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(FundamentalDiagramsPeer.TS);
+		@SuppressWarnings("unchecked")
+		List<FundamentalDiagrams> db_fd_l = db_fdprofile.getFundamentalDiagramss(crit);
+		for (FundamentalDiagrams db_fd : db_fd_l)
+			fdprofile.getFundamentalDiagram().add(restoreFundamentalDiagram(db_fd));
+		return fdprofile;
+	}
+
+	com.relteq.sirius.jaxb.FundamentalDiagram restoreFundamentalDiagram(FundamentalDiagrams db_fd) {
+		com.relteq.sirius.jaxb.FundamentalDiagram fd = factory.createFundamentalDiagram();
+		fd.setFreeFlowSpeed(db_fd.getFreeFlowSpeed());
+		fd.setCongestionSpeed(db_fd.getCongestionWaveSpeed());
+		fd.setCapacity(db_fd.getCapacity());
+		fd.setJamDensity(db_fd.getJamDensity());
+		fd.setCapacityDrop(db_fd.getCapacityDrop());
+		fd.setStdDevCapacity(db_fd.getStdDeviationCapacity());
+		return fd;
+	}
 }
