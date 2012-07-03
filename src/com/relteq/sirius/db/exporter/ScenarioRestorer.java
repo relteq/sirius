@@ -13,6 +13,10 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.om.DemandProfileSets;
+import com.relteq.sirius.om.DemandProfiles;
+import com.relteq.sirius.om.Demands;
+import com.relteq.sirius.om.DemandsPeer;
 import com.relteq.sirius.om.FundamentalDiagramProfileSets;
 import com.relteq.sirius.om.FundamentalDiagramProfiles;
 import com.relteq.sirius.om.FundamentalDiagrams;
@@ -93,6 +97,7 @@ public class ScenarioRestorer {
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
+			scenario.setDemandProfileSet(restoreDemandProfileSet(db_scenario.getDemandProfileSets()));
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -450,5 +455,43 @@ public class ScenarioRestorer {
 		fd.setCapacityDrop(db_fd.getCapacityDrop());
 		fd.setStdDevCapacity(db_fd.getStdDeviationCapacity());
 		return fd;
+	}
+
+	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) throws TorqueException {
+		if (null == db_dpset) return null;
+		com.relteq.sirius.jaxb.DemandProfileSet dpset = factory.createDemandProfileSet();
+		dpset.setId(db_dpset.getId());
+		dpset.setName(db_dpset.getName());
+		dpset.setDescription(db_dpset.getDescription());
+		@SuppressWarnings("unchecked")
+		List<DemandProfiles> db_dp_l = db_dpset.getDemandProfiless();
+		for (DemandProfiles db_dp : db_dp_l)
+			dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
+		return dpset;
+	}
+
+	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) throws TorqueException {
+		com.relteq.sirius.jaxb.DemandProfile dp = factory.createDemandProfile();
+		dp.setLinkIdOrigin(db_dp.getLinkId());
+		dp.setDt(db_dp.getDt());
+		dp.setStartTime(db_dp.getStartTime());
+		dp.setKnob(db_dp.getKnob());
+		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
+		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(DemandsPeer.TS);
+		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
+		@SuppressWarnings("unchecked")
+		List<Demands> db_demand_l = db_dp.getDemandss(crit);
+		if (0 < db_demand_l.size()) {
+			StringBuilder sb = new StringBuilder();
+			Date ts = null;
+			for (Demands db_demand : db_demand_l) {
+				if (null != ts) sb.append(ts.equals(db_demand.getTs()) ? ':' : ',');
+				ts = db_demand.getTs();
+				sb.append(db_demand.getDemand().toPlainString());
+			}
+		}
+		return dp;
 	}
 }
