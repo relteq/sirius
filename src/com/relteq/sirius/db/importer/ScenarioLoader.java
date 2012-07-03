@@ -13,6 +13,8 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
+import com.relteq.sirius.om.DecisionPointSplitProfileSets;
+import com.relteq.sirius.om.DecisionPointSplitProfiles;
 import com.relteq.sirius.om.DemandProfileSets;
 import com.relteq.sirius.om.DemandProfiles;
 import com.relteq.sirius.om.Demands;
@@ -142,6 +144,7 @@ public class ScenarioLoader {
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
 		db_scenario.setOdLists(save(scenario.getODList()));
+		db_scenario.setDecisionPointSplitProfileSets(save(scenario.getDecisionPoints()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
 		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
@@ -716,6 +719,47 @@ public class ScenarioLoader {
 		db_od.setOriginLinkId(link_family_id.get(od.getLinkIdOrigin()));
 		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
 		db_od.save(conn);
+	}
+
+	/**
+	 * Imports decision point split profiles
+	 * @param dpoints
+	 * @return the imported profile list
+	 * @throws TorqueException
+	 */
+	private DecisionPointSplitProfileSets save(com.relteq.sirius.jaxb.DecisionPoints dpoints) throws TorqueException {
+		if (null == dpoints) return null;
+		DecisionPointSplitProfileSets db_dpsps = new DecisionPointSplitProfileSets();
+		db_dpsps.setId(uuid());
+		db_dpsps.setProjectId(getProjectId());
+		// TODO db_dpsps.setName();
+		// TODO db_dpsps.setDescription();
+		for (com.relteq.sirius.jaxb.DecisionPoint dp : dpoints.getDecisionPoint())
+			save(dp, db_dpsps);
+		db_dpsps.save(conn);
+		return db_dpsps;
+	}
+
+	/**
+	 * Imports a decision point split profile
+	 * @param dp
+	 * @param db_dpsps an already imported split profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.DecisionPoint dp, DecisionPointSplitProfileSets db_dpsps) throws TorqueException {
+		DecisionPointSplitProfiles db_dpsp = new DecisionPointSplitProfiles();
+		db_dpsp.setId(uuid());
+		db_dpsp.setDecisionPointSplitProfileSets(db_dpsps);
+		db_dpsp.setNodeId(node_family_id.get(dp.getNodeId()));
+		db_dpsp.setDt(dp.getDt());
+		db_dpsp.setStartTime(dp.getStartTime());
+		db_dpsp.save(conn);
+		for (com.relteq.sirius.jaxb.DecisionPointSplit split : dp.getDecisionPointSplit())
+			save(split, db_dpsp);
+	}
+
+	private void save(com.relteq.sirius.jaxb.DecisionPointSplit split, DecisionPointSplitProfiles db_dpsp) {
+		// TODO Auto-generated method stub
 	}
 
 	/**
