@@ -16,6 +16,9 @@ import com.relteq.sirius.jaxb.Position;
 import com.relteq.sirius.om.DemandProfileSets;
 import com.relteq.sirius.om.DemandProfiles;
 import com.relteq.sirius.om.Demands;
+import com.relteq.sirius.om.DownstreamBoundaryCapacities;
+import com.relteq.sirius.om.DownstreamBoundaryCapacityProfileSets;
+import com.relteq.sirius.om.DownstreamBoundaryCapacityProfiles;
 import com.relteq.sirius.om.FundamentalDiagramProfileSets;
 import com.relteq.sirius.om.FundamentalDiagramProfiles;
 import com.relteq.sirius.om.FundamentalDiagrams;
@@ -147,6 +150,7 @@ public class ScenarioLoader {
 		db_scenario.setFundamentalDiagramProfileSets(save(scenario.getFundamentalDiagramProfileSet()));
 		db_scenario.setDemandProfileSets(save(scenario.getDemandProfileSet()));
 		db_scenario.setOdDemandProfileSets(save(scenario.getODDemandProfileSet()));
+		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -762,6 +766,53 @@ public class ScenarioLoader {
 				db_odd.setTs(new Time(count * 1000));
 				db_odd.setOdDemand(new BigDecimal(demand));
 				// TODO db_odd.save(conn);
+				++count;
+			}
+		}
+	}
+
+	/**
+	 * Imports downstream boundary capacity profiles
+	 * @param dbcps
+	 * @return the imported downstream boundary capacity profile set
+	 * @throws TorqueException
+	 */
+	private DownstreamBoundaryCapacityProfileSets save(com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet dbcps) throws TorqueException {
+		if (null == dbcps) return null;
+		DownstreamBoundaryCapacityProfileSets db_dbcps = new DownstreamBoundaryCapacityProfileSets();
+		db_dbcps.setId(uuid());
+		db_dbcps.setProjectId(getProjectId());
+		db_dbcps.setName(dbcps.getName());
+		db_dbcps.setDescription(dbcps.getDescription());
+		db_dbcps.save(conn);
+		for (com.relteq.sirius.jaxb.CapacityProfile cp : dbcps.getCapacityProfile())
+			save(cp, db_dbcps);
+		return db_dbcps;
+	}
+
+	/**
+	 * Imports a downstream boundary capacity profile
+	 * @param cp
+	 * @param db_dbcps an already imported capacity profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.CapacityProfile cp, DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
+		DownstreamBoundaryCapacityProfiles db_dbcp = new DownstreamBoundaryCapacityProfiles();
+		db_dbcp.setId(uuid());
+		db_dbcp.setDownstreamBoundaryCapacityProfileSets(db_dbcps);
+		db_dbcp.setLinkId(link_family_id.get(cp.getLinkId()));
+		db_dbcp.setDt(cp.getDt());
+		db_dbcp.setStartTime(cp.getStartTime());
+		db_dbcp.save(conn);
+		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(cp.getContent(), ":");
+		if (!values.isEmpty()) {
+			int count = 0;
+			for (Double capacity : values.getData()) {
+				DownstreamBoundaryCapacities db_dbc = new DownstreamBoundaryCapacities();
+				db_dbc.setDownstreamBoundaryCapacityProfiles(db_dbcp);
+				db_dbc.setTs(new Time(count * 1000));
+				db_dbc.setDownstreamBoundaryCapacity(new BigDecimal(capacity));
+				db_dbc.save(conn);
 				++count;
 			}
 		}
