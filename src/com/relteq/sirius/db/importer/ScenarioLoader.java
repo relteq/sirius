@@ -29,6 +29,8 @@ import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.OdLists;
+import com.relteq.sirius.om.Ods;
 import com.relteq.sirius.om.PhaseLinks;
 import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
@@ -81,6 +83,7 @@ public class ScenarioLoader {
 	private Map<String, String> network_id = null;
 	private Map<String, String> link_family_id = null;
 	private Map<String, String> node_family_id = null;
+	private Map<String, String> od_id = null;
 
 	private ScenarioLoader() {
 		project_id = "default";
@@ -132,6 +135,7 @@ public class ScenarioLoader {
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
+		db_scenario.setOdLists(save(scenario.getODList()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
 		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
@@ -667,5 +671,42 @@ public class ScenarioLoader {
 			db_nc.setToLinkId(link_family_id.get(lp.getLinkB()));
 			db_nc.save(conn);
 		}
+	}
+
+	/**
+	 * Imports an origin-destination list
+	 * @param odlist
+	 * @return the imported list
+	 * @throws TorqueException
+	 */
+	private OdLists save(com.relteq.sirius.jaxb.ODList odlist) throws TorqueException {
+		if (null == odlist) return null;
+		OdLists db_odlist = new OdLists();
+		db_odlist.setId(uuid());
+		db_odlist.setProjectId(getProjectId());
+		db_odlist.setName(odlist.getName());
+		// TODO db_odlist.setDescription();
+		db_odlist.save(conn);
+		od_id = new HashMap<String, String>();
+		for (com.relteq.sirius.jaxb.Od od : odlist.getOd())
+			save(od, db_odlist);
+		return db_odlist;
+	}
+
+	/**
+	 * Imports an origin-destination pair
+	 * @param od
+	 * @param db_odlist an already imported OD list
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Od od, OdLists db_odlist) throws TorqueException {
+		Ods db_od = new Ods();
+		String id = uuid();
+		od_id.put(od.getId(), id);
+		db_od.setId(id);
+		db_od.setOdLists(db_odlist);
+		db_od.setOriginLinkId(link_family_id.get(od.getLinkIdOrigin()));
+		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
+		db_od.save(conn);
 	}
 }
