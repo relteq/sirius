@@ -29,6 +29,9 @@ import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.OdDemandProfileSets;
+import com.relteq.sirius.om.OdDemandProfiles;
+import com.relteq.sirius.om.OdDemands;
 import com.relteq.sirius.om.OdLists;
 import com.relteq.sirius.om.Ods;
 import com.relteq.sirius.om.PhaseLinks;
@@ -143,6 +146,7 @@ public class ScenarioLoader {
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
 		db_scenario.setFundamentalDiagramProfileSets(save(scenario.getFundamentalDiagramProfileSet()));
 		db_scenario.setDemandProfileSets(save(scenario.getDemandProfileSet()));
+		db_scenario.setOdDemandProfileSets(save(scenario.getODDemandProfileSet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -708,5 +712,58 @@ public class ScenarioLoader {
 		db_od.setOriginLinkId(link_family_id.get(od.getLinkIdOrigin()));
 		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
 		db_od.save(conn);
+	}
+
+	/**
+	 * Imports OD demand profiles
+	 * @param oddps
+	 * @return the imported OD demand profile set
+	 * @throws TorqueException
+	 */
+	private OdDemandProfileSets save(com.relteq.sirius.jaxb.ODDemandProfileSet oddps) throws TorqueException {
+		if (null == oddps) return null;
+		OdDemandProfileSets db_oddps = new OdDemandProfileSets();
+		db_oddps.setId(uuid());
+		db_oddps.setProjectId(getProjectId());
+		db_oddps.setName(oddps.getName());
+		db_oddps.setDescription(oddps.getDescription());
+		db_oddps.save(conn);
+		for (com.relteq.sirius.jaxb.OdDemandProfile oddp : oddps.getOdDemandProfile())
+			save(oddp, db_oddps);
+		return db_oddps;
+	}
+
+	/**
+	 * Imports an OD Demand profile
+	 * @param oddp
+	 * @param db_oddps an already imported OD demand profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.OdDemandProfile oddp, OdDemandProfileSets db_oddps) throws TorqueException {
+		OdDemandProfiles db_oddp = new OdDemandProfiles();
+		db_oddp.setId(uuid());
+		db_oddp.setOdDemandProfileSets(db_oddps);
+		// TODO db_oddp.setLinkId();
+		db_oddp.setOdId(od_id.get(oddp.getOdId()));
+		db_oddp.setDt(oddp.getDt());
+		db_oddp.setStartTime(oddp.getStartTime());
+		db_oddp.setKnob(oddp.getKnob());
+		db_oddp.setStdDeviationAdditive(oddp.getStdDevAdd());
+		db_oddp.setStdDeviationMultiplicative(oddp.getStdDevMult());
+		// TODO uncomment when the link id is set
+		// db_oddp.save(conn);
+		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(oddp.getContent(), ":");
+		if (!values.isEmpty()) {
+			int count = 0;
+			for (Double demand : values.getData()) {
+				OdDemands db_odd = new OdDemands();
+				// TODO db_odd.setOdDemandProfiles(db_oddp);
+				db_odd.setVehicleTypeId(vehicle_type_id[count]);
+				db_odd.setTs(new Time(count * 1000));
+				db_odd.setOdDemand(new BigDecimal(demand));
+				// TODO db_odd.save(conn);
+				++count;
+			}
+		}
 	}
 }
