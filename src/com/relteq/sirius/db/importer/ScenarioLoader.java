@@ -13,6 +13,7 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
+import com.relteq.sirius.om.ControllerSets;
 import com.relteq.sirius.om.DecisionPointSplitProfileSets;
 import com.relteq.sirius.om.DecisionPointSplitProfiles;
 import com.relteq.sirius.om.DemandProfileSets;
@@ -21,6 +22,7 @@ import com.relteq.sirius.om.Demands;
 import com.relteq.sirius.om.DownstreamBoundaryCapacities;
 import com.relteq.sirius.om.DownstreamBoundaryCapacityProfileSets;
 import com.relteq.sirius.om.DownstreamBoundaryCapacityProfiles;
+import com.relteq.sirius.om.EventSets;
 import com.relteq.sirius.om.FundamentalDiagramProfileSets;
 import com.relteq.sirius.om.FundamentalDiagramProfiles;
 import com.relteq.sirius.om.FundamentalDiagrams;
@@ -154,6 +156,8 @@ public class ScenarioLoader {
 		db_scenario.setDemandProfileSets(save(scenario.getDemandProfileSet()));
 		db_scenario.setOdDemandProfileSets(save(scenario.getODDemandProfileSet()));
 		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
+		db_scenario.setControllerSets(save(scenario.getControllerSet()));
+		db_scenario.setEventSets(save(scenario.getEventSet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -860,5 +864,15 @@ public class ScenarioLoader {
 				++count;
 			}
 		}
+	}
+
+	private ControllerSets save(com.relteq.sirius.jaxb.ControllerSet cset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
