@@ -41,7 +41,10 @@ public class Runner {
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {
 				com.relteq.sirius.db.Lister.listScenarios();
 			} else if (cmd.equals("list_runs") || cmd.equals("lr")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					com.relteq.sirius.db.Lister.listRuns(arguments[0]);
+				else
+					throw new InvalidUsageException("Usage: list_runs|lr scenario_id");
 			} else if (cmd.equals("load") || cmd.equals("l")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("process") || cmd.equals("p")) {
