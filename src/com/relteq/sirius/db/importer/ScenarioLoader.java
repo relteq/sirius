@@ -13,6 +13,9 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
+import com.relteq.sirius.om.DemandProfileSets;
+import com.relteq.sirius.om.DemandProfiles;
+import com.relteq.sirius.om.Demands;
 import com.relteq.sirius.om.FundamentalDiagramProfileSets;
 import com.relteq.sirius.om.FundamentalDiagramProfiles;
 import com.relteq.sirius.om.FundamentalDiagrams;
@@ -132,6 +135,7 @@ public class ScenarioLoader {
 		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorSet()));
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
 		db_scenario.setFundamentalDiagramProfileSets(save(scenario.getFundamentalDiagramProfileSet()));
+		db_scenario.setDemandProfileSets(save(scenario.getDemandProfileSet()));
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -571,5 +575,57 @@ public class ScenarioLoader {
 		db_fd.setCapacityDrop(fd.getCapacityDrop());
 		db_fd.setStdDeviationCapacity(fd.getStdDevCapacity());
 		db_fd.save(conn);
+	}
+
+	/**
+	 * Imports a demand profile set
+	 * @param dpset
+	 * @return the imported demand profile set
+	 * @throws TorqueException
+	 */
+	private DemandProfileSets save(com.relteq.sirius.jaxb.DemandProfileSet dpset) throws TorqueException {
+		if (null == dpset) return null;
+		DemandProfileSets db_dpset = new DemandProfileSets();
+		db_dpset.setId(uuid());
+		db_dpset.setProjectId(getProjectId());
+		db_dpset.setName(dpset.getName());
+		db_dpset.setDescription(dpset.getDescription());
+		db_dpset.save(conn);
+		for (com.relteq.sirius.jaxb.DemandProfile dp : dpset.getDemandProfile())
+			save(dp, db_dpset);
+		return db_dpset;
+	}
+
+	/**
+	 * Imports a demand profile
+	 * @param dp a demand profile
+	 * @param db_dpset an already imported demand profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset) throws TorqueException {
+		DemandProfiles db_dp = new DemandProfiles();
+		db_dp.setId(uuid());
+		db_dp.setDemandProfileSets(db_dpset);
+		db_dp.setLinkId(link_family_id.get(dp.getLinkIdOrigin()));
+		db_dp.setDt(dp.getDt());
+		db_dp.setStartTime(dp.getStartTime());
+		db_dp.setKnob(dp.getKnob());
+		db_dp.setStdDeviationAdditive(dp.getStdDevAdd());
+		db_dp.setStdDeviationMultiplicative(dp.getStdDevMult());
+		db_dp.save(conn);
+		Double2DMatrix data = new Double2DMatrix(dp.getContent());
+		if (!data.isEmpty()) {
+			for (int t = 0; t < data.getnTime(); ++t) {
+				Time ts = new Time(t * 1000);
+				for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
+					Demands db_demand = new Demands();
+					db_demand.setDemandProfiles(db_dp);
+					db_demand.setVehicleTypeId(vehicle_type_id[vtn]);
+					db_demand.setTs(ts);
+					db_demand.setDemand(new BigDecimal(data.get(t, vtn)));
+					db_demand.save(conn);
+				}
+			}
+		}
 	}
 }
