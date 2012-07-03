@@ -23,6 +23,8 @@ import com.relteq.sirius.om.InitialDensities;
 import com.relteq.sirius.om.InitialDensitySets;
 import com.relteq.sirius.om.LinkFamilies;
 import com.relteq.sirius.om.Links;
+import com.relteq.sirius.om.NetworkConnectionLists;
+import com.relteq.sirius.om.NetworkConnections;
 import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.NodeFamilies;
@@ -129,6 +131,7 @@ public class ScenarioLoader {
 		db_scenario.save(conn);
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
+		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
 		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
@@ -626,6 +629,43 @@ public class ScenarioLoader {
 					db_demand.save(conn);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Imports a network connection list
+	 * @param nconns
+	 * @return the imported network connection list
+	 * @throws TorqueException
+	 */
+	private NetworkConnectionLists save(com.relteq.sirius.jaxb.NetworkConnections nconns) throws TorqueException {
+		if (null == nconns) return null;
+		NetworkConnectionLists db_ncl = new NetworkConnectionLists();
+		db_ncl.setId(uuid());
+		db_ncl.setProjectId(getProjectId());
+		db_ncl.setName(nconns.getName());
+		db_ncl.setDescription(nconns.getDescription());
+		db_ncl.save(conn);
+		for (com.relteq.sirius.jaxb.Networkpair np : nconns.getNetworkpair())
+			save(np, db_ncl);
+		return db_ncl;
+	}
+
+	/**
+	 * Imports network connections
+	 * @param np
+	 * @param db_ncl an already imported network connection list
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Networkpair np, NetworkConnectionLists db_ncl) throws TorqueException {
+		for (com.relteq.sirius.jaxb.Linkpair lp : np.getLinkpair()) {
+			NetworkConnections db_nc = new NetworkConnections();
+			db_nc.setNetworkConnectionLists(db_ncl);
+			db_nc.setFromNetworkId(network_id.get(np.getNetworkA()));
+			db_nc.setFromLinkId(link_family_id.get(lp.getLinkA()));
+			db_nc.setToNetworkId(network_id.get(np.getNetworkB()));
+			db_nc.setToLinkId(link_family_id.get(lp.getLinkB()));
+			db_nc.save(conn);
 		}
 	}
 }
