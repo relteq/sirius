@@ -685,7 +685,7 @@
 		<column name="scenario_id" required="true" domain="STRING_ID"/>
 		<column name="run_number" required="true" type="INTEGER"/>
 		<column name="start_time" required="true" type="TIMESTAMP"/>
-		<column name="end_time" required="true" type="TIMESTAMP"/>
+		<column name="end_time" required="false" type="TIMESTAMP"/>
 		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
