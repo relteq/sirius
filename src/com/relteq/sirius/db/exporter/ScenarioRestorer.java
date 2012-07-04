@@ -14,6 +14,7 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.om.ControllerSets;
 import com.relteq.sirius.om.DecisionPointSplitProfileSets;
 import com.relteq.sirius.om.DecisionPointSplitProfiles;
 import com.relteq.sirius.om.DecisionPointSplits;
@@ -22,6 +23,7 @@ import com.relteq.sirius.om.DemandProfileSets;
 import com.relteq.sirius.om.DemandProfiles;
 import com.relteq.sirius.om.Demands;
 import com.relteq.sirius.om.DemandsPeer;
+import com.relteq.sirius.om.EventSets;
 import com.relteq.sirius.om.FundamentalDiagramProfileSets;
 import com.relteq.sirius.om.FundamentalDiagramProfiles;
 import com.relteq.sirius.om.FundamentalDiagrams;
@@ -44,6 +46,7 @@ import com.relteq.sirius.om.PhaseLinksPeer;
 import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
+import com.relteq.sirius.om.SensorLists;
 import com.relteq.sirius.om.SignalLists;
 import com.relteq.sirius.om.Signals;
 import com.relteq.sirius.om.SplitRatioProfileSets;
@@ -113,11 +116,14 @@ public class ScenarioRestorer {
 			// TODO scenario.setRouteSegments();
 			scenario.setDecisionPoints(restoreDecisionPoints(db_scenario.getDecisionPointSplitProfileSets()));
 			scenario.setSignalList(restoreSignalList(db_scenario.getSignalLists()));
+			scenario.setSensorList(restoreSensorList(db_scenario.getSensorLists()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
 			scenario.setDemandProfileSet(restoreDemandProfileSet(db_scenario.getDemandProfileSets()));
+			scenario.setControllerSet(restoreControllerSet(db_scenario.getControllerSets()));
+			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
 			return scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc.getCause());
@@ -693,5 +699,32 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
 		lr.setId(db_phl.getLinkId());
 		return lr;
+	}
+
+	private com.relteq.sirius.jaxb.SensorList restoreSensorList(SensorLists db_sl) {
+		if (null == db_sl) return null;
+		com.relteq.sirius.jaxb.SensorList sl = factory.createSensorList();
+		// TODO sl.getSensor().add();
+		return sl;
+	}
+
+	private com.relteq.sirius.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) {
+		if (null == db_cs) return null;
+		com.relteq.sirius.jaxb.ControllerSet cset = factory.createControllerSet();
+		cset.setId(db_cs.getId());
+		// TODO cset.setName();
+		// TODO cset.setDescription();
+		// TODO cset.getController().add();
+		return cset;
+	}
+
+	private com.relteq.sirius.jaxb.EventSet restoreEventSet(EventSets db_es) {
+		if (null == db_es) return null;
+		com.relteq.sirius.jaxb.EventSet eset = factory.createEventSet();
+		eset.setId(db_es.getId());
+		// TODO eset.setName();
+		// TODO eset.setDescription();
+		// TODO eset.getEvent().add();
+		return eset;
 	}
 }
