@@ -16,6 +16,7 @@ import com.relteq.sirius.jaxb.Position;
 import com.relteq.sirius.om.ControllerSets;
 import com.relteq.sirius.om.DecisionPointSplitProfileSets;
 import com.relteq.sirius.om.DecisionPointSplitProfiles;
+import com.relteq.sirius.om.DecisionPointSplits;
 import com.relteq.sirius.om.DemandProfileSets;
 import com.relteq.sirius.om.DemandProfiles;
 import com.relteq.sirius.om.Demands;
@@ -816,8 +817,27 @@ public class ScenarioLoader {
 			save(split, db_dpsp);
 	}
 
-	private void save(com.relteq.sirius.jaxb.DecisionPointSplit split, DecisionPointSplitProfiles db_dpsp) {
-		// TODO Auto-generated method stub
+	/**
+	 * Imports a decision point split
+	 * @param split
+	 * @param db_dpsp an already imported decision point split profile
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.DecisionPointSplit split, DecisionPointSplitProfiles db_dpsp) throws TorqueException {
+		// TODO delimiter = ',' or ':'?
+		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(split.getContent(), ",");
+		if (!values.isEmpty()) {
+			int count = 0;
+			for (Double val : values.getData()) {
+				DecisionPointSplits db_dps = new DecisionPointSplits();
+				db_dps.setDecisionPointSplitProfiles(db_dpsp);
+				db_dps.setInRouteSegmentId(route_segment_id.get(split.getRouteSegmentIn()));
+				db_dps.setOutRouteSegmentId(route_segment_id.get(split.getRouteSegmentOut()));
+				db_dps.setTs(new Time(1000 * count++));
+				db_dps.setSplit(new BigDecimal(val));
+				db_dps.save(conn);
+			}
+		}
 	}
 
 	/**
