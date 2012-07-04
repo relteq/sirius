@@ -104,6 +104,7 @@ public class ScenarioRestorer {
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
 			scenario.setODList(restoreODList(db_scenario.getOdLists()));
+			// TODO scenario.setRouteSegments();
 			scenario.setDecisionPoints(restoreDecisionPoints(db_scenario.getDecisionPointSplitProfileSets()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
