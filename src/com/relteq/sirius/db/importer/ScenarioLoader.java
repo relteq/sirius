@@ -778,6 +778,7 @@ public class ScenarioLoader {
 		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
 		db_od.save(conn);
 		// TODO od_route_segments table
+		// TODO od_decision_points table
 	}
 
 	/**
