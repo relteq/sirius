@@ -117,6 +117,7 @@
 			linksource="yes"
 			access="protected" 
 			excludepackagenames="com.relteq.sirius.*"
+			classpathref="compile.lib.path"
 			destdir="${doc.dir}"
 			sourcepath="${src.dir}">
 			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
