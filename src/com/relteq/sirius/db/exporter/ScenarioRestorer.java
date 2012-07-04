@@ -1,6 +1,7 @@
 package com.relteq.sirius.db.exporter;
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -38,8 +39,13 @@ import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
 import com.relteq.sirius.om.OdLists;
 import com.relteq.sirius.om.Ods;
+import com.relteq.sirius.om.PhaseLinks;
+import com.relteq.sirius.om.PhaseLinksPeer;
+import com.relteq.sirius.om.Phases;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
+import com.relteq.sirius.om.SignalLists;
+import com.relteq.sirius.om.Signals;
 import com.relteq.sirius.om.SplitRatioProfileSets;
 import com.relteq.sirius.om.SplitRatioProfiles;
 import com.relteq.sirius.om.SplitRatios;
@@ -106,6 +112,7 @@ public class ScenarioRestorer {
 			scenario.setODList(restoreODList(db_scenario.getOdLists()));
 			// TODO scenario.setRouteSegments();
 			scenario.setDecisionPoints(restoreDecisionPoints(db_scenario.getDecisionPointSplitProfileSets()));
+			scenario.setSignalList(restoreSignalList(db_scenario.getSignalLists()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
@@ -624,5 +631,67 @@ public class ScenarioRestorer {
 			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return dpoint;
+	}
+
+	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalLists db_sl) {
+		if (null == db_sl) return null;
+		com.relteq.sirius.jaxb.SignalList sl = factory.createSignalList();
+		// TODO sl.setName(db_sl.getName());
+		// TODO sl.setDescription(db_sl.getDescription());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Signals> db_signal_l = db_sl.getSignalss();
+			for (Signals db_signal : db_signal_l)
+				sl.getSignal().add(restoreSignal(db_signal));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return sl;
+	}
+
+	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) {
+		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
+		signal.setId(db_signal.getId());
+		signal.setNodeId(db_signal.getNodeId());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Phases> db_ph_l = db_signal.getPhasess();
+			for (Phases db_ph : db_ph_l)
+				signal.getPhase().add(restorePhase(db_ph));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return signal;
+	}
+
+	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) {
+		com.relteq.sirius.jaxb.Phase phase = factory.createPhase();
+		phase.setNema(BigInteger.valueOf(db_ph.getPhase()));
+		phase.setProtected(db_ph.getIs_protected());
+		phase.setPermissive(db_ph.getPermissive());
+		phase.setLag(db_ph.getLag());
+		phase.setRecall(db_ph.getRecall());
+		phase.setMinGreenTime(db_ph.getMinGreenTime());
+		phase.setYellowTime(db_ph.getYellowTime());
+		phase.setRedClearTime(db_ph.getRedClearTime());
+		Criteria crit = new Criteria();
+		crit.add(PhaseLinksPeer.PHASE, db_ph.getPhase());
+		try {
+			@SuppressWarnings("unchecked")
+			List<PhaseLinks> db_phl_l = db_ph.getSignals(null).getPhaseLinkss(crit);
+			com.relteq.sirius.jaxb.Links links = factory.createLinks();
+			for (PhaseLinks db_phl : db_phl_l)
+				links.getLinkReference().add(restorePhaseLink(db_phl));
+			phase.setLinks(links);
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return phase;
+	}
+
+	private com.relteq.sirius.jaxb.LinkReference restorePhaseLink(PhaseLinks db_phl) {
+		com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
+		lr.setId(db_phl.getLinkId());
+		return lr;
 	}
 }
