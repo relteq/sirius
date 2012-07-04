@@ -795,25 +795,23 @@ public class ScenarioLoader {
 		OdDemandProfiles db_oddp = new OdDemandProfiles();
 		db_oddp.setId(uuid());
 		db_oddp.setOdDemandProfileSets(db_oddps);
-		// TODO db_oddp.setLinkId();
 		db_oddp.setOdId(od_id.get(oddp.getOdId()));
 		db_oddp.setDt(oddp.getDt());
 		db_oddp.setStartTime(oddp.getStartTime());
 		db_oddp.setKnob(oddp.getKnob());
 		db_oddp.setStdDeviationAdditive(oddp.getStdDevAdd());
 		db_oddp.setStdDeviationMultiplicative(oddp.getStdDevMult());
-		// TODO uncomment when the link id is set
-		// db_oddp.save(conn);
+		db_oddp.save(conn);
 		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(oddp.getContent(), ":");
 		if (!values.isEmpty()) {
 			int count = 0;
 			for (Double demand : values.getData()) {
 				OdDemands db_odd = new OdDemands();
-				// TODO db_odd.setOdDemandProfiles(db_oddp);
+				db_odd.setOdDemandProfiles(db_oddp);
 				db_odd.setVehicleTypeId(vehicle_type_id[count]);
 				db_odd.setTs(new Time(count * 1000));
 				db_odd.setOdDemand(new BigDecimal(demand));
-				// TODO db_odd.save(conn);
+				db_odd.save(conn);
 				++count;
 			}
 		}
