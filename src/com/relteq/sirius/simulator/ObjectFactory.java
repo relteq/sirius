@@ -541,7 +541,6 @@ public final class ObjectFactory {
 	 * location on a link. 
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return					_Sensor object
 	 */
@@ -556,7 +555,6 @@ public final class ObjectFactory {
 	 * position of the sensor.
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return			XXX
 	 */
