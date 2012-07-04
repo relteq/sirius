@@ -32,6 +32,8 @@ import com.relteq.sirius.om.NetworkConnectionsPeer;
 import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.OdLists;
+import com.relteq.sirius.om.Ods;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
 import com.relteq.sirius.om.SplitRatioProfileSets;
@@ -97,6 +99,7 @@ public class ScenarioRestorer {
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
+			scenario.setODList(restoreODList(db_scenario.getOdLists()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
@@ -532,5 +535,32 @@ public class ScenarioRestorer {
 			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return nc;
+	}
+
+	private com.relteq.sirius.jaxb.ODList restoreODList(OdLists db_odl) {
+		if (null == db_odl) return null;
+		com.relteq.sirius.jaxb.ODList odlist = factory.createODList();
+		odlist.setId(db_odl.getId());
+		odlist.setName(db_odl.getName());
+		// TODO odlist.setDescription(db_odl.getDescription());
+		try {
+			@SuppressWarnings("unchecked")
+			List<Ods> db_od_l = db_odl.getOdss();
+			for (Ods db_od : db_od_l)
+				odlist.getOd().add(restoreOD(db_od));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return odlist;
+	}
+
+	private com.relteq.sirius.jaxb.Od restoreOD(Ods db_od) {
+		com.relteq.sirius.jaxb.Od od = factory.createOd();
+		od.setId(db_od.getId());
+		od.setLinkIdOrigin(db_od.getOriginLinkId());
+		od.setLinkIdDestination(db_od.getDestinationLinkId());
+		// TODO od.setRouteSegments();
+		// TODO od.setDecisionPoints();
+		return od;
 	}
 }
