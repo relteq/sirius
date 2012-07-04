@@ -116,7 +116,7 @@
 			version="yes"
 			linksource="yes"
 			access="protected" 
-			excludepackagenames="com.relteq.sirius.*"
+			excludepackagenames="com.relteq.sirius.*,org.*"
 			classpathref="compile.lib.path"
 			destdir="${doc.dir}"
 			sourcepath="${src.dir}">
