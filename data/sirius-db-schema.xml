@@ -461,7 +461,6 @@
 	<table name="od_demand_profiles">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_demand_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="link_id" required="true" domain="STRING_ID"/>
 		<column name="od_id" required="true" domain="STRING_ID"/>
 		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
@@ -470,9 +469,6 @@
 		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
 		<foreign-key foreignTable="od_demand_profile_sets">
 			<reference local="od_demand_profile_set_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="ods">
 			<reference local="od_id" foreign="id"/>
