@@ -39,6 +39,10 @@ import com.relteq.sirius.om.NetworkConnectionsPeer;
 import com.relteq.sirius.om.NetworkLists;
 import com.relteq.sirius.om.Networks;
 import com.relteq.sirius.om.Nodes;
+import com.relteq.sirius.om.OdDemandProfileSets;
+import com.relteq.sirius.om.OdDemandProfiles;
+import com.relteq.sirius.om.OdDemands;
+import com.relteq.sirius.om.OdDemandsPeer;
 import com.relteq.sirius.om.OdLists;
 import com.relteq.sirius.om.Ods;
 import com.relteq.sirius.om.PhaseLinks;
@@ -122,6 +126,7 @@ public class ScenarioRestorer {
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
 			scenario.setDemandProfileSet(restoreDemandProfileSet(db_scenario.getDemandProfileSets()));
+			scenario.setODDemandProfileSet(restoreODDemandProfileSet(db_scenario.getOdDemandProfileSets()));
 			scenario.setControllerSet(restoreControllerSet(db_scenario.getControllerSets()));
 			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
 			return scenario;
@@ -706,6 +711,49 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.SensorList sl = factory.createSensorList();
 		// TODO sl.getSensor().add();
 		return sl;
+	}
+
+	private com.relteq.sirius.jaxb.ODDemandProfileSet restoreODDemandProfileSet(OdDemandProfileSets db_oddps) {
+		if (null == db_oddps) return null;
+		com.relteq.sirius.jaxb.ODDemandProfileSet oddps = factory.createODDemandProfileSet();
+		oddps.setId(db_oddps.getId());
+		oddps.setName(db_oddps.getName());
+		oddps.setDescription(db_oddps.getDescription());
+		try {
+			@SuppressWarnings("unchecked")
+			List<OdDemandProfiles> db_oddp_l = db_oddps.getOdDemandProfiless();
+			for (OdDemandProfiles db_oddp : db_oddp_l)
+				oddps.getOdDemandProfile().add(restoreODDemandProfile(db_oddp));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return oddps;
+	}
+
+	private com.relteq.sirius.jaxb.OdDemandProfile restoreODDemandProfile(OdDemandProfiles db_oddp) {
+		com.relteq.sirius.jaxb.OdDemandProfile oddp = factory.createOdDemandProfile();
+		oddp.setOdId(db_oddp.getOdId());
+		oddp.setDt(db_oddp.getDt());
+		oddp.setStartTime(db_oddp.getStartTime());
+		oddp.setKnob(db_oddp.getKnob());
+		oddp.setStdDevAdd(db_oddp.getStdDeviationAdditive());
+		oddp.setStdDevMult(db_oddp.getStdDeviationMultiplicative());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(OdDemandsPeer.VEHICLE_TYPE_ID);
+		try {
+			@SuppressWarnings("unchecked")
+			List<OdDemands> db_odd_l = db_oddp.getOdDemandss(crit);
+			StringBuilder sb = null;
+			for (OdDemands db_odd : db_odd_l) {
+				if (null == sb) sb = new StringBuilder();
+				else sb.append(':');
+				sb.append(db_odd.getOdDemand().toPlainString());
+			}
+			if (null != sb) oddp.setContent(sb.toString());
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return oddp;
 	}
 
 	private com.relteq.sirius.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) {
