@@ -13,6 +13,10 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.om.DecisionPointSplitProfileSets;
+import com.relteq.sirius.om.DecisionPointSplitProfiles;
+import com.relteq.sirius.om.DecisionPointSplits;
+import com.relteq.sirius.om.DecisionPointSplitsPeer;
 import com.relteq.sirius.om.DemandProfileSets;
 import com.relteq.sirius.om.DemandProfiles;
 import com.relteq.sirius.om.Demands;
@@ -100,6 +104,7 @@ public class ScenarioRestorer {
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
 			scenario.setODList(restoreODList(db_scenario.getOdLists()));
+			scenario.setDecisionPoints(restoreDecisionPoints(db_scenario.getDecisionPointSplitProfileSets()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
@@ -562,5 +567,61 @@ public class ScenarioRestorer {
 		// TODO od.setRouteSegments();
 		// TODO od.setDecisionPoints();
 		return od;
+	}
+
+	private com.relteq.sirius.jaxb.DecisionPoints restoreDecisionPoints(DecisionPointSplitProfileSets db_dpsps) {
+		if (null == db_dpsps) return null;
+		com.relteq.sirius.jaxb.DecisionPoints dpoints = factory.createDecisionPoints();
+		// TODO dpoints.setName(db_dpsps.getName());
+		// TODO dpoints.setDescription(db_dpsps.getDescription());
+		try {
+			@SuppressWarnings("unchecked")
+			List<DecisionPointSplitProfiles> db_dpsp_l = db_dpsps.getDecisionPointSplitProfiless();
+			for (DecisionPointSplitProfiles db_dpsp : db_dpsp_l)
+				dpoints.getDecisionPoint().add(restoreDecisionPoint(db_dpsp));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return dpoints;
+	}
+
+	private com.relteq.sirius.jaxb.DecisionPoint restoreDecisionPoint(DecisionPointSplitProfiles db_dpsp) {
+		com.relteq.sirius.jaxb.DecisionPoint dpoint = factory.createDecisionPoint();
+		dpoint.setId(db_dpsp.getId());
+		dpoint.setNodeId(db_dpsp.getNodeId());
+		dpoint.setDt(db_dpsp.getDt());
+		dpoint.setStartTime(db_dpsp.getStartTime());
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.IN_ROUTE_SEGMENT_ID);
+		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.OUT_ROUTE_SEGMENT_ID);
+		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.VEHICLE_TYPE_ID);
+		try {
+			@SuppressWarnings("unchecked")
+			List<DecisionPointSplits> db_dps_l = db_dpsp.getDecisionPointSplitss(crit);
+			com.relteq.sirius.jaxb.DecisionPointSplit dps = null;
+			StringBuilder sb = new StringBuilder();
+			for (DecisionPointSplits db_dps : db_dps_l) {
+				if (null != dps && (!dps.getRouteSegmentIn().equals(db_dps.getInRouteSegmentId()) || !dps.getRouteSegmentOut().equals(db_dps.getOutRouteSegmentId()))) {
+					dps.setContent(sb.toString());
+					dpoint.getDecisionPointSplit().add(dps);
+					dps = null;
+					sb.setLength(0);
+				}
+				if (null == dps) {
+					dps = factory.createDecisionPointSplit();
+					dps.setRouteSegmentIn(db_dps.getInRouteSegmentId());
+					dps.setRouteSegmentOut(db_dps.getOutRouteSegmentId());
+				} else
+					sb.append(':');
+				sb.append(db_dps.getSplit().toPlainString());
+			}
+			if (null != dps) {
+				dps.setContent(sb.toString());
+				dpoint.getDecisionPointSplit().add(dps);
+			}
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
+		return dpoint;
 	}
 }
