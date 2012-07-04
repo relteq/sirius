@@ -43,6 +43,8 @@ import com.relteq.sirius.om.OdLists;
 import com.relteq.sirius.om.Ods;
 import com.relteq.sirius.om.PhaseLinks;
 import com.relteq.sirius.om.Phases;
+import com.relteq.sirius.om.RouteSegmentLinks;
+import com.relteq.sirius.om.RouteSegments;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.SensorLists;
 import com.relteq.sirius.om.SignalLists;
@@ -94,6 +96,7 @@ public class ScenarioLoader {
 	private Map<String, String> link_family_id = null;
 	private Map<String, String> node_family_id = null;
 	private Map<String, String> od_id = null;
+	private Map<String, String> route_segment_id = null;
 
 	private ScenarioLoader() {
 		project_id = "default";
@@ -145,6 +148,7 @@ public class ScenarioLoader {
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
+		save(scenario.getRouteSegments());
 		db_scenario.setOdLists(save(scenario.getODList()));
 		db_scenario.setDecisionPointSplitProfileSets(save(scenario.getDecisionPoints()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
@@ -689,6 +693,55 @@ public class ScenarioLoader {
 	}
 
 	/**
+	 * Imports route segments
+	 * @param rsegments
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.RouteSegments rsegments) throws TorqueException {
+		if (null == rsegments) return;
+		route_segment_id = new HashMap<String, String>();
+		for (com.relteq.sirius.jaxb.RouteSegment rs : rsegments.getRouteSegment())
+			save(rs);
+	}
+
+	/**
+	 * Imports a route segment
+	 * @param rs
+	 * @return the imported route segment
+	 * @throws TorqueException
+	 */
+	private RouteSegments save(com.relteq.sirius.jaxb.RouteSegment rs) throws TorqueException {
+		RouteSegments db_rs = new RouteSegments();
+		String id = uuid();
+		route_segment_id.put(rs.getId(), id);
+		db_rs.setId(id);
+		db_rs.setProjectId(getProjectId());
+		// TODO db_rs.setName();
+		// TODO db_rs.setDescription();
+		db_rs.save(conn);
+		int count = 0;
+		for (com.relteq.sirius.jaxb.Links links : rs.getLinks())
+			for (com.relteq.sirius.jaxb.LinkReference lr : links.getLinkReference())
+				save(lr, db_rs, count++);
+		return db_rs;
+	}
+
+	/**
+	 * Imports a route segment link
+	 * @param lr
+	 * @param db_rs
+	 * @param number
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.LinkReference lr, RouteSegments db_rs, int number) throws TorqueException {
+		RouteSegmentLinks db_rsl = new RouteSegmentLinks();
+		db_rsl.setLinkId(link_family_id.get(lr.getId()));
+		db_rsl.setRouteSegments(db_rs);
+		db_rsl.setNumber(number);
+		db_rsl.save(conn);
+	}
+
+	/**
 	 * Imports an origin-destination list
 	 * @param odlist
 	 * @return the imported list
@@ -723,6 +776,7 @@ public class ScenarioLoader {
 		db_od.setOriginLinkId(link_family_id.get(od.getLinkIdOrigin()));
 		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
 		db_od.save(conn);
+		// TODO od_route_segments table
 	}
 
 	/**
