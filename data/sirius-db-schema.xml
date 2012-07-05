@@ -294,7 +294,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="split_ratio_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="split_ratio_profile_sets">
 			<reference local="split_ratio_profile_set_id" foreign="id"/>
@@ -339,7 +339,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="decision_point_split_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="decision_point_split_profile_sets">
 			<reference local="decision_point_split_profile_set_id" foreign="id"/>
@@ -384,7 +384,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="fundamental_diagram_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="fundamental_diagram_profile_sets">
 			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
@@ -422,7 +422,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
 		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
@@ -462,7 +462,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="od_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
 		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
@@ -502,7 +502,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
-		<column name="dt" required="true" domain="DECIMAL" description="Sampling rate in seconds."/>
+		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
 			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
