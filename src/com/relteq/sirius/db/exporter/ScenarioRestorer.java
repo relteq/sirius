@@ -519,15 +519,15 @@ public class ScenarioRestorer {
 		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
 		@SuppressWarnings("unchecked")
 		List<Demands> db_demand_l = db_dp.getDemandss(crit);
-		if (0 < db_demand_l.size()) {
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = null;
 			Date ts = null;
 			for (Demands db_demand : db_demand_l) {
-				if (null != ts) sb.append(ts.equals(db_demand.getTs()) ? ':' : ',');
+				if (null == sb) sb = new StringBuilder();
+				else sb.append(ts.equals(db_demand.getTs()) ? ':' : ',');
 				ts = db_demand.getTs();
 				sb.append(db_demand.getDemand().toPlainString());
 			}
-			dp.setContent(sb.toString());
+			if (null != sb) dp.setContent(sb.toString());
 		}
 		return dp;
 	}
