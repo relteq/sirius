@@ -321,7 +321,7 @@ public class ScenarioRestorer {
 		return link;
 	}
 
-	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) throws TorqueException {
+	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) {
 		if (null == db_idset) return null;
 		com.relteq.sirius.jaxb.InitialDensitySet idset = factory.createInitialDensitySet();
 		idset.setId(db_idset.getId());
@@ -330,35 +330,39 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
-		@SuppressWarnings("unchecked")
-		List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
-		com.relteq.sirius.jaxb.Density density = null;
-		StringBuilder sb = new StringBuilder();
-		for (InitialDensities db_id : db_idl) {
-			if (null != density && !density.getLinkId().equals(db_id.getLinkId())) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
+			com.relteq.sirius.jaxb.Density density = null;
+			StringBuilder sb = new StringBuilder();
+			for (InitialDensities db_id : db_idl) {
+				if (null != density && !density.getLinkId().equals(db_id.getLinkId())) {
+					density.setContent(sb.toString());
+					idset.getDensity().add(density);
+					density = null;
+				}
+				if (null == density) { // new link
+					density = factory.createDensity();
+					density.setLinkId(db_id.getLinkId());
+					// TODO density.setNetworkId();
+					sb.setLength(0);
+				} else { // same link, different vehicle type
+					sb.append(":");
+				}
+				sb.append(db_id.getDensity().toPlainString());
+			}
+			// last link
+			if (null != density) {
 				density.setContent(sb.toString());
 				idset.getDensity().add(density);
-				density = null;
 			}
-			if (null == density) { // new link
-				density = factory.createDensity();
-				density.setLinkId(db_id.getLinkId());
-				// TODO density.setNetworkId();
-				sb.setLength(0);
-			} else { // same link, different vehicle type
-				sb.append(":");
-			}
-			sb.append(db_id.getDensity().toPlainString());
-		}
-		// last link
-		if (null != density) {
-			density.setContent(sb.toString());
-			idset.getDensity().add(density);
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return idset;
 	}
 
-	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) throws TorqueException {
+	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) {
 		if (null == db_wfset) return null;
 		com.relteq.sirius.jaxb.WeavingFactorSet wfset = factory.createWeavingFactorSet();
 		wfset.setId(db_wfset.getId());
@@ -368,51 +372,59 @@ public class ScenarioRestorer {
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.OUT_LINK_ID);
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.VEHICLE_TYPE_ID);
-		@SuppressWarnings("unchecked")
-		List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss();
-		// TODO uncomment when the XSD schema is updated
-		/*
-		com.relteq.sirius.jaxb.Weavingfactors wf = null;
-		StringBuilder sb = new StringBuilder();
-		for (WeavingFactors db_wf : db_wf_l) {
-			if (null != wf && !(wf.getLinkIn().equals(db_wf.getInLinkId()) && wf.getLinkOut().equals(db_wf.getOutLinkId()))) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss();
+			// TODO uncomment when the XSD schema is updated
+			/*
+			com.relteq.sirius.jaxb.Weavingfactors wf = null;
+			StringBuilder sb = new StringBuilder();
+			for (WeavingFactors db_wf : db_wf_l) {
+				if (null != wf && !(wf.getLinkIn().equals(db_wf.getInLinkId()) && wf.getLinkOut().equals(db_wf.getOutLinkId()))) {
+					wf.setContent(sb.toString());
+					wfp.getWeavingfactors().add(wf);
+					wf = null;
+				}
+				if (null == wf) { // new weaving factor
+					wf = factory.createWeavingfactors();
+					wf.setLinkIn(db_wf.getInLinkId());
+					wf.setLinkOut(db_wf.getOutLinkId());
+					// TODO wf.setNetworkId();
+					sb.setLength(0);
+				} else { // same weaving factor, different vehicle type
+					sb.append(':');
+				}
+				sb.append(db_wf.getFactor().toPlainString());
+			}
+			if (null != wf) {
 				wf.setContent(sb.toString());
 				wfp.getWeavingfactors().add(wf);
-				wf = null;
 			}
-			if (null == wf) { // new weaving factor
-				wf = factory.createWeavingfactors();
-				wf.setLinkIn(db_wf.getInLinkId());
-				wf.setLinkOut(db_wf.getOutLinkId());
-				// TODO wf.setNetworkId();
-				sb.setLength(0);
-			} else { // same weaving factor, different vehicle type
-				sb.append(':');
-			}
-			sb.append(db_wf.getFactor().toPlainString());
+			*/
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
-		if (null != wf) {
-			wf.setContent(sb.toString());
-			wfp.getWeavingfactors().add(wf);
-		}
-		*/
 		return wfset;
 	}
 
-	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
+	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) {
 		if (null == db_srps) return null;
 		com.relteq.sirius.jaxb.SplitRatioProfileSet srps = factory.createSplitRatioProfileSet();
 		srps.setId(db_srps.getId());
 		srps.setName(db_srps.getName());
 		srps.setDescription(db_srps.getDescription());
-		@SuppressWarnings("unchecked")
-		List<SplitRatioProfiles> db_srp_l = db_srps.getSplitRatioProfiless();
-		for (SplitRatioProfiles db_srp : db_srp_l)
-			srps.getSplitratioProfile().add(restoreSplitRatioProfile(db_srp));
+		try {
+			@SuppressWarnings("unchecked")
+			List<SplitRatioProfiles> db_srp_l = db_srps.getSplitRatioProfiless();
+			for (SplitRatioProfiles db_srp : db_srp_l)
+				srps.getSplitratioProfile().add(restoreSplitRatioProfile(db_srp));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
 		return srps;
 	}
 
-	private com.relteq.sirius.jaxb.SplitratioProfile restoreSplitRatioProfile(SplitRatioProfiles db_srp) throws TorqueException {
+	private com.relteq.sirius.jaxb.SplitratioProfile restoreSplitRatioProfile(SplitRatioProfiles db_srp) {
 		com.relteq.sirius.jaxb.SplitratioProfile srp = factory.createSplitratioProfile();
 		srp.setNodeId(db_srp.getNodeId());
 		srp.setDt(db_srp.getDt());
@@ -422,31 +434,35 @@ public class ScenarioRestorer {
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.OUT_LINK_ID);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.TS);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.VEHICLE_TYPE_ID);
-		@SuppressWarnings("unchecked")
-		List<SplitRatios> db_sr_l = db_srp.getSplitRatioss(crit);
-		com.relteq.sirius.jaxb.Splitratio sr = null;
-		Date ts = null;
-		StringBuilder sb = new StringBuilder();
-		for (SplitRatios db_sr : db_sr_l) {
-			if (null != sr && !(sr.getLinkIn().equals(db_sr.getInLinkId()) && sr.getLinkOut().equals(db_sr.getOutLinkId()))) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<SplitRatios> db_sr_l = db_srp.getSplitRatioss(crit);
+			com.relteq.sirius.jaxb.Splitratio sr = null;
+			Date ts = null;
+			StringBuilder sb = new StringBuilder();
+			for (SplitRatios db_sr : db_sr_l) {
+				if (null != sr && !(sr.getLinkIn().equals(db_sr.getInLinkId()) && sr.getLinkOut().equals(db_sr.getOutLinkId()))) {
+					sr.setContent(sb.toString());
+					srp.getSplitratio().add(sr);
+					sr = null;
+				}
+				if (null == sr) { // new split ratio
+					sr = factory.createSplitratio();
+					sr.setLinkIn(db_sr.getInLinkId());
+					sr.setLinkOut(db_sr.getOutLinkId());
+					sb.setLength(0);
+				} else { // same split ratio, different time stamp (',') or vehicle type (':')
+					sb.append(ts.equals(db_sr.getTs()) ? ':' : ',');
+				}
+				ts = db_sr.getTs();
+				sb.append(db_sr.getSplitRatio().toPlainString());
+			}
+			if (null != sr) {
 				sr.setContent(sb.toString());
 				srp.getSplitratio().add(sr);
-				sr = null;
 			}
-			if (null == sr) { // new split ratio
-				sr = factory.createSplitratio();
-				sr.setLinkIn(db_sr.getInLinkId());
-				sr.setLinkOut(db_sr.getOutLinkId());
-				sb.setLength(0);
-			} else { // same split ratio, different time stamp (',') or vehicle type (':')
-				sb.append(ts.equals(db_sr.getTs()) ? ':' : ',');
-			}
-			ts = db_sr.getTs();
-			sb.append(db_sr.getSplitRatio().toPlainString());
-		}
-		if (null != sr) {
-			sr.setContent(sb.toString());
-			srp.getSplitratio().add(sr);
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return srp;
 	}
@@ -468,17 +484,21 @@ public class ScenarioRestorer {
 		return fdps;
 	}
 
-	com.relteq.sirius.jaxb.FundamentalDiagramProfile restoreFundamentalDiagramProfile(FundamentalDiagramProfiles db_fdprofile) throws TorqueException {
+	com.relteq.sirius.jaxb.FundamentalDiagramProfile restoreFundamentalDiagramProfile(FundamentalDiagramProfiles db_fdprofile) {
 		com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile = factory.createFundamentalDiagramProfile();
 		fdprofile.setLinkId(db_fdprofile.getLinkId());
 		fdprofile.setDt(db_fdprofile.getDt());
 		fdprofile.setStartTime(db_fdprofile.getStartTime());
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(FundamentalDiagramsPeer.TS);
-		@SuppressWarnings("unchecked")
-		List<FundamentalDiagrams> db_fd_l = db_fdprofile.getFundamentalDiagramss(crit);
-		for (FundamentalDiagrams db_fd : db_fd_l)
-			fdprofile.getFundamentalDiagram().add(restoreFundamentalDiagram(db_fd));
+		try {
+			@SuppressWarnings("unchecked")
+			List<FundamentalDiagrams> db_fd_l = db_fdprofile.getFundamentalDiagramss(crit);
+			for (FundamentalDiagrams db_fd : db_fd_l)
+				fdprofile.getFundamentalDiagram().add(restoreFundamentalDiagram(db_fd));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
 		return fdprofile;
 	}
 
@@ -493,20 +513,24 @@ public class ScenarioRestorer {
 		return fd;
 	}
 
-	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) throws TorqueException {
+	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) {
 		if (null == db_dpset) return null;
 		com.relteq.sirius.jaxb.DemandProfileSet dpset = factory.createDemandProfileSet();
 		dpset.setId(db_dpset.getId());
 		dpset.setName(db_dpset.getName());
 		dpset.setDescription(db_dpset.getDescription());
-		@SuppressWarnings("unchecked")
-		List<DemandProfiles> db_dp_l = db_dpset.getDemandProfiless();
-		for (DemandProfiles db_dp : db_dp_l)
-			dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
+		try {
+			@SuppressWarnings("unchecked")
+			List<DemandProfiles> db_dp_l = db_dpset.getDemandProfiless();
+			for (DemandProfiles db_dp : db_dp_l)
+				dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
+		}
 		return dpset;
 	}
 
-	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) throws TorqueException {
+	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) {
 		com.relteq.sirius.jaxb.DemandProfile dp = factory.createDemandProfile();
 		dp.setLinkIdOrigin(db_dp.getLinkId());
 		dp.setDt(db_dp.getDt());
@@ -517,8 +541,9 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(DemandsPeer.TS);
 		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
-		@SuppressWarnings("unchecked")
-		List<Demands> db_demand_l = db_dp.getDemandss(crit);
+		try {
+			@SuppressWarnings("unchecked")
+			List<Demands> db_demand_l = db_dp.getDemandss(crit);
 			StringBuilder sb = null;
 			Date ts = null;
 			for (Demands db_demand : db_demand_l) {
@@ -528,6 +553,8 @@ public class ScenarioRestorer {
 				sb.append(db_demand.getDemand().toPlainString());
 			}
 			if (null != sb) dp.setContent(sb.toString());
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addErrorMessage(exc.getMessage());
 		}
 		return dp;
 	}
