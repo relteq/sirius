@@ -25,7 +25,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 @RunWith(Parameterized.class)
-public class OutputWriterTest {
+public class XMLOutputWriterTest {
 	/** output file name prefix */
 	private static String OUT_PREFIX = "output_";
 	/** output file name suffix */
@@ -56,7 +56,7 @@ public class OutputWriterTest {
 	 * Initializes testing environment
 	 * @param conffile File the configuration file
 	 */
-	public OutputWriterTest(File conffile) {
+	public XMLOutputWriterTest(File conffile) {
 		this.conffile = conffile;
 	}
 

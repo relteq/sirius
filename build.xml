@@ -195,7 +195,7 @@
 				<path refid="classpath.test"/>
 			</classpath>
 			<formatter type="plain" usefile="false"/>
-			<test name="com.relteq.sirius.simulator.OutputWriterTest"/>
+			<test name="com.relteq.sirius.simulator.XMLOutputWriterTest"/>
 		</junit>
 	</target>
 
