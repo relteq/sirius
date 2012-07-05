@@ -111,7 +111,7 @@ public class ScenarioLoader {
 	public static void load(String filename) throws SiriusException {
 		ScenarioLoader sl = new ScenarioLoader();
 		try {
-			com.relteq.sirius.db.Service.init();
+			if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
 			Scenarios db_scenario = sl.load(ObjectFactory.createAndLoadScenario(filename));
 			System.out.println("Scenario imported, ID='" + db_scenario.getId() + "'");
 		} catch (TorqueException exc) {
