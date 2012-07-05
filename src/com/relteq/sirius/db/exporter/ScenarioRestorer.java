@@ -527,6 +527,7 @@ public class ScenarioRestorer {
 				ts = db_demand.getTs();
 				sb.append(db_demand.getDemand().toPlainString());
 			}
+			dp.setContent(sb.toString());
 		}
 		return dp;
 	}
