@@ -188,7 +188,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		for (int iii = 0; iii < link.length; ++iii)
 			for (int jjj = 0; jjj < vehicletypeindex.length; ++jjj)
 				data.add(new Tuple(link[iii].getId(), link[iii].myNetwork.getId(),
-						vehicletypeindex[iii].intValue(),
+						vehicletypeindex[jjj].intValue(),
 						initial_density[iii][jjj] * link[iii].getLengthInMiles()));
 		return data;
 	}
