@@ -206,7 +206,7 @@ public class ScenarioLoader {
 		crit.add(VehicleTypesPeer.NAME, vt.getName());
 		crit.add(VehicleTypesPeer.WEIGHT, vt.getWeight());
 		@SuppressWarnings("unchecked")
-		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
+		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
 		VehicleTypes db_vtype = null;
 		if (db_vt_l.isEmpty()) {
 			VehicleTypeFamilies db_vtf = new VehicleTypeFamilies();
