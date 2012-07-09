@@ -543,6 +543,18 @@ public class ScenarioLoader {
 							db_sr.save(conn);
 						}
 					}
+				} else {
+					for (String vtid : vehicle_type_id) {
+						SplitRatios db_sr = new SplitRatios();
+						db_sr.copy();
+						db_sr.setSplitRatioProfiles(db_srp);
+						db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
+						db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
+						db_sr.setVehicleTypeId(vtid);
+						db_sr.setTs(new Time(0));
+						db_sr.setSplitRatio(new BigDecimal(-1));
+						db_sr.save(conn);
+					}
 				}
 			}
 		}
