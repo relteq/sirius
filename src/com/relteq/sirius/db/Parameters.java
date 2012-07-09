@@ -110,7 +110,10 @@ public class Parameters {
 		this.create = create;
 	}
 
-	private Parameters() {}
+	/**
+	 * Empty DB parameters
+	 */
+	public Parameters() {}
 
 	/**
 	 * Retrieves the DB parameters from the environment
@@ -137,6 +140,7 @@ public class Parameters {
 	 * @return the database connection URL
 	 */
 	public String getUrl() {
+		if (null == driver || null == db_name) return null;
 		StringBuilder url = new StringBuilder("jdbc:");
 		url.append(driver).append(":");
 		if (driver.equals("postgresql") && (null != host)) {
