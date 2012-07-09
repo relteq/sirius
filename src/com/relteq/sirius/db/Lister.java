@@ -1,7 +1,6 @@
 package com.relteq.sirius.db;
 
 import java.text.DateFormat;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.torque.NoRowsException;
@@ -23,8 +22,7 @@ public class Lister {
 			com.relteq.sirius.db.Service.init();
 			@SuppressWarnings("unchecked")
 			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(new Criteria());
-			for (Iterator<Scenarios> iter = db_scenarios.iterator(); iter.hasNext();) {
-				Scenarios db_scenario = iter.next();
+			for (Scenarios db_scenario : db_scenarios) {
 				StringBuilder sb = new StringBuilder(db_scenario.getId());
 				if (null != db_scenario.getName())
 					sb.append(" ").append(db_scenario.getName());
