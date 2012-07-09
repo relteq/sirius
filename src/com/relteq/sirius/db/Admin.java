@@ -24,14 +24,8 @@ public class Admin {
 	public static void init() throws SQLException, IOException {
 		SQLExec exec = new SQLExec();
 		Parameters params = Parameters.get();
-		if (params.getDriver().equals("derby")) {
-			try {
-				org.apache.commons.io.FileUtils.deleteDirectory(new File(params.getDBName()));
-			} catch (IOException exc) {
-				SiriusErrorLog.addErrorMessage(exc.getMessage());
-			}
-			params.setCreate(true);
-		}
+		drop(params);
+		if (params.getDriver().equals("derby")) params.setCreate(true);
 		exec.setSrc("sql" + File.separator + //
 				params.getDriver() + File.separator + "sirius-db-schema.sql");
 		exec.setUrl(params.getUrl());
@@ -102,4 +96,16 @@ public class Admin {
 		}
 	}
 
+	/**
+	 * Drops the database
+	 * @param params DB connection parameters
+	 */
+	public static void drop(Parameters params) {
+		if (params.getDriver().equals("derby"))
+			try {
+				org.apache.commons.io.FileUtils.deleteDirectory(new File(params.getDBName()));
+			} catch (IOException exc) {
+				SiriusErrorLog.addErrorMessage(exc.getMessage());
+			}
+	}
 }
