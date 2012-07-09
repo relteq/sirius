@@ -189,13 +189,15 @@
 	</target>
 
 	<target name="test" description="run tests" depends="compile-test">
-		<junit haltonfailure="on">
+		<junit haltonfailure="on" filtertrace="no" reloading="false">
 			<classpath>
 				<pathelement location="${test.dir}"/>
 				<path refid="classpath.test"/>
 			</classpath>
 			<formatter type="plain" usefile="false"/>
-			<test name="com.relteq.sirius.simulator.XMLOutputWriterTest"/>
+			<batchtest>
+				<fileset dir="${test.dir}" includes="**/*.class"/>
+			</batchtest>
 		</junit>
 	</target>
 
