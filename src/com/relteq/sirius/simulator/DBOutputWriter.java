@@ -3,8 +3,10 @@ package com.relteq.sirius.simulator;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Calendar;
+import java.util.List;
 
 import org.apache.torque.TorqueException;
+import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.om.*;
@@ -29,10 +31,18 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ds.setId(data_source_id = com.relteq.sirius.db.util.UUID.generate());
 			db_ds.save(conn);
 
+			Criteria crit = new Criteria();
+			crit.add(com.relteq.sirius.om.SimulationRunsPeer.SCENARIO_ID, getScenario().getId());
+			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);
+			// TODO limit the number of rows
+			@SuppressWarnings("unchecked")
+			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = com.relteq.sirius.om.SimulationRunsPeer.doSelect(crit);
+			final int run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
+
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
 			db_sr.setDataSources(db_ds);
 			db_sr.setScenarioId(getScenario().getId());
-			db_sr.setRunNumber(getRunId());
+			db_sr.setRunNumber(run_number);
 			db_sr.setStartTime(Calendar.getInstance().getTime());
 			db_sr.setStatus(-1);
 			db_sr.save(conn);

@@ -689,6 +689,10 @@
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
+		<unique name="scenario_run">
+			<unique-column name="scenario_id"/>
+			<unique-column name="run_number"/>
+		</unique>
 	</table>
 	
 
