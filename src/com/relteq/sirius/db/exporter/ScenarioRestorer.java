@@ -2,7 +2,6 @@ package com.relteq.sirius.db.exporter;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -432,13 +431,13 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.OUT_LINK_ID);
-		crit.addAscendingOrderByColumn(SplitRatiosPeer.TS);
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.NUMBER);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.VEHICLE_TYPE_ID);
 		try {
 			@SuppressWarnings("unchecked")
 			List<SplitRatios> db_sr_l = db_srp.getSplitRatioss(crit);
 			com.relteq.sirius.jaxb.Splitratio sr = null;
-			Date ts = null;
+			int number = -1;
 			StringBuilder sb = new StringBuilder();
 			for (SplitRatios db_sr : db_sr_l) {
 				if (null != sr && !(sr.getLinkIn().equals(db_sr.getInLinkId()) && sr.getLinkOut().equals(db_sr.getOutLinkId()))) {
@@ -452,9 +451,9 @@ public class ScenarioRestorer {
 					sr.setLinkOut(db_sr.getOutLinkId());
 					sb.setLength(0);
 				} else { // same split ratio, different time stamp (',') or vehicle type (':')
-					sb.append(ts.equals(db_sr.getTs()) ? ':' : ',');
+					sb.append(db_sr.getNumber() == number ? ':' : ',');
 				}
-				ts = db_sr.getTs();
+				number = db_sr.getNumber();
 				sb.append(db_sr.getSplitRatio().toPlainString());
 			}
 			if (null != sr) {
@@ -490,7 +489,7 @@ public class ScenarioRestorer {
 		fdprofile.setDt(db_fdprofile.getDt());
 		fdprofile.setStartTime(db_fdprofile.getStartTime());
 		Criteria crit = new Criteria();
-		crit.addAscendingOrderByColumn(FundamentalDiagramsPeer.TS);
+		crit.addAscendingOrderByColumn(FundamentalDiagramsPeer.NUMBER);
 		try {
 			@SuppressWarnings("unchecked")
 			List<FundamentalDiagrams> db_fd_l = db_fdprofile.getFundamentalDiagramss(crit);
@@ -539,17 +538,17 @@ public class ScenarioRestorer {
 		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
 		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
 		Criteria crit = new Criteria();
-		crit.addAscendingOrderByColumn(DemandsPeer.TS);
+		crit.addAscendingOrderByColumn(DemandsPeer.NUMBER);
 		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
 		try {
 			@SuppressWarnings("unchecked")
 			List<Demands> db_demand_l = db_dp.getDemandss(crit);
 			StringBuilder sb = null;
-			Date ts = null;
+			int number = -1;
 			for (Demands db_demand : db_demand_l) {
 				if (null == sb) sb = new StringBuilder();
-				else sb.append(ts.equals(db_demand.getTs()) ? ':' : ',');
-				ts = db_demand.getTs();
+				else sb.append(db_demand.getNumber() == number ? ':' : ',');
+				number = db_demand.getNumber();
 				sb.append(db_demand.getDemand().toPlainString());
 			}
 			if (null != sb) dp.setContent(sb.toString());
@@ -812,7 +811,7 @@ public class ScenarioRestorer {
 		cprofile.setDt(db_dbcp.getDt());
 		cprofile.setStartTime(db_dbcp.getStartTime());
 		Criteria crit = new Criteria();
-		crit.addAscendingOrderByColumn(DownstreamBoundaryCapacitiesPeer.TS);
+		crit.addAscendingOrderByColumn(DownstreamBoundaryCapacitiesPeer.NUMBER);
 		try {
 			@SuppressWarnings("unchecked")
 			List<DownstreamBoundaryCapacities> db_dbc_l = db_dbcp.getDownstreamBoundaryCapacitiess(crit);

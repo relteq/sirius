@@ -309,7 +309,7 @@
 		<column name="in_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the split ratio"/>
 		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
 		<foreign-key foreignTable="split_ratio_profiles">
 			<reference local="split_ratio_profile_id" foreign="id"/>
@@ -354,7 +354,7 @@
 		<column name="in_route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the split"/>
 		<column name="split" required="true" domain="DECIMAL" description="Split ratio between 0 and 1."/>
 		<foreign-key foreignTable="decision_point_split_profiles">
 			<reference local="decision_point_split_profile_id" foreign="id"/>
@@ -396,7 +396,7 @@
 
 	<table name="fundamental_diagrams">
 		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the fundamental diagram"/>
 		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in mph."/>
 		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in mph."/>
 		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
@@ -438,7 +438,7 @@
 	<table name="demands">
 		<column name="demand_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the demand"/>
 		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<foreign-key foreignTable="demand_profiles">
 			<reference local="demand_profile_id" foreign="id"/>
@@ -478,7 +478,7 @@
 	<table name="od_demands">
 		<column name="od_demand_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the OD demand"/>
 		<column name="od_demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<foreign-key foreignTable="od_demand_profiles">
 			<reference local="od_demand_profile_id" foreign="id"/>
@@ -514,7 +514,7 @@
 
 	<table name="downstream_boundary_capacities">
 		<column name="downstream_boundary_capacity_profile_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="ts" primaryKey="true" type="TIME" description="Here we only need time entry without date."/>
+		<column name="number" primaryKey="true" type="INTEGER" description="Order of the downstream boundary capacity"/>
 		<column name="downstream_boundary_capacity" required="true" domain="DECIMAL" description="Maximum flow that can exit this link in vph."/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profiles">
 			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>

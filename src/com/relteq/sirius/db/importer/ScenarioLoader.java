@@ -2,7 +2,6 @@ package com.relteq.sirius.db.importer;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -531,14 +530,13 @@ public class ScenarioLoader {
 				Double2DMatrix data = new Double2DMatrix(sr.getContent());
 				if (!data.isEmpty()) {
 					for (int t = 0; t < data.getnTime(); ++t) {
-						Time ts = new Time(t * 1000);
 						for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
 							SplitRatios db_sr = new SplitRatios();
 							db_sr.setSplitRatioProfiles(db_srp);
 							db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
 							db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
 							db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
-							db_sr.setTs(ts);
+							db_sr.setNumber(t);
 							db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
 							db_sr.save(conn);
 						}
@@ -551,7 +549,7 @@ public class ScenarioLoader {
 						db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
 						db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
 						db_sr.setVehicleTypeId(vtid);
-						db_sr.setTs(new Time(0));
+						db_sr.setNumber(0);
 						db_sr.setSplitRatio(new BigDecimal(-1));
 						db_sr.save(conn);
 					}
@@ -595,20 +593,20 @@ public class ScenarioLoader {
 		db_fdprofile.save(conn);
 		int num = 0;
 		for (com.relteq.sirius.jaxb.FundamentalDiagram fd : fdprofile.getFundamentalDiagram())
-			save(fd, db_fdprofile, new Time(1000 * num++));
+			save(fd, db_fdprofile, num++);
 	}
 
 	/**
 	 * Imports a fundamental diagram
 	 * @param fd
 	 * @param db_fdprofile an already imported FD profile
-	 * @param ts timestamp for sorting
+	 * @param number order of the FD
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.FundamentalDiagram fd, FundamentalDiagramProfiles db_fdprofile, java.util.Date ts) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.FundamentalDiagram fd, FundamentalDiagramProfiles db_fdprofile, int number) throws TorqueException {
 		FundamentalDiagrams db_fd = new FundamentalDiagrams();
 		db_fd.setFundamentalDiagramProfiles(db_fdprofile);
-		db_fd.setTs(ts);
+		db_fd.setNumber(number);
 		db_fd.setFreeFlowSpeed(fd.getFreeFlowSpeed());
 		db_fd.setCongestionWaveSpeed(fd.getCongestionSpeed());
 		db_fd.setCapacity(fd.getCapacity());
@@ -657,12 +655,11 @@ public class ScenarioLoader {
 		Double2DMatrix data = new Double2DMatrix(dp.getContent());
 		if (!data.isEmpty()) {
 			for (int t = 0; t < data.getnTime(); ++t) {
-				Time ts = new Time(t * 1000);
 				for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
 					Demands db_demand = new Demands();
 					db_demand.setDemandProfiles(db_dp);
 					db_demand.setVehicleTypeId(vehicle_type_id[vtn]);
-					db_demand.setTs(ts);
+					db_demand.setNumber(t);
 					db_demand.setDemand(new BigDecimal(data.get(t, vtn)));
 					db_demand.save(conn);
 				}
@@ -848,7 +845,7 @@ public class ScenarioLoader {
 				db_dps.setDecisionPointSplitProfiles(db_dpsp);
 				db_dps.setInRouteSegmentId(route_segment_id.get(split.getRouteSegmentIn()));
 				db_dps.setOutRouteSegmentId(route_segment_id.get(split.getRouteSegmentOut()));
-				db_dps.setTs(new Time(1000 * count++));
+				db_dps.setNumber(count++);
 				db_dps.setSplit(new BigDecimal(val));
 				db_dps.save(conn);
 			}
@@ -898,7 +895,7 @@ public class ScenarioLoader {
 				OdDemands db_odd = new OdDemands();
 				db_odd.setOdDemandProfiles(db_oddp);
 				db_odd.setVehicleTypeId(vehicle_type_id[count]);
-				db_odd.setTs(new Time(count * 1000));
+				db_odd.setNumber(count);
 				db_odd.setOdDemand(new BigDecimal(demand));
 				db_odd.save(conn);
 				++count;
@@ -939,13 +936,14 @@ public class ScenarioLoader {
 		db_dbcp.setDt(cp.getDt());
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
+		// TODO delimiter = ':' or ','?
 		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(cp.getContent(), ":");
 		if (!values.isEmpty()) {
 			int count = 0;
 			for (Double capacity : values.getData()) {
 				DownstreamBoundaryCapacities db_dbc = new DownstreamBoundaryCapacities();
 				db_dbc.setDownstreamBoundaryCapacityProfiles(db_dbcp);
-				db_dbc.setTs(new Time(count * 1000));
+				db_dbc.setNumber(count);
 				db_dbc.setDownstreamBoundaryCapacity(new BigDecimal(capacity));
 				db_dbc.save(conn);
 				++count;
