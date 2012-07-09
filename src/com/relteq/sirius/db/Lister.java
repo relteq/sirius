@@ -16,10 +16,17 @@ import com.relteq.sirius.simulator.SiriusException;
  * Implements "list" commands
  */
 public class Lister {
+	/**
+	 * Initialize the DB service if it hasn't been initialized yet
+	 * @throws SiriusException
+	 */
+	private static void initDB() throws SiriusException {
+		if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
+	}
 
 	public static void listScenarios() throws SiriusException {
+		initDB();
 		try {
-			com.relteq.sirius.db.Service.init();
 			@SuppressWarnings("unchecked")
 			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(new Criteria());
 			for (Scenarios db_scenario : db_scenarios) {
@@ -30,14 +37,13 @@ public class Lister {
 					sb.append(" ").append(db_scenario.getDescription());
 				System.out.println(sb.toString());
 			}
-			com.relteq.sirius.db.Service.shutdown();
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc);
 		}
 	}
 
 	public static void listRuns(String scenario_id) throws SiriusException {
-		com.relteq.sirius.db.Service.init();
+		initDB();
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);
 			DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
@@ -52,7 +58,6 @@ public class Lister {
 				}
 				System.out.println(sb.toString());
 			}
-			com.relteq.sirius.db.Service.shutdown();
 		} catch (NoRowsException exc) {
 			throw new SiriusException("Scenario '" + scenario_id + "\' does not exist");
 		} catch (TorqueException exc) {
