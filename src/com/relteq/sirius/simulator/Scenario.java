@@ -909,8 +909,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			OutputWriterIF outputwriter = null;
 			if (writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
 				outputwriter = OutputWriterFactory.getWriter(this, owr_props);
-				outputwriter.setRunId(i);
-				outputwriter.open();
+				outputwriter.open(i);
 			}
 			try{
 				// allocate state

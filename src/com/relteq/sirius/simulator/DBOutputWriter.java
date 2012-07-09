@@ -58,7 +58,7 @@ public class DBOutputWriter extends OutputWriterBase {
 	}
 
 	@Override
-	public void open() throws SiriusException {
+	public void open(int run_id) throws SiriusException {
 		try {
 			createDataSource();
 			conn = Transaction.begin();

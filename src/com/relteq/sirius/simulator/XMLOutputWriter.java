@@ -27,10 +27,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 	}
 
 	@Override
-	public void open() throws SiriusException {
+	public void open(int run_id) throws SiriusException {
 		XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
 		try {
-			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + String.format("%d", getRunId()) + ".xml"), "utf-8");
+			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + String.format("%d", run_id) + ".xml"), "utf-8");
 			xmlsw.writeStartDocument("utf-8", "1.0");
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");

@@ -4,11 +4,12 @@ package com.relteq.sirius.simulator;
  * Output writer interface
  */
 public interface OutputWriterIF {
-	void setRunId(int run_id);
 	/**
 	 * Opens the output writer
+	 * @param run_id the run number
+	 * @throws SiriusException
 	 */
-	void open() throws SiriusException;
+	void open(int run_id) throws SiriusException;
 	/**
 	 * Records the simulator state
 	 * @param time

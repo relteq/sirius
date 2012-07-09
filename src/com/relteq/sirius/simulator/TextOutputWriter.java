@@ -29,8 +29,9 @@ public final class TextOutputWriter extends OutputWriterBase {
 		if (null == prefix) prefix = "output";
 	}
 
-	public void open() throws SiriusException {
-		String suffix = String.format("_%d.txt", getRunId());
+	@Override
+	public void open(int run_id) throws SiriusException {
+		String suffix = String.format("_%d.txt", run_id);
 		try {
 			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
 			out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));
