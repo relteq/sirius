@@ -4,12 +4,13 @@
 sirius.jar
 /src/com/relteq/sirius/jaxb/
 output_*.xml
+output_*.txt
 *.asv
 *.class
 /torque/
 velocity.log
 /sirius/
 /derby.log
-.project
-.classpath
+/src/com/relteq/sirius/om/
+/src/org/apache/torque/linkage/
 
