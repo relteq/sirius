@@ -113,10 +113,10 @@ public class Parameters {
 	private Parameters() {}
 
 	/**
-	 * Initializes the DB parameters from the environment
+	 * Retrieves the DB parameters from the environment
 	 * @return the parameters
 	 */
-	public static Parameters get() {
+	public static Parameters fromEnvironment() {
 		Parameters params = new Parameters();
 		String driver = System.getenv("SIRIUS_DB");
 		if (null == driver) driver = "derby";

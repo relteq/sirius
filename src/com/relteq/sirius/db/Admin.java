@@ -22,8 +22,17 @@ public class Admin {
 	 * @throws IOException
 	 */
 	public static void init() throws SQLException, IOException {
+		init(Parameters.fromEnvironment());
+	}
+
+	/**
+	 * Initializes the database
+	 * @param params the database connection parameters
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static void init(Parameters params) throws SQLException, IOException {
 		SQLExec exec = new SQLExec();
-		Parameters params = Parameters.get();
 		drop(params);
 		if (params.getDriver().equals("derby")) params.setCreate(true);
 		exec.setSrc("sql" + File.separator + //

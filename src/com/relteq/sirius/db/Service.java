@@ -16,8 +16,17 @@ public class Service {
 	 * @throws SiriusException
 	 */
 	public static void init() throws SiriusException {
+		init(Parameters.fromEnvironment());
+	}
+
+	/**
+	 * Initializes the DB service for the specified parameters
+	 * @param params
+	 * @throws SiriusException
+	 */
+	public static void init(Parameters params) throws SiriusException {
 		try {
-			Torque.init(Parameters.get().toConfiguration());
+			Torque.init(params.toConfiguration());
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc.getMessage(), exc);
 		}
