@@ -162,14 +162,18 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 //			return null;
 //		return getSensorList().getSensor();
 //	}
-//
-//	/** Get the list of signals in this network.
-//	 * @return List of all signals. 
-//	 */
-//	public List<com.relteq.sirius.jaxb.Signal> getListOfSignals() {
-//		if(getSignalList()==null)
-//			return null;
-//		return getSignalList().getSignal();
-//	}
-	
+
+	/**
+	 * Retrieves a list of signals referencing nodes from this network
+	 * @return a list of signals or null if the scenario's signal list is null
+	 */
+	public List<com.relteq.sirius.jaxb.Signal> getListOfSignals() {
+		if (null == myScenario.getSignalList()) return null;
+		List<com.relteq.sirius.jaxb.Signal> sigl = new java.util.ArrayList<com.relteq.sirius.jaxb.Signal>();
+		for (com.relteq.sirius.jaxb.Signal sig : myScenario.getSignalList().getSignal()) {
+			if (null != getNodeWithId(sig.getNodeId()))
+				sigl.add(sig);
+		}
+		return sigl;
+	}
 }
