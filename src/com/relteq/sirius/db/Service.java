@@ -28,7 +28,7 @@ public class Service {
 		try {
 			Torque.init(params.toConfiguration());
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 

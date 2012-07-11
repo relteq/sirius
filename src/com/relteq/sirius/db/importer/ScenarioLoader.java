@@ -116,7 +116,7 @@ public class ScenarioLoader {
 			System.out.println("Scenario imported, ID='" + db_scenario.getId() + "'");
 			return db_scenario;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 

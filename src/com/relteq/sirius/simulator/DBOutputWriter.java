@@ -63,7 +63,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			createDataSource();
 			conn = Transaction.begin();
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc.getCause());
+			throw new SiriusException(exc);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class DBOutputWriter extends OutputWriterBase {
 					data.setNetworkId(network.getId());
 					data.setDataSourceId(data_source_id);
 				} catch (TorqueException exc) {
-					throw new SiriusException(exc.getMessage(), exc.getCause());
+					throw new SiriusException(exc);
 				}
 				data.setTs(ts.getTime());
 				data.setAggregation("raw");
@@ -103,7 +103,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				try {
 					data.save(conn);
 				} catch (TorqueException exc) {
-					throw new SiriusException(exc.getMessage(), exc.getCause());
+					throw new SiriusException(exc);
 				}
 			}
 		}

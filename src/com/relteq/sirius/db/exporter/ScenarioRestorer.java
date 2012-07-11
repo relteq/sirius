@@ -135,7 +135,7 @@ public class ScenarioRestorer {
 			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
 			return scenario;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc.getCause());
+			throw new SiriusException(exc);
 		}
 	}
 

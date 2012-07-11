@@ -85,7 +85,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 		} catch (XMLStreamException exc) {
 			SiriusErrorLog.addErrorMessage(exc.toString());
 		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc.getMessage());
+			throw new SiriusException(exc);
 		}
 	}
 

@@ -38,7 +38,7 @@ public class Lister {
 				System.out.println(sb.toString());
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 
@@ -61,7 +61,7 @@ public class Lister {
 		} catch (NoRowsException exc) {
 			throw new SiriusException("Scenario '" + scenario_id + "\' does not exist");
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 
