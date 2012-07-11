@@ -48,8 +48,12 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** On/off switch for this controller */
 	protected boolean ison;
 	
-	/** On/off switch for this controller */
+	/** Activation times for this controller */
 	protected ArrayList<ActivationTimes> activationTimes;
+	
+	/** Table of parameters. */
+	protected Table table;
+	
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
@@ -169,8 +173,11 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		this.ison = false; //c.isEnabled(); 
 		this.activationTimes=new ArrayList<ActivationTimes>();
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
 		
+		// Copy table
+		if (c.getTable()!=null)
+			this.table = new Table(c.getTable());
 		// Get activation times and sort	
 		if (c.getActivationIntervals()!=null)
 			for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval()){			

@@ -33,7 +33,7 @@
       <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
    </DemandProfileSet>
    <ControllerSet>
-      <controller dt="5" type="IRM_alinea" id="-1" enabled="true">
+      <controller dt="5" type="IRM_alinea" id="-1" enabled="true">		
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>
@@ -42,11 +42,21 @@
          </targetElements>
          <feedbackElements>
             <scenarioElement id="-2" type="link" usage="mainlinelink"/>
-         </feedbackElements>
+         </feedbackElements>		 
 		<ActivationIntervals>			
 			<interval start_time="370" end_time="400" />
 			<interval start_time="120" end_time="240" />
 		</ActivationIntervals>
+		<table>
+			<column_names>
+				<column_name>Test1</column_name>
+				<column_name>Test2</column_name>
+			</column_names>
+			<row>
+				<column>A1</column>
+				<column>A2</column>
+			</row>			
+		</table>		
       </controller>
 	  <controller dt="5" type="IRM_alinea" id="-2" enabled="true">
          <parameters>
