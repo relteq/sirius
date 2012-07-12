@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
@@ -102,6 +103,8 @@ public class ScenarioLoader {
 		project_id = "default";
 	}
 
+	private static Logger logger = Logger.getLogger(ScenarioLoader.class);
+
 	/**
 	 * Loads a scenario from a file
 	 * @param filename the configuration (scenario) file name
@@ -113,7 +116,7 @@ public class ScenarioLoader {
 		try {
 			if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
 			Scenarios db_scenario = sl.load(ObjectFactory.createAndLoadScenario(filename));
-			System.out.println("Scenario imported, ID='" + db_scenario.getId() + "'");
+			logger.info("Scenario imported, ID=" + db_scenario.getId());
 			return db_scenario;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);

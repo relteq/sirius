@@ -1,5 +1,6 @@
 package com.relteq.sirius.db;
 
+import org.apache.log4j.Logger;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
 
@@ -26,6 +27,7 @@ public class Service {
 	 */
 	public static void init(Parameters params) throws SiriusException {
 		try {
+			Logger.getLogger(Service.class).info("Connection URL: " + params.getUrl());
 			Torque.init(params.toConfiguration());
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);

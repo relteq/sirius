@@ -7,6 +7,8 @@ package com.relteq.sirius.simulator;
 
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public final class Runner {
 	
 	private static Scenario scenario;
@@ -18,6 +20,8 @@ public final class Runner {
 	private static double timeend;
 	private static double outdt;
 	private static int numRepetitions;
+
+	private static Logger logger = Logger.getLogger(Runner.class);
 
 	public static void main(String[] args) {
 		
@@ -128,6 +132,7 @@ public final class Runner {
 	}
 
 	public static void run_db(String [] args) throws SiriusException, com.relteq.sirius.Runner.InvalidUsageException {
+		logger.info("Parsing arguments");
 		if (0 == args.length) {
 			final String eol = System.getProperty("line.separator");
 			throw new com.relteq.sirius.Runner.InvalidUsageException(
@@ -146,17 +151,20 @@ public final class Runner {
 
 		com.relteq.sirius.db.Service.init();
 
+		logger.info("Loading scenario");
 		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.printErrorMessage();
 			return;
 		}
 
+		logger.info("Simulation");
 		Properties owr_props = new Properties();
 		owr_props.setProperty("type", "db");
 		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
 
 		com.relteq.sirius.db.Service.shutdown();
+		logger.info("Done");
 	}
 
 }
