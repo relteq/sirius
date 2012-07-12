@@ -34,7 +34,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			Criteria crit = new Criteria();
 			crit.add(com.relteq.sirius.om.SimulationRunsPeer.SCENARIO_ID, getScenario().getId());
 			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);
-			// TODO limit the number of rows
+			crit.setLimit(1);
 			@SuppressWarnings("unchecked")
 			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = com.relteq.sirius.om.SimulationRunsPeer.doSelect(crit);
 			final int run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
