@@ -710,7 +710,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) {
 		com.relteq.sirius.jaxb.Phase phase = factory.createPhase();
 		phase.setNema(BigInteger.valueOf(db_ph.getPhase()));
-		phase.setProtected(db_ph.getIs_protected());
+		phase.setProtected(db_ph.getIsProtected());
 		phase.setPermissive(db_ph.getPermissive());
 		phase.setLag(db_ph.getLag());
 		phase.setRecall(db_ph.getRecall());

@@ -549,7 +549,7 @@
 	<table name="phases">
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
-		<column name="protected" javaName="is_protected" required="true" domain="BOOL" description=""/>
+		<column name="protected" javaName="isProtected" required="true" domain="BOOL" description=""/>
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
 		<column name="recall" required="true" domain="BOOL" description=""/>

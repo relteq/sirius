@@ -391,7 +391,7 @@ public class ScenarioLoader {
 		Phases db_phase = new Phases();
 		db_phase.setSignals(db_signal);
 		db_phase.setPhase(phase.getNema().intValue());
-		db_phase.setIs_protected(phase.isProtected());
+		db_phase.setIsProtected(phase.isProtected());
 		db_phase.setPermissive(phase.isPermissive());
 		db_phase.setLag(phase.isLag());
 		db_phase.setRecall(phase.isRecall());
