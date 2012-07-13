@@ -135,8 +135,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	}
 
 	@Override
-	public boolean validate() {
-		return true;
+	public void validate() {
 	}
 
 	@Override

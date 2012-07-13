@@ -59,31 +59,24 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		
 		int i;
 		
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
+		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("List of vehicle types in initial density profile id=" + getId() + " does not match that of settings.");
-			return false;
-		}
 		
 		// check that vehicle types are valid
-		for(i=0;i<vehicletypeindex.length;i++){
-			if(vehicletypeindex[i]<0){
+		for(i=0;i<vehicletypeindex.length;i++)
+			if(vehicletypeindex[i]<0)
 				SiriusErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
-				return false;
-			}
-		}
 		
 		// check size of data
-		for(i=0;i<link.length;i++){
-			if(initial_density[i].length!=vehicletypeindex.length){
-				SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
-				return false;
-			}
-		}
+		if(link!=null)
+			for(i=0;i<link.length;i++)
+				if(initial_density[i].length!=vehicletypeindex.length)
+					SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
 
 		// check that values are between 0 and jam density
 		int j;
@@ -91,35 +84,30 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		Double x;
 		for(i=0;i<initial_density.length;i++){
 			
+			if(link[i]==null){
+				SiriusErrorLog.addWarning("Unknown link id in initial density profile");
+				continue;
+			}
+			
 			if(link[i].issource)	// does not apply to source links
 				continue;
 			
 			sum = 0.0;
 			for(j=0;j<vehicletypeindex.length;j++){
 				x = initial_density[i][j];
-
-				if(x<0){
+				if(x<0)
 					SiriusErrorLog.addError("Negative value found in initial density profile for link id=" + link[i].getId());
-					return false;
-				}
-				
-				if( x.isNaN()){
+				if( x.isNaN())
 					SiriusErrorLog.addError("Invalid value found in initial density profile for link id=" + link[i].getId());
-					return false;
-				}
-				
 				sum += x;
 			}
 			
 			// NOTE: REMOVED THIS CHECK TEMPORARILY. NEED TO DECIDE HOW TO DO IT 
 			// WITH ENSEMBLE FUNDAMENTAL DIAGRAMS
-//			if(sum>link[i].getDensityJamInVPMPL()){
+//			if(sum>link[i].getDensityJamInVPMPL())
 //				SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
-//				return false;
-//			}
-		}
-		
-		return true;
+
+		}		
 	}
 
 	protected void reset() {

@@ -40,26 +40,20 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 		
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 
-		if(myScenario.getSimDtInSeconds()<=0){
+		if(myScenario.getSimDtInSeconds()<=0)
 			SiriusErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
-			return false;
-		}
 		
 		// node list
 		if(getNodeList()!=null)
 			for (com.relteq.sirius.jaxb.Node node : getNodeList().getNode())
-				if( !((Node)node).validate() )
-					return false;
+				((Node)node).validate();
 
 		// link list
 		if(getLinkList()!=null)
 			for (com.relteq.sirius.jaxb.Link link : getLinkList().getLink())
-				if( !((Link)link).validate() )
-					return false;
-
-		return true;
+				((Link)link).validate();
 	}
 
 	protected void reset(Scenario.ModeType simulationMode) throws SiriusException {

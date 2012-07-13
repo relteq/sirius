@@ -83,47 +83,33 @@ public class Event_Node_Split_Ratio extends Event {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
 		
-		if(targets.size()!=1){
+		super.validate();
+		
+		if(targets.size()!=1)
 			SiriusErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
-			return false;
-		}
 		
 		// check each target is valid
-		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0){
+		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
 			SiriusErrorLog.addError("Wrong target type for event id="+getId()+".");
-			return false;
-		}
 		
-		if(myNode==null){
+		if(myNode==null)
 			SiriusErrorLog.addWarning("Invalid node id for event id="+getId()+".");
-			return true;
-		}
 		
 		// check split ratio matrix
 		if(!resetToNominal){
-			if(splitrow==null){
+			if(splitrow==null)
 				SiriusErrorLog.addWarning("No split ratio rows for event id="+getId()+".");
-				return false;
+			if(myNode!=null){
+				if(splitrow.size()!=myNode.getnOut())
+					SiriusErrorLog.addWarning("Number of rows does not match number of outgoing links for event id="+getId()+".");
+				if(inputindex<0 || inputindex>=myNode.getnIn())
+					SiriusErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
 			}
-			if(splitrow.size()!=myNode.getnOut()){
-				SiriusErrorLog.addWarning("Number of rows does not match number of outgoing links for event id="+getId()+".");
-				return false;
-			}
-			if(inputindex<0 || inputindex>=myNode.getnIn()){
-				SiriusErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
-				return false;
-			}
-			if(vehicletypeindex<0 || vehicletypeindex>=myScenario.getNumVehicleTypes()){
+			if(vehicletypeindex<0 || vehicletypeindex>=myScenario.getNumVehicleTypes())
 				SiriusErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
-				return false;
-			}
 		}
-		
-		return true;
 	}
 	
 	@Override

@@ -159,38 +159,27 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	}
     
 	/** @y.exclude */ 	
-	protected boolean validate() {
-		
+	protected void validate() {
+				
 		if(isTerminal)
-			return true;
+			return;
 		
 		if(output_link!=null)
-			for(Link link : output_link){
-				if(link==null){
+			for(Link link : output_link)
+				if(link==null)
 					SiriusErrorLog.addError("Incorrect output link id in node id=" + getId());
-					return false;
-				}
-			}
 
 		if(input_link!=null)
-			for(Link link : input_link){
-				if(link==null){
+			for(Link link : input_link)
+				if(link==null)
 					SiriusErrorLog.addError("Incorrect input link id in node id=" + getId());
-					return false;
-				}
-			}
 		
-		if(nIn==0){
+		if(nIn==0)
 			SiriusErrorLog.addError("No inputs into non-terminal node id=" + getId());
-			return false;
-		}
 
-		if(nOut==0){
+		if(nOut==0)
 			SiriusErrorLog.addError("No outputs from non-terminal node id=" + getId());
-			return false;
-		}
 		
-		return true;
 	}
 
 	/** @y.exclude */ 	

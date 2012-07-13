@@ -165,26 +165,20 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
-	public boolean validate() {
+	public void validate() {
 		
 		// check that type was reaad correctly
-		if(myType==null){
+		if(myType==null)
 			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-			return false;
-		}
 		
 		// check that the target is valid
-		if(targets==null){
+		if(targets==null)
 			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
-			return false;
-		}
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
-			return false;
-		}
-		return true;
+
 	}
 
 	/** @y.exclude */

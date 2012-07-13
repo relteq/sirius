@@ -66,28 +66,22 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
 	
-	public boolean validate() {
+	public void validate() {
 		
-		if(myType==null){
+		if(myType==null)
 			SiriusErrorLog.addError("Event with id=" + getId() + " has bad type.");
-			return false;
-		}
 			
 		// check that there are targets assigned to non-global events
-		if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
-			if(targets.isEmpty()){
-				SiriusErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
-				return false;
-			}
+		if(myType!=null)
+			if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
+				if(targets.isEmpty())
+					SiriusErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
 		
 		// check each target is valid
-		for(ScenarioElement s : targets){
-			if(s.reference==null){
+		for(ScenarioElement s : targets)
+			if(s.reference==null)
 				SiriusErrorLog.addError("Invalid target in event with id=" + getId() + ".");
-				return false;
-			}
-		}
-		return true;
+
 	}
 	
 	@Override

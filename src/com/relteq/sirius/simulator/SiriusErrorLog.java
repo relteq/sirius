@@ -22,6 +22,10 @@ public final class SiriusErrorLog {
 	public static boolean haswarning(){
 		return haswarning;
 	}
+	
+	public static boolean hasmessage(){
+		return !error.isEmpty();
+	}
 
 	public static void print(){
 		if(!error.isEmpty()){

@@ -46,18 +46,16 @@ public class Event_Control_Toggle extends Event {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
+		
+		super.validate();
 		
 		// check each target is valid
-		for(ScenarioElement s : targets){
-			if(s.getMyType().compareTo(ScenarioElement.Type.controller)!=0){
-				SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
-				return false;
-			}
-		}
-		return true;
+		if(targets!=null)
+			for(ScenarioElement s : targets)
+				if(s.getMyType().compareTo(ScenarioElement.Type.controller)!=0)
+					SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
+
 	}
 
 	@Override

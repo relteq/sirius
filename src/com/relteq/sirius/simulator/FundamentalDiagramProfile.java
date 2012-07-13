@@ -40,6 +40,7 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		
 		this.myScenario = myScenario;
 		isdone = false;
+		FD = new ArrayList<FundamentalDiagram>();
 		
 		// required
 		myLink = myScenario.getLinkWithId(getLinkId());
@@ -67,7 +68,6 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		}
 		
 		//  read fundamental diagrams
-		FD = new ArrayList<FundamentalDiagram>();
 		for(com.relteq.sirius.jaxb.FundamentalDiagram fd : getFundamentalDiagram()){
 			FundamentalDiagram _fd = new FundamentalDiagram(myLink);	// create empty fd
 	        _fd.settoDefault();					// set to default
@@ -77,30 +77,22 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 		
-		if(myLink==null){
+		if(myLink==null)
 			SiriusErrorLog.addError("Bad link id in fundamental diagram: " + getLinkId());
-			return false;
-		}
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
+		if( dtinseconds<=0 )
 			SiriusErrorLog.addError("Non-positive dt in fundamental diagram profile for link id=" + getLinkId());
-			return false;	
-		}
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
-			return false;	
-		}
 		
 		// check fundamental diagrams
 		for(FundamentalDiagram fd : FD)
-			if(!fd.validate())
-				return false;
+			fd.validate();
 
-		return true;
 	}
 
 	protected void reset() throws SiriusException {

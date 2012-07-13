@@ -295,59 +295,49 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 	
 	/** @y.exclude */
-	public boolean validate() {
-		
+	public void validate() {
+				
 		// validate network
 		if( getNetworkList()!=null)
 			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-				if(!((Network)network).validate())
-					return false;
+				((Network)network).validate();
 
 		// sensor list
 		if(getSensorList()!=null)
 			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				if( !((Sensor) sensor).validate() )
-					return false;
+				((Sensor) sensor).validate();
 
 		// signal list
 		if(getSignalList()!=null)
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
-				if( !((Signal) signal).validate() )
-					return false;
+				((Signal) signal).validate();
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
 //		if(getInitialDensityProfile()!=null)
-//			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate())
-//				return false;
+//			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacityProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
-				if(!((CapacityProfile)capacityProfile).validate())
-					return false;
+				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
-			if(!((DemandProfileSet)getDemandProfileSet()).validate())
-				return false;
+			((DemandProfileSet)getDemandProfileSet()).validate();
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
-			if(!((SplitRatioProfileSet)getSplitRatioProfileSet()).validate())
-				return false;
-
+			((SplitRatioProfileSet)getSplitRatioProfileSet()).validate();
+		
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				if(!((FundamentalDiagramProfile)fd).validate())
-					return false;
-
+				((FundamentalDiagramProfile)fd).validate();
+		
 		// validate controllers
-		if(!controllerset.validate())
-			return false;
+		controllerset.validate();
 
-		return true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -713,7 +703,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// validate
-		if(!C.validate())
+		SiriusErrorLog.clearErrorMessage();
+		C.validate();
+		SiriusErrorLog.print();
+		if(SiriusErrorLog.haserror())
 			return false;
 		
 		// add

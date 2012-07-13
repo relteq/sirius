@@ -5,6 +5,7 @@ import com.relteq.sirius.simulator.Controller;
 import com.relteq.sirius.simulator.Link;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Sensor;
+import com.relteq.sirius.simulator.SiriusErrorLog;
 
 public class Controller_IRM_Alinea extends Controller {
 
@@ -152,43 +153,42 @@ public class Controller_IRM_Alinea extends Controller {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
+		
+		super.validate();
 
 		// must have exactly one target
 		if(targets.size()!=1)
-			return false;
+			SiriusErrorLog.addError("Numnber of targets for Alinea controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
 		if(hasmainlinesensor && mainlinesensor==null)
-			return false;
+			SiriusErrorLog.addError("Bad mainline sensor id in Alinea controller id=" + getId()+".");
 
 		// bad queue sensor id
 		if(hasqueuesensor && queuesensor==null)
-			return false;		
+			SiriusErrorLog.addError("Bad queue sensor id in Alinea controller id=" + getId()+".");
 		
 		// both link and sensor feedback
 		if(hasmainlinelink && hasmainlinesensor)
-			return false;
+			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in Alinea controller id=" + getId()+".");
 		
 		// sensor is disconnected
 		if(usesensor && mainlinesensor.getMyLink()==null)
-			 return false;
+			SiriusErrorLog.addError("Mainline sensor is not connected to a link in Alinea controller id=" + getId()+ " ");
 		
 		// no feedback
 		if(mainlinelink==null)
-			return false;
+			SiriusErrorLog.addError("Invalid mainline link for Alinea controller id=" + getId()+ ".");
 		
 		// Target link id not found, or number of targets not 1.
 		if(onramplink==null)
-			return false;
+			SiriusErrorLog.addError("Invalid onramp link for Alinea controller id=" + getId()+ ".");
 			
 		// negative gain
 		if(gain_normalized<=0f)
-			return false;
+			SiriusErrorLog.addError("Non-positiva gain for Alinea controller id=" + getId()+ ".");
 		
-		return true;
 	}
 
 	@Override

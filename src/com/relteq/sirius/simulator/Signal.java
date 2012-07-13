@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
-	
 	public static enum CommandType {hold,forceoff};
 	protected static enum BulbColor {GREEN,YELLOW,RED,DARK};
 	public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
@@ -100,23 +99,20 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 			p.reset();
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(myNode==null){
 			SiriusErrorLog.addWarning("Unknow node id=" + getNodeId() + " in signal id=" + getId());
-			return true; // this signal will be ignored
+			return; // this signal will be ignored
 		}
 		
-		if(phase==null){
+		if(phase==null)
 			SiriusErrorLog.addError("Signal id=" + getId() + " contains no valid phases.");
-			return false;
-		}
-						
-		for(SignalPhase p : phase)
-			if(!p.validate())
-				return false;
+
+		if(phase!=null)	
+			for(SignalPhase p : phase)
+				p.validate();
 		
-		return true;
 	}
 
 	protected void update() {

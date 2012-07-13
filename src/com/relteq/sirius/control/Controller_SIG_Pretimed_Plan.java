@@ -56,45 +56,39 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 		
 	}
 	
-	public boolean validate(){
+	public void validate(){
 		
 		if(myController==null)
-			return false;
+			SiriusErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
 		
 		// positive cycle
-		if(_cyclelength<=0){
+		if(_cyclelength<=0)
 			SiriusErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
-			return false;
-		}
 		
 		// cycle length should be a multiple of controller dt
-		if(!SiriusMath.isintegermultipleof(_cyclelength,myController.getDtinseconds())){
-			SiriusErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
-			return false;
-		}
+		if(myController!=null)
+			if(!SiriusMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
+				SiriusErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
 		
 		// plan includes all targets
 		boolean foundit;
-		for(ScenarioElement se : myController.getTargets()){
-			foundit = false;
-			for(int i=0;i<intersplan.length;i++){
-				if(se.getId().equals(intersplan[i].mySignal.getId())){
-					foundit=true;
-					break;
+		if(myController!=null)
+			for(ScenarioElement se : myController.getTargets()){
+				foundit = false;
+				for(int i=0;i<intersplan.length;i++){
+					if(se.getId().equals(intersplan[i].mySignal.getId())){
+						foundit=true;
+						break;
+					}
 				}
+				if(!foundit)
+					SiriusErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
 			}
-			if(!foundit){
-				SiriusErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
-				return false;
-			}
-		}
 		
 		// intersection plans
 		for(int i=0;i<intersplan.length;i++)
-			if(!intersplan[i].validate(myController.getDtinseconds()))
-				return false;
+			intersplan[i].validate(myController.getDtinseconds());
 		
-		return true;
 	}
 
 	public void reset() {

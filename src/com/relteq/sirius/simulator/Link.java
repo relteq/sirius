@@ -128,11 +128,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     	// carry numEnsemble event FDs.
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
     	
-		if(!FDfromEvent.validate())
-			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+    	SiriusErrorLog.clearErrorMessage();
+    	FDfromEvent.validate();
+		if(SiriusErrorLog.haserror())
+			throw new SiriusException("Fundamental diagram event could not be validated.");
 		
 		activeFDevent = true;
-//	    FD = FDfromEvent;
     }
 
 	/** @throws SiriusException 
@@ -265,29 +266,19 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected boolean validate() {
+	protected void validate() {
 		
-		if(!issource && begin_node==null){
+		if(!issource && begin_node==null)
 			SiriusErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
-			return false;
-		}
 
-		if(!issink && end_node==null){
+		if(!issink && end_node==null)
 			SiriusErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
-			return false;
-		}
 		
-		if(_length<=0){
+		if(_length<=0)
 			SiriusErrorLog.addError("Non-positive length in link id=" + getId() + ".");
-			return false;
-		}
 		
-		if(_lanes<=0){
-			SiriusErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");
-			return false;
-		}
-		
-		return true;
+		if(_lanes<=0)
+			SiriusErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
 	/** @y.exclude */

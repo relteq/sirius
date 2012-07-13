@@ -31,15 +31,16 @@ public final class Runner {
 		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
-		if(SiriusErrorLog.haserror()){
-			SiriusErrorLog.print();
+		if(scenario==null)
 			return;
-		}
 
 		try {
 			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
 		} catch (SiriusException e) {
-			e.printStackTrace();
+			if(SiriusErrorLog.haserror())
+				SiriusErrorLog.print();
+			else
+				e.printStackTrace();
 		}	
 		
 		System.out.println("done in " + (System.currentTimeMillis()-time));

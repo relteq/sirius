@@ -226,36 +226,32 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		return samp;
 	}
 	
-	protected boolean validate(){
-		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0){
-			SiriusErrorLog.addError("Fundamental diagram parameters must be non-negative.");
-			return false;
-		}
+	protected void validate(){
+		
+		String myLinkId;
+		if(myLink==null)
+			myLinkId = "[invalid link id]";
+		else
+			myLinkId = myLink.getId();
+		
+		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
+			SiriusErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLinkId);
 
 		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
-		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion)){
-			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
-			return false;
-		}
+		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion))
+			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLinkId + " is " + dens_crit_congestion);
 		
-		if(_vf>1){
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
-			return false;
-		}
+		if(_vf>1)
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLinkId + " has vf=" + _vf);
 
-		if(_w>1){
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
-			return false;
-		}
+		if(_w>1)
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLinkId + " has w=" + _w);
 		
-		for(int e=0;e<this.myLink.myNetwork.myScenario.numEnsemble;e++)
-			if(myLink.getTotalDensityInVeh(e)>_densityJam){
-				SiriusErrorLog.addError("XXX");
-				return false;
-			}
-		
-		return true;
+		if(myLink!=null)
+			for(int e=0;e<myLink.myNetwork.myScenario.numEnsemble;e++)
+				if(myLink.getTotalDensityInVeh(e)>_densityJam)
+					SiriusErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLinkId + " exceeds jam density=" + _densityJam);
 	}
 
 }

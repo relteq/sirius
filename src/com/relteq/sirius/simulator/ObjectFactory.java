@@ -307,11 +307,16 @@ public final class ObjectFactory {
         }
 		
 		// validate scenario ......................................
-		if(!S.validate())
-			return null;
-		
-        return S;
-		
+        SiriusErrorLog.clearErrorMessage();
+        S.validate();
+        
+        // print errors and warnings
+        SiriusErrorLog.print();
+        
+        if(SiriusErrorLog.haserror())
+        	return null;
+        else
+        	return S;	
 	}
 
 	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {

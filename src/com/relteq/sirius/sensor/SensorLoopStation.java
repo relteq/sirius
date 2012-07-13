@@ -3,6 +3,7 @@ package com.relteq.sirius.sensor;
 
 import java.util.ArrayList;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Sensor;
@@ -66,10 +67,9 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	}
 	
 	@Override
-	public boolean validate() {
+	public void validate() {
 		if(myLink==null)
-			return false;
-		return true;
+			SiriusErrorLog.addError("Unknown link reference for sensor id=" + getId());
 	}
 
 	@Override

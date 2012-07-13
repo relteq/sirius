@@ -82,40 +82,29 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(demand_nominal.isEmpty())
-			return true;
+			return;
 		
-		if(myLinkOrigin==null){
+		if(myLinkOrigin==null)
 			SiriusErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
-			return false;
-		}
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
+		if( dtinseconds<=0 )
 			SiriusErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
-			return false;	
-		}
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
-			return false;	
-		}
 		
 		// check dimensions
-		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes()){
+		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("Incorrect dimensions for demand for link id=" + getLinkIdOrigin());
-			return false;
-		}
 		
 		// check non-negative
-		if(demand_nominal.hasNaN()){
+		if(demand_nominal.hasNaN())
 			SiriusErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
-			return false;
-		}
 
-		return true;
 	}
 
 	protected void reset() {
