@@ -74,7 +74,7 @@ public class ScenarioLoader {
 	/**
 	 * @return a universally unique random string identifier
 	 */
-	protected String uuid() {
+	private String uuid() {
 		return com.relteq.sirius.db.util.UUID.generate();
 	}
 
@@ -143,7 +143,7 @@ public class ScenarioLoader {
 	 * @param scenario
 	 * @throws TorqueException
 	 */
-	protected Scenarios save(Scenario scenario) throws TorqueException {
+	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException {
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setId(scenario_id = uuid());
 		db_scenario.setProjectId(getProjectId());
@@ -177,7 +177,7 @@ public class ScenarioLoader {
 	 * @return the imported vehicle type list
 	 * @throws TorqueException
 	 */
-	protected VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
+	private VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeLists db_vtl = new VehicleTypeLists();
 		db_vtl.setId(uuid());
 		db_vtl.setProjectId(getProjectId());
@@ -238,7 +238,7 @@ public class ScenarioLoader {
 	 * @param nl
 	 * @throws TorqueException
 	 */
-	protected void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
 		network_id = new HashMap<String, String>(nl.getNetwork().size());
 		link_family_id = new HashMap<String, String>();
 		node_family_id = new HashMap<String, String>();
@@ -278,7 +278,7 @@ public class ScenarioLoader {
 	 * @return the imported network
 	 * @throws TorqueException
 	 */
-	protected Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
+	private Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
 		Networks db_network = new Networks();
 		String id = uuid();
 		network_id.put(network.getId(), id);
@@ -450,7 +450,7 @@ public class ScenarioLoader {
 	 * @return the imported initial density set
 	 * @throws TorqueException
 	 */
-	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
+	private InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
 		if (null == idset) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setId(uuid());
@@ -475,7 +475,7 @@ public class ScenarioLoader {
 	 * @return the imported weaving factor set
 	 * @throws TorqueException
 	 */
-	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
+	private WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
 		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
 		db_wfset.setId(uuid());
