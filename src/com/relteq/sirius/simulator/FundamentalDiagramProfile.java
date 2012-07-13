@@ -80,18 +80,18 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 	protected boolean validate() {
 		
 		if(myLink==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in fundamental diagram: " + getLinkId());
+			SiriusErrorLog.addError("Bad link id in fundamental diagram: " + getLinkId());
 			return false;
 		}
 		
 		// check dtinseconds
 		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkId());
+			SiriusErrorLog.addError("Non-positive dt in fundamental diagram profile for link id=" + getLinkId());
 			return false;	
 		}
 		
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkId());
+			SiriusErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
 			return false;	
 		}
 		
@@ -116,8 +116,9 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 
 		stepinitial = SiriusMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
-		for(FundamentalDiagram fd : FD)
-			fd.reset(myScenario.uncertaintyModel);
+		if(FD!=null)
+			for(FundamentalDiagram fd : FD)
+				fd.reset(myScenario.uncertaintyModel);
 		
 		// assign the fundamental diagram to the link
 		//update();	
@@ -125,6 +126,8 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 	}
 
 	protected void update() throws SiriusException {
+		if(myLink==null)
+			return;
 		if(isdone || FD.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){

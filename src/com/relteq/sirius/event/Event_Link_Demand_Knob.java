@@ -48,11 +48,11 @@ public class Event_Link_Demand_Knob extends Event {
 		// check each target is valid
 		for(ScenarioElement s : targets){
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
-				SiriusErrorLog.addErrorMessage("wrong target type.");
+				SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
 				return false;
 			}
 			if(!((Link)s.getReference()).isSource()){
-				SiriusErrorLog.addErrorMessage("demand event attached to non-source link.");
+				SiriusErrorLog.addError("Demand event id=" +getId()+ " attached to non-source link.");
 				return false;
 				
 			}

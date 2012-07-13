@@ -18,9 +18,6 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
 
-	/** Unique identifier.  */
-	//protected String id;
-
 	/** Sensor type. */
 	protected Sensor.Type myType;
 	

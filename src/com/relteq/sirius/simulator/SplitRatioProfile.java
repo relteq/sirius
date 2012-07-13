@@ -101,37 +101,43 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			return true;
 		
 		if(myNode==null){
-			SiriusErrorLog.addErrorMessage("Bad node id in split ratio profile: " + getNodeId());
-			return false;
+			SiriusErrorLog.addWarning("Unknown node with id=" + getNodeId() + " in split ratio profile.");
+			return true; // this profile will be skipped but does not cause invalidation.
 		}
 		
 		// check link ids
-		int in_index, out_index;
+		int index;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
-			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
-			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			if(in_index<0 || out_index<0){
-				SiriusErrorLog.addErrorMessage("Bad link id in split ratio profile: " + getNodeId());
+			index = myNode.getInputLinkIndex(sr.getLinkIn());
+			if(index<0){
+				SiriusErrorLog.addError("Bad input link id=" + sr.getLinkIn() + " in split ratio profile with node id=" + getNodeId());
+				return false;
+			}
+			index = myNode.getOutputLinkIndex(sr.getLinkOut());
+			if(index<0){
+				SiriusErrorLog.addError("Bad output link id=" + sr.getLinkOut() + " in split ratio profile with node id=" + getNodeId());
 				return false;
 			}
 		}
 
 		// check dtinhours
 		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Split ratio profile dt should be positive: " + getNodeId());
+			SiriusErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
 			return false;	
 		}
 
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Split ratio dt should be multiple of sim dt: " + getNodeId());
+			SiriusErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
 			return false;	
 		}
 		
 		// check split ratio dimensions and values
+		int in_index;
+		int out_index;
 		for(in_index=0;in_index<profile.length;in_index++){
 			for(out_index=0;out_index<profile[in_index].length;out_index++){
 				if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes()){
-					SiriusErrorLog.addErrorMessage("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
+					SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
 					return false;
 				}
 			}
@@ -142,6 +148,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	protected void update() {
 		if(profile==null)
+			return;
+		if(myNode==null)
 			return;
 		if(isdone)
 			return;

@@ -167,7 +167,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		if(output_link!=null)
 			for(Link link : output_link){
 				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect output link id.");
+					SiriusErrorLog.addError("Incorrect output link id in node id=" + getId());
 					return false;
 				}
 			}
@@ -175,18 +175,18 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		if(input_link!=null)
 			for(Link link : input_link){
 				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect input link id.");
+					SiriusErrorLog.addError("Incorrect input link id in node id=" + getId());
 					return false;
 				}
 			}
 		
 		if(nIn==0){
-			SiriusErrorLog.addErrorMessage("No inputs into non-terminal node.");
+			SiriusErrorLog.addError("No inputs into non-terminal node id=" + getId());
 			return false;
 		}
 
 		if(nOut==0){
-			SiriusErrorLog.addErrorMessage("No outputs from non-terminal node.");
+			SiriusErrorLog.addError("No outputs from non-terminal node id=" + getId());
 			return false;
 		}
 		
@@ -274,8 +274,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		Double value;
 		
 		// dimension
-		if(X.getnIn()!=this.nIn || X.getnOut()!=this.nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Split ratio for node " + this.getId() + " has incorrect dimension");
+		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+			SiriusErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
 		
@@ -285,7 +285,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
 					if( !value.isNaN() && (value>1 || value<0) ){
-						SiriusErrorLog.addErrorMessage("Split ratio values must be in [0,1]");
+						SiriusErrorLog.addError("Invalid split ratio values for node id=" + getId());
 						return false;
 					}
 				}

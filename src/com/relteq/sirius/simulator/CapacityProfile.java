@@ -46,24 +46,24 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			return true;
 		
 		if(myLink==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in capacity profile: " + getLinkId());
+			SiriusErrorLog.addError("Bad link id=" + getLinkId() + " in capacity profile.");
 			return false;
 		}
 		
 		// check dtinseconds
 		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Capacity profile dt should be positive: " + getLinkId());
+			SiriusErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 			return false;	
 		}
 
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Capacity dt should be multiple of sim dt: " + getLinkId());
+			SiriusErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 			return false;	
 		}
 		
 		// check non-negative
 		if(capacity.hasNaN()){
-			SiriusErrorLog.addErrorMessage("Capacity profile has illegal values: " + getLinkId());
+			SiriusErrorLog.addError("Capacity profile for link id=" +getLinkId()+ " has illegal values.");
 			return false;
 		}
 

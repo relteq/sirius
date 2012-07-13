@@ -80,7 +80,7 @@ final class OutputWriter extends OutputWriter_Base {
 			// data
 			xmlsw.writeStartElement("data");
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addErrorMessage(exc.toString());
+			SiriusErrorLog.addError(exc.toString());
 		}
 		return true;
 	}
@@ -169,7 +169,7 @@ final class OutputWriter extends OutputWriter_Base {
 			xmlsw.writeEndDocument();
 			xmlsw.close();
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addErrorMessage(exc.toString());
+			SiriusErrorLog.addError(exc.toString());
 		}
 	}
 

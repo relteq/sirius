@@ -18,12 +18,12 @@ public final class Runner {
 	private static int numRepetitions;
 	
 	public static void main(String[] args) {
-		
+
 		long time = System.currentTimeMillis();
 
 		// process input parameters
 		if(!parseInput(args)){
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 
@@ -32,7 +32,7 @@ public final class Runner {
 
 		// check if it loaded
 		if(SiriusErrorLog.haserror()){
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 
@@ -72,7 +72,7 @@ public final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			SiriusErrorLog.addErrorMessage(str);
+			SiriusErrorLog.addError(str);
 			return false;
 		}
 		

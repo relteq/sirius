@@ -63,13 +63,13 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 		
 		// positive cycle
 		if(_cyclelength<=0){
-			SiriusErrorLog.addErrorMessage("Non-positive cycle length.");
+			SiriusErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
 			return false;
 		}
 		
 		// cycle length should be a multiple of controller dt
 		if(!SiriusMath.isintegermultipleof(_cyclelength,myController.getDtinseconds())){
-			SiriusErrorLog.addErrorMessage("Cycle length is not an integer multiple of controller rate.");
+			SiriusErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
 			return false;
 		}
 		
@@ -84,7 +84,7 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 				}
 			}
 			if(!foundit){
-				SiriusErrorLog.addErrorMessage("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+this.getId());
+				SiriusErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
 				return false;
 			}
 		}

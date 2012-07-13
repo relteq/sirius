@@ -36,7 +36,7 @@ final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
 
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Demand profile list of vehicle types does not match that of settings.");
+			SiriusErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");
 			return false;
 		}
 		

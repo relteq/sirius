@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.relteq.sirius.simulator.SignalPhase;
+import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Signal;
@@ -180,36 +181,50 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	public boolean validate(double controldt){
 		
 		// at least two stages
-		if(numstages<=1)
+		if(numstages<=1){
+			SiriusErrorLog.addError("Signal id=" + mySignal.getId() + " has less than two stages.");
 			return false;
+		}
 		
 		// check offset
-		if(offset<0 || offset>=myPlan._cyclelength)
+		if(offset<0 || offset>=myPlan._cyclelength){
+			SiriusErrorLog.addError("Offset for signal id=" + mySignal.getId() + " is not between zero and the cycle length.");
 			return false;
+		}
 		
 		//  greentime, movA, movB
 		for(int k=0;k<numstages;k++){
-			if(greentime[k]==null || greentime[k]<=0)
+			if(greentime[k]==null || greentime[k]<=0){
+				SiriusErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
 				return false;
-			if(movA[k]==null && movB[k]==null)
+			}
+			if(movA[k]==null && movB[k]==null){
+				SiriusErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
 				return false;
+			}
 		}
 		
 		// values are integer multiples of controller dt
 		for(int k=0;k<numstages;k++){
-			if(!SiriusMath.isintegermultipleof((double) greentime[k],controldt))
+			if(!SiriusMath.isintegermultipleof((double) greentime[k],controldt)){
+				SiriusErrorLog.addError("Green time not a multiple of control time step in signal id=" + mySignal.getId());
 				return false;
+			}
 			if(stagelength[k]!=greentime[k])
-				if(!SiriusMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
+				if(!SiriusMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt)){
+					SiriusErrorLog.addError("Lost time not a multiple of control time step in signal id=" + mySignal.getId());
 					return false;
+				}
 		}
 
 		// check cycles are long enough .....................................	
 		float totphaselength=0;
 		for(int k=0;k<numstages;k++)
 			totphaselength += stagelength[k];
-		if(!SiriusMath.equals(myPlan._cyclelength,totphaselength))
+		if(!SiriusMath.equals(myPlan._cyclelength,totphaselength)){
+			SiriusErrorLog.addError("Stages do not add up to cycle time in signal id=" + mySignal.getId());
 			return false;
+		}
 		
 		// first two commands have zero timestamp
 		if(command.get(0).time!=0.0)

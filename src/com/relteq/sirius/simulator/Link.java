@@ -268,22 +268,22 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected boolean validate() {
 		
 		if(!issource && begin_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect begin node id in link.");
+			SiriusErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
 			return false;
 		}
 
 		if(!issink && end_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect end node id in link.");
+			SiriusErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
 			return false;
 		}
 		
 		if(_length<=0){
-			SiriusErrorLog.addErrorMessage("Non-positive length.");
+			SiriusErrorLog.addError("Non-positive length in link id=" + getId() + ".");
 			return false;
 		}
 		
 		if(_lanes<=0){
-			SiriusErrorLog.addErrorMessage("Non-positive number of lanes.");
+			SiriusErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");
 			return false;
 		}
 		

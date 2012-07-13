@@ -63,7 +63,7 @@ public class Event_Fundamental_Diagram extends Event {
 		// check each target is valid
 		for(ScenarioElement s : targets){
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
-				SiriusErrorLog.addErrorMessage("wrong target type.");
+				SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
 				return false;
 			}
 		}

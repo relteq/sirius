@@ -115,8 +115,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(getInitialDensitySet()!=null)
 			((InitialDensitySet) getInitialDensitySet()).populate(this);
 		
-		// initialize controllers and events
+		// populate controllers 
 		controllerset.populate(this);
+
+		// populate events 
 		eventset.populate(this);
 		
 	}
@@ -298,64 +300,48 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// validate network
 		if( getNetworkList()!=null)
 			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-				if(!((Network)network).validate()){
-					SiriusErrorLog.addErrorMessage("Network validation failure.");
+				if(!((Network)network).validate())
 					return false;
-				}
 
 		// sensor list
 		if(getSensorList()!=null)
 			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				if( !((Sensor) sensor).validate() ){
-					SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
+				if( !((Sensor) sensor).validate() )
 					return false;
-				}
 
 		// signal list
 		if(getSignalList()!=null)
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
-				if( !((Signal) signal).validate() ){
-					SiriusErrorLog.addErrorMessage("Signal validation failure, signal " + signal.getId());
+				if( !((Signal) signal).validate() )
 					return false;
-				}
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
 //		if(getInitialDensityProfile()!=null)
-//			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate()){
-//				SiriusErrorLog.addErrorMessage("InitialDensityProfile validation failure.");
+//			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate())
 //				return false;
-//			}
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacityProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
-				if(!((CapacityProfile)capacityProfile).validate()){
-					SiriusErrorLog.addErrorMessage("DownstreamBoundaryCapacitySet validation failure.");
+				if(!((CapacityProfile)capacityProfile).validate())
 					return false;
-				}
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
-			if(!((DemandProfileSet)getDemandProfileSet()).validate()){
-				SiriusErrorLog.addErrorMessage("DemandProfileSet validation failure.");
+			if(!((DemandProfileSet)getDemandProfileSet()).validate())
 				return false;
-			}
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
-			if(!((SplitRatioProfileSet)getSplitRatioProfileSet()).validate()){
-				SiriusErrorLog.addErrorMessage("SplitRatioProfileSet validation failure.");
+			if(!((SplitRatioProfileSet)getSplitRatioProfileSet()).validate())
 				return false;
-			}
 
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				if(!((FundamentalDiagramProfile)fd).validate()){
-					SiriusErrorLog.addErrorMessage("FundamentalDiagramProfileSet validation failure.");
+				if(!((FundamentalDiagramProfile)fd).validate())
 					return false;
-				}
 
 		// validate controllers
 		if(!controllerset.validate())

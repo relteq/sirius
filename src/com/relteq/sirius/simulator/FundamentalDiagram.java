@@ -28,10 +28,10 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	public FundamentalDiagram(Link myLink){
 		if(myLink==null)
 			return;
-		this.myLink = myLink;
-		this.lanes = myLink._lanes;
+		this.myLink       = myLink;
+		this.lanes        = myLink._lanes;
 		_densityJam 	  = Double.NaN;  
-	    _capacity  = Double.NaN;
+	    _capacity  		  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
@@ -183,13 +183,16 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 	
 	protected void reset(Scenario.UncertaintyType uncertaintyModel){
+		if(myLink==null)
+			return;
 		// set lanes back to original value
 		setLanes(myLink.get_Lanes());
 	}
 	
 	// produce a sample fundamental diagram with this one as expected value.
 	protected FundamentalDiagram perturb(){
-		
+		if(myLink==null)
+			return null;
 		// make a copy of this fundamental diagram
 		FundamentalDiagram samp = new FundamentalDiagram(myLink);
 		samp.copyfrom(this);
@@ -225,30 +228,30 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	
 	protected boolean validate(){
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0){
-			SiriusErrorLog.addErrorMessage("Fundamental diagram parameters must be non-negative.");
+			SiriusErrorLog.addError("Fundamental diagram parameters must be non-negative.");
 			return false;
 		}
 
 		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
 		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion)){
-			SiriusErrorLog.addErrorMessage("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
+			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
 			return false;
 		}
 		
 		if(_vf>1){
-			SiriusErrorLog.addErrorMessage("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
 			return false;
 		}
 
 		if(_w>1){
-			SiriusErrorLog.addErrorMessage("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 			return false;
 		}
 		
 		for(int e=0;e<this.myLink.myNetwork.myScenario.numEnsemble;e++)
 			if(myLink.getTotalDensityInVeh(e)>_densityJam){
-				SiriusErrorLog.addErrorMessage("XXX");
+				SiriusErrorLog.addError("XXX");
 				return false;
 			}
 		

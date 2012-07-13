@@ -4,35 +4,53 @@ import java.util.ArrayList;
 
 public final class SiriusErrorLog {
 	
-	private static String errorheader = new String();
-	private static ArrayList<String> errormessage = new ArrayList<String>();
+	private static boolean haserror;
+	private static boolean haswarning;
+	private static enum level {Warning,Error};
+	private static ArrayList<SiriusError> error = new ArrayList<SiriusError>();
 
-	public static void clearErrorMessage(){
-		errormessage.clear();
+	protected static void clearErrorMessage(){
+		error.clear();
+		haserror = false;
+		haswarning = false;
 	}
 	
 	public static boolean haserror(){
-		return !errormessage.isEmpty();
+		return haserror;
+	}
+	
+	public static boolean haswarning(){
+		return haswarning;
 	}
 
-	public static void printErrorMessage(){
-		if(!errorheader.isEmpty())
-			System.out.println(errorheader);
-		if(!errormessage.isEmpty()){
-			if(errormessage.size()==1)
-				System.out.println(errormessage.get(0));
-			else
-				for(int i=0;i<errormessage.size();i++)
-					System.out.println(i+1 + ") " + errormessage.get(i));
+	public static void print(){
+		if(!error.isEmpty()){
+			for(int i=0;i<error.size();i++){
+				System.out.println(i+1 + ") " 
+						+ error.get(i).mylevel.toString() + ": "
+						+ error.get(i).description );
+			}
+			
 		}
 	}
 
-	public static void addErrorMessage(String str){
-		errormessage.add(str);
+	public static void addError(String str){
+		error.add(new SiriusError(str,SiriusErrorLog.level.Error));
+		haserror = true;
 	}
 
-	public static void setErrorHeader(String str){
-		errorheader = str;
+	public static void addWarning(String str){
+		error.add(new SiriusError(str,SiriusErrorLog.level.Warning));
+		haswarning = true;
 	}
 	
+	public static class SiriusError{
+		String description;
+		SiriusErrorLog.level mylevel;
+		public SiriusError(String description,SiriusErrorLog.level mylevel){
+			this.description = description;
+			this.mylevel = mylevel;
+		}
+	}
+
 }
