@@ -42,6 +42,14 @@ public class Service {
 	}
 
 	/**
+	 * Initializes the DB service if it hasn't been initialized yet
+	 * @throws SiriusException
+	 */
+	public static void ensureInit() throws SiriusException {
+		if (!isInit()) init();
+	}
+
+	/**
 	 * Shuts down the DB service
 	 * @throws SiriusException
 	 */
