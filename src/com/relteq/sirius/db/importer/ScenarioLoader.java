@@ -13,56 +13,8 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
-import com.relteq.sirius.om.ControllerSets;
-import com.relteq.sirius.om.DecisionPointSplitProfileSets;
-import com.relteq.sirius.om.DecisionPointSplitProfiles;
-import com.relteq.sirius.om.DecisionPointSplits;
-import com.relteq.sirius.om.DemandProfileSets;
-import com.relteq.sirius.om.DemandProfiles;
-import com.relteq.sirius.om.Demands;
-import com.relteq.sirius.om.DownstreamBoundaryCapacities;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfileSets;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfiles;
-import com.relteq.sirius.om.EventSets;
-import com.relteq.sirius.om.FundamentalDiagramProfileSets;
-import com.relteq.sirius.om.FundamentalDiagramProfiles;
-import com.relteq.sirius.om.FundamentalDiagrams;
-import com.relteq.sirius.om.InitialDensities;
-import com.relteq.sirius.om.InitialDensitySets;
-import com.relteq.sirius.om.LinkFamilies;
-import com.relteq.sirius.om.Links;
-import com.relteq.sirius.om.NetworkConnectionLists;
-import com.relteq.sirius.om.NetworkConnections;
-import com.relteq.sirius.om.NetworkLists;
-import com.relteq.sirius.om.Networks;
-import com.relteq.sirius.om.NodeFamilies;
-import com.relteq.sirius.om.Nodes;
-import com.relteq.sirius.om.OdDemandProfileSets;
-import com.relteq.sirius.om.OdDemandProfiles;
-import com.relteq.sirius.om.OdDemands;
-import com.relteq.sirius.om.OdLists;
-import com.relteq.sirius.om.Ods;
-import com.relteq.sirius.om.PhaseLinks;
-import com.relteq.sirius.om.Phases;
-import com.relteq.sirius.om.RouteSegmentLinks;
-import com.relteq.sirius.om.RouteSegments;
-import com.relteq.sirius.om.Scenarios;
-import com.relteq.sirius.om.SensorLists;
-import com.relteq.sirius.om.SignalLists;
-import com.relteq.sirius.om.Signals;
-import com.relteq.sirius.om.SplitRatioProfileSets;
-import com.relteq.sirius.om.SplitRatioProfiles;
-import com.relteq.sirius.om.SplitRatios;
-import com.relteq.sirius.om.VehicleTypeFamilies;
-import com.relteq.sirius.om.VehicleTypeLists;
-import com.relteq.sirius.om.VehicleTypes;
-import com.relteq.sirius.om.VehicleTypesInLists;
-import com.relteq.sirius.om.VehicleTypesPeer;
-import com.relteq.sirius.om.WeavingFactorSets;
-import com.relteq.sirius.om.WeavingFactors;
+import com.relteq.sirius.om.*;
 import com.relteq.sirius.simulator.Double2DMatrix;
-import com.relteq.sirius.simulator.ObjectFactory;
-import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
@@ -99,7 +51,7 @@ public class ScenarioLoader {
 	private Map<String, String> od_id = null;
 	private Map<String, String> route_segment_id = null;
 
-	private ScenarioLoader() {
+	public ScenarioLoader() {
 		project_id = "default";
 	}
 
@@ -112,24 +64,24 @@ public class ScenarioLoader {
 	 * @throws SiriusException
 	 */
 	public static Scenarios load(String filename) throws SiriusException {
-		ScenarioLoader sl = new ScenarioLoader();
-		try {
-			if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
-			Scenarios db_scenario = sl.load(ObjectFactory.createAndLoadScenario(filename));
-			logger.info("Scenario imported, ID=" + db_scenario.getId());
-			return db_scenario;
-		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
-		}
+		com.relteq.sirius.simulator.Scenario scenario =
+				com.relteq.sirius.simulator.ObjectFactory.createAndLoadScenario(filename);
+		logger.info("Configuration file '" + filename + "' parsed");
+		Scenarios db_scenario = new ScenarioLoader().load(scenario);
+		logger.info("Scenario imported, ID=" + db_scenario.getId());
+		return db_scenario;
 	}
 
-	public Scenarios load(Scenario scenario) throws TorqueException {
+	public Scenarios load(com.relteq.sirius.simulator.Scenario scenario) throws SiriusException {
+		com.relteq.sirius.db.Service.ensureInit();
 		try {
 			conn = Transaction.begin();
 			Scenarios db_scenario = save(scenario);
 			Transaction.commit(conn);
 			conn = null;
 			return db_scenario;
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
