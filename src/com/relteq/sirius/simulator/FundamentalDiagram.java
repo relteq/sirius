@@ -26,10 +26,8 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	public FundamentalDiagram(){};
 	
 	public FundamentalDiagram(Link myLink){
-		if(myLink==null)
-			return;
 		this.myLink       = myLink;
-		this.lanes        = myLink._lanes;
+		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
 		_densityJam 	  = Double.NaN;  
 	    _capacity  		  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
@@ -229,10 +227,8 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	protected void validate(){
 		
 		String myLinkId;
-		if(myLink==null)
-			myLinkId = "[invalid link id]";
-		else
-			myLinkId = myLink.getId();
+		
+		myLinkId = myLink==null ? "[invalid link id]" : myLink.getId();
 		
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
 			SiriusErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLinkId);

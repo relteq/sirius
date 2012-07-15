@@ -229,6 +229,7 @@ public final class ObjectFactory {
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	SiriusErrorLog.addError("Failed to create context for JAXB unmarshaller.");
+            SiriusErrorLog.print();
             return null;
         }
         
@@ -240,6 +241,7 @@ public final class ObjectFactory {
         	u.setSchema(schema);
         } catch(SAXException e){
         	SiriusErrorLog.addError("Schema not found.");
+            SiriusErrorLog.print();
         	return null;
         }
         
@@ -253,18 +255,20 @@ public final class ObjectFactory {
         	setObjectFactory(u, new JaxbObjectFactory());
         	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
-        	System.out.println(je.getMessage());
         	SiriusErrorLog.addError("JAXB threw an exception when loading the configuration file.");
         	if(je.getLinkedException()!=null)
         		SiriusErrorLog.addError(je.getLinkedException().getMessage());
+            SiriusErrorLog.print();
             return null;
         } catch (FileNotFoundException e) {
         	SiriusErrorLog.addError("Configuration file not found.");
+            SiriusErrorLog.print();
         	return null;
 		}
         
         if(S==null){
         	SiriusErrorLog.addError("Unknown load error.");
+            SiriusErrorLog.print();
         	return null;
 		}
 
@@ -290,6 +294,7 @@ public final class ObjectFactory {
         	S.populate();
         } catch (SiriusException e){
         	SiriusErrorLog.addError(e.getMessage());
+            SiriusErrorLog.print();
         	return null;
         }
         
@@ -303,6 +308,7 @@ public final class ObjectFactory {
         
         if(!registersuccess){
         	SiriusErrorLog.addError("Controller registration failure.");
+            SiriusErrorLog.print();
         	return null;
         }
 		

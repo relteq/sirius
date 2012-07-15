@@ -53,6 +53,7 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 	
 	/** @y.exclude */
 	protected void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Event jaxbE,Event.Type myType){
+		this.id = jaxbE.getId();
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
@@ -80,7 +81,7 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 		// check each target is valid
 		for(ScenarioElement s : targets)
 			if(s.reference==null)
-				SiriusErrorLog.addError("Invalid target in event with id=" + getId() + ".");
+				SiriusErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
 	

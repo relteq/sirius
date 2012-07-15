@@ -36,6 +36,7 @@ public final class Runner {
 
 		try {
 			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
+			System.out.println("done in " + (System.currentTimeMillis()-time));
 		} catch (SiriusException e) {
 			if(SiriusErrorLog.haserror())
 				SiriusErrorLog.print();
@@ -43,7 +44,6 @@ public final class Runner {
 				e.printStackTrace();
 		}	
 		
-		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
 
 	private static boolean parseInput(String[] args){

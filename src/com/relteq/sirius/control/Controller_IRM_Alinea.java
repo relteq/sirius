@@ -117,11 +117,11 @@ public class Controller_IRM_Alinea extends Controller {
 			}
 		}
 		
-		// abort unless there is either one mainline link or one mainline sensor
-		if(mainlinelink==null && mainlinesensor==null)
-			return;
-		if(mainlinelink!=null  && mainlinesensor!=null)
-			return;
+//		// abort unless there is either one mainline link or one mainline sensor
+//		if(mainlinelink==null && mainlinesensor==null)
+//			return;
+//		if(mainlinelink!=null  && mainlinesensor!=null)
+//			return;
 		
 		usesensor = mainlinesensor!=null;
 		
@@ -129,8 +129,8 @@ public class Controller_IRM_Alinea extends Controller {
 		if(usesensor)
 			mainlinelink = mainlinesensor.getMyLink();
 		
-		if(mainlinelink==null)
-			return;
+//		if(mainlinelink==null)
+//			return;
 		
 		// read parameters
 		double gain_in_mph = 50.0;
@@ -140,16 +140,18 @@ public class Controller_IRM_Alinea extends Controller {
 				if(p.getName().equals("gain")){
 					gain_in_mph = Double.parseDouble(p.getValue());
 				}
-
 				if(p.getName().equals("targetdensity")){
-					targetvehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
-					targetvehicles *= mainlinelink.get_Lanes()*mainlinelink.getLengthInMiles();		// now in [veh]
-					targetdensity_given = true;
+					if(mainlinelink!=null){
+						targetvehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
+						targetvehicles *= mainlinelink.get_Lanes()*mainlinelink.getLengthInMiles();		// now in [veh]
+						targetdensity_given = true;
+					}
 				}
 			}	
 		
 		// normalize the gain
-		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
+		if(mainlinelink!=null)
+			gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
 	}
 	
 	@Override
@@ -186,7 +188,7 @@ public class Controller_IRM_Alinea extends Controller {
 			SiriusErrorLog.addError("Invalid onramp link for Alinea controller id=" + getId()+ ".");
 			
 		// negative gain
-		if(gain_normalized<=0f)
+		if(mainlinelink!=null && gain_normalized<=0f)
 			SiriusErrorLog.addError("Non-positiva gain for Alinea controller id=" + getId()+ ".");
 		
 	}

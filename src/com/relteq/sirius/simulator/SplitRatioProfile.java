@@ -128,10 +128,13 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		// check split ratio dimensions and values
 		int in_index;
 		int out_index;
-		for(in_index=0;in_index<profile.length;in_index++)
-			for(out_index=0;out_index<profile[in_index].length;out_index++)
-				if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
-					SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+		if(profile!=null)
+			for(in_index=0;in_index<profile.length;in_index++)
+				if(profile[in_index]!=null)
+					for(out_index=0;out_index<profile[in_index].length;out_index++)
+						if(profile[in_index][out_index]!=null)
+							if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
+								SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
 		
 	}
 

@@ -69,7 +69,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	@Override
 	public void validate() {
 		if(myLink==null)
-			SiriusErrorLog.addError("Unknown link reference for sensor id=" + getId());
+			SiriusErrorLog.addError("Unknown link reference for sensor id=" + getId() +".");
 	}
 
 	@Override

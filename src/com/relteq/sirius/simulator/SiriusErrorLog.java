@@ -28,14 +28,32 @@ public final class SiriusErrorLog {
 	}
 
 	public static void print(){
-		if(!error.isEmpty()){
+
+		int c;
+		if(haserror){
+			System.out.println("----------------------------------------");
+			System.out.println("ERRORS");
+			System.out.println("----------------------------------------");
+			c=0;
 			for(int i=0;i<error.size();i++){
-				System.out.println(i+1 + ") " 
-						+ error.get(i).mylevel.toString() + ": "
-						+ error.get(i).description );
+				SiriusError e = error.get(i);
+				if(e.mylevel.compareTo(SiriusErrorLog.level.Error)==0)
+					System.out.println(++c + ") " + e.description );
+			}
+		}
+		if(haswarning){
+			System.out.println("----------------------------------------");
+			System.out.println("WARNINGS");
+			System.out.println("----------------------------------------");
+			c=0;
+			for(int i=0;i<error.size();i++){
+				SiriusError e = error.get(i);
+				if(e.mylevel.compareTo(SiriusErrorLog.level.Warning)==0)
+					System.out.println(++c + ") " + e.description );
 			}
 			
 		}
+		
 	}
 
 	public static void addError(String str){
@@ -48,7 +66,7 @@ public final class SiriusErrorLog {
 		haswarning = true;
 	}
 	
-	public static class SiriusError{
+	public static class SiriusError {
 		String description;
 		SiriusErrorLog.level mylevel;
 		public SiriusError(String description,SiriusErrorLog.level mylevel){
