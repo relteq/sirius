@@ -36,7 +36,7 @@ public class ImportExportTest {
 	public static void createDatabase() throws SQLException, IOException, SiriusException, ClassNotFoundException {
 		params = new com.relteq.sirius.db.Parameters();
 		params.setDriver("derby");
-		params.setDBName("sirius-" + com.relteq.sirius.db.util.UUID.generate());
+		params.setDBName(("sirius-" + com.relteq.sirius.db.util.UUID.generate()).replace('-', '_'));
 		System.out.println("Initializing the database");
 		com.relteq.sirius.db.Admin.init(params);
 		System.out.println("Created a temporary database '" + params.getDBName() + "'");
