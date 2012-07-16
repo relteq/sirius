@@ -15,6 +15,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
 @RunWith(Parameterized.class)
@@ -41,6 +42,7 @@ public class ImportExportTest {
 		System.out.println("Created a temporary database '" + params.getDBName() + "'");
 		params.setCreate(false);
 		com.relteq.sirius.db.Service.init(params);
+		clearErrors();
 	}
 
 	/**
@@ -50,6 +52,16 @@ public class ImportExportTest {
 	public static void removeDatabase() {
 		com.relteq.sirius.db.Service.shutdown();
 		com.relteq.sirius.db.Admin.drop(params);
+		clearErrors();
+	}
+
+	private static void clearErrors() {
+		if (SiriusErrorLog.haserror()) {
+			System.out.println("==== ERRORS ====");
+			SiriusErrorLog.printErrorMessage();
+			System.out.println("================");
+			SiriusErrorLog.clearErrorMessage();
+		}
 	}
 
 	/**
@@ -85,6 +97,8 @@ public class ImportExportTest {
 		System.out.println("Exporting " + db_scenario.getId() + " to " + outfile.getPath());
 		com.relteq.sirius.db.exporter.ScenarioRestorer.export(db_scenario.getId(), outfile.getPath());
 		outfile.delete();
+
+		clearErrors();
 	}
 
 }
