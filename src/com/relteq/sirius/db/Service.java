@@ -20,6 +20,8 @@ public class Service {
 		init(Parameters.fromEnvironment());
 	}
 
+	private static Logger logger = Logger.getLogger(Service.class);
+
 	/**
 	 * Initializes the DB service for the specified parameters
 	 * @param params
@@ -27,7 +29,7 @@ public class Service {
 	 */
 	public static void init(Parameters params) throws SiriusException {
 		try {
-			Logger.getLogger(Service.class).info("Connection URL: " + params.getUrl());
+			logger.info("Connection URL: " + params.getUrl());
 			Torque.init(params.toConfiguration());
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
@@ -57,7 +59,7 @@ public class Service {
 		try {
 			Torque.shutdown();
 		} catch (TorqueException exc) {
-			exc.printStackTrace();
+			logger.error("Database shutdown failed", exc);
 		}
 	}
 }
