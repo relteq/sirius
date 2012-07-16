@@ -26,6 +26,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected int nIn;
 	/** @y.exclude */ 	protected int nOut;
 	/** @y.exclude */ 	protected boolean isTerminal;
+	
+	/** @y.exclude */ 	protected Signal mySignal = null;
 
     // controller
 	/** @y.exclude */ 	protected boolean hascontroller;

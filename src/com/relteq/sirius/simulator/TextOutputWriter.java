@@ -11,48 +11,54 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Properties;
 
 import com.relteq.sirius.simulator.Link;
 
-final class OutputWriter_simple extends OutputWriter_Base {
-
-	protected Scenario myScenario;
+public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer out_time = null;
 	protected Writer out_density = null;
 	protected Writer out_outflow = null;
 	protected Writer out_inflow = null;
 	protected static String delim = "\t";
+	private String prefix;
 
-	public OutputWriter_simple(Scenario myScenario){
-		this.myScenario = myScenario;
-		//this.outsteps = osteps;
+	public TextOutputWriter(Scenario scenario, Properties props){
+		super(scenario);
+		if (null != props) prefix = props.getProperty("prefix");
+		if (null == prefix) prefix = "output";
 	}
 
-	protected boolean open(String prefix,String suffix) throws FileNotFoundException {
-		suffix = "_"+suffix+".txt";
-		out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));	
-		out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));		
-		out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));		
-		out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));	
-		return true;
+	@Override
+	public void open(int run_id) throws SiriusException {
+		String suffix = String.format("_%d.txt", run_id);
+		try {
+			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
+			out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));
+			out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
+			out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
+		} catch (FileNotFoundException exc) {
+			throw new SiriusException(exc.getMessage());
+		}
 	}
 
-	protected void recordstate(double time,boolean exportflows,int outsteps) throws SiriusException {
+	@Override
+	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		
-		if(myScenario==null)
+		if(scenario==null)
 			return;
 		
 		Double [] numbers;
 		double invsteps;
 		
-		if(myScenario.clock.getCurrentstep()==1)
+		if(scenario.clock.getCurrentstep()==1)
 			invsteps = 1f;
 		else
 			invsteps = 1f/((double)outsteps);
 			
 		try {
 			out_time.write(String.format("%f\n",time));
-			for(com.relteq.sirius.jaxb.Network network : myScenario.getNetworkList().getNetwork()){
+			for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
 				List<com.relteq.sirius.jaxb.Link> links = network.getLinkList().getLink();
 
 				int n = links.size();
@@ -60,12 +66,12 @@ final class OutputWriter_simple extends OutputWriter_Base {
 				for(int i=0;i<n-1;i++){
 					link = (Link) links.get(i);
 					numbers = SiriusMath.times(link.cumulative_density[0],invsteps);
-					out_density.write(format(numbers,":")+OutputWriter_simple.delim);
+					out_density.write(format(numbers,":")+TextOutputWriter.delim);
 					if(exportflows){
 						numbers = SiriusMath.times(link.cumulative_outflow[0],invsteps);
-						out_outflow.write(format(numbers,":")+OutputWriter_simple.delim);
+						out_outflow.write(format(numbers,":")+TextOutputWriter.delim);
 						numbers = SiriusMath.times(link.cumulative_inflow[0],invsteps);
-						out_inflow.write(format(numbers,":")+OutputWriter_simple.delim);
+						out_inflow.write(format(numbers,":")+TextOutputWriter.delim);
 					}
 					link.reset_cumulative();
 				}
@@ -87,7 +93,7 @@ final class OutputWriter_simple extends OutputWriter_Base {
 		}
 	}
 
-	protected void close(){
+	public void close(){
 		try {
 			if(out_time!=null)
 				out_time.close();
