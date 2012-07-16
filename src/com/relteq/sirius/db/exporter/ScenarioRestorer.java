@@ -262,6 +262,7 @@ public class ScenarioRestorer {
 		link.setRoadName(db_link.getRoadName());
 		link.setDescription(db_link.getDescription());
 		link.setType(db_link.getType());
+		// TODO link.setLinkGeometry();
 		link.setLanes(db_link.getLanes());
 		link.setLength(db_link.getLength());
 		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
@@ -287,6 +288,7 @@ public class ScenarioRestorer {
 		idset.setId(db_idset.getId());
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
+		// TODO idset.setTstamp();
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);

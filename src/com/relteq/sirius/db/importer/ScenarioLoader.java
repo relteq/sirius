@@ -289,6 +289,7 @@ public class ScenarioLoader {
 		db_link.setRoadName(link.getRoadName());
 		db_link.setDescription(link.getDescription());
 		db_link.setType(link.getType());
+		// TODO the link geometry serialization is to be revised
 		if (null != link.getLinkGeometry()) db_link.setShape(link.getLinkGeometry().toString());
 		db_link.setLanes(link.getLanes());
 		db_link.setLength(link.getLength());
