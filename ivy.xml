@@ -11,9 +11,8 @@
 	</configurations>
 	<dependencies defaultconf="compile" defaultconfmapping="*->*">
 		<dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2" conf="generate"/>
-		<dependency org="org.apache.ant" name="ant" rev="1.8.3"/>
 		<dependency org="junit" name="junit" rev="4.10" conf="test"/>
-		<dependency org="org.apache.torque" name="torque-generator" rev="3.3" conf="generate"/>
+		<dependency org="org.apache.torque" name="torque-generator" rev="3.3" conf="generate,compile"/>
 		<dependency org="org.apache.torque" name="torque-runtime" rev="3.3" conf="compile"/>
 		<dependency org="org.apache.derby" name="derby" rev="10.8.2.2" conf="runtime"/>
 		<dependency org="postgresql" name="postgresql" rev="9.1-901.jdbc4" conf="runtime"/>
