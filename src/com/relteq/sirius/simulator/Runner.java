@@ -37,15 +37,11 @@ public final class Runner {
 			return;
 
 		try {
-<<<<<<< HEAD
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
-			System.out.println("done in " + (System.currentTimeMillis()-time));
-=======
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", outputtype);
 			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
->>>>>>> ce26bb0fde3c6ebced52e33cee08707249f25def
+			System.out.println("done in " + (System.currentTimeMillis()-time));
 		} catch (SiriusException e) {
 			if(SiriusErrorLog.haserror())
 				SiriusErrorLog.print();
@@ -152,8 +148,9 @@ public final class Runner {
 		com.relteq.sirius.db.Service.init();
 
 		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		
 		if (SiriusErrorLog.haserror()) {
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 

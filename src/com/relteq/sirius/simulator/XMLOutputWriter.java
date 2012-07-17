@@ -83,13 +83,9 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			// data
 			xmlsw.writeStartElement("data");
 		} catch (XMLStreamException exc) {
-<<<<<<< HEAD
 			SiriusErrorLog.addError(exc.toString());
-=======
-			SiriusErrorLog.addErrorMessage(exc.toString());
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc.getMessage());
->>>>>>> ce26bb0fde3c6ebced52e33cee08707249f25def
 		}
 	}
 
