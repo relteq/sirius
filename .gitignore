@@ -1,9 +1,10 @@
 /build/
+/bin/
 /doc/
 /lib/
 sirius.jar
 /src/com/relteq/sirius/jaxb/
-output_*.xml
+output_*
 *.asv
 *.class
 /torque/
@@ -12,4 +13,5 @@ velocity.log
 /derby.log
 .project
 .classpath
+*.pptx
 
