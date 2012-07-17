@@ -95,7 +95,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
 		if (null == scenario) {
 			if (SiriusErrorLog.haserror()) {
-				SiriusErrorLog.printErrorMessage();
+				SiriusErrorLog.print();
 				SiriusErrorLog.clearErrorMessage();
 			}
 			throw new SiriusException("Could not load the scenario");

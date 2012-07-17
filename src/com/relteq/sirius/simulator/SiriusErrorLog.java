@@ -9,7 +9,7 @@ public final class SiriusErrorLog {
 	private static enum level {Warning,Error};
 	private static ArrayList<SiriusError> error = new ArrayList<SiriusError>();
 
-	protected static void clearErrorMessage(){
+	public static void clearErrorMessage(){
 		error.clear();
 		haserror = false;
 		haswarning = false;
