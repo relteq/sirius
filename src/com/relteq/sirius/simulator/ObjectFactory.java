@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -235,7 +236,7 @@ public final class ObjectFactory {
         
         // schema assignment ..........................................................
         try{
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
         	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
@@ -274,7 +275,16 @@ public final class ObjectFactory {
 
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
-        
+
+		return process(S);
+	}
+
+	/**
+	 * Updates a scenario loaded by JAXB
+	 * @param S a scenario
+	 * @return the updated scenario or null if an error occurred
+	 */
+	public static Scenario process(Scenario S) {
         // copy data to static variables ..............................................
         S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
@@ -535,7 +545,6 @@ public final class ObjectFactory {
 	 * location on a link. 
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return					_Sensor object
 	 */
@@ -550,7 +559,6 @@ public final class ObjectFactory {
 	 * position of the sensor.
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return			XXX
 	 */

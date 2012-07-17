@@ -5,18 +5,20 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.Properties;
+
 public final class Runner {
 	
 	private static Scenario scenario;
-		
-	private static OutputWriter_Base.Type outputtype = OutputWriter_Base.Type.tabdelim;
+
+	private static String outputtype = "xml";
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
 	private static double timeend;
 	private static double outdt;
 	private static int numRepetitions;
-	
+
 	public static void main(String[] args) {
 
 		long time = System.currentTimeMillis();
@@ -35,8 +37,15 @@ public final class Runner {
 			return;
 
 		try {
+<<<<<<< HEAD
 			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
 			System.out.println("done in " + (System.currentTimeMillis()-time));
+=======
+			Properties owr_props = new Properties();
+			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+			owr_props.setProperty("type", outputtype);
+			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
+>>>>>>> ce26bb0fde3c6ebced52e33cee08707249f25def
 		} catch (SiriusException e) {
 			if(SiriusErrorLog.haserror())
 				SiriusErrorLog.print();
@@ -44,6 +53,11 @@ public final class Runner {
 				e.printStackTrace();
 		}	
 		
+	}
+
+	public static void debug(String [] args) {
+		outputtype = "text";
+		main(args);
 	}
 
 	private static boolean parseInput(String[] args){
@@ -116,6 +130,38 @@ public final class Runner {
 			numRepetitions = 1;
 
 		return true;
+	}
+
+	public static void run_db(String [] args) throws SiriusException, com.relteq.sirius.Runner.InvalidUsageException {
+		if (0 == args.length) {
+			final String eol = System.getProperty("line.separator");
+			throw new com.relteq.sirius.Runner.InvalidUsageException(
+					"Usage: simulate|s scenario_id [parameters]" + eol +
+					"Parameters:" + eol +
+					"\tstart time, sec" + eol +
+					"\tduration, sec" + eol +
+					"\toutput sampling time, sec" + eol +
+					"\tnumber of simulations");
+		} else {
+			String [] auxargs = new String[args.length + 1];
+			auxargs[0] = auxargs[1] = null;
+			System.arraycopy(args, 1, auxargs, 2, args.length - 1);
+			parseInput(auxargs);
+		}
+
+		com.relteq.sirius.db.Service.init();
+
+		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		if (SiriusErrorLog.haserror()) {
+			SiriusErrorLog.printErrorMessage();
+			return;
+		}
+
+		Properties owr_props = new Properties();
+		owr_props.setProperty("type", "db");
+		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
+
+		com.relteq.sirius.db.Service.shutdown();
 	}
 
 }

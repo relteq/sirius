@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.util.StringTokenizer;
 
-final class Double2DMatrix {
+public final class Double2DMatrix {
 	
 	private int nTime;			// number of time slices
 	private int nVTypes;		// number of vehicle types
@@ -127,6 +127,16 @@ final class Double2DMatrix {
 			}
 		}
 		return x;
+	}
+
+	/**
+	 * Retrieves the split ratio value for a given time slice and a given vehicle type index
+	 * @param timeslice the time slice
+	 * @param vehicletypeindex the vehicle type index
+	 * @return the split ratio
+	 */
+	public Double get(int timeslice, int vehicletypeindex) {
+		return data[timeslice][vehicletypeindex];
 	}
 
 	/////////////////////////////////////////////////////////////////////

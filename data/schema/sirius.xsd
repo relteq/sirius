@@ -290,7 +290,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_apporach"/>
+						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_approach"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
