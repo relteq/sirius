@@ -11,7 +11,7 @@ output_*
 velocity.log
 /sirius/
 /derby.log
-.project
-.classpath
+/src/com/relteq/sirius/om/
+/src/org/apache/torque/linkage/
 *.pptx
 
