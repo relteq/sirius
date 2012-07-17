@@ -31,9 +31,7 @@ public class SensorFloating extends Sensor {
 	}
 	
 	@Override
-	public boolean validate() {
-		// TODO Auto-generated method stub
-		return false;
+	public void validate() {
 	}
 
 	@Override
