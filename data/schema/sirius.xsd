@@ -117,8 +117,8 @@
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
         <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
         <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
-	<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
-	<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
+		<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
+		<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
@@ -224,7 +224,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal"/>
+						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal|highway|stop_intersection|other"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -290,7 +290,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_apporach"/>
+						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_approach|heavy_vehicle|electric_toll"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>

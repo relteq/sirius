@@ -5,25 +5,27 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.Properties;
+
 public final class Runner {
 	
 	private static Scenario scenario;
-		
-	private static OutputWriter_Base.Type outputtype = OutputWriter_Base.Type.tabdelim;
+
+	private static String outputtype = "xml";
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
 	private static double timeend;
 	private static double outdt;
 	private static int numRepetitions;
-	
+
 	public static void main(String[] args) {
-		
+
 		long time = System.currentTimeMillis();
 
 		// process input parameters
 		if(!parseInput(args)){
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 
@@ -31,18 +33,27 @@ public final class Runner {
 		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
-		if(SiriusErrorLog.haserror()){
-			SiriusErrorLog.printErrorMessage();
+		if(scenario==null)
 			return;
-		}
 
 		try {
-			scenario.run(outputfileprefix,timestart,timeend,outdt,numRepetitions,outputtype);
+			Properties owr_props = new Properties();
+			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+			owr_props.setProperty("type", outputtype);
+			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
+			System.out.println("done in " + (System.currentTimeMillis()-time));
 		} catch (SiriusException e) {
-			e.printStackTrace();
+			if(SiriusErrorLog.haserror())
+				SiriusErrorLog.print();
+			else
+				e.printStackTrace();
 		}	
 		
-		System.out.println("done in " + (System.currentTimeMillis()-time));
+	}
+
+	public static void debug(String [] args) {
+		outputtype = "text";
+		main(args);
 	}
 
 	private static boolean parseInput(String[] args){
@@ -72,7 +83,7 @@ public final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			SiriusErrorLog.addErrorMessage(str);
+			SiriusErrorLog.addError(str);
 			return false;
 		}
 		
@@ -115,6 +126,39 @@ public final class Runner {
 			numRepetitions = 1;
 
 		return true;
+	}
+
+	public static void run_db(String [] args) throws SiriusException, com.relteq.sirius.Runner.InvalidUsageException {
+		if (0 == args.length) {
+			final String eol = System.getProperty("line.separator");
+			throw new com.relteq.sirius.Runner.InvalidUsageException(
+					"Usage: simulate|s scenario_id [parameters]" + eol +
+					"Parameters:" + eol +
+					"\tstart time, sec" + eol +
+					"\tduration, sec" + eol +
+					"\toutput sampling time, sec" + eol +
+					"\tnumber of simulations");
+		} else {
+			String [] auxargs = new String[args.length + 1];
+			auxargs[0] = auxargs[1] = null;
+			System.arraycopy(args, 1, auxargs, 2, args.length - 1);
+			parseInput(auxargs);
+		}
+
+		com.relteq.sirius.db.Service.init();
+
+		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		
+		if (SiriusErrorLog.haserror()) {
+			SiriusErrorLog.print();
+			return;
+		}
+
+		Properties owr_props = new Properties();
+		owr_props.setProperty("type", "db");
+		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
+
+		com.relteq.sirius.db.Service.shutdown();
 	}
 
 }

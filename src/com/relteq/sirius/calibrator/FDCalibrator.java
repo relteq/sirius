@@ -52,7 +52,7 @@ public class FDCalibrator {
 	private boolean readScenario() {
 		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 		if(scenario==null || SiriusErrorLog.haserror()){
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return false;
 		}
 		return true;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="sirius" default="jar" basedir="."
+<project name="sirius relteq" default="jar" basedir="."
 		xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="test.dir" value="${basedir}/test"/>
@@ -12,7 +12,7 @@
 	<property name="javac.deprecation" value="off"/>
 	<property name="javac.version" value="1.6"/>
 	<property name="javac.args" value=""/>
-	<property name="javac.args.warnings" value="-Xlint:unchecked"/>
+	<property name="javac.args.warnings" value="-Xlint:unchecked -Xlint:deprecation"/>
 
 	<property name="ydoc.dir" value="${basedir}/yworks-uml-doclet-3.0_01-jdk1.5"/>
 	<property name="doc.dir" value="${basedir}/doc"/>
@@ -22,18 +22,31 @@
 
 	<property name="xjc.destdir" value="${src.dir}/com/relteq/sirius/jaxb"/>
 
-	<property name="ivy.lib.dir" value="${basedir}/lib"/>
+	<property name="lib.dir" value="${basedir}/lib"/>
 
 	<property name="torque.buildfile" value="build-torque.xml"/>
 
+	<property file="ivy.properties"/>
 	<property file="torque.properties"/>
 
-	<path id="lib.path">
-		<fileset dir="${ivy.lib.dir}" includes="*.jar"/>
+	<path id="generate.lib.path">
+		<fileset dir="${lib.dir}/jar/generate" includes="*.jar"/>
+	</path>
+
+	<path id="compile.lib.path">
+		<fileset dir="${lib.dir}/jar/compile" includes="*.jar"/>
+	</path>
+
+	<path id="runtime.lib.path">
+		<fileset dir="${lib.dir}/jar/runtime" includes="*.jar"/>
+	</path>
+
+	<path id="test.lib.path">
+		<fileset dir="${lib.dir}/jar/test" includes="*.jar"/>
 	</path>
 
 	<target name="xjctask" depends="deps-generate">
-		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="lib.path"/>
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask" classpathref="generate.lib.path"/>
 	</target>
 
 	<target name="all" depends="jar,doc,test"
@@ -52,10 +65,21 @@
 		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" depends="builddir,xsd2java,deps-compile">
+	<target name="compile" depends="builddir,xsd2java,deps-compile,om">
+		<property name="torque.generated.sources" value="org/apache/torque/**/*.java,com/relteq/sirius/om/**/*.java"/>
 		<javac encoding="${src.encoding}" includeantruntime="no"
-				srcdir="${src.dir}" includes="**/*.java" destdir="${build.dir}"
-				classpathref="lib.path"
+				srcdir="${src.dir}" destdir="${build.dir}"
+				includes="${torque.generated.sources}"
+				classpathref="compile.lib.path"
+				debug="${javac.debug}" optimize="${javac.optimize}"
+				target="${javac.version}" source="${javac.version}"
+				deprecation="${javac.deprecation}"
+				nowarn="yes">
+		</javac>
+		<javac encoding="${src.encoding}" includeantruntime="no"
+				srcdir="${src.dir}" destdir="${build.dir}"
+				includes="**/*.java" excludes="${torque.generated.sources}"
+				classpathref="compile.lib.path"
 				debug="${javac.debug}" optimize="${javac.optimize}"
 				target="${javac.version}" source="${javac.version}"
 				deprecation="${javac.deprecation}">
@@ -65,6 +89,7 @@
 
 	<target name="resources" depends="builddir,sql,version">
 		<copy file="${schema.file}" todir="${build.dir}"/>
+		<copy file="log4j.properties" todir="${build.dir}"/>
 		<copy todir="${build.dir}/sql">
 			<fileset dir="${torque.output.dir}/sql">
 				<include name="**/*.sql"/>
@@ -74,7 +99,7 @@
 
 	<target name="jar" depends="compile,resources,deps-runtime" description="build a jar">
 		<manifestclasspath property="jar.classpath" jarfile="${jar.file}">
-			<classpath refid="lib.path"/>
+			<classpath refid="runtime.lib.path"/>
 		</manifestclasspath>
 		<jar jarfile="${jar.file}" basedir="${build.dir}">
 			<manifest>
@@ -92,7 +117,8 @@
 			version="yes"
 			linksource="yes"
 			access="protected" 
-			excludepackagenames="com.relteq.sirius.*"
+			excludepackagenames="com.relteq.sirius.*,org.*"
+			classpathref="compile.lib.path"
 			destdir="${doc.dir}"
 			sourcepath="${src.dir}">
 			<fileset dir="${src.dir}/com/relteq/sirius/simulator"
@@ -112,27 +138,26 @@
 		<delete file="${jar.file}"/>
 		<delete dir="${build.dir}"/>
 		<delete dir="${doc.dir}"/>
-		<delete dir="${ivy.lib.dir}"/>
+		<delete dir="${lib.dir}"/>
 		<delete dir="${xjc.destdir}"/>
 	</target>
 
 	<target name="deps-compile" depends="init-ivy">
-		<ivy:retrieve conf="compile"/>
+		<ivy:retrieve conf="compile" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-generate" depends="init-ivy">
-		<ivy:retrieve conf="generate"/>
+		<ivy:retrieve conf="generate" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-test" depends="init-ivy">
-		<ivy:retrieve conf="test"/>
+		<ivy:retrieve conf="test" log="${ivy.retrieve.log}"/>
 	</target>
 
 	<target name="deps-runtime" depends="init-ivy">
-		<ivy:retrieve conf="runtime"/>
+		<ivy:retrieve conf="runtime" log="${ivy.retrieve.log}"/>
 	</target>
 
-	<property name="ivy.install.version" value="2.1.0-rc2"/>
 	<condition property="ivy.home" value="${env.IVY_HOME}">
 		<isset property="env.IVY_HOME"/>
 	</condition>
@@ -153,9 +178,8 @@
 	</target>
 
 	<path id="classpath.test">
-		<path refid="lib.path"/>
 		<pathelement location="${jar.file}"/>
-		<pathelement location="${test.dir}"/>
+		<path refid="test.lib.path"/>
 	</path>
 
 	<target name="compile-test" depends="deps-test,jar">
@@ -166,10 +190,15 @@
 	</target>
 
 	<target name="test" description="run tests" depends="compile-test">
-		<junit haltonfailure="on">
-			<classpath refid="classpath.test"/>
+		<junit haltonfailure="on" filtertrace="no" reloading="false">
+			<classpath>
+				<pathelement location="${test.dir}"/>
+				<path refid="classpath.test"/>
+			</classpath>
 			<formatter type="plain" usefile="false"/>
-			<test name="com.relteq.sirius.simulator.OutputWriterTest"/>
+			<batchtest>
+				<fileset dir="${test.dir}" includes="**/*.class"/>
+			</batchtest>
 		</junit>
 	</target>
 
@@ -179,8 +208,10 @@
 		</delete>
 	</target>
 
+	<property name="torque.schema.file" value="${torque.schema.dir}/${torque.project}-schema.xml"/>
+
 	<uptodate property="sql.uptodate"
-			srcfile="${torque.schema.dir}/${torque.project}-schema.xml"
+			srcfile="${torque.schema.file}"
 			targetfile="${torque.output.dir}/sql/.done"/>
 
 	<target name="sql" depends="deps-generate" unless="sql.uptodate"
@@ -201,21 +232,45 @@
 		<ant antfile="${torque.buildfile}" target="doc"/>
 	</target>
 
+	<uptodate property="om.uptodate"
+			srcfile="${torque.schema.file}"
+			targetfile="${torque.output.dir}/java/.done"/>
+
+	<target name="om" depends="deps-generate" unless="om.uptodate">
+		<ant antfile="${torque.buildfile}" target="om"/>
+		<property file="${torque.properties}"/>
+		<mkdir dir="${torque.output.dir}/java"/>
+		<move todir="${torque.output.dir}/java">
+			<fileset dir="${torque.java.dir}">
+				<include name="report.*"/>
+			</fileset>
+		</move>
+		<touch file="${torque.output.dir}/java/.done"/>
+	</target>
+
 	<target name="clean-db">
 		<delete dir="${torque.output.dir}"/>
+		<delete dir="${torque.java.dir}/org"/>
+		<resources id="om.package.dir">
+			<mappedresources>
+				<string value="${torque.targetPackage}"/>
+				<unpackagemapper from="*" to="${torque.java.dir}/*"/>
+			</mappedresources>
+		</resources>
+		<delete dir="${toString:om.package.dir}"/>
 	</target>
 
 	<property name="version.src.dir" value="util${file.separator}version"/>
 
 	<path id="classpath.version">
-		<path refid="lib.path"/>
+		<path refid="generate.lib.path"/>
 		<pathelement location="${version.src.dir}"/>
 	</path>
 
 	<target name="compile-version" depends="deps-generate">
 		<javac srcdir="${version.src.dir}"
 				debug="${javac.debug}" includeantruntime="false"
-				classpathref="lib.path"/>
+				classpathref="generate.lib.path"/>
 	</target>
 
 	<target name="version" depends="compile-version,builddir">

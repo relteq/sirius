@@ -165,27 +165,31 @@ public class SignalPhase {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 
 		// check that there are links attached
 		if(targetlinks==null || targetlinks.length==0)
-			return false;
+			SiriusErrorLog.addError("No valid target link for phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// target links are valid
-		for(int i=0;i<targetlinks.length;i++)
-			if(targetlinks[i]==null)
-				return false;
-
+		if(targetlinks!=null)
+			for(int i=0;i<targetlinks.length;i++)
+				if(targetlinks[i]==null)
+					SiriusErrorLog.addError("Unknown link reference in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// myNEMA is valid
 		if(myNEMA.compareTo(Signal.NEMA.NULL)==0)
-			return false;
+			SiriusErrorLog.addError("Invalid NEMA code in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// numbers are positive
-		if( mingreen<0 || yellowtime<0 || redcleartime<0 )
-			return false;
-		
-		return true;
+		if( mingreen<0 )
+			SiriusErrorLog.addError("Negative mingreen=" + mingreen + " in signal id=" + mySignal.getId());
+
+		if( yellowtime<0 )
+			SiriusErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal id=" + mySignal.getId());
+
+		if( redcleartime<0 )
+			SiriusErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
 	}
 	
 //	 -------------------------------------------------------------------------------------------------

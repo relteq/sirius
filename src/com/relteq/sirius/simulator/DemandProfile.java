@@ -82,40 +82,29 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(demand_nominal.isEmpty())
-			return true;
+			return;
 		
-		if(myLinkOrigin==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in demand profile: " + getLinkIdOrigin());
-			return false;
-		}
+		if(myLinkOrigin==null)
+			SiriusErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkIdOrigin());
-			return false;	
-		}
+		if( dtinseconds<=0 )
+			SiriusErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkIdOrigin());
-			return false;	
-		}
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
 		
 		// check dimensions
-		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Incorrect dimensions for demand on link " + getLinkIdOrigin());
-			return false;
-		}
+		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes())
+			SiriusErrorLog.addError("Incorrect dimensions for demand for link id=" + getLinkIdOrigin());
 		
 		// check non-negative
-		if(demand_nominal.hasNaN()){
-			SiriusErrorLog.addErrorMessage("Illegal values in demand profile for link " + getLinkIdOrigin());
-			return false;
-		}
+		if(demand_nominal.hasNaN())
+			SiriusErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
 
-		return true;
 	}
 
 	protected void reset() {
@@ -135,6 +124,8 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	}
 	
 	protected void update(boolean forcesample) {
+		if(myLinkOrigin==null)
+			return;
 		if(!forcesample)
 			if(isdone || demand_nominal.isEmpty())
 				return;

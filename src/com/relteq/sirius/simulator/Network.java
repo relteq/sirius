@@ -40,30 +40,20 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 		
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 
-		if(myScenario.getSimDtInSeconds()<=0){
-			SiriusErrorLog.addErrorMessage("Negative simulation time (" + myScenario.getSimDtInSeconds() +").");
-			return false;
-		}
+		if(myScenario.getSimDtInSeconds()<=0)
+			SiriusErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
 		
 		// node list
 		if(getNodeList()!=null)
 			for (com.relteq.sirius.jaxb.Node node : getNodeList().getNode())
-				if( !((Node)node).validate() ){
-					SiriusErrorLog.addErrorMessage("Node validation failure, node " + node.getId());
-					return false;
-				}
+				((Node)node).validate();
 
 		// link list
 		if(getLinkList()!=null)
 			for (com.relteq.sirius.jaxb.Link link : getLinkList().getLink())
-				if( !((Link)link).validate() ){
-					SiriusErrorLog.addErrorMessage("Link validation failure, link " + link.getId());
-					return false;
-				}
-
-		return true;
+				((Link)link).validate();
 	}
 
 	protected void reset(Scenario.ModeType simulationMode) throws SiriusException {
@@ -162,14 +152,18 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 //			return null;
 //		return getSensorList().getSensor();
 //	}
-//
-//	/** Get the list of signals in this network.
-//	 * @return List of all signals. 
-//	 */
-//	public List<com.relteq.sirius.jaxb.Signal> getListOfSignals() {
-//		if(getSignalList()==null)
-//			return null;
-//		return getSignalList().getSignal();
-//	}
-	
+
+	/**
+	 * Retrieves a list of signals referencing nodes from this network
+	 * @return a list of signals or null if the scenario's signal list is null
+	 */
+	public List<com.relteq.sirius.jaxb.Signal> getListOfSignals() {
+		if (null == myScenario.getSignalList()) return null;
+		List<com.relteq.sirius.jaxb.Signal> sigl = new java.util.ArrayList<com.relteq.sirius.jaxb.Signal>();
+		for (com.relteq.sirius.jaxb.Signal sig : myScenario.getSignalList().getSignal()) {
+			if (null != getNodeWithId(sig.getNodeId()))
+				sigl.add(sig);
+		}
+		return sigl;
+	}
 }

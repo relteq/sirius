@@ -8,6 +8,7 @@ package com.relteq.sirius.simulator;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.xml.bind.JAXBContext;
@@ -115,8 +116,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(getInitialDensitySet()!=null)
 			((InitialDensitySet) getInitialDensitySet()).populate(this);
 		
-		// initialize controllers and events
+		// populate controllers 
 		controllerset.populate(this);
+
+		// populate events 
 		eventset.populate(this);
 		
 	}
@@ -293,75 +296,49 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 	
 	/** @y.exclude */
-	public boolean validate() {
-		
+	public void validate() {
+				
 		// validate network
 		if( getNetworkList()!=null)
 			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-				if(!((Network)network).validate()){
-					SiriusErrorLog.addErrorMessage("Network validation failure.");
-					return false;
-				}
+				((Network)network).validate();
 
 		// sensor list
 		if(getSensorList()!=null)
 			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				if( !((Sensor) sensor).validate() ){
-					SiriusErrorLog.addErrorMessage("Sensor validation failure, sensor " + sensor.getId());
-					return false;
-				}
+				((Sensor) sensor).validate();
 
 		// signal list
 		if(getSignalList()!=null)
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
-				if( !((Signal) signal).validate() ){
-					SiriusErrorLog.addErrorMessage("Signal validation failure, signal " + signal.getId());
-					return false;
-				}
+				((Signal) signal).validate();
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
 //		if(getInitialDensityProfile()!=null)
-//			if(!((_InitialDensityProfile) getInitialDensityProfile()).validate()){
-//				SiriusErrorLog.addErrorMessage("InitialDensityProfile validation failure.");
-//				return false;
-//			}
+//			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacityProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
-				if(!((CapacityProfile)capacityProfile).validate()){
-					SiriusErrorLog.addErrorMessage("DownstreamBoundaryCapacitySet validation failure.");
-					return false;
-				}
+				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
 		if(getDemandProfileSet()!=null)
-			if(!((DemandProfileSet)getDemandProfileSet()).validate()){
-				SiriusErrorLog.addErrorMessage("DemandProfileSet validation failure.");
-				return false;
-			}
+			((DemandProfileSet)getDemandProfileSet()).validate();
 
 		// validate split ratio profiles
 		if(getSplitRatioProfileSet()!=null)
-			if(!((SplitRatioProfileSet)getSplitRatioProfileSet()).validate()){
-				SiriusErrorLog.addErrorMessage("SplitRatioProfileSet validation failure.");
-				return false;
-			}
-
+			((SplitRatioProfileSet)getSplitRatioProfileSet()).validate();
+		
 		// validate fundamental diagram profiles
 		if(getFundamentalDiagramProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				if(!((FundamentalDiagramProfile)fd).validate()){
-					SiriusErrorLog.addErrorMessage("FundamentalDiagramProfileSet validation failure.");
-					return false;
-				}
-
+				((FundamentalDiagramProfile)fd).validate();
+		
 		// validate controllers
-		if(!controllerset.validate())
-			return false;
+		controllerset.validate();
 
-		return true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -375,14 +352,17 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
-	 * @param outputfileprefix 	String prefix for all output files.
+	 * @param timestart
+	 * @param timeend
+	 * @param outdt
 	 * @param numRepetitions 	The integer number of simulations to run.
+	 * @param owr_props the output writer properties
 	 * @throws SiriusException 
 	 */
-	public void run(String outputfileprefix,Double timestart,Double timeend,double outdt,int numRepetitions,OutputWriter_Base.Type outputtype) throws SiriusException{
-		RunParameters param = new RunParameters(outputfileprefix,timestart,timeend,outdt,simdtinseconds);
+	public void run(Double timestart,Double timeend,double outdt,int numRepetitions,Properties owr_props) throws SiriusException{
+		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
 		numEnsemble = 1;
-		run_internal(param,numRepetitions,true,false,outputtype);
+		run_internal(param,numRepetitions,true,false,owr_props);
 	}
 
 	/** Run the scenario once, return the state trajectory.
@@ -391,7 +371,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @throws SiriusException 
 	 */
 	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
-		RunParameters param = new RunParameters(null,timestart,timeend,outdt,simdtinseconds);
+		RunParameters param = new RunParameters(timestart,timeend,outdt,simdtinseconds);
 		numEnsemble = 1;
 		return run_internal(param,1,false,true,null);
 	}
@@ -727,7 +707,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return false;
 		
 		// validate
-		if(!C.validate())
+		SiriusErrorLog.clearErrorMessage();
+		C.validate();
+		SiriusErrorLog.print();
+		if(SiriusErrorLog.haserror())
 			return false;
 		
 		// add
@@ -886,8 +869,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////	
-	
-	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,OutputWriter_Base.Type outputtype) throws SiriusException{
+
+	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,Properties owr_props) throws SiriusException{
 			
 		if(returnstate && numRepetitions>1)
 			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
@@ -902,50 +885,27 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
-
-			OutputWriter_Base outputwriter  = null;
-			
-			// open output files
-	        if( writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0 ){
-	        	switch(outputtype){
-	        	case xml:
-	        		outputwriter = new OutputWriter(this);
-	        		break;
-	        	case tabdelim:
-	        		outputwriter = new OutputWriter_simple(this);
-	        		break;
-	        	}
-				try {
-					outputwriter.open(param.outputfileprefix,String.format("%d",i));
-				} catch (FileNotFoundException e) {
-					throw new SiriusException("Unable to open output file.");
-				}
-	        }
-	        
-	        // allocate state
-	        if(returnstate)
-	        	state = new SiriusStateTrajectory(this,param.outsteps);
-	
-			// reset the simulation
-			if(!reset(param.simulationMode))
-				throw new SiriusException("Reset failed.");
-						
-			// advance to end of simulation
-			while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
+			OutputWriterIF outputwriter = null;
+			if (writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props);
+				outputwriter.open(i);
 			}
-			
-            // close output files
-	        if(writefiles){
-	        	if(param.simulationMode.compareTo(Scenario.ModeType.normal)==0)
-		        	outputwriter.close();
-				// or save scenario (in warmup mode)
-		        if(param.simulationMode.compareTo(Scenario.ModeType.warmupFromIC)==0 || param.simulationMode.compareTo(Scenario.ModeType.warmupFromZero)==0 ){
-		    		//	    		String outfile = "C:\\Users\\gomes\\workspace\\auroralite\\data\\config\\out.xml";
-		    		//	    		Utils.save(scenario, outfile);
-		        }
-	        }
-	        
-		}		
+			try{
+				// allocate state
+				if(returnstate)
+					state = new SiriusStateTrajectory(this,param.outsteps);
+
+				// reset the simulation
+				if(!reset(param.simulationMode))
+					throw new SiriusException("Reset failed.");
+
+				// advance to end of simulation
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
+				}
+			} finally {
+				if (null != outputwriter) outputwriter.close();
+			}
+		}
         scenariolocked = false;
 
 		return state;
@@ -964,7 +924,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws 
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriter_Base outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -991,7 +951,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriter_Base outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
@@ -999,14 +959,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 	
 	private class RunParameters{
-		public String outputfileprefix;
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
 		public int outsteps;				// [-] number of simulation steps per output step
 		public Scenario.ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
-		public RunParameters(String outputfileprefix,double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
+		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
 			
 			// check timestart < timeend
 			if(tstart>=tend)
@@ -1016,7 +975,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds))
 				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
-			this.outputfileprefix = outputfileprefix;
 			this.timestart = tstart;
 			this.timeend = tend;
 	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
