@@ -33,7 +33,29 @@
       <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
    </DemandProfileSet>
    <ControllerSet>
-      <controller dt="5" type="IRM_alinea" id="-1" enabled="true">		
+      <controller dt="5" type="IRM_time_of_day" id="-1" enabled="true">		         
+         <targetElements>
+            <scenarioElement id="-6" type="link"/>
+         </targetElements>         		 
+		<ActivationIntervals>			
+			<interval start_time="10" end_time="120" />
+		</ActivationIntervals>		
+		<table>
+			<column_names>
+				<column_name>StartTime</column_name>
+				<column_name>MeteringRates</column_name>
+			</column_names>
+			<row>
+				<column>10</column>
+				<column>1200</column>
+			</row>
+			<row>
+				<column>60</column>
+				<column>100</column>
+			</row>						
+		</table>
+      </controller>
+	  <controller dt="5" type="IRM_alinea" id="-2" enabled="true">		
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>
@@ -46,19 +68,9 @@
 		<ActivationIntervals>			
 			<interval start_time="370" end_time="400" />
 			<interval start_time="120" end_time="240" />
-		</ActivationIntervals>
-		<table>
-			<column_names>
-				<column_name>Test1</column_name>
-				<column_name>Test2</column_name>
-			</column_names>
-			<row>
-				<column>A1</column>
-				<column>A2</column>
-			</row>			
-		</table>		
+		</ActivationIntervals>	
       </controller>
-	  <controller dt="5" type="IRM_alinea" id="-2" enabled="true">
+	  <controller dt="5" type="IRM_alinea" id="-3" enabled="true">
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>
@@ -72,7 +84,32 @@
 			<interval start_time="240" end_time="360" />					
 		</ActivationIntervals>
       </controller>
-	  <controller dt="5" type="IRM_alinea" id="-2" enabled="true">
+	  <controller dt="5" type="IRM_traffic_responsive" id="-4" enabled="true">		         
+         <targetElements>
+            <scenarioElement id="-6" type="link"/>
+         </targetElements>
+         <feedbackElements>
+            <scenarioElement id="-2" type="link" usage="mainlinelink"/>
+         </feedbackElements>        		 
+		<ActivationIntervals>			
+			<interval start_time="410" end_time="3500" />
+		</ActivationIntervals>		
+		<table>
+			<column_names>
+				<column_name>MeteringRates</column_name>
+				<column_name>OccupancyThresholds</column_name>
+			</column_names>
+			<row>
+				<column>1200</column>
+				<column>30</column>
+			</row>
+			<row>
+				<column>1000</column>
+				<column>60</column>
+			</row>						
+		</table>
+      </controller>
+	  <controller dt="5" type="IRM_alinea" id="-5" enabled="true">
          <parameters>
             <parameter name="gain" value="50"/>
          </parameters>

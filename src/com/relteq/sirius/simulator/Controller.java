@@ -161,6 +161,31 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 //			return node.registerSplitRatioController(this,index);
 //	}
 	
+	
+	// Returns the start and end times of the controller.
+	
+	
+	protected double myStartTime(){
+		double starttime=myScenario.getTimeStart();
+		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+			if (ActTimesIndex == 0)
+				starttime=activationTimes.get(ActTimesIndex).getBegintime();
+			else
+				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
+		
+		return starttime;
+	}
+	
+	protected double myEndTime(){
+		double endtime=myScenario.getTimeEnd();
+		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+			if (ActTimesIndex == 0)
+				endtime=activationTimes.get(ActTimesIndex).getEndtime();
+			else
+				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
+		
+		return endtime;
+	}
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////

@@ -53,6 +53,14 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 		return null;
 	}
 
+	/** Default implementation of {@link InterfaceSensor#getOccupancy()} 
+	 * @return <code>Double.NaN</code>
+	 * */
+	@Override
+	public double getOccupancy(int ensemble) {
+		return Double.NaN;
+	}
+	
 	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVPM()} 
 	 * @return <code>Double.NaN</code>
 	 * */

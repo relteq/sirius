@@ -38,6 +38,15 @@ public interface InterfaceSensor {
 	 */
 	public double getTotalDensityInVeh(int ensemble);
 	
+	/** Measured total occupancy in a number between 0 and 100. 
+	 * 
+	 * <p> Returns the occupancy  measured by the sensor.	 * 
+	 * 
+	 * @return A double with the total occupancy, with values between 0 and 100.	 
+	 */
+	public double getOccupancy(int ensemble);
+	
+	
 	/** Measured flow per vehicle type in veh/hr. 
 	 * 
 	 * <p> The output array contains measured flows.
@@ -45,7 +54,8 @@ public interface InterfaceSensor {
 	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
 	 * 
 	 * @return Array of flows.
-	 */
+	 */	
+	
 	public Double[] getFlowInVPH(int ensemble);
 	
 	/** Measured total flow in veh/hr. 

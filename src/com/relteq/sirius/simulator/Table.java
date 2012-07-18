@@ -29,6 +29,11 @@ public class Table {
 		return Rows.size();
 	}
 	
+	/** Returns the number of columns in the table*/ 
+	public int getNoColumns(){		
+		return 	ColumnNames.size();
+	}
+	
 	/** Returns the column number corresponding to the given column_name*/ 
 	public int getColumnNo(String cname){		
 		return 	ColumnNames.indexOf((Object) cname);

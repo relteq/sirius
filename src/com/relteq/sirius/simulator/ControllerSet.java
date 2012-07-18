@@ -153,12 +153,12 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 				if (activecmd.getOperation().equals(OperationType.Activate)){
 					controllers.get(activecmd.getIndex()).register();
 					controllers.get(activecmd.getIndex()).ison=true;
+					controllers.get(activecmd.getIndex()).reset();
 					activeControllerIndex.add((Integer) activecmd.getIndex()); 
 				}
 				else{
 					controllers.get(activecmd.getIndex()).deregister();
-					controllers.get(activecmd.getIndex()).ison=false;
-					controllers.get(activecmd.getIndex()).reset();
+					controllers.get(activecmd.getIndex()).ison=false;					
 					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex())); 
 				}
 			}

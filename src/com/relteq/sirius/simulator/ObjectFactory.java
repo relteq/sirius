@@ -368,21 +368,45 @@ public final class ObjectFactory {
 		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
 	}
 	
-	/** [NOT IMPLEMENTED] Time of day isolated ramp metering.
+	/** TOD isolated ramp metering.
 	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_IRM_Time_of_Day(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario);
-	}
-
-	/** [NOT IMPLEMENTED] Traffic responsive isolated ramp metering.
+	 * <p> Generates a controller executing the TOD algorithm. A queue override algorithm will be 
+	 * employed if the <code>queuesensor</code> is non-null. The time of day profile is provided in a table.
+	 * Each row of the table contains a TOD entry, denoting the start time and the metering rates. This rate applies 
+	 * until the next entry becomes active/ the simulation ends. 
 	 * 
-	 * @return			_Controller object
+	 * @param myScenario		The scenario that contains the controller and its referenced links.
+	 * @param onramplink		The onramp link being controlled.
+	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+	 * @param todtable			The time of day profile is provided in a table. It contains two columns - StartTime and MeteringRates. 
+	 * @return					_Controller object
 	 */
-	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario);
+	public static Controller createController_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
+		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
 	}
+	
+	/** Traffic responsive isolated ramp metering.
+	 * 
+	 * <p> Generates a controller executing the Traffic responsive algorithm. Feedback for the controller is taken
+	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
+	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
+	 * employed if the <code>queuesensor</code> is non-null. trtable specifies the occupancy, flow and speed thresholds.
+	 * Unused threshold types can be omitted from the table definition, or set to 0, for all entries. 
+	 * At least one of these thresholds should be available.  
+	 * 
+	 * @param myScenario		The scenario that contains the controller and its referenced links.
+	 * @param onramplink		The onramp link being controlled.
+	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
+	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
+	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+	 * @param trtable			The traffic responsive levels are provided in a table. It can contain four columns - MeteringRates, OccupancyThresholds, SpeedThresholds, FlowThresholds. 
+	 * @return					_Controller object
+	 */
+	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
+		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
+	}
+	
+	
 
 	/** [NOT IMPLEMENTED] Actuated signal control.
 	 * 
