@@ -81,8 +81,8 @@ public class Analyser {
 										Map<String, String> attrs = get_attributes("");
 										Vector<Double> f = attrs.containsKey("f") ? unformat(attrs.get("f"), ":") : null;
 										Vector<Double> d = attrs.containsKey("d") ? unformat(attrs.get("d"), ":") : null;
-										if (null == f && null == d) SiriusErrorLog.addErrorMessage("d and f are undefined");
-										else if (null != f && null != d && f.size() != d.size()) SiriusErrorLog.addErrorMessage("size(f) != size(d)");
+										if (null == f && null == d) SiriusErrorLog.addError("d and f are undefined");
+										else if (null != f && null != d && f.size() != d.size()) SiriusErrorLog.addError("size(f) != size(d)");
 										else {
 											Double v = attrs.containsKey("v") ? Double.valueOf(attrs.get("v")) : null;
 											Double fv = attrs.containsKey("fv") ? Double.valueOf(attrs.get("fv")) : null;
@@ -95,7 +95,7 @@ public class Analyser {
 													double factor = cum_f / cum_d;
 													double EPSILON = .01 * cum_f;
 													for (int iii = 0; iii < f.size(); ++iii)
-														if (Math.abs(factor * d.get(iii) - f.get(iii)) > EPSILON) SiriusErrorLog.addErrorMessage("speeds differ");
+														if (Math.abs(factor * d.get(iii) - f.get(iii)) > EPSILON) SiriusErrorLog.addError("speeds differ");
 												}
 											}
 											Link link = null == scenario ? null : scenario.getLinkWithId(xmlsr.getAttributeValue(null, "id"));

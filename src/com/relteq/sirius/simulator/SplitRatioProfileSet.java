@@ -27,19 +27,14 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 			((SplitRatioProfile) sr).populate(myScenario);
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 
 		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Demand profile list of vehicle types does not match that of settings.");
-			return false;
-		}
+		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
+			SiriusErrorLog.addError("Vehicle types list in demand profile id=" +getId()+ " does not match that of settings.");
 		
 		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
-			if(!((SplitRatioProfile)sr).validate())
-				return false;
-		
-		return true;
+			((SplitRatioProfile)sr).validate();		
 	}
 
 	protected void update() {

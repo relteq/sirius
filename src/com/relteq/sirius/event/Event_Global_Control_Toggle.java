@@ -34,10 +34,8 @@ public class Event_Global_Control_Toggle extends Event {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
-		return true;
+	public void validate() {
+		super.validate();
 	}
 
 	@Override
