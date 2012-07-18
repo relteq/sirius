@@ -166,12 +166,12 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			switch(myScenario.uncertaintyModel){
 			case uniform:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*myScenario.random.nextDouble()-1);
+					demandvalue[j] += SiriusMath.sampleZeroMeanUniform(std_dev_apply[j]);
 				break;
 	
 			case gaussian:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += std_dev_apply[j]*myScenario.random.nextGaussian();
+					demandvalue[j] += SiriusMath.sampleZeroMeanGaussian(std_dev_apply[j]);
 				break;
 			}
 		}

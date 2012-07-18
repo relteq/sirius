@@ -5,8 +5,6 @@
 
 package com.relteq.sirius.simulator;
 
-import java.util.Random;
-
 final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
 
 	protected Link myLink;
@@ -290,14 +288,13 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		
 		// perturb it
 		if(!std_dev_capacity.isNaN()){
-			Random random = myLink.myNetwork.myScenario.random;
 			switch(myLink.myNetwork.myScenario.uncertaintyModel){
 			case uniform:
-				samp._capacity += std_dev_capacity*Math.sqrt(3)*(2*random.nextDouble()-1);
+				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;
 
 			case gaussian:
-				samp._capacity += std_dev_capacity*random.nextGaussian();
+				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;
 			}			
 		}

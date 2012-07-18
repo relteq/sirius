@@ -292,6 +292,7 @@ public final class ObjectFactory {
         S.uncertaintyModel = Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
         S.numVehicleTypes = 1;
+        S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
         
         if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
