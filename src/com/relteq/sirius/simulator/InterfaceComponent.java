@@ -26,7 +26,7 @@ public interface InterfaceComponent {
 	 * 
 	 * @return <code>true</code> if the data is valid, <code>false</code> otherwise. 
 	 */
-	public boolean validate();
+	public void validate();
 
 	/** Prepare the component for simulation.
 	 * 

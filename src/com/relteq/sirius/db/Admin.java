@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.sql.*;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
+
 /**
  * Administers the Sirius Database
  */
@@ -20,8 +22,19 @@ public class Admin {
 	 * @throws IOException
 	 */
 	public static void init() throws SQLException, IOException {
+		init(Parameters.fromEnvironment());
+	}
+
+	/**
+	 * Initializes the database
+	 * @param params the database connection parameters
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public static void init(Parameters params) throws SQLException, IOException {
 		SQLExec exec = new SQLExec();
-		Parameters params = Parameters.get();
+		drop(params);
+		if (params.getDriver().equals("derby")) params.setCreate(true);
 		exec.setSrc("sql" + File.separator + //
 				params.getDriver() + File.separator + "sirius-db-schema.sql");
 		exec.setUrl(params.getUrl());
@@ -92,4 +105,16 @@ public class Admin {
 		}
 	}
 
+	/**
+	 * Drops the database
+	 * @param params DB connection parameters
+	 */
+	public static void drop(Parameters params) {
+		if (params.getDriver().equals("derby"))
+			try {
+				org.apache.commons.io.FileUtils.deleteDirectory(new File(params.getDBName()));
+			} catch (IOException exc) {
+				SiriusErrorLog.addError(exc.getMessage());
+			}
+	}
 }

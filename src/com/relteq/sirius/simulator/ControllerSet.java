@@ -74,7 +74,7 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		
 		// For controllers that do not have activation times, validation does the initial registration,		
 		// This is not added to the list of active controllers, because it is always active, thought we may need to change that.
@@ -87,6 +87,7 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 				}
 					
 			
+			controller.validate();
 			if(!controller.validate()){
 				SiriusErrorLog.addErrorMessage("Controller validation failure, controller " + controller.getId());
 				return false;

@@ -2,7 +2,6 @@ package com.relteq.sirius.simulator;
 
 import java.util.List;
 
-
 /** Storage for a scenario state trajectory. 
  * <p>
 * @author Gabriel Gomes

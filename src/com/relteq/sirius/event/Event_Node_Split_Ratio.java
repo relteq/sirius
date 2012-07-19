@@ -83,43 +83,39 @@ public class Event_Node_Split_Ratio extends Event {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
 		
-		if(targets.size()!=1){
-			SiriusErrorLog.addErrorMessage("This event does not work for multiple targets.");
-			return false;
-		}
+		super.validate();
+		
+		if(targets.size()!=1)
+			SiriusErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
 		
 		// check each target is valid
-		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0){
-			SiriusErrorLog.addErrorMessage("wrong target type.");
-			return false;
-		}
+		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
+			SiriusErrorLog.addError("Wrong target type for event id="+getId()+".");
 		
-		if(myNode==null){
-			SiriusErrorLog.addErrorMessage("wrong node id.");
-			return false;
-		}
+		if(myNode==null)
+			SiriusErrorLog.addWarning("Invalid node id for event id="+getId()+".");
 		
 		// check split ratio matrix
 		if(!resetToNominal){
 			if(splitrow==null)
-				return false;
-			if(splitrow.size()!=myNode.getnOut())
-				return false;
-			if(inputindex<0 || inputindex>=myNode.getnIn())
-				return false;
+				SiriusErrorLog.addWarning("No split ratio rows for event id="+getId()+".");
+			if(myNode!=null){
+				if(splitrow.size()!=myNode.getnOut())
+					SiriusErrorLog.addWarning("Number of rows does not match number of outgoing links for event id="+getId()+".");
+				if(inputindex<0 || inputindex>=myNode.getnIn())
+					SiriusErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
+			}
 			if(vehicletypeindex<0 || vehicletypeindex>=myScenario.getNumVehicleTypes())
-				return false;
+				SiriusErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
 		}
-		
-		return true;
 	}
 	
 	@Override
 	public void activate() throws SiriusException{
+		if(myNode==null)
+			return;
 		if(resetToNominal)
 			revertNodeEventSplitRatio(myNode);
 		else

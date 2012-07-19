@@ -46,19 +46,15 @@ public class Event_Link_Lanes extends Event {
 	}
 
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
+		
+		super.validate();
 		
 		// check each target is valid
 		for(ScenarioElement s : targets){
-			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
-				SiriusErrorLog.addErrorMessage("wrong target type.");
-				return false;
-			}
+			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
+				SiriusErrorLog.addError("wrong target type for event id=" +getId() +".");
 		}
-				
-		return true;
 	}
 
 	@Override

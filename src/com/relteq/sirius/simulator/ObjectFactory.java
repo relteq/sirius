@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -216,7 +217,7 @@ public final class ObjectFactory {
 	 * </table> 
 	 * 
 	 * @param configfilename		The name of the XML configuration file.
-	 * @return scenario				_Scenario object.
+	 * @return scenario				Scenario object.
 	 */
 	public static Scenario createAndLoadScenario(String configfilename) {
 
@@ -228,20 +229,20 @@ public final class ObjectFactory {
         	context = JAXBContext.newInstance("com.relteq.sirius.jaxb");
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
-        	SiriusErrorLog.addErrorMessage("Failed to create context for JAXB unmarshaller.");
-        	SiriusErrorLog.setErrorHeader("Load error.");
+        	SiriusErrorLog.addError("Failed to create context for JAXB unmarshaller.");
+            SiriusErrorLog.print();
             return null;
         }
         
         // schema assignment ..........................................................
         try{
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
         	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
         } catch(SAXException e){
-        	SiriusErrorLog.addErrorMessage("Schema not found.");
-        	SiriusErrorLog.setErrorHeader("Load error.");
+        	SiriusErrorLog.addError("Schema not found.");
+            SiriusErrorLog.print();
         	return null;
         }
         
@@ -255,26 +256,35 @@ public final class ObjectFactory {
         	setObjectFactory(u, new JaxbObjectFactory());
         	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
-        	System.out.println(je.getMessage());
-        	SiriusErrorLog.setErrorHeader("Load error.");
-        	SiriusErrorLog.addErrorMessage("JAXB threw an exception when loading the configuration file.");
+        	SiriusErrorLog.addError("JAXB threw an exception when loading the configuration file.");
         	if(je.getLinkedException()!=null)
-        		SiriusErrorLog.addErrorMessage(je.getLinkedException().getMessage());
+        		SiriusErrorLog.addError(je.getLinkedException().getMessage());
+            SiriusErrorLog.print();
             return null;
         } catch (FileNotFoundException e) {
-        	SiriusErrorLog.setErrorHeader("Load error.");
-        	SiriusErrorLog.addErrorMessage("Configuration file not found.");
+        	SiriusErrorLog.addError("Configuration file not found.");
+            SiriusErrorLog.print();
         	return null;
 		}
         
         if(S==null){
-        	SiriusErrorLog.setErrorHeader("Unknown load error.");
+        	SiriusErrorLog.addError("Unknown load error.");
+            SiriusErrorLog.print();
         	return null;
 		}
 
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
-        
+
+		return process(S);
+	}
+
+	/**
+	 * Updates a scenario loaded by JAXB
+	 * @param S a scenario
+	 * @return the updated scenario or null if an error occurred
+	 */
+	public static Scenario process(Scenario S) {
         // copy data to static variables ..............................................
         S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
@@ -282,6 +292,7 @@ public final class ObjectFactory {
         S.uncertaintyModel = Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
         S.numVehicleTypes = 1;
+        S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
         
         if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
@@ -293,8 +304,8 @@ public final class ObjectFactory {
         try{
         	S.populate();
         } catch (SiriusException e){
-        	SiriusErrorLog.setErrorHeader("Scenario population error.");
-        	SiriusErrorLog.addErrorMessage(e.getMessage());
+        	SiriusErrorLog.addError(e.getMessage());
+            SiriusErrorLog.print();
         	return null;
         }
         
@@ -305,18 +316,22 @@ public final class ObjectFactory {
         		registersuccess &= ((Signal)signal).register();
         
         if(!registersuccess){
-        	SiriusErrorLog.addErrorMessage("Signal registration failure.");
+        	SiriusErrorLog.addError("Controller registration failure.");
+            SiriusErrorLog.print();
         	return null;
         }
 		
 		// validate scenario ......................................
-		if(!S.validate()){
-			SiriusErrorLog.setErrorHeader("Validation error.");
-			return null;
-		}
-		
-        return S;
-		
+        SiriusErrorLog.clearErrorMessage();
+        S.validate();
+        
+        // print errors and warnings
+        SiriusErrorLog.print();
+        
+        if(SiriusErrorLog.haserror())
+        	return null;
+        else
+        	return S;	
 	}
 
 	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
@@ -553,7 +568,6 @@ public final class ObjectFactory {
 	 * location on a link. 
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return					_Sensor object
 	 */
@@ -568,7 +582,6 @@ public final class ObjectFactory {
 	 * position of the sensor.
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
 	 * @return			XXX
 	 */
@@ -679,7 +692,7 @@ public final class ObjectFactory {
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds
 	        if( SiriusMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	SiriusErrorLog.addErrorMessage("Warning: Network dt given in hours. Changing to seconds.");
+	        	SiriusErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
 				dt *= 3600;
 	        }
 			tengcd = SiriusMath.gcd( SiriusMath.round(dt*10.0) , tengcd );

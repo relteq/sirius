@@ -106,7 +106,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
    	 */
 	protected boolean registerFlowController(Link link,int index){
 		if(link==null)
-			return false;
+			return true;
 		else
 			return link.registerFlowController(this,index);
 	}
@@ -146,7 +146,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
    	 */
 	protected boolean registerSpeedController(Link link,int index){
 		if(link==null)
-			return false;
+			return true;
 		else
 			return link.registerSpeedController(this,index);
 	}
@@ -156,7 +156,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 //   	 */
 //	protected boolean registerSplitRatioController(_Node node,int index){
 //		if(node==null)
-//			return false;
+//			return true;
 //		else
 //			return node.registerSplitRatioController(this,index);
 //	}
@@ -237,22 +237,21 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
-	public boolean validate() {
+	public void validate() {
 		
 		// check that type was read correctly
-		if(myType==null){
-			SiriusErrorLog.addErrorMessage("Controller has the wrong type.");
-			return false;
-		}
+		if(myType==null)
+			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
 		
 		// check that the target is valid
-		if(targets==null){
-			SiriusErrorLog.addErrorMessage("Target is invalid or has multiple controllers.");
-			return false;
-		}
+		if(targets==null)
+			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
+<<<<<<< .mine		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
+=======		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+>>>>>>> .theirs			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
+
 			SiriusErrorLog.addErrorMessage("Controller sample time must be integer multiple of simulation time step.");
 			return false;
 		}
