@@ -1,14 +1,11 @@
 package com.relteq.sirius.control;
 
-import java.util.Arrays;
-
 import com.relteq.sirius.simulator.Controller;
 import com.relteq.sirius.simulator.Link;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Sensor;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.Table;
-
 
 public class Controller_IRM_Time_of_Day extends Controller {
 	
@@ -45,6 +42,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		
 		this.extractTable();
 	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
@@ -106,32 +104,27 @@ public class Controller_IRM_Time_of_Day extends Controller {
 			istablevalid=false;
 		}
 	
-	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
 
+		super.validate();
+		
 		// must have exactly one target
 		if(targets.size()!=1)
-			return false;
-
+			SiriusErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
+		
 		// bad queue sensor id
 		if(hasqueuesensor && queuesensor==null)
-			return false;		
+			SiriusErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
 		
 		// Target link id not found, or number of targets not 1.
 		if(onramplink==null)
-			return false;
+			SiriusErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
 			
 		// has valid tables	
-		
-		if(!istablevalid){
-			SiriusErrorLog.addErrorMessage("Controller has an invalid TOD table.");			
-		}
-		return istablevalid;
+		if(!istablevalid)
+			SiriusErrorLog.addError("Controller has an invalid TOD table.");
 	}
-	
 	
 	@Override
 	public void reset() {
@@ -152,10 +145,10 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	public boolean register() {
 		return registerFlowController(onramplink,0);
 	}
-	
+
+	@Override
 	public boolean deregister() {
 		return deregisterFlowController(onramplink);
 	}
 	
-
 }

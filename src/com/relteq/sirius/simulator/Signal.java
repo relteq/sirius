@@ -88,7 +88,7 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		myPhaseController = new PhaseController(this);
 		
 		// nema2phase
-		
+
 		
 	}
 
@@ -271,88 +271,6 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// internal class
-	/////////////////////////////////////////////////////////////////////
-	
-	// Each signal communicates with links via a PhaseController.
-	// Phase controller does two things: a) it registers the signal control,
-	// and b) it implements the phase indication. 
-	class PhaseController extends Controller {
-
-		private HashMap<Link,Integer> target2index;
-		private HashMap<Signal.NEMA,Integer[]> nema2indices;
-
-		public PhaseController(Signal mySignal){
-			
-			int i,j;
-			
-			// populate target2index
-			int index = 0;
-			target2index = new HashMap<Link,Integer>();
-			for(i=0;i<mySignal.phase.length;i++)
-				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
-					target2index.put(mySignal.phase[i].targetlinks[j],index++);
-			
-			// populate nema2indices
-			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
-			for(i=0;i<mySignal.phase.length;i++){
-				Integer [] indices = new Integer[mySignal.phase[i].targetlinks.length];
-				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
-					indices[j] = target2index.get(mySignal.phase[i].targetlinks[j]);
-				nema2indices.put(mySignal.phase[i].myNEMA,indices);
-			}
-			
-			control_maxflow = new Double[target2index.size()];
-		}
-		
-		@Override public void populate(Object jaxbobject) {}
-		@Override public void update() throws SiriusException {}
-
-		@Override
-		public boolean register() {
-	        for(Link link : target2index.keySet())
-	        	if(!link.registerFlowController(this,target2index.get(link)))
-	        		return false;
-			return true;
-		}
-		
-		@Override
-		public boolean deregister() {
-	        for(Link link : target2index.keySet())
-	        	if(!link.deregisterFlowController(this))
-	        		return false;
-			return true;
-		}
-		
-		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
-			
-			Integer [] indices = nema2indices.get(nema);
-			if(indices==null)
-				return;
-			
-			double maxflow;
-			switch(color){
-				case GREEN:
-				case YELLOW:
-					maxflow = Double.POSITIVE_INFINITY;
-					break;
-				case RED:
-				case DARK:
-					maxflow = 0d;
-					break;
-				default:
-					maxflow = 0d;
-					break;			
-			}
-			
-			for(Integer index:indices)
-				control_maxflow[index] = maxflow;
-
-		}
-		
-	}
-	
-	/////////////////////////////////////////////////////////////////////
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 	
@@ -380,14 +298,7 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 			}
 		}
 	}
-	
-//	public String getMyNetworkId() {
-//		if(myNetwork!=null)
-//			return myNetwork.getId();
-//		else
-//			return null;
-//	}
-	
+		
 	/////////////////////////////////////////////////////////////////////
 	// static NEMA methods
 	/////////////////////////////////////////////////////////////////////
@@ -545,7 +456,86 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		}
 	}
 	
-	
+	// Each signal communicates with links via a PhaseController.
+	// Phase controller does two things: a) it registers the signal control,
+	// and b) it implements the phase indication. 
+	protected class PhaseController extends Controller {
+
+		private HashMap<Link,Integer> target2index;
+		private HashMap<Signal.NEMA,Integer[]> nema2indices;
+
+		public PhaseController(Signal mySignal){
+			
+			int i,j;
+			
+			// populate target2index
+			int index = 0;
+			target2index = new HashMap<Link,Integer>();
+			for(i=0;i<mySignal.phase.length;i++)
+				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
+					target2index.put(mySignal.phase[i].targetlinks[j],index++);
+			
+			// populate nema2indices
+			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
+			for(i=0;i<mySignal.phase.length;i++){
+				Integer [] indices = new Integer[mySignal.phase[i].targetlinks.length];
+				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
+					indices[j] = target2index.get(mySignal.phase[i].targetlinks[j]);
+				nema2indices.put(mySignal.phase[i].myNEMA,indices);
+			}
+			
+			control_maxflow = new Double[target2index.size()];
+		}
+		
+		@Override 
+		public void populate(Object jaxbobject) {}
+		
+		@Override 
+		public void update() throws SiriusException {}
+
+		@Override
+		public boolean register() {
+	        for(Link link : target2index.keySet())
+	        	if(!link.registerFlowController(this,target2index.get(link)))
+	        		return false;
+			return true;
+		}
+		
+		@Override
+		public boolean deregister() {
+	        for(Link link : target2index.keySet())
+	        	if(!link.deregisterFlowController(this))
+	        		return false;
+			return true;
+		}
+		
+		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
+			
+			Integer [] indices = nema2indices.get(nema);
+			if(indices==null)
+				return;
+			
+			double maxflow;
+			switch(color){
+				case GREEN:
+				case YELLOW:
+					maxflow = Double.POSITIVE_INFINITY;
+					break;
+				case RED:
+				case DARK:
+					maxflow = 0d;
+					break;
+				default:
+					maxflow = 0d;
+					break;			
+			}
+			
+			for(Integer index:indices)
+				control_maxflow[index] = maxflow;
+
+		}
+		
+	}
 }
 
 

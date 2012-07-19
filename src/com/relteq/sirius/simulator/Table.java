@@ -4,13 +4,11 @@ import java.util.HashSet;
 
 public class Table {
 	
-	
 	/** List of Column names*/	
 	protected ArrayList<String> ColumnNames;
 	
 	/** List of Rows. Each row contains a list of strings denoting different columns */	
 	protected ArrayList<ArrayList<String>> Rows;
-	
 	
 	/** Checks that each row has the same number of columns as the column_names. Also checks for unique column names*/  
 	public boolean checkTable(){
@@ -22,7 +20,6 @@ public class Table {
 		}
 		return true;
 	}
-	
 	
 	/** Returns number of rows in the table*/
 	public int getNoRows(){
@@ -49,7 +46,6 @@ public class Table {
 		return (Rows.get(RowNo)).get(this.getColumnNo(cname));
 	}
 	
-	
 	/** Constructors*/
 	public Table(com.relteq.sirius.jaxb.Table T1){	
 		 Rows = new ArrayList<ArrayList<String>>();
@@ -64,15 +60,11 @@ public class Table {
 		 }		
 	}
 
-
 	public Table(ArrayList<String> columnNames,	ArrayList<ArrayList<String>> rows) {
 		super();
 		ColumnNames = columnNames;
 		Rows = rows;
 	}
-
-
-	
 	
 }
 

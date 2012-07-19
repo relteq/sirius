@@ -12,10 +12,12 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 
 	protected Scenario myScenario;
 	protected ArrayList<Controller> controllers = new ArrayList<Controller>();
-	protected  enum OperationType {Deactivate,Activate}; 
+	
+	protected enum OperationType {Deactivate,Activate}; 
 	protected ArrayList<ActivationCommand> activations;
 	protected ArrayList<Integer> activeControllerIndex;
 	protected int activationindex;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -46,11 +48,10 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 				}	
 				
 				// generate controller
-				
 				if(myType!=null){
 					Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
 					if(C!=null){
-						controllers.add(tempindex,C);												
+						controllers.add(tempindex,C);									
 						for (Controller.ActivationTimes acttimes : C.activationTimes){
 							if (acttimes!=null){								
 								activations.add(new ActivationCommand(tempindex,acttimes.getBegintime(),OperationType.Activate));
@@ -58,45 +59,36 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 							}
 						}
 						tempindex++;
-							
 					}
 				}
-				
-				
 			}			
 		}
 		
-		if (activations!=null){
-			Collections.sort(activations);
-			activationindex=0;
-		}
-		
-		
+		Collections.sort(activations);
+		activationindex=0;
 	}
 
 	protected void validate() {
-		
+		for(Controller controller : controllers)
+			controller.validate();		
+	}
+	
+	protected boolean register(){
+
 		// For controllers that do not have activation times, validation does the initial registration,		
 		// This is not added to the list of active controllers, because it is always active, thought we may need to change that.
 		// We also validate each controller for its internal paramters.
 		for(Controller controller : controllers){			
 			if (controller.activationTimes==null)
 				if (!controller.register()){
-					SiriusErrorLog.addErrorMessage("Controller registration failure, controller " + controller.getId());
+					SiriusErrorLog.addError("Controller registration failure, controller " + controller.getId());
 					return false;
 				}
-					
-			
-			controller.validate();
-			if(!controller.validate()){
-				SiriusErrorLog.addErrorMessage("Controller validation failure, controller " + controller.getId());
-				return false;
-			}
 		}
+
 		// Check whether any two controllers are accessing the same link at any particular time.
 		// An easy way to validate is to run through the sequence of activations and check registering/deregisterintg success.
 		// We require all the controllers that are always active to be registered first!
-		
 		boolean validated = true;
 		for (ActivationCommand activecmd : activations){
 			if (activecmd!=null){
@@ -109,15 +101,13 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 					controllers.get(activecmd.getIndex()).ison=false;
 					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));					
 				}
-				
 				if (!validated){
-					SiriusErrorLog.addErrorMessage("Multiple controllers accessing the same link at the same time. Controller registration failure, controller " + controllers.get(activecmd.getIndex()).getId());
+					SiriusErrorLog.addError("Multiple controllers accessing the same link at the same time. Controller registration failure, controller " + controllers.get(activecmd.getIndex()).getId());
 					return false;
 				}
-			}
-			
-				
+			}	
 		}
+		
 		// However, you need to deregister the last set of registered controllers
 		for(Integer controllerindex : activeControllerIndex)
 			if(controllerindex!=null)
@@ -180,20 +170,23 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 	// Setup a class to keep track of Activation/Deactivation times
 	/////////////////////////////////////////////////////////////////////
 	
-	protected class ActivationCommand implements Comparable {
+	protected class ActivationCommand implements Comparable<ActivationCommand> {
 		protected int index;
 		protected double time;		
 		protected OperationType operation;
 		
 		public int getIndex() {
 			return index;
-		}		
+		}
+		
 		public double getTime() {
 			return time;
-		}		
+		}
+		
 		public OperationType getOperation() {
 			return operation;
 		}
+		
 		public ActivationCommand(int index, double time, OperationType operation) {
 			super();
 			this.index = index;
@@ -201,17 +194,15 @@ final class ControllerSet extends com.relteq.sirius.jaxb.ControllerSet {
 			this.operation = operation;
 		}
 		
-		
-		public int compareTo(Object o) {
+		public int compareTo(ActivationCommand o) {
 			//first compare by times
-			int compare = ((Double) time).compareTo((Double)((ActivationCommand) o).getTime());
+			int compare = ((Double) time).compareTo((Double)o.getTime());
 			//then compare by operation type - deactivation takes precedence (as defined in the order before.
 			if (compare==0){
-				compare = operation.compareTo(((ActivationCommand) o).getOperation());				
+				compare = operation.compareTo(o.getOperation());				
 			}
 			return compare;
-		}
-		
+		}	
 		
 	}
 }

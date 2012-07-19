@@ -285,53 +285,59 @@ public final class ObjectFactory {
 	 * @return the updated scenario or null if an error occurred
 	 */
 	public static Scenario process(Scenario S) {
-        // copy data to static variables ..............................................
-        S.global_control_on = true;
-        S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
-        S.simdtinhours = S.simdtinseconds/3600.0;
-        S.uncertaintyModel = Scenario.UncertaintyType.uniform;
-        S.global_demand_knob = 1d;
-        S.numVehicleTypes = 1;
-        S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
-        
-        if(S.getSettings()!=null)
+		
+	    // copy data to static variables ..............................................
+	    S.global_control_on = true;
+	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
+	    S.simdtinhours = S.simdtinseconds/3600.0;
+	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
+	    S.global_demand_knob = 1d;
+	    S.numVehicleTypes = 1;
+	    S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
+	    
+	    if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
 	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
 	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-	            	
-	            	
-        // populate the scenario ....................................................
-        try{
-        	S.populate();
-        } catch (SiriusException e){
-        	SiriusErrorLog.addError(e.getMessage());
-            SiriusErrorLog.print();
-        	return null;
-        }
-        
-        // register signals with their targets ..................................
-        boolean registersuccess = true;
-    	if(S.getSignalList()!=null)
-        	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
-        		registersuccess &= ((Signal)signal).register();
-        
-        if(!registersuccess){
-        	SiriusErrorLog.addError("Controller registration failure.");
-            SiriusErrorLog.print();
-        	return null;
-        }
-		
+
+	    // populate the scenario ....................................................
+	    try{
+	    	S.populate();
+	    } catch (SiriusException e){
+	    	SiriusErrorLog.addError(e.getMessage());
+	        SiriusErrorLog.print();
+	    	return null;
+	    }
+	    
+	    // register signals with their targets ..................................
+	    boolean registersuccess = true;
+		if(S.getSignalList()!=null)
+	    	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
+	    		registersuccess &= ((Signal)signal).register();
+	    if(!registersuccess){
+	    	SiriusErrorLog.addError("Signal registration failure.");
+	        SiriusErrorLog.print();
+	    	return null;
+	    }
+
+	    if(S.controllerset!=null)
+	    	if(!S.controllerset.register()){
+		    	SiriusErrorLog.addError("Controller registration failure.");
+		        SiriusErrorLog.print();
+		    	return null;
+		    }
+	    
 		// validate scenario ......................................
-        SiriusErrorLog.clearErrorMessage();
-        S.validate();
-        
-        // print errors and warnings
-        SiriusErrorLog.print();
-        
-        if(SiriusErrorLog.haserror())
-        	return null;
-        else
-        	return S;	
+	    SiriusErrorLog.clearErrorMessage();
+	    S.validate();
+	    
+	    // print errors and warnings
+	    SiriusErrorLog.print();
+	    
+	    if(SiriusErrorLog.haserror())
+	    	return null;
+	    else
+	    	return S;	
 	}
 
 	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {

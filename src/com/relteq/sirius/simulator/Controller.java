@@ -92,7 +92,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		 this.control_maxspeed = new Double [targets.size()];
 	 }
 	
-		 
 	/////////////////////////////////////////////////////////////////////
 	// registration
 	/////////////////////////////////////////////////////////////////////
@@ -161,9 +160,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 //			return node.registerSplitRatioController(this,index);
 //	}
 	
-	
 	// Returns the start and end times of the controller.
-	
 	
 	protected double myStartTime(){
 		double starttime=myScenario.getTimeStart();
@@ -186,6 +183,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		
 		return endtime;
 	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
@@ -203,14 +201,12 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		// Copy table
 		if (c.getTable()!=null)
 			this.table = new Table(c.getTable());
+		
 		// Get activation times and sort	
 		if (c.getActivationIntervals()!=null)
-			for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval()){			
-				if(tinterval!=null){				
+			for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval())		
+				if(tinterval!=null)
 					activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
-				}
-			}		
-			
 		Collections.sort(activationTimes);
 		
 		// store targets ......
@@ -233,7 +229,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 				if(se!=null)
 					feedbacks.add(se);	
 			}
-
 	}
 
 	/** @y.exclude */
@@ -248,28 +243,16 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
-<<<<<<< .mine		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-=======		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
->>>>>>> .theirs			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
 
-			SiriusErrorLog.addErrorMessage("Controller sample time must be integer multiple of simulation time step.");
-			return false;
-		}
-		
 		// check that activation times are valid.
-		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ ){
-			if(!activationTimes.get(ActTimesIndex).validate()){
-				SiriusErrorLog.addErrorMessage("ActivationTimes must have a valid time interval.");
-				return false;
-			}
-			if (ActTimesIndex<activationTimes.size()-1){
-				if(!activationTimes.get(ActTimesIndex).validateWith(activationTimes.get(ActTimesIndex+1))){
-					SiriusErrorLog.addErrorMessage("Activation Periods of the controllers must not overlap.");
-					return false;
-				}
-			}
+		for (int i=0; i<activationTimes.size(); i++ ){
+			activationTimes.get(i).validate();
+			if (i<activationTimes.size()-1)
+				activationTimes.get(i).validateWith(activationTimes.get(i+1));
 		}
-		return true;
+
 	}
 
 	/** @y.exclude */
@@ -306,12 +289,17 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	public boolean isIson() {
 		return ison;
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// internal classes
+	/////////////////////////////////////////////////////////////////////
 	
-	@SuppressWarnings("rawtypes")
 	/** Creates a new class that stores begin and end times for each period of controller activation */
-	protected class ActivationTimes implements Comparable{
+	protected class ActivationTimes implements Comparable<ActivationTimes>{
+		
 		/** Start time for each activation interval */
 		protected double begintime; 
+		
 		/** End time for each activation interval */
 		protected double endtime;
 		
@@ -320,38 +308,41 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 			this.begintime = begintime;
 			this.endtime = endtime;
 		}
+		
 		public double getBegintime() {
 			return begintime;
 		}
+		
 		protected void setBegintime(double begintime) {
 			this.begintime = begintime;
 		}
+		
 		public double getEndtime() {
 			return endtime;
 		}
+		
 		protected void setEndtime(double endtime) {
 			this.endtime = endtime;
 		}		
 		
-		protected boolean validate(){			
+		protected void validate(){			
 			if (begintime-endtime>=0)
-				return false;
-			return true;			  
+				SiriusErrorLog.addError("Begin time must be larger than end time.");		  
 		}
 		
-		protected boolean validateWith(ActivationTimes that){			
+		protected void validateWith(ActivationTimes that){			
 			if (Math.max(this.begintime-that.getEndtime(), that.getBegintime()-this.endtime)<0)  // Assumption - activation times is sorted before this is invoked, should remove this assumption later.
-				return false;
-			return true;			  
+				SiriusErrorLog.addError("Activation Periods of the controllers must not overlap.");
 		}
+		
 		/////////////////////////////////////////////////////////////////////
 		// Comparable
 		/////////////////////////////////////////////////////////////////////		
-		
-		public int compareTo(Object arg0) {
-			if(arg0==null)
+
+		@Override
+		public int compareTo(ActivationTimes that) {
+			if(that==null)
 				return 1;
-			ActivationTimes that = (ActivationTimes) arg0;
 			
 			// Order first by begintimes.
 			int compare = ((Double) this.getBegintime()).compareTo((Double) that.getBegintime());
