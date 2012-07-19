@@ -314,7 +314,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		return samp;
 	}
 	
-	protected boolean validate(){
+	protected void validate(){
 				
 		String myLinkId;
 		
