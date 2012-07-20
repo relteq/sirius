@@ -11,7 +11,7 @@ public final class Runner {
 	
 	private static Scenario scenario;
 
-	private static String outputtype = "xml";
+	private static String outputtype = "text";
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;

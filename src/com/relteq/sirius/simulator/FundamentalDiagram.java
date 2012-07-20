@@ -274,6 +274,21 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		density_critical =  _capacity / _vf;
         
 	}
+
+ 	// clone a fd
+	protected void copyfrom(com.relteq.sirius.simulator.FundamentalDiagram that){
+		if(that==null)
+			return;
+		this.myLink = that.myLink;
+		this._capacity = that._capacity;
+		this._capacityDrop = that._capacityDrop;
+		this._densityJam = that._densityJam;
+		this._vf = that._vf;
+		this._w = that._w;
+		this.density_critical = that.density_critical;
+		this.lanes = that.lanes;
+		this.std_dev_capacity = that.std_dev_capacity;
+	}	
 	
 	protected void reset(Scenario.UncertaintyType uncertaintyModel){
 		if(myLink==null)
@@ -290,7 +305,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		FundamentalDiagram samp = new FundamentalDiagram(myLink,this);
 		
 		// perturb it
-		if(!std_dev_capacity.isNaN()){
+		if(!std_dev_capacity.isNaN() && std_dev_capacity>0){
 			switch(myLink.myNetwork.myScenario.uncertaintyModel){
 			case uniform:
 				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);

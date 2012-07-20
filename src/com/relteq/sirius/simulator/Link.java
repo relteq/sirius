@@ -219,6 +219,25 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
             	totaloutflow = Math.min( totaloutflow , control_maxflow );
             }    
 
+            // flow uncertainty model
+            if(myNetwork.myScenario.has_flow_unceratinty){
+
+            	double delta_flow=0.0;
+            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+	            
+				switch(myNetwork.myScenario.uncertaintyModel){
+				case uniform:
+					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					break;
+		
+				case gaussian:
+					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					break;
+				}
+	            
+				totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
+            }
+
             // split among types
             outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity);
         }
@@ -235,6 +254,24 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         	totaldensity = SiriusMath.sum(density[e]);
             spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
+            
+            // flow uncertainty model
+            if(myNetwork.myScenario.has_flow_unceratinty){
+            	double delta_flow=0.0;
+            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+	            
+				switch(myNetwork.myScenario.uncertaintyModel){
+				case uniform:
+					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					break;
+		
+				case gaussian:
+					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					break;
+				}
+				spaceSupply[e] = Math.max( 0d , spaceSupply[e] + delta_flow );
+				spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
+            }
     	}
     }
 	

@@ -366,7 +366,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	            		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
 	            
 	            // compute and sort output demand/supply ratio .............
-	            dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
+	            if(SiriusMath.greaterthan(outSupply[e][j],0d))
+	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
+	            else
+	            	dsratio[e][j] = 1d;
 	            
 	            // reflect ratios back on inputs
 	            for(i=0;i<nIn;i++)
@@ -380,40 +383,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        for(i=0;i<nIn;i++)
 	            for(k=0;k<numVehicleTypes;k++)
 	                inDemand[e][i][k] /= applyratio[e][i];
-
-        // flow uncertainty model
-        if(myNetwork.myScenario.has_flow_unceratinty){
-        	double total_flow_nominal;
-        	double delta_flow=0.0;
-        	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
-        	double trial_total_flow;
-            for(e=0;e<numEnsemble;e++)
-    	        for(i=0;i<nIn;i++){
-    	        	total_flow_nominal = 0.0;
-    	            for(k=0;k<numVehicleTypes;k++)
-    	            	total_flow_nominal += inDemand[e][i][k];
-    	            
-    				switch(myNetwork.myScenario.uncertaintyModel){
-    				case uniform:
-    					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
-    					break;
-    		
-    				case gaussian:
-    					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
-    					break;
-    				}
-    	            
-    				trial_total_flow = total_flow_nominal + delta_flow;
-    				if(SiriusMath.greaterthan(trial_total_flow,0.0)){
-    					for(k=0;k<numVehicleTypes;k++)
-    						inDemand[e][i][k] *= 1.0 + delta_flow/total_flow_nominal;    					
-    				}
-    				else{
-    					for(k=0;k<numVehicleTypes;k++)
-    						inDemand[e][i][k] = 0.0;
-    				}
-    	        }
-        }
         
         // compute out flows ...........................................   
         for(e=0;e<numEnsemble;e++)
@@ -421,7 +390,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        	for(k=0;k<numVehicleTypes;k++){
 	        		outFlow[e][j][k] = 0d;
 	            	for(i=0;i<nIn;i++){
-	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);
+	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);	            		
 	            	}
 	        	}
 	        }
