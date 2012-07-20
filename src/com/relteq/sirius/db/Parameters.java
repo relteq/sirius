@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import org.apache.commons.configuration.BaseConfiguration;
 
 public class Parameters {
 	/** The database type: <code>derby</code>, <code>postgresql</code>, etc */
@@ -13,6 +14,7 @@ public class Parameters {
 	private String port;
 	private String user;
 	private String password;
+	private boolean create = false;
 
 	private static final String default_db_name = "sirius";
 	private static final String default_host = "localhost";
@@ -34,14 +36,14 @@ public class Parameters {
 	/**
 	 * @return the database name
 	 */
-	public String getDb_name() {
+	public String getDBName() {
 		return db_name;
 	}
 
 	/**
 	 * @param db_name the database name to set
 	 */
-	public void setDb_name(String db_name) {
+	public void setDBName(String db_name) {
 		this.db_name = db_name;
 	}
 
@@ -101,20 +103,30 @@ public class Parameters {
 		this.password = password;
 	}
 
-	private Parameters() {}
+	/**
+	 * @param create true, if the database should be created (valid for derby)
+	 */
+	public void setCreate(boolean create) {
+		this.create = create;
+	}
 
 	/**
-	 * Initializes the DB parameters from the environment
+	 * Empty DB parameters
+	 */
+	public Parameters() {}
+
+	/**
+	 * Retrieves the DB parameters from the environment
 	 * @return the parameters
 	 */
-	public static Parameters get() {
+	public static Parameters fromEnvironment() {
 		Parameters params = new Parameters();
 		String driver = System.getenv("SIRIUS_DB");
 		if (null == driver) driver = "derby";
 		params.setDriver(driver);
 		String db_name = System.getenv("SIRIUS_DB_NAME");
 		if (null == db_name) db_name = default_db_name;
-		params.setDb_name(db_name);
+		params.setDBName(db_name);
 		params.setHost(System.getenv("SIRIUS_DB_HOST"));
 		params.setPort(System.getenv("SIRIUS_DB_PORT"));
 		if (null == params.getHost() && null != params.getPort())
@@ -128,6 +140,7 @@ public class Parameters {
 	 * @return the database connection URL
 	 */
 	public String getUrl() {
+		if (null == driver || null == db_name) return null;
 		StringBuilder url = new StringBuilder("jdbc:");
 		url.append(driver).append(":");
 		if (driver.equals("postgresql") && (null != host)) {
@@ -136,7 +149,7 @@ public class Parameters {
 			url.append("/");
 		}
 		url.append(db_name);
-		if (driver.equals("derby")) url.append(";create=true");
+		if (driver.equals("derby") && create) url.append(";create=true");
 		return url.toString();
 	}
 
@@ -157,6 +170,17 @@ public class Parameters {
 	 */
 	public Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(getUrl(), getConnectionProperties());
+	}
+
+	public org.apache.commons.configuration.Configuration toConfiguration() {
+		BaseConfiguration conf = new BaseConfiguration();
+		conf.addProperty("torque.database.default", "sirius");
+		conf.addProperty("torque.database.sirius.adapter", getDriver());
+		conf.addProperty("torque.dsfactory.sirius.factory", "org.apache.torque.dsfactory.SharedPoolDataSourceFactory");
+		conf.addProperty("torque.dsfactory.sirius.connection.url", getUrl());
+		if (null != getUser()) conf.addProperty("torque.dsfactory.sirius.connection.user", getUser());
+		if (null != getPassword()) conf.addProperty("torque.dsfactory.sirius.connection.password", getPassword());
+		return conf;
 	}
 
 }

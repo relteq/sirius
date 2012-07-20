@@ -26,6 +26,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected int nIn;
 	/** @y.exclude */ 	protected int nOut;
 	/** @y.exclude */ 	protected boolean isTerminal;
+	
+	/** @y.exclude */ 	protected Signal mySignal = null;
 
     // controller
 	/** @y.exclude */ 	protected boolean hascontroller;
@@ -157,38 +159,27 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	}
     
 	/** @y.exclude */ 	
-	protected boolean validate() {
-		
+	protected void validate() {
+				
 		if(isTerminal)
-			return true;
+			return;
 		
 		if(output_link!=null)
-			for(Link link : output_link){
-				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect output link id.");
-					return false;
-				}
-			}
+			for(Link link : output_link)
+				if(link==null)
+					SiriusErrorLog.addError("Incorrect output link id in node id=" + getId());
 
 		if(input_link!=null)
-			for(Link link : input_link){
-				if(link==null){
-					SiriusErrorLog.addErrorMessage("Incorrect input link id.");
-					return false;
-				}
-			}
+			for(Link link : input_link)
+				if(link==null)
+					SiriusErrorLog.addError("Incorrect input link id in node id=" + getId());
 		
-		if(nIn==0){
-			SiriusErrorLog.addErrorMessage("No inputs into non-terminal node.");
-			return false;
-		}
+		if(nIn==0)
+			SiriusErrorLog.addError("No inputs into non-terminal node id=" + getId());
 
-		if(nOut==0){
-			SiriusErrorLog.addErrorMessage("No outputs from non-terminal node.");
-			return false;
-		}
+		if(nOut==0)
+			SiriusErrorLog.addError("No outputs from non-terminal node id=" + getId());
 		
-		return true;
 	}
 
 	/** @y.exclude */ 	
@@ -272,8 +263,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		Double value;
 		
 		// dimension
-		if(X.getnIn()!=this.nIn || X.getnOut()!=this.nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Split ratio for node " + this.getId() + " has incorrect dimension");
+		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+			SiriusErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
 		
@@ -283,7 +274,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
 					if( !value.isNaN() && (value>1 || value<0) ){
-						SiriusErrorLog.addErrorMessage("Split ratio values must be in [0,1]");
+						SiriusErrorLog.addError("Invalid split ratio values for node id=" + getId());
 						return false;
 					}
 				}
@@ -349,10 +340,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	
 	private void computeLinkFlows(){
-
-        // There should be no unknown splits by now ....................
-        //if(any(any(any(SR<0))) || any(any(any(isnan(SR))))  )
-        //    error('!!!')
         
     	int e,i,j,k;
     	int numEnsemble = myNetwork.myScenario.numEnsemble;
@@ -394,6 +381,40 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	            for(k=0;k<numVehicleTypes;k++)
 	                inDemand[e][i][k] /= applyratio[e][i];
 
+        // flow uncertainty model
+        if(myNetwork.myScenario.has_flow_unceratinty){
+        	double total_flow_nominal;
+        	double delta_flow=0.0;
+        	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+        	double trial_total_flow;
+            for(e=0;e<numEnsemble;e++)
+    	        for(i=0;i<nIn;i++){
+    	        	total_flow_nominal = 0.0;
+    	            for(k=0;k<numVehicleTypes;k++)
+    	            	total_flow_nominal += inDemand[e][i][k];
+    	            
+    				switch(myNetwork.myScenario.uncertaintyModel){
+    				case uniform:
+    					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+    					break;
+    		
+    				case gaussian:
+    					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+    					break;
+    				}
+    	            
+    				trial_total_flow = total_flow_nominal + delta_flow;
+    				if(SiriusMath.greaterthan(trial_total_flow,0.0)){
+    					for(k=0;k<numVehicleTypes;k++)
+    						inDemand[e][i][k] *= 1.0 + delta_flow/total_flow_nominal;    					
+    				}
+    				else{
+    					for(k=0;k<numVehicleTypes;k++)
+    						inDemand[e][i][k] = 0.0;
+    				}
+    	        }
+        }
+        
         // compute out flows ...........................................   
         for(e=0;e<numEnsemble;e++)
 	        for(j=0;j<nOut;j++){

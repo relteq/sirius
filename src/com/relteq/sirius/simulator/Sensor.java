@@ -18,9 +18,6 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
 
-	/** Unique identifier.  */
-	//protected String id;
-
 	/** Sensor type. */
 	protected Sensor.Type myType;
 	
@@ -138,8 +135,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	}
 
 	@Override
-	public boolean validate() {
-		return true;
+	public void validate() {
 	}
 
 	@Override
