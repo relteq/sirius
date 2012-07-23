@@ -67,20 +67,15 @@ final class EventSet extends com.relteq.sirius.jaxb.EventSet {
 		Collections.sort(sortedevents);
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		Event previousevent = null;
-		for(Event event : sortedevents){
-			if(!event.validate())
-				return false;
-			
+		for(Event event : sortedevents){			
 			// disallow pairs of events with equal time stamp, target, and type.
-			if(previousevent!=null){
+			if(previousevent!=null)
 				if(event.equals(previousevent))
-					return false;
-			}
+					SiriusErrorLog.addError("Events id=" + previousevent.getId() + " and id=" + event.getId() + " are identical.");
 			previousevent = event;
 		}
-		return true;
 	}
 
 	protected void reset() {
@@ -102,8 +97,14 @@ final class EventSet extends com.relteq.sirius.jaxb.EventSet {
 		while(myScenario.clock.getCurrentstep()>=sortedevents.get(currentevent).timestampstep){
 			
 			Event event =  sortedevents.get(currentevent);
-			if(event.validate())
+			
+			SiriusErrorLog.clearErrorMessage();
+			event.validate();
+			if(!SiriusErrorLog.haserror())
 				event.activate(); 
+			else
+				throw new SiriusException("Event could not be validated.");
+			
 			currentevent++;
 			
 			// don't come back if done

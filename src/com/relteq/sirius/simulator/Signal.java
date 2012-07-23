@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
-	
 	public static enum CommandType {hold,forceoff};
 	protected static enum BulbColor {GREEN,YELLOW,RED,DARK};
 	public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
@@ -38,6 +37,9 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		
 		this.myScenario = myScenario;
 		this.myNode = myScenario.getNodeWithId(getNodeId());
+		
+		if(myNode==null)
+			return;
 		
 		myNode.mySignal = this;
 
@@ -91,33 +93,33 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	}
 
 	protected void reset() {
+		if(myNode==null)
+			return;
 		for(SignalPhase p : phase)
 			p.reset();
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(myNode==null){
-			SiriusErrorLog.addErrorMessage("Incorrect node reference in signal.");
-			return false;
+			SiriusErrorLog.addWarning("Unknow node id=" + getNodeId() + " in signal id=" + getId());
+			return; // this signal will be ignored
 		}
 		
-		if(phase==null){
-			SiriusErrorLog.addErrorMessage("Signal contains no valid phases.");
-			return false;
-		}
-						
-		for(SignalPhase p : phase)
-			if(!p.validate()){
-				SiriusErrorLog.addErrorMessage("Invalid phase in signal.");
-				return false;
-			}
+		if(phase==null)
+			SiriusErrorLog.addError("Signal id=" + getId() + " contains no valid phases.");
+
+		if(phase!=null)	
+			for(SignalPhase p : phase)
+				p.validate();
 		
-		return true;
 	}
 
 	protected void update() {
 
+		if(myNode==null)
+			return;
+		
 		int i;
 		
 		// 0) Advance all phase timers ...........................................
@@ -253,7 +255,10 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected boolean register(){
-		return myPhaseController.register();
+		if(myNode==null)
+			return true;
+		else
+			return myPhaseController.register();
 	}
 	
 	protected SignalPhase getPhaseForNEMA(NEMA nema){

@@ -85,7 +85,7 @@ public class Runner {
 			} else if (cmd.equals("version") || cmd.equals("v")) {
 				printVersion();
 			} else throw new InvalidCommandException(cmd);
-			if (SiriusErrorLog.haserror()) SiriusErrorLog.printErrorMessage();
+			if (SiriusErrorLog.haserror()) SiriusErrorLog.print();
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();
 			if (null == msg) msg = "Usage: command [parameters]";

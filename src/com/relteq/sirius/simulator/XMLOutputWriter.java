@@ -83,7 +83,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			// data
 			xmlsw.writeStartElement("data");
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addErrorMessage(exc.toString());
+			SiriusErrorLog.addError(exc.toString());
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
 		}
@@ -178,7 +178,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			xmlsw.writeEndDocument();
 			xmlsw.close();
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addErrorMessage(exc.toString());
+			SiriusErrorLog.addError(exc.toString());
 		}
 	}
 

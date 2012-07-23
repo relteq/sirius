@@ -53,6 +53,7 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 	
 	/** @y.exclude */
 	protected void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Event jaxbE,Event.Type myType){
+		this.id = jaxbE.getId();
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
@@ -66,28 +67,22 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
 	
-	public boolean validate() {
+	public void validate() {
 		
-		if(myType==null){
-			SiriusErrorLog.addErrorMessage("Event has bad type.");
-			return false;
-		}
+		if(myType==null)
+			SiriusErrorLog.addError("Event with id=" + getId() + " has bad type.");
 			
 		// check that there are targets assigned to non-global events
-		if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
-			if(targets.isEmpty()){
-				SiriusErrorLog.addErrorMessage("No targets assigned.");
-				return false;
-			}
+		if(myType!=null)
+			if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
+				if(targets.isEmpty())
+					SiriusErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
 		
 		// check each target is valid
-		for(ScenarioElement s : targets){
-			if(s.reference==null){
-				SiriusErrorLog.addErrorMessage("Invalid target.");
-				return false;
-			}
-		}
-		return true;
+		for(ScenarioElement s : targets)
+			if(s.reference==null)
+				SiriusErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
+
 	}
 	
 	@Override

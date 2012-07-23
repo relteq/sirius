@@ -40,24 +40,17 @@ public class Event_Link_Demand_Knob extends Event {
 	}
 
 	@Override
-	public boolean validate() {
+	public void validate() {
 
-		if(!super.validate())
-			return false;
+		super.validate();
 		
 		// check each target is valid
 		for(ScenarioElement s : targets){
-			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0){
-				SiriusErrorLog.addErrorMessage("wrong target type.");
-				return false;
-			}
-			if(!((Link)s.getReference()).isSource()){
-				SiriusErrorLog.addErrorMessage("demand event attached to non-source link.");
-				return false;
-				
-			}
+			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
+				SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
+			if(!((Link)s.getReference()).isSource())
+				SiriusErrorLog.addError("Demand event id=" +getId()+ " attached to non-source link.");
 		}
-		return true;
 	}
 
 	@Override
