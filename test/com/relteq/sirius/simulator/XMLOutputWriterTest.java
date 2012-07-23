@@ -131,7 +131,7 @@ public class XMLOutputWriterTest {
 		Runner.main(args);
 		if (SiriusErrorLog.haserror()) {
 			System.out.println("==== ERRORS ====");
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			System.out.println("================");
 			SiriusErrorLog.clearErrorMessage();
 		}

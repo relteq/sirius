@@ -11,7 +11,7 @@ public final class Runner {
 	
 	private static Scenario scenario;
 
-	private static String outputtype = "xml";
+	private static String outputtype = "text";
 	private static String configfilename;
 	private static String outputfileprefix;
 	private static double timestart;
@@ -20,12 +20,12 @@ public final class Runner {
 	private static int numRepetitions;
 
 	public static void main(String[] args) {
-		
+
 		long time = System.currentTimeMillis();
 
 		// process input parameters
 		if(!parseInput(args)){
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 
@@ -33,21 +33,22 @@ public final class Runner {
 		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
 		// check if it loaded
-		if(SiriusErrorLog.haserror()){
-			SiriusErrorLog.printErrorMessage();
+		if(scenario==null)
 			return;
-		}
 
 		try {
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", outputtype);
 			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
+			System.out.println("done in " + (System.currentTimeMillis()-time));
 		} catch (SiriusException e) {
-			e.printStackTrace();
+			if(SiriusErrorLog.haserror())
+				SiriusErrorLog.print();
+			else
+				e.printStackTrace();
 		}	
 		
-		System.out.println("done in " + (System.currentTimeMillis()-time));
 	}
 
 	public static void debug(String [] args) {
@@ -82,7 +83,7 @@ public final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			SiriusErrorLog.addErrorMessage(str);
+			SiriusErrorLog.addError(str);
 			return false;
 		}
 		
@@ -147,8 +148,9 @@ public final class Runner {
 		com.relteq.sirius.db.Service.init();
 
 		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		
 		if (SiriusErrorLog.haserror()) {
-			SiriusErrorLog.printErrorMessage();
+			SiriusErrorLog.print();
 			return;
 		}
 

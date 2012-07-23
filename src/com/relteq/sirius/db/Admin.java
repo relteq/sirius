@@ -114,7 +114,7 @@ public class Admin {
 			try {
 				org.apache.commons.io.FileUtils.deleteDirectory(new File(params.getDBName()));
 			} catch (IOException exc) {
-				SiriusErrorLog.addErrorMessage(exc.getMessage());
+				SiriusErrorLog.addError(exc.getMessage());
 			}
 	}
 }

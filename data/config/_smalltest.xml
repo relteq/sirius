@@ -21,10 +21,14 @@
       </splitratioProfile>
    </SplitRatioProfileSet>
    <EventSet>
-      <event enabled="true" tstamp="4" type="fundamental_diagram" id="-1">
-         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="13.8461538461538" jam_density="150" free_flow_speed="90"/>
+      <event enabled="true" id="0" reset_to_nominal="true" tstamp="10980" type="link_lanes">
+         <description/>
+         <lane_count_change delta="1"/>
+         <display_position>
+            <point lat="37.8649695878758" lng="-122.302958965302"/>
+         </display_position>
          <targetElements>
-            <scenarioElement id="-2" type="link"/>
+            <scenarioElement id="-3" type="link"/>
          </targetElements>
       </event>
    </EventSet>
@@ -33,18 +37,81 @@
       <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
    </DemandProfileSet>
    <ControllerSet>
-      <controller dt="5" type="IRM_alinea" id="-1">
-         <parameters>
-            <parameter name="gain" value="50"/>
-         </parameters>
+      <controller dt="300" id="0" name="New Controller" type="IRM_alinea">
+         <parameters/>
+         <display_position>
+            <point lat="37.8491120765346" lng="-122.298152446747"/>
+         </display_position>
+         <PlanSequence transition_delay="0"/>
+         <PlanList/>
          <targetElements>
-            <scenarioElement id="-6" type="link"/>
+            <scenarioElement id="-2" type="link"/>
          </targetElements>
-         <feedbackElements>
-            <scenarioElement id="-2" type="link" usage="mainlinelink"/>
-         </feedbackElements>
       </controller>
    </ControllerSet>
+   <SensorList>
+      <sensor id="-1" link_type="freeway" type="static_point">
+         <description>University Ave</description>
+         <position>
+            <point lat="37.856225" lng="-122.300735"/>
+         </position>
+         <display_position>
+            <point lat="37.856225" lng="-122.300735"/>
+         </display_position>
+         <parameters>
+            <parameter name="lanes" value="5"/>
+            <parameter name="postmile" value="10.4"/>
+            <parameter name="length" value="0.38"/>
+            <parameter name="hwy_dir" value="E"/>
+            <parameter name="vds" value="400679"/>
+            <parameter name="start_time" value="0"/>
+            <parameter name="hwy_name" value="80"/>
+            <parameter name="offset_in_link" value="0"/>
+            <parameter name="data_id" value="400679"/>
+         </parameters>
+         <data_sources>
+            <data_source dt="300" format="PeMS Data Clearinghouse" url="pems:d4, Jan 1, 2011"/>
+         </data_sources>
+         <link_reference id="-1"/>
+      </sensor>
+   </SensorList>
+   <SignalList>
+      <signal id="-1" node_id="-5">
+         <phase lag="false" min_green_time="10" nema="1" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links/>
+         </phase>
+         <phase lag="false" min_green_time="10" nema="2" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links>
+               <link_reference id="-5"/>
+            </links>
+         </phase>
+         <phase lag="false" min_green_time="0" nema="3" permissive="true" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+            <links/>
+         </phase>
+         <phase lag="false" min_green_time="10" nema="4" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links>
+               <link_reference id="-7"/>
+            </links>
+         </phase>
+         <phase lag="false" min_green_time="10" nema="5" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links/>
+         </phase>
+         <phase lag="false" min_green_time="10" nema="6" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links>
+               <link_reference id="-11"/>
+            </links>
+         </phase>
+         <phase lag="false" min_green_time="0" nema="7" permissive="true" protected="false" recall="false" red_clear_time="0" yellow_time="0">
+            <links/>
+         </phase>
+         <phase lag="false" min_green_time="10" nema="8" permissive="false" protected="true" recall="false" red_clear_time="2" yellow_time="2">
+            <links>
+               <link_reference id="-8"/>
+            </links>
+         </phase>
+      </signal>
+   </SignalList>
+   
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
          <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
@@ -76,7 +143,9 @@
          </position>
          <NodeList>
             <node id="-1" name="1" type="terminal">
-               <outputs/>
+               <outputs>
+                  <output link_id="-1"/>
+               </outputs>
                <inputs/>
                <position>
                   <point lat="37.8399873791942" lng="-122.296725511551"/>

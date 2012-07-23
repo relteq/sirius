@@ -2,6 +2,7 @@ package com.relteq.sirius.control;
 
 import java.util.Vector;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Controller;
 import com.relteq.sirius.simulator.Scenario;
@@ -126,42 +127,38 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
+		
+		super.validate();
 		
 		int i;
 		
 		// transdelay>=0
 		if(transdelay<0)
-			return false;
+			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// first planstarttime=0
 		if(planstarttime[0]!=0)
-			return false;
+			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// planstarttime is increasing
 		for(i=1;i<planstarttime.length;i++)
 			if(planstarttime[i]<=planstarttime[i-1])
-				return false;
+				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// all plansequence ids found
 		for(i=0;i<plansequence.length;i++)
 			if(plansequence[i]<0)
-				return false;
+				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 
 		// all targets are signals
-		for(ScenarioElement se: targets){
-			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0){
-				return false;
-			}
-		}
+		for(ScenarioElement se: targets)
+			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
+				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		for(i=0;i<plan.length;i++)
-			if(!plan[i].validate())
-				return false;
+			plan[i].validate();
 		
-		return true;
 	}
 
 	@Override
