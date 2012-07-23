@@ -74,7 +74,10 @@ public class Runner {
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					com.relteq.sirius.db.Cleaner.clearProcessed(arguments[0]);
+				else
+					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_all") || cmd.equals("cla")) {
