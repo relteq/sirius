@@ -57,9 +57,7 @@ public class ImportExportTest {
 
 	private static void clearErrors() {
 		if (SiriusErrorLog.haserror()) {
-			System.out.println("==== ERRORS ====");
-			SiriusErrorLog.printErrorMessage();
-			System.out.println("================");
+			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
 		}
 	}

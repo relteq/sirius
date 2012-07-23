@@ -78,7 +78,7 @@ public class Admin {
 			try {
 				BasePeer.executeStatement(sql);
 			} catch (TorqueException exc) {
-				SiriusErrorLog.addErrorMessage(exc.getMessage());
+				SiriusErrorLog.addError(exc.getMessage());
 			}
 		}
 
