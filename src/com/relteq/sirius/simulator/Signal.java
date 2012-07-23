@@ -59,12 +59,12 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 			com.relteq.sirius.jaxb.Phase p = getPhase().get(i);
 			isvalid[i] = true;
 			isvalid[i] &= p.isPermissive() || p.isProtected();
-			if(p.getLinks()==null)
+			if(p.getLinkReferences()==null)
 				numlinks = 0;
-			else if(p.getLinks().getLinkReference()==null)
+			else if(p.getLinkReferences().getLinkReference()==null)
 				numlinks = 0;
 			else 
-				numlinks = p.getLinks().getLinkReference().size();
+				numlinks = p.getLinkReferences().getLinkReference().size();
 			isvalid[i] &= numlinks>0;
 			numvalid += isvalid[i] ? 1 : 0;
 		}
