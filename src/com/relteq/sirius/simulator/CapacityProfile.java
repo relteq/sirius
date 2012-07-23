@@ -37,37 +37,30 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(capacity==null)
-			return true;
+			return;
 		
 		if(capacity.isEmpty())
-			return true;
+			return;
 		
 		if(myLink==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in capacity profile: " + getLinkId());
-			return false;
+			SiriusErrorLog.addWarning("Unknown link id=" + getLinkId() + " in capacity profile.");
+			return;
 		}
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Capacity profile dt should be positive: " + getLinkId());
-			return false;	
-		}
+		if( dtinseconds<=0 )
+			SiriusErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Capacity dt should be multiple of sim dt: " + getLinkId());
-			return false;	
-		}
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
-		if(capacity.hasNaN()){
-			SiriusErrorLog.addErrorMessage("Capacity profile has illegal values: " + getLinkId());
-			return false;
-		}
+		if(capacity.hasNaN())
+			SiriusErrorLog.addError("Capacity profile for link id=" +getLinkId()+ " has illegal values.");
 
-		return true;
 	}
 
 	protected void reset() {
@@ -85,10 +78,10 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 	}
 	
 	protected void update() {
-		
+		if(myLink==null)
+			return;
 		if(capacity==null)
 			return;
-		
 		if(isdone || capacity.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){

@@ -1,5 +1,6 @@
 package com.relteq.sirius.event;
 
+import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.simulator.Event;
 import com.relteq.sirius.simulator.Scenario;
@@ -36,12 +37,11 @@ public class Event_Global_Demand_Knob extends Event {
 	}
 	
 	@Override
-	public boolean validate() {
-		if(!super.validate())
-			return false;
+	public void validate() {
+		super.validate();
+
 		if(newknob<0)
-			return false;
-		return true;
+			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 	}
 
 	@Override

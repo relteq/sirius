@@ -88,7 +88,7 @@ public final class Double2DMatrix {
 		}
 		
 		if(!issquare){
-			SiriusErrorLog.addErrorMessage("Data is not square.");
+			SiriusErrorLog.addError("Data is not square.");
 			data = null;
 	    	isempty = true;
 			return;

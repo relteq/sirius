@@ -95,7 +95,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
 		if (null == scenario) {
 			if (SiriusErrorLog.haserror()) {
-				SiriusErrorLog.printErrorMessage();
+				SiriusErrorLog.print();
 				SiriusErrorLog.clearErrorMessage();
 			}
 			throw new SiriusException("Could not load the scenario");
@@ -159,7 +159,7 @@ public class ScenarioRestorer {
 				settings.setVehicleTypes(vts);
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return settings;
 	}
@@ -182,7 +182,7 @@ public class ScenarioRestorer {
 				return nets;
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return null;
 	}
@@ -209,7 +209,7 @@ public class ScenarioRestorer {
 				return nl;
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return null;
 	}
@@ -244,7 +244,7 @@ public class ScenarioRestorer {
 			for (Links db_link : db_link_l)
 				inputs.getInput().add(restoreInput(db_link));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return inputs;
 	}
@@ -266,7 +266,7 @@ public class ScenarioRestorer {
 			for (Links db_link : db_link_l)
 				outputs.getOutput().add(restoreOutput(db_link));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return outputs;
 	}
@@ -289,7 +289,7 @@ public class ScenarioRestorer {
 				return ll;
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return null;
 	}
@@ -356,7 +356,7 @@ public class ScenarioRestorer {
 				idset.getDensity().add(density);
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return idset;
 	}
@@ -401,7 +401,7 @@ public class ScenarioRestorer {
 			}
 			*/
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return wfset;
 	}
@@ -418,7 +418,7 @@ public class ScenarioRestorer {
 			for (SplitRatioProfiles db_srp : db_srp_l)
 				srps.getSplitratioProfile().add(restoreSplitRatioProfile(db_srp));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return srps;
 	}
@@ -461,7 +461,7 @@ public class ScenarioRestorer {
 				srp.getSplitratio().add(sr);
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return srp;
 	}
@@ -478,7 +478,7 @@ public class ScenarioRestorer {
 			for (FundamentalDiagramProfiles db_fdprofile : db_fdprofile_l)
 				fdps.getFundamentalDiagramProfile().add(restoreFundamentalDiagramProfile(db_fdprofile));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return fdps;
 	}
@@ -496,7 +496,7 @@ public class ScenarioRestorer {
 			for (FundamentalDiagrams db_fd : db_fd_l)
 				fdprofile.getFundamentalDiagram().add(restoreFundamentalDiagram(db_fd));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return fdprofile;
 	}
@@ -524,7 +524,7 @@ public class ScenarioRestorer {
 			for (DemandProfiles db_dp : db_dp_l)
 				dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return dpset;
 	}
@@ -553,7 +553,7 @@ public class ScenarioRestorer {
 			}
 			if (null != sb) dp.setContent(sb.toString());
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return dp;
 	}
@@ -588,7 +588,7 @@ public class ScenarioRestorer {
 			}
 			if (null != np) nc.getNetworkpair().add(np);
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return nc;
 	}
@@ -605,7 +605,7 @@ public class ScenarioRestorer {
 			for (Ods db_od : db_od_l)
 				odlist.getOd().add(restoreOD(db_od));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return odlist;
 	}
@@ -631,7 +631,7 @@ public class ScenarioRestorer {
 			for (DecisionPointSplitProfiles db_dpsp : db_dpsp_l)
 				dpoints.getDecisionPoint().add(restoreDecisionPoint(db_dpsp));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return dpoints;
 	}
@@ -671,7 +671,7 @@ public class ScenarioRestorer {
 				dpoint.getDecisionPointSplit().add(dps);
 			}
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return dpoint;
 	}
@@ -687,7 +687,7 @@ public class ScenarioRestorer {
 			for (Signals db_signal : db_signal_l)
 				sl.getSignal().add(restoreSignal(db_signal));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return sl;
 	}
@@ -702,7 +702,7 @@ public class ScenarioRestorer {
 			for (Phases db_ph : db_ph_l)
 				signal.getPhase().add(restorePhase(db_ph));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return signal;
 	}
@@ -727,7 +727,7 @@ public class ScenarioRestorer {
 				links.getLinkReference().add(restorePhaseLink(db_phl));
 			phase.setLinks(links);
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return phase;
 	}
@@ -757,7 +757,7 @@ public class ScenarioRestorer {
 			for (OdDemandProfiles db_oddp : db_oddp_l)
 				oddps.getOdDemandProfile().add(restoreODDemandProfile(db_oddp));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return oddps;
 	}
@@ -783,7 +783,7 @@ public class ScenarioRestorer {
 			}
 			if (null != sb) oddp.setContent(sb.toString());
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return oddp;
 	}
@@ -800,7 +800,7 @@ public class ScenarioRestorer {
 			for (DownstreamBoundaryCapacityProfiles db_dbcp : db_dbcp_l)
 				dbcps.getCapacityProfile().add(restoreCapacityProfile(db_dbcp));
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return dbcps;
 	}
@@ -824,7 +824,7 @@ public class ScenarioRestorer {
 			}
 			if (null != sb) cprofile.setContent(sb.toString());
 		} catch (TorqueException exc) {
-			SiriusErrorLog.addErrorMessage(exc.getMessage());
+			SiriusErrorLog.addError(exc.getMessage());
 		}
 		return cprofile;
 	}

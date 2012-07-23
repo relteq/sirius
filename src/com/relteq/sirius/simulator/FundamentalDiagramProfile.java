@@ -40,14 +40,13 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		
 		this.myScenario = myScenario;
 		isdone = false;
+		FD = new ArrayList<FundamentalDiagram>();
 		
 		// required
 		myLink = myScenario.getLinkWithId(getLinkId());
 		
-		if(myLink==null)
-			return;
-		
-		myLink.setFundamentalDiagramProfile(this);
+		if(myLink!=null)
+			myLink.setFundamentalDiagramProfile(this);
 		
 		// optional dt
 		if(getDt()!=null){
@@ -67,40 +66,31 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		}
 		
 		//  read fundamental diagrams
-		FD = new ArrayList<FundamentalDiagram>();
 		for(com.relteq.sirius.jaxb.FundamentalDiagram fd : getFundamentalDiagram()){
-			FundamentalDiagram _fd = new FundamentalDiagram(myLink);	// create empty fd
-	        _fd.settoDefault();					// set to default
-			_fd.copyfrom(fd);					// copy and normalize
+			FundamentalDiagram _fd = new FundamentalDiagram(myLink,fd);	// create empty fd
+//	        _fd.settoDefault();					// set to default
+//			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
 		}
 		
 	}
 	
-	protected boolean validate() {
+	protected void validate() {
 		
-		if(myLink==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in fundamental diagram: " + getLinkId());
-			return false;
-		}
+		if(myLink==null)
+			SiriusErrorLog.addError("Bad link id=" + getLinkId() + " in fundamental diagram.");
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkId());
-			return false;	
-		}
+		if( dtinseconds<=0 )
+			SiriusErrorLog.addError("Non-positive dt in fundamental diagram profile for link id=" + getLinkId() + ".");
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkId());
-			return false;	
-		}
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check fundamental diagrams
 		for(FundamentalDiagram fd : FD)
-			if(!fd.validate())
-				return false;
+			fd.validate();
 
-		return true;
 	}
 
 	protected void reset() throws SiriusException {
@@ -108,16 +98,13 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 		
 		// read start time, convert to stepinitial
 		double profile_starttime;	// [sec]
-		if( getStartTime()!=null){
-			profile_starttime = getStartTime().floatValue();
-		}
-		else
-			profile_starttime = 0f;
-
+		
+		profile_starttime = getStartTime()==null ? 0f : getStartTime().floatValue();
 		stepinitial = SiriusMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
-		for(FundamentalDiagram fd : FD)
-			fd.reset(myScenario.uncertaintyModel);
+		if(FD!=null)
+			for(FundamentalDiagram fd : FD)
+				fd.reset(myScenario.uncertaintyModel);
 		
 		// assign the fundamental diagram to the link
 		//update();	
@@ -125,6 +112,8 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 	}
 
 	protected void update() throws SiriusException {
+		if(myLink==null)
+			return;
 		if(isdone || FD.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){

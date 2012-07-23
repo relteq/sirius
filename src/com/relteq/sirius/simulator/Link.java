@@ -122,17 +122,17 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     	if(fd==null)
     		throw new SiriusException("Null parameter.");
     	
-    	FDfromEvent = new FundamentalDiagram(this);
-    	FDfromEvent.copyfrom(currentFD(0));			// copy current FD 
+    	FDfromEvent = new FundamentalDiagram(this,currentFD(0));		// copy current FD 
     	// note: we are copying from the zeroth FD for simplicity. The alternative is to 
     	// carry numEnsemble event FDs.
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
     	
-		if(!FDfromEvent.validate())
-			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
+    	SiriusErrorLog.clearErrorMessage();
+    	FDfromEvent.validate();
+		if(SiriusErrorLog.haserror())
+			throw new SiriusException("Fundamental diagram event could not be validated.");
 		
 		activeFDevent = true;
-//	    FD = FDfromEvent;
     }
 
 	/** @throws SiriusException 
@@ -219,6 +219,25 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
             	totaloutflow = Math.min( totaloutflow , control_maxflow );
             }    
 
+            // flow uncertainty model
+            if(myNetwork.myScenario.has_flow_unceratinty){
+
+            	double delta_flow=0.0;
+            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+	            
+				switch(myNetwork.myScenario.uncertaintyModel){
+				case uniform:
+					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					break;
+		
+				case gaussian:
+					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					break;
+				}
+	            
+				totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
+            }
+
             // split among types
             outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity);
         }
@@ -235,6 +254,24 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         	totaldensity = SiriusMath.sum(density[e]);
             spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
+            
+            // flow uncertainty model
+            if(myNetwork.myScenario.has_flow_unceratinty){
+            	double delta_flow=0.0;
+            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+	            
+				switch(myNetwork.myScenario.uncertaintyModel){
+				case uniform:
+					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					break;
+		
+				case gaussian:
+					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					break;
+				}
+				spaceSupply[e] = Math.max( 0d , spaceSupply[e] + delta_flow );
+				spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
+            }
     	}
     }
 	
@@ -265,29 +302,19 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected boolean validate() {
+	protected void validate() {
 		
-		if(!issource && begin_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect begin node id in link.");
-			return false;
-		}
+		if(!issource && begin_node==null)
+			SiriusErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
 
-		if(!issink && end_node==null){
-			SiriusErrorLog.addErrorMessage("Incorrect end node id in link.");
-			return false;
-		}
+		if(!issink && end_node==null)
+			SiriusErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
 		
-		if(_length<=0){
-			SiriusErrorLog.addErrorMessage("Non-positive length.");
-			return false;
-		}
+		if(_length<=0)
+			SiriusErrorLog.addError("Non-positive length in link id=" + getId() + ".");
 		
-		if(_lanes<=0){
-			SiriusErrorLog.addErrorMessage("Non-positive number of lanes.");
-			return false;
-		}
-		
-		return true;
+		if(_lanes<=0)
+			SiriusErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
 	/** @y.exclude */

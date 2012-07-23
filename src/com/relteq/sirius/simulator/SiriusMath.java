@@ -3,9 +3,11 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 
 public final class SiriusMath {
 	
+	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
 	
  	public static Double [] zeros(int n1){
@@ -182,5 +184,13 @@ public final class SiriusMath {
 			for(j=0;j<n2;j++)
 				y[i][j]=x[i][j];
 		return y;
+	}
+
+	public static double sampleZeroMeanUniform(double std_dev){
+		return std_dev*Math.sqrt(3)*(2*SiriusMath.random.nextDouble()-1);
+	}
+	
+	public static double sampleZeroMeanGaussian(double std_dev){
+		return std_dev*SiriusMath.random.nextGaussian();
 	}
 }
