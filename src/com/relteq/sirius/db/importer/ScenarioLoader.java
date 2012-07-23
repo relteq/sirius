@@ -66,6 +66,8 @@ public class ScenarioLoader {
 	public static Scenarios load(String filename) throws SiriusException {
 		com.relteq.sirius.simulator.Scenario scenario =
 				com.relteq.sirius.simulator.ObjectFactory.createAndLoadScenario(filename);
+		if (null == scenario)
+			throw new SiriusException("Could not load a scenario from file " + filename);
 		logger.info("Configuration file '" + filename + "' parsed");
 		Scenarios db_scenario = new ScenarioLoader().load(scenario);
 		logger.info("Scenario imported, ID=" + db_scenario.getId());
@@ -96,6 +98,7 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException {
+		if (null == scenario) return null;
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setId(scenario_id = uuid());
 		db_scenario.setProjectId(getProjectId());
