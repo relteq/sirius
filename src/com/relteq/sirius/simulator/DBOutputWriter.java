@@ -41,7 +41,7 @@ public class DBOutputWriter extends OutputWriterBase {
 
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
 			db_sr.setDataSources(db_ds);
-			db_sr.setScenarioId(getScenario().getId());
+			db_sr.setScenarioId(Integer.parseInt(getScenario().getId()));
 			db_sr.setRunNumber(run_number);
 			db_sr.setStartTime(Calendar.getInstance().getTime());
 			db_sr.setStatus(-1);

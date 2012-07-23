@@ -92,7 +92,7 @@ public class ImportExportTest {
 		com.relteq.sirius.om.Scenarios db_scenario = com.relteq.sirius.db.importer.ScenarioLoader.load(conffile.getPath());
 
 		File outfile = File.createTempFile("scenario_", ".xml");
-		System.out.println("Exporting " + db_scenario.getId() + " to " + outfile.getPath());
+		System.out.println("Exporting scenario " + db_scenario.getId() + " to " + outfile.getPath());
 		com.relteq.sirius.db.exporter.ScenarioRestorer.export(db_scenario.getId(), outfile.getPath());
 		outfile.delete();
 

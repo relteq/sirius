@@ -42,7 +42,7 @@ public class Lister {
 		}
 	}
 
-	public static void listRuns(String scenario_id) throws SiriusException {
+	public static void listRuns(int scenario_id) throws SiriusException {
 		initDB();
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);

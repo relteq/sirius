@@ -31,7 +31,7 @@ public class ScenarioLoader {
 	}
 
 	private String project_id;
-	private String scenario_id = null;
+	private int scenario_id;
 	/**
 	 * @return the project id
 	 */
@@ -41,7 +41,7 @@ public class ScenarioLoader {
 	/**
 	 * @return the generated scenario id
 	 */
-	private String getScenarioId() {
+	private int getScenarioId() {
 		return scenario_id;
 	}
 	private String [] vehicle_type_id = null;
@@ -100,11 +100,11 @@ public class ScenarioLoader {
 	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException {
 		if (null == scenario) return null;
 		Scenarios db_scenario = new Scenarios();
-		db_scenario.setId(scenario_id = uuid());
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
 		db_scenario.save(conn);
+		scenario_id = db_scenario.getId();
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));

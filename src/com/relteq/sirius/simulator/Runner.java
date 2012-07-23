@@ -153,7 +153,7 @@ public final class Runner {
 		com.relteq.sirius.db.Service.init();
 
 		logger.info("Loading scenario");
-		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(args[0]);
+		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(Integer.parseInt(args[0]));
 		
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();

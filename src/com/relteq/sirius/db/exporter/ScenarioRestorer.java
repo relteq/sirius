@@ -22,7 +22,7 @@ import com.relteq.sirius.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioRestorer {
-	public static void export(String id, String filename) throws SiriusException, JAXBException, SAXException {
+	public static void export(int id, String filename) throws SiriusException, JAXBException, SAXException {
 		com.relteq.sirius.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
 		scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 		JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
@@ -38,7 +38,7 @@ public class ScenarioRestorer {
 	 * @return the scenario
 	 * @throws SiriusException
 	 */
-	public static com.relteq.sirius.simulator.Scenario getScenario(String id) throws SiriusException {
+	public static com.relteq.sirius.simulator.Scenario getScenario(int id) throws SiriusException {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
 		if (null == scenario) {
 			if (SiriusErrorLog.haserror()) {
@@ -56,7 +56,7 @@ public class ScenarioRestorer {
 		factory = new com.relteq.sirius.simulator.JaxbObjectFactory();
 	}
 
-	private com.relteq.sirius.simulator.Scenario restore(String id) throws SiriusException {
+	private com.relteq.sirius.simulator.Scenario restore(int id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
 		Scenarios db_scenario = null;
 		try {
@@ -72,7 +72,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws SiriusException {
 		if (null == db_scenario) return null;
 		com.relteq.sirius.jaxb.Scenario scenario = factory.createScenario();
-		scenario.setId(db_scenario.getId());
+		scenario.setId(String.format("%d", db_scenario.getId()));
 		scenario.setName(db_scenario.getName());
 		scenario.setDescription(db_scenario.getDescription());
 		try{
