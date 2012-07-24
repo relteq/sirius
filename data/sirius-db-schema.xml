@@ -549,7 +549,7 @@
 	<table name="phases">
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
-		<column name="protected" javaName="is_protected" required="true" domain="BOOL" description=""/>
+		<column name="protected" javaName="isProtected" required="true" domain="BOOL" description=""/>
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
 		<column name="recall" required="true" domain="BOOL" description=""/>
@@ -582,8 +582,8 @@
 
 	<!-- Main Scenario Tables -->
 
-	<table name="scenarios">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
+	<table name="scenarios" idMethod="native">
+		<column name="id" primaryKey="true" type="INTEGER"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="network_connection_list_id" domain="STRING_ID"/>
 		<column name="od_list_id" domain="STRING_ID"/>
@@ -650,7 +650,7 @@
 	</table>
 	
 	<table name="network_lists">
-		<column name="scenario_id" required="true" domain="STRING_ID"/>
+		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="network_id" required="true" domain="STRING_ID"/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
@@ -678,7 +678,7 @@
 	
 	<table name="simulation_runs">
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="scenario_id" required="true" domain="STRING_ID"/>
+		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="run_number" required="true" type="INTEGER"/>
 		<column name="start_time" required="true" type="TIMESTAMP"/>
 		<column name="end_time" required="false" type="TIMESTAMP"/>

@@ -9,64 +9,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.torque.NoRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
-import com.relteq.sirius.om.ControllerSets;
-import com.relteq.sirius.om.DecisionPointSplitProfileSets;
-import com.relteq.sirius.om.DecisionPointSplitProfiles;
-import com.relteq.sirius.om.DecisionPointSplits;
-import com.relteq.sirius.om.DecisionPointSplitsPeer;
-import com.relteq.sirius.om.DemandProfileSets;
-import com.relteq.sirius.om.DemandProfiles;
-import com.relteq.sirius.om.Demands;
-import com.relteq.sirius.om.DemandsPeer;
-import com.relteq.sirius.om.DownstreamBoundaryCapacities;
-import com.relteq.sirius.om.DownstreamBoundaryCapacitiesPeer;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfileSets;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfiles;
-import com.relteq.sirius.om.EventSets;
-import com.relteq.sirius.om.FundamentalDiagramProfileSets;
-import com.relteq.sirius.om.FundamentalDiagramProfiles;
-import com.relteq.sirius.om.FundamentalDiagrams;
-import com.relteq.sirius.om.FundamentalDiagramsPeer;
-import com.relteq.sirius.om.InitialDensities;
-import com.relteq.sirius.om.InitialDensitiesPeer;
-import com.relteq.sirius.om.InitialDensitySets;
-import com.relteq.sirius.om.Links;
-import com.relteq.sirius.om.LinksPeer;
-import com.relteq.sirius.om.NetworkConnectionLists;
-import com.relteq.sirius.om.NetworkConnections;
-import com.relteq.sirius.om.NetworkConnectionsPeer;
-import com.relteq.sirius.om.NetworkLists;
-import com.relteq.sirius.om.Networks;
-import com.relteq.sirius.om.Nodes;
-import com.relteq.sirius.om.OdDemandProfileSets;
-import com.relteq.sirius.om.OdDemandProfiles;
-import com.relteq.sirius.om.OdDemands;
-import com.relteq.sirius.om.OdDemandsPeer;
-import com.relteq.sirius.om.OdLists;
-import com.relteq.sirius.om.Ods;
-import com.relteq.sirius.om.PhaseLinks;
-import com.relteq.sirius.om.PhaseLinksPeer;
-import com.relteq.sirius.om.Phases;
-import com.relteq.sirius.om.Scenarios;
-import com.relteq.sirius.om.ScenariosPeer;
-import com.relteq.sirius.om.SensorLists;
-import com.relteq.sirius.om.SignalLists;
-import com.relteq.sirius.om.Signals;
-import com.relteq.sirius.om.SplitRatioProfileSets;
-import com.relteq.sirius.om.SplitRatioProfiles;
-import com.relteq.sirius.om.SplitRatios;
-import com.relteq.sirius.om.SplitRatiosPeer;
-import com.relteq.sirius.om.VehicleTypeLists;
-import com.relteq.sirius.om.VehicleTypes;
-import com.relteq.sirius.om.VehicleTypesInListsPeer;
-import com.relteq.sirius.om.VehicleTypesPeer;
-import com.relteq.sirius.om.WeavingFactorSets;
-import com.relteq.sirius.om.WeavingFactors;
-import com.relteq.sirius.om.WeavingFactorsPeer;
+import com.relteq.sirius.om.*;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
@@ -74,7 +22,7 @@ import com.relteq.sirius.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioRestorer {
-	public static void export(String id, String filename) throws SiriusException, JAXBException, SAXException {
+	public static void export(int id, String filename) throws SiriusException, JAXBException, SAXException {
 		com.relteq.sirius.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
 		scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 		JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
@@ -90,8 +38,7 @@ public class ScenarioRestorer {
 	 * @return the scenario
 	 * @throws SiriusException
 	 */
-	public static com.relteq.sirius.simulator.Scenario getScenario(String id) throws SiriusException {
-		if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
+	public static com.relteq.sirius.simulator.Scenario getScenario(int id) throws SiriusException {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
 		if (null == scenario) {
 			if (SiriusErrorLog.haserror()) {
@@ -109,13 +56,26 @@ public class ScenarioRestorer {
 		factory = new com.relteq.sirius.simulator.JaxbObjectFactory();
 	}
 
-	private com.relteq.sirius.simulator.Scenario restore(String id) throws SiriusException {
+	private com.relteq.sirius.simulator.Scenario restore(int id) throws SiriusException {
+		com.relteq.sirius.db.Service.ensureInit();
+		Scenarios db_scenario = null;
 		try {
-			Scenarios db_scenario = ScenariosPeer.retrieveByPK(id);
-			com.relteq.sirius.simulator.Scenario scenario = (com.relteq.sirius.simulator.Scenario) factory.createScenario();
-			scenario.setId(db_scenario.getId());
-			scenario.setName(db_scenario.getName());
-			scenario.setDescription(db_scenario.getDescription());
+			db_scenario = ScenariosPeer.retrieveByPK(id);
+		} catch (NoRowsException exc) {
+			throw new SiriusException("Scenario " + id + " does not exist", exc);
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		}
+		return (com.relteq.sirius.simulator.Scenario) restoreScenario(db_scenario);
+	}
+
+	private com.relteq.sirius.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws SiriusException {
+		if (null == db_scenario) return null;
+		com.relteq.sirius.jaxb.Scenario scenario = factory.createScenario();
+		scenario.setId(String.format("%d", db_scenario.getId()));
+		scenario.setName(db_scenario.getName());
+		scenario.setDescription(db_scenario.getDescription());
+		try{
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
@@ -133,35 +93,36 @@ public class ScenarioRestorer {
 			scenario.setDownstreamBoundaryCapacityProfileSet(restoreDownstreamBoundaryCapacity(db_scenario.getDownstreamBoundaryCapacityProfileSets()));
 			scenario.setControllerSet(restoreControllerSet(db_scenario.getControllerSets()));
 			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
-			return scenario;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc.getCause());
+			throw new SiriusException(exc);
 		}
+		return scenario;
 	}
 
-	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) {
+	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) throws TorqueException {
 		com.relteq.sirius.jaxb.Settings settings = factory.createSettings();
 		settings.setUnits("US");
+		settings.setVehicleTypes(restoreVehicleTypes(db_scenario.getVehicleTypeLists()));
+		return settings;
+	}
+
+	private com.relteq.sirius.jaxb.VehicleTypes restoreVehicleTypes(VehicleTypeLists db_vtlists) {
+		if (null == db_vtlists) return null;
+		com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
+		Criteria crit = new Criteria();
+		crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.ID);
+		crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_vtlists.getId());
+		crit.add(VehicleTypesPeer.PROJECT_ID, db_vtlists.getProjectId());
+		crit.addAscendingOrderByColumn(VehicleTypesPeer.ID);
 		try {
-			VehicleTypeLists db_vtlists = db_scenario.getVehicleTypeLists();
-			if (null != db_vtlists) {
-				com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
-				List<com.relteq.sirius.jaxb.VehicleType> vtl = vts.getVehicleType();
-				Criteria crit = new Criteria();
-				crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.ID);
-				crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_vtlists.getId());
-				crit.add(VehicleTypesPeer.PROJECT_ID, db_vtlists.getProjectId());
-				crit.addAscendingOrderByColumn(VehicleTypesPeer.ID);
-				@SuppressWarnings("unchecked")
-				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
-				for (VehicleTypes db_vt : db_vt_l)
-					vtl.add(restoreVehicleType(db_vt));
-				settings.setVehicleTypes(vts);
-			}
+			@SuppressWarnings("unchecked")
+			List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
+			for (VehicleTypes db_vt : db_vt_l)
+				vts.getVehicleType().add(restoreVehicleType(db_vt));
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addError(exc.getMessage());
 		}
-		return settings;
+		return vts;
 	}
 
 	private com.relteq.sirius.jaxb.VehicleType restoreVehicleType(VehicleTypes db_vt) {
@@ -301,6 +262,7 @@ public class ScenarioRestorer {
 		link.setRoadName(db_link.getRoadName());
 		link.setDescription(db_link.getDescription());
 		link.setType(db_link.getType());
+		// TODO link.setLinkGeometry();
 		link.setLanes(db_link.getLanes());
 		link.setLength(db_link.getLength());
 		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
@@ -326,6 +288,7 @@ public class ScenarioRestorer {
 		idset.setId(db_idset.getId());
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
+		// TODO idset.setTstamp();
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
@@ -710,7 +673,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) {
 		com.relteq.sirius.jaxb.Phase phase = factory.createPhase();
 		phase.setNema(BigInteger.valueOf(db_ph.getPhase()));
-		phase.setProtected(db_ph.getIs_protected());
+		phase.setProtected(db_ph.getIsProtected());
 		phase.setPermissive(db_ph.getPermissive());
 		phase.setLag(db_ph.getLag());
 		phase.setRecall(db_ph.getRecall());

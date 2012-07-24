@@ -38,7 +38,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 			out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
 			out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
 		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc.getMessage());
+			throw new SiriusException(exc);
 		}
 	}
 
@@ -89,7 +89,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 			}
 			
 		} catch (IOException e) {
-			throw new SiriusException(e.getMessage());
+			throw new SiriusException(e);
 		}
 	}
 
