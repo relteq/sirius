@@ -69,7 +69,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	@Override
 	public void validate() {
 		if(myLink==null)
-			SiriusErrorLog.addError("Unknown link reference for sensor id=" + getId() +".");
+			SiriusErrorLog.addWarning("Unknown link reference for sensor id=" + getId() +".");
 	}
 
 	@Override
@@ -112,7 +112,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return myLink.computeSpeedInMPH(ensemble);
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// SensorLoopStation API
 	/////////////////////////////////////////////////////////////////////
@@ -121,7 +120,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return VDS;
 	}
 
-	
 	public ArrayList<com.relteq.sirius.sensor.DataSource> get_datasources() {
 		return _datasources;
 	}
@@ -135,17 +133,14 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 			this.q_max = q_max;
 	}
 
-	
 	public float getVf() {
 		return vf;
 	}
 
-	
 	public float getW() {
 		return w;
 	}
 
-	
 	public float getQ_max() {
 		return q_max;
 	}
