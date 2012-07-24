@@ -311,8 +311,9 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		@Override
 		public boolean register() {
 	        for(Link link : target2index.keySet())
-	        	if(!link.registerFlowController(this,target2index.get(link)))
-	        		return false;
+				if(link!=null)
+		        	if(!link.registerFlowController(this,target2index.get(link)))
+		        		return false;
 			return true;
 		}
 		
