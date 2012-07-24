@@ -130,9 +130,7 @@ public class XMLOutputWriterTest {
 		System.out.println();
 		Runner.main(args);
 		if (SiriusErrorLog.haserror()) {
-			System.out.println("==== ERRORS ====");
 			SiriusErrorLog.print();
-			System.out.println("================");
 			SiriusErrorLog.clearErrorMessage();
 		}
 	}

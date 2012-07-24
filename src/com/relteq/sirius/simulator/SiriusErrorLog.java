@@ -53,6 +53,8 @@ public final class SiriusErrorLog {
 			}
 			
 		}
+		if (haserror || haswarning)
+			System.out.println("----------------------------------------");
 		
 	}
 

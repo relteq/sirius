@@ -216,11 +216,11 @@
 
 	<target name="sql" depends="deps-generate" unless="sql.uptodate"
 			description="generate sql from xml db schema">
-		<ant antfile="${torque.buildfile}" target="sql">
+		<ant antfile="${torque.buildfile}" target="sql-all">
 			<property name="torque.database" value="derby"/>
 			<property name="torque.sql.dir" value="${torque.output.dir}/sql/derby"/>
 		</ant>
-		<ant antfile="${torque.buildfile}" target="sql">
+		<ant antfile="${torque.buildfile}" target="sql-all">
 			<property name="torque.database" value="postgresql"/>
 			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
 		</ant>

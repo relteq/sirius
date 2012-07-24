@@ -15,6 +15,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.log4j.Logger;
+
 /** Load, manipulate, and run scenarios. 
  * <p>
  * A scenario is a collection of,
@@ -591,6 +593,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			if(link!=null)
 				return link;
 		}
+		Logger.getLogger(Scenario.class).error("Link " + id + " not found");
 		return null;
 	}
 

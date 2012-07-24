@@ -322,6 +322,7 @@
       />
     </torque-data-model>
 
+<!--
     <echo>
       Executing the create-db.sql script ...
     </echo>
@@ -336,6 +337,7 @@
       userid="${torque.database.user}">
       <classpath refid="torque-classpath"/>
     </sql>
+-->
   </target>
 
   <!-- ================================================================ -->
@@ -841,5 +843,10 @@
       />
     </torque-data-model>
   </target>
+
+	<target name="sql-all">
+		<antcall target="sql"/>
+		<antcall target="create-db"/>
+	</target>
 
 </project>

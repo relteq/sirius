@@ -6,62 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
-import com.relteq.sirius.om.ControllerSets;
-import com.relteq.sirius.om.DecisionPointSplitProfileSets;
-import com.relteq.sirius.om.DecisionPointSplitProfiles;
-import com.relteq.sirius.om.DecisionPointSplits;
-import com.relteq.sirius.om.DemandProfileSets;
-import com.relteq.sirius.om.DemandProfiles;
-import com.relteq.sirius.om.Demands;
-import com.relteq.sirius.om.DownstreamBoundaryCapacities;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfileSets;
-import com.relteq.sirius.om.DownstreamBoundaryCapacityProfiles;
-import com.relteq.sirius.om.EventSets;
-import com.relteq.sirius.om.FundamentalDiagramProfileSets;
-import com.relteq.sirius.om.FundamentalDiagramProfiles;
-import com.relteq.sirius.om.FundamentalDiagrams;
-import com.relteq.sirius.om.InitialDensities;
-import com.relteq.sirius.om.InitialDensitySets;
-import com.relteq.sirius.om.LinkFamilies;
-import com.relteq.sirius.om.Links;
-import com.relteq.sirius.om.NetworkConnectionLists;
-import com.relteq.sirius.om.NetworkConnections;
-import com.relteq.sirius.om.NetworkLists;
-import com.relteq.sirius.om.Networks;
-import com.relteq.sirius.om.NodeFamilies;
-import com.relteq.sirius.om.Nodes;
-import com.relteq.sirius.om.OdDemandProfileSets;
-import com.relteq.sirius.om.OdDemandProfiles;
-import com.relteq.sirius.om.OdDemands;
-import com.relteq.sirius.om.OdLists;
-import com.relteq.sirius.om.Ods;
-import com.relteq.sirius.om.PhaseLinks;
-import com.relteq.sirius.om.Phases;
-import com.relteq.sirius.om.RouteSegmentLinks;
-import com.relteq.sirius.om.RouteSegments;
-import com.relteq.sirius.om.Scenarios;
-import com.relteq.sirius.om.SensorLists;
-import com.relteq.sirius.om.SignalLists;
-import com.relteq.sirius.om.Signals;
-import com.relteq.sirius.om.SplitRatioProfileSets;
-import com.relteq.sirius.om.SplitRatioProfiles;
-import com.relteq.sirius.om.SplitRatios;
-import com.relteq.sirius.om.VehicleTypeFamilies;
-import com.relteq.sirius.om.VehicleTypeLists;
-import com.relteq.sirius.om.VehicleTypes;
-import com.relteq.sirius.om.VehicleTypesInLists;
-import com.relteq.sirius.om.VehicleTypesPeer;
-import com.relteq.sirius.om.WeavingFactorSets;
-import com.relteq.sirius.om.WeavingFactors;
+import com.relteq.sirius.om.*;
 import com.relteq.sirius.simulator.Double2DMatrix;
-import com.relteq.sirius.simulator.ObjectFactory;
-import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
@@ -73,12 +26,12 @@ public class ScenarioLoader {
 	/**
 	 * @return a universally unique random string identifier
 	 */
-	protected String uuid() {
+	private String uuid() {
 		return com.relteq.sirius.db.util.UUID.generate();
 	}
 
 	private String project_id;
-	private String scenario_id = null;
+	private int scenario_id;
 	/**
 	 * @return the project id
 	 */
@@ -88,7 +41,7 @@ public class ScenarioLoader {
 	/**
 	 * @return the generated scenario id
 	 */
-	private String getScenarioId() {
+	private int getScenarioId() {
 		return scenario_id;
 	}
 	private String [] vehicle_type_id = null;
@@ -98,9 +51,11 @@ public class ScenarioLoader {
 	private Map<String, String> od_id = null;
 	private Map<String, String> route_segment_id = null;
 
-	private ScenarioLoader() {
+	public ScenarioLoader() {
 		project_id = "default";
 	}
+
+	private static Logger logger = Logger.getLogger(ScenarioLoader.class);
 
 	/**
 	 * Loads a scenario from a file
@@ -109,24 +64,26 @@ public class ScenarioLoader {
 	 * @throws SiriusException
 	 */
 	public static Scenarios load(String filename) throws SiriusException {
-		ScenarioLoader sl = new ScenarioLoader();
-		try {
-			if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
-			Scenarios db_scenario = sl.load(ObjectFactory.createAndLoadScenario(filename));
-			System.out.println("Scenario imported, ID='" + db_scenario.getId() + "'");
-			return db_scenario;
-		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
-		}
+		com.relteq.sirius.simulator.Scenario scenario =
+				com.relteq.sirius.simulator.ObjectFactory.createAndLoadScenario(filename);
+		if (null == scenario)
+			throw new SiriusException("Could not load a scenario from file " + filename);
+		logger.info("Configuration file '" + filename + "' parsed");
+		Scenarios db_scenario = new ScenarioLoader().load(scenario);
+		logger.info("Scenario imported, ID=" + db_scenario.getId());
+		return db_scenario;
 	}
 
-	public Scenarios load(Scenario scenario) throws TorqueException {
+	public Scenarios load(com.relteq.sirius.simulator.Scenario scenario) throws SiriusException {
+		com.relteq.sirius.db.Service.ensureInit();
 		try {
 			conn = Transaction.begin();
 			Scenarios db_scenario = save(scenario);
 			Transaction.commit(conn);
 			conn = null;
 			return db_scenario;
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
@@ -140,13 +97,14 @@ public class ScenarioLoader {
 	 * @param scenario
 	 * @throws TorqueException
 	 */
-	protected Scenarios save(Scenario scenario) throws TorqueException {
+	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException {
+		if (null == scenario) return null;
 		Scenarios db_scenario = new Scenarios();
-		db_scenario.setId(scenario_id = uuid());
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
 		db_scenario.save(conn);
+		scenario_id = db_scenario.getId();
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
@@ -174,7 +132,7 @@ public class ScenarioLoader {
 	 * @return the imported vehicle type list
 	 * @throws TorqueException
 	 */
-	protected VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
+	private VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeLists db_vtl = new VehicleTypeLists();
 		db_vtl.setId(uuid());
 		db_vtl.setProjectId(getProjectId());
@@ -235,7 +193,7 @@ public class ScenarioLoader {
 	 * @param nl
 	 * @throws TorqueException
 	 */
-	protected void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
 		network_id = new HashMap<String, String>(nl.getNetwork().size());
 		link_family_id = new HashMap<String, String>();
 		node_family_id = new HashMap<String, String>();
@@ -275,7 +233,7 @@ public class ScenarioLoader {
 	 * @return the imported network
 	 * @throws TorqueException
 	 */
-	protected Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
+	private Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
 		Networks db_network = new Networks();
 		String id = uuid();
 		network_id.put(network.getId(), id);
@@ -334,6 +292,7 @@ public class ScenarioLoader {
 		db_link.setRoadName(link.getRoadName());
 		db_link.setDescription(link.getDescription());
 		db_link.setType(link.getType());
+		// TODO the link geometry serialization is to be revised
 		if (null != link.getLinkGeometry()) db_link.setShape(link.getLinkGeometry().toString());
 		db_link.setLanes(link.getLanes());
 		db_link.setLength(link.getLength());
@@ -388,7 +347,7 @@ public class ScenarioLoader {
 		Phases db_phase = new Phases();
 		db_phase.setSignals(db_signal);
 		db_phase.setPhase(phase.getNema().intValue());
-		db_phase.setIs_protected(phase.isProtected());
+		db_phase.setIsProtected(phase.isProtected());
 		db_phase.setPermissive(phase.isPermissive());
 		db_phase.setLag(phase.isLag());
 		db_phase.setRecall(phase.isRecall());
@@ -447,7 +406,7 @@ public class ScenarioLoader {
 	 * @return the imported initial density set
 	 * @throws TorqueException
 	 */
-	protected InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
+	private InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
 		if (null == idset) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setId(uuid());
@@ -472,7 +431,7 @@ public class ScenarioLoader {
 	 * @return the imported weaving factor set
 	 * @throws TorqueException
 	 */
-	protected WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
+	private WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
 		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
 		db_wfset.setId(uuid());
