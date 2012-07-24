@@ -236,6 +236,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 				}
 	            
 				totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
+				totaloutflow = Math.min( totaloutflow , totaldensity );
             }
 
             // split among types
