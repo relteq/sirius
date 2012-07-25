@@ -86,31 +86,28 @@ public class DBOutputWriter extends OutputWriterBase {
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
 		for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
-				LinkDataTotal data = new LinkDataTotal();
-				try {
-					data.setLinkId(link.getId());
-					data.setNetworkId(network.getId());
-					data.setDataSourceId(data_source_id);
-				} catch (TorqueException exc) {
-					throw new SiriusException(exc);
-				}
-				data.setTs(ts.getTime());
-				data.setAggregation("raw");
 				Link _link = (Link) link;
-				if (exportflows) {
-					data.setInFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_inflow[0])));
-					data.setOutFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_outflow[0])));
-				}
-				data.setDensity(new BigDecimal(SiriusMath.sum(_link.cumulative_density[0]) * invsteps));
-				double ffspeed = _link.getVfInMPH(0);
-				if (!Double.isNaN(ffspeed)) data.setFreeFlowSpeed(new BigDecimal(ffspeed));
-				double capacity = _link.getCapacityInVPH(0);
-				if (!Double.isNaN(capacity)) data.setCapacity(new BigDecimal(capacity));
-				_link.reset_cumulative();
 				try {
-					data.save(conn);
+					LinkDataTotal db_ldt = new LinkDataTotal();
+					db_ldt.setLinkId(link.getId());
+					db_ldt.setNetworkId(network.getId());
+					db_ldt.setDataSourceId(data_source_id);
+					db_ldt.setTs(ts.getTime());
+					db_ldt.setAggregation("raw");
+					if (exportflows) {
+						db_ldt.setInFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_inflow[0])));
+						db_ldt.setOutFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_outflow[0])));
+					}
+					db_ldt.setDensity(new BigDecimal(SiriusMath.sum(_link.cumulative_density[0]) * invsteps));
+					double ffspeed = _link.getVfInMPH(0);
+					if (!Double.isNaN(ffspeed)) db_ldt.setFreeFlowSpeed(new BigDecimal(ffspeed));
+					double capacity = _link.getCapacityInVPH(0);
+					if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
+					db_ldt.save(conn);
 				} catch (TorqueException exc) {
 					throw new SiriusException(exc);
+				} finally {
+					_link.reset_cumulative();
 				}
 			}
 		}
