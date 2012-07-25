@@ -25,27 +25,31 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
 
+	private Scenarios db_scenario = null;
+
 	private void createDataSource() throws TorqueException {
 		Connection conn = null;
 		try {
 			conn = Transaction.begin();
+
+			if (null == db_scenario)
+				db_scenario = ScenariosPeer.retrieveByPK(Integer.parseInt(getScenario().getId()), conn);
 
 			com.relteq.sirius.om.DataSources db_ds = new com.relteq.sirius.om.DataSources();
 			db_ds.setId(data_source_id = com.relteq.sirius.db.util.UUID.generate());
 			db_ds.save(conn);
 
 			Criteria crit = new Criteria();
-			crit.add(com.relteq.sirius.om.SimulationRunsPeer.SCENARIO_ID, Integer.parseInt(getScenario().getId()));
 			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);
 			crit.setLimit(1);
 			@SuppressWarnings("unchecked")
-			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = com.relteq.sirius.om.SimulationRunsPeer.doSelect(crit);
+			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = db_scenario.getSimulationRunss(crit);
 			final int run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
 			logger.info("Run number: " + run_number);
 
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
 			db_sr.setDataSources(db_ds);
-			db_sr.setScenarioId(Integer.parseInt(getScenario().getId()));
+			db_sr.setScenarios(db_scenario);
 			db_sr.setRunNumber(run_number);
 			db_sr.setStartTime(Calendar.getInstance().getTime());
 			db_sr.setStatus(-1);
