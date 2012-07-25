@@ -23,7 +23,7 @@ public class Lister {
 			@SuppressWarnings("unchecked")
 			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(new Criteria());
 			for (Scenarios db_scenario : db_scenarios) {
-				StringBuilder sb = new StringBuilder(db_scenario.getId());
+				StringBuilder sb = new StringBuilder(String.format("%2d", db_scenario.getId()));
 				if (null != db_scenario.getName())
 					sb.append(" ").append(db_scenario.getName());
 				if (null != db_scenario.getDescription())
