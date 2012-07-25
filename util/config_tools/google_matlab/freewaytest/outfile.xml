@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AuroraRNM>
+   <network controlled="true" id="-1" name="none" top="true" tp="0">
+      <description>none</description>
+      <position>
+         <point x="0" y="0" z="0"/>
+      </position>
+      <LinkList>
+         <link id="2001" lanes="1" length="1" name="Link 2001" type="FW">
+            <begin id="1"/>
+            <end id="2"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2002" lanes="1" length="1" name="Link 2002" type="FW">
+            <begin id="2"/>
+            <end id="3"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2003" lanes="1" length="1" name="Link 2003" type="FW">
+            <begin id="3"/>
+            <end id="4"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2004" lanes="1" length="1" name="Link 2004" type="FW">
+            <begin id="4"/>
+            <end id="5"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2005" lanes="1" length="1" name="Link 2005" type="FW">
+            <begin id="5"/>
+            <end id="6"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2006" lanes="1" length="1" name="Link 2006" type="FW">
+            <begin id="6"/>
+            <end id="7"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2007" lanes="1" length="1" name="Link 2007" type="FW">
+            <begin id="7"/>
+            <end id="8"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2008" lanes="1" length="1" name="Link 2008" type="FW">
+            <begin id="8"/>
+            <end id="9"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2009" lanes="1" length="1" name="Link 2009" type="FW">
+            <begin id="9"/>
+            <end id="10"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+         <link id="2010" lanes="1" length="1" name="Link 2010" type="FW">
+            <begin id="10"/>
+            <end id="11"/>
+            <fd densityCritical="1" densityJam="1" flowMax="1"/>
+            <density>
+               <CONTENTS>0</CONTENTS>
+            </density>
+            <dynamics type="CTM"/>
+            <position>
+               <point x="0" y="0" z="0"/>
+               <point x="0" y="0" z="0"/>
+            </position>
+            <qmax>
+               <CONTENTS>0</CONTENTS>
+            </qmax>
+         </link>
+      </LinkList>
+      <MonitorList/>
+      <SensorList/>
+      <NodeList>
+         <node description="node 1" id="1" name="node 1" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0348" y="-37.5599" z="0"/>
+            </position>
+         </node>
+         <node description="node 2" id="2" name="node 2" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0253" y="-37.5497" z="0"/>
+            </position>
+         </node>
+         <node description="node 3" id="3" name="node 3" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0224" y="-37.5458" z="0"/>
+            </position>
+         </node>
+         <node description="node 4" id="4" name="node 4" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0204" y="-37.5432" z="0"/>
+            </position>
+         </node>
+         <node description="node 5" id="5" name="node 5" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0066" y="-37.532" z="0"/>
+            </position>
+         </node>
+         <node description="node 6" id="6" name="node 6" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-122.0011" y="-37.5291" z="0"/>
+            </position>
+         </node>
+         <node description="node 7" id="7" name="node 7" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-121.9981" y="-37.5275" z="0"/>
+            </position>
+         </node>
+         <node description="node 8" id="8" name="node 8" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-121.9922" y="-37.5246" z="0"/>
+            </position>
+         </node>
+         <node description="node 9" id="9" name="node 9" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-121.9859" y="-37.5215" z="0"/>
+            </position>
+         </node>
+         <node description="node 10" id="10" name="node 10" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-121.9838" y="-37.5203" z="0"/>
+            </position>
+         </node>
+         <node description="node 11" id="11" name="node 11" type="F">
+            <postmile>0</postmile>
+            <position>
+               <point x="-121.9743" y="-37.5127" z="0"/>
+            </position>
+         </node>
+      </NodeList>
+   </network>
+   <settings>
+      <display timeMax="24" timeout="50" tp="0" tsMax="50000"/>
+      <VehicleTypes>
+         <vtype name="SOV" weight="1.0"/>
+      </VehicleTypes>
+   </settings>
+</AuroraRNM>

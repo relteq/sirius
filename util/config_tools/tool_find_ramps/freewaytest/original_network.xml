@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario id="null" name="New Scenario" schemaVersion="1.0.20" xmlns:aurora="http://path.berkeley.edu/aurora">
+  <network name="New Network" ml_control="false" q_control="false" dt="300" id="-1">
+    <description>Created by Network Editor version xsd-1.0.20-53-g63cb19d</description>
+    <position>
+      <point lat="37.53762027176077" lng="-122.00626373291016"/>
+    </position>
+    <MonitorList/>
+    <NetworkList/>
+    <NodeList>
+      <node name="Node -1" type="F" id="-1">
+        <outputs>
+          <output link_id="-1"/>
+        </outputs>
+        <inputs/>
+        <position>
+          <point lat="37.56003744778131" lng="-122.03505992889404"/>
+        </position>
+      </node>
+      <node name="Node -2" type="F" id="-2">
+        <outputs/>
+        <inputs>
+          <input link_id="-1">
+            <weavingfactors></weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.51520309574024" lng="-121.97746753692627"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList>
+      <link name="-1 -> -2" road_name="I-880 S" lanes="1" length="4.508904895441632" type="ST" id="-1" record="false">
+        <description></description>
+        <begin node_id="-1"/>
+        <end node_id="-2"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link>
+    </LinkList>
+    <SignalList/>
+    <ODList/>
+    <SensorList/>
+    <DirectionsCache>
+      <DirectionsCacheEntry avoidHighways="false" road_name="I-880 S">
+        <From>
+          <ALatLng lat="37.56003744778131" lng="-122.03505992889404"/>
+        </From>
+        <To>
+          <ALatLng lat="37.51520309574024" lng="-121.97746753692627"/>
+        </To>
+        <EncodedPolyline zoomFactor="2" numLevels="18">
+          <Points>q}fdFt}ygVfZk\dJeJbM_J|c@gZxQoMfX}QnE{D|EsGpD_Hvn@{vAtk@uyArB{DvIoMxSgX</Points>
+          <Levels>PAEAA@DBHBDEACP</Levels>
+        </EncodedPolyline>
+      </DirectionsCacheEntry>
+    </DirectionsCache>
+  </network>
+  <settings>
+    <units>US</units>
+  </settings>
+  <SplitRatioProfileSet>
+    <splitratios node_id="-1" dt="300"/>
+    <splitratios node_id="-2" dt="300"/>
+  </SplitRatioProfileSet>
+</scenario>

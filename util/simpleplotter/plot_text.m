@@ -1,4 +1,4 @@
-function []=plot_csv(configfile,outprefix)
+function []=plot_text(configfile,outprefix)
 
 fnformat = sprintf('%s_%%s_0.txt',outprefix);
 
