@@ -16,16 +16,9 @@ import com.relteq.sirius.simulator.SiriusException;
  * Implements "list" commands
  */
 public class Lister {
-	/**
-	 * Initialize the DB service if it hasn't been initialized yet
-	 * @throws SiriusException
-	 */
-	private static void initDB() throws SiriusException {
-		if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
-	}
 
 	public static void listScenarios() throws SiriusException {
-		initDB();
+		com.relteq.sirius.db.Service.ensureInit();
 		try {
 			@SuppressWarnings("unchecked")
 			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(new Criteria());
@@ -43,7 +36,7 @@ public class Lister {
 	}
 
 	public static void listRuns(int scenario_id) throws SiriusException {
-		initDB();
+		com.relteq.sirius.db.Service.ensureInit();
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);
 			DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
