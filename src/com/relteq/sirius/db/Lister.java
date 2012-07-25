@@ -10,6 +10,7 @@ import org.apache.torque.util.Criteria;
 import com.relteq.sirius.om.Scenarios;
 import com.relteq.sirius.om.ScenariosPeer;
 import com.relteq.sirius.om.SimulationRuns;
+import com.relteq.sirius.om.SimulationRunsPeer;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
@@ -20,8 +21,10 @@ public class Lister {
 	public static void listScenarios() throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
 		try {
+			Criteria crit = new Criteria();
+			crit.addAscendingOrderByColumn(ScenariosPeer.ID);
 			@SuppressWarnings("unchecked")
-			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(new Criteria());
+			List<Scenarios> db_scenarios = ScenariosPeer.doSelect(crit);
 			for (Scenarios db_scenario : db_scenarios) {
 				StringBuilder sb = new StringBuilder(String.format("%2d", db_scenario.getId()));
 				if (null != db_scenario.getName())
@@ -37,11 +40,13 @@ public class Lister {
 
 	public static void listRuns(int scenario_id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
+		DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);
-			DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+			Criteria crit = new Criteria();
+			crit.addAscendingOrderByColumn(SimulationRunsPeer.RUN_NUMBER);
 			@SuppressWarnings("unchecked")
-			List<SimulationRuns> db_run_l = db_scenario.getSimulationRunss();
+			List<SimulationRuns> db_run_l = db_scenario.getSimulationRunss(crit);
 			for (SimulationRuns db_sr : db_run_l) {
 				StringBuilder sb = new StringBuilder(String.format("%2d", db_sr.getRunNumber()));
 				if (null != db_sr.getStartTime()) {
@@ -52,7 +57,7 @@ public class Lister {
 				System.out.println(sb.toString());
 			}
 		} catch (NoRowsException exc) {
-			throw new SiriusException("Scenario '" + scenario_id + "\' does not exist");
+			throw new SiriusException("Scenario " + scenario_id + " does not exist");
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
