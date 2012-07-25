@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
@@ -22,6 +23,8 @@ public class DBOutputWriter extends OutputWriterBase {
 		super(scenario);
 	}
 
+	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
+
 	private void createDataSource() throws TorqueException {
 		Connection conn = null;
 		try {
@@ -38,6 +41,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			@SuppressWarnings("unchecked")
 			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = com.relteq.sirius.om.SimulationRunsPeer.doSelect(crit);
 			final int run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
+			logger.info("Run number: " + run_number);
 
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
 			db_sr.setDataSources(db_ds);
