@@ -65,8 +65,31 @@ public class DBOutputWriter extends OutputWriterBase {
 		}
 	}
 
+	java.util.Map<String, String> vt_name2id = null;
+
+	private String getVehicleTypeId(String name, Connection conn) throws SiriusException {
+		if (null == vt_name2id) {
+			vt_name2id = new java.util.TreeMap<String, String>();
+			logger.info("Loading vehicle type IDs");
+			Criteria crit = new Criteria();
+			crit.addJoin(VehicleTypesPeer.ID, VehicleTypesInListsPeer.VEHICLE_TYPE_ID);
+			crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_scenario.getVehicleTypeListId());
+			try {
+				@SuppressWarnings("unchecked")
+				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
+				for (VehicleTypes db_vt : db_vt_l)
+					vt_name2id.put(db_vt.getName(), db_vt.getId());
+			} catch (TorqueException exc) {
+				throw new SiriusException(exc);
+			}
+		}
+		return vt_name2id.get(name);
+	}
+
 	@Override
 	public void open(int run_id) throws SiriusException {
+		if (1 != scenario.numEnsemble)
+			logger.warn("scenario.numEnsembles != 1");
 		try {
 			createDataSource();
 			conn = Transaction.begin();
@@ -108,6 +131,22 @@ public class DBOutputWriter extends OutputWriterBase {
 					double capacity = _link.getCapacityInVPH(0);
 					if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
 					db_ldt.save(conn);
+
+					for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
+						LinkDataDetailed db_ldd = new LinkDataDetailed();
+						db_ldd.setLinkId(_link.getId());
+						db_ldd.setNetworkId(network.getId());
+						db_ldd.setDataSourceId(data_source_id);
+						db_ldd.setVehicleTypeId(getVehicleTypeId(scenario.getVehicleTypeNames()[vt_ind], conn));
+						db_ldd.setTs(ts.getTime());
+						db_ldd.setAggregation("raw");
+						if (exportflows) {
+							db_ldd.setInFlow(new BigDecimal(_link.cumulative_inflow[0][vt_ind]));
+							db_ldd.setOutFlow(new BigDecimal(_link.cumulative_outflow[0][vt_ind]));
+						}
+						db_ldd.setDensity(new BigDecimal(_link.cumulative_density[0][vt_ind] * invsteps));
+						db_ldd.save(conn);
+					}
 				} catch (TorqueException exc) {
 					throw new SiriusException(exc);
 				} finally {
