@@ -69,13 +69,16 @@ public class DBOutputWriter extends OutputWriterBase {
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
+		ts = Calendar.getInstance();
+		ts.set(Calendar.MILLISECOND, 0);
 	}
+
+	private Calendar ts = null;
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		boolean firststep = 0 == scenario.clock.getCurrentstep();
 		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
-		Calendar ts = Calendar.getInstance();
 		double min = Math.floor(time / 60);
 		double hrs = Math.floor(min / 60);
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
@@ -128,6 +131,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				conn = null;
 			}
 		}
+		ts = null;
 		if (null != data_source_id)
 			try {
 				com.relteq.sirius.om.SimulationRuns db_sr = com.relteq.sirius.om.SimulationRunsPeer.retrieveByPK(data_source_id);
