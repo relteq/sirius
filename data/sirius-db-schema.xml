@@ -743,8 +743,8 @@
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="od_id" domain="STRING_ID"/>
+		<column name="route_segment_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
@@ -819,8 +819,8 @@
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="od_id" domain="STRING_ID"/>
+		<column name="route_segment_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
