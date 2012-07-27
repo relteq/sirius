@@ -111,48 +111,105 @@ public class DBOutputWriter extends OutputWriterBase {
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
 		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
+		// output period, hr
+		double dt = scenario.getSimDtInSeconds() * outsteps / 3600.0d;
+
 		for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 				Link _link = (Link) link;
 				try {
-					LinkDataTotal db_ldt = new LinkDataTotal();
-					db_ldt.setLinkId(link.getId());
-					db_ldt.setNetworkId(network.getId());
-					db_ldt.setDataSourceId(data_source_id);
-					db_ldt.setTs(ts.getTime());
-					db_ldt.setAggregation("raw");
-					if (exportflows) {
-						db_ldt.setInFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_inflow[0])));
-						db_ldt.setOutFlow(new BigDecimal(SiriusMath.sum(_link.cumulative_outflow[0])));
-					}
-					db_ldt.setDensity(new BigDecimal(SiriusMath.sum(_link.cumulative_density[0]) * invsteps));
-					double ffspeed = _link.getVfInMPH(0);
-					if (!Double.isNaN(ffspeed)) db_ldt.setFreeFlowSpeed(new BigDecimal(ffspeed));
-					double capacity = _link.getCapacityInVPH(0);
-					if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
-					db_ldt.save(conn);
-
-					for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
-						LinkDataDetailed db_ldd = new LinkDataDetailed();
-						db_ldd.setLinkId(_link.getId());
-						db_ldd.setNetworkId(network.getId());
-						db_ldd.setDataSourceId(data_source_id);
-						db_ldd.setVehicleTypeId(getVehicleTypeId(scenario.getVehicleTypeNames()[vt_ind], conn));
-						db_ldd.setTs(ts.getTime());
-						db_ldd.setAggregation("raw");
-						if (exportflows) {
-							db_ldd.setInFlow(new BigDecimal(_link.cumulative_inflow[0][vt_ind]));
-							db_ldd.setOutFlow(new BigDecimal(_link.cumulative_outflow[0][vt_ind]));
-						}
-						db_ldd.setDensity(new BigDecimal(_link.cumulative_density[0][vt_ind] * invsteps));
-						db_ldd.save(conn);
-					}
+					LinkDataTotal db_ldt = fill_total(_link, exportflows, invsteps, dt);
+					fill_detailed(_link, exportflows, invsteps, dt, db_ldt.getSpeed());
 				} catch (TorqueException exc) {
 					throw new SiriusException(exc);
 				} finally {
 					_link.reset_cumulative();
 				}
 			}
+		}
+	}
+
+	/**
+	 * Fills link_data_total table
+	 * @param link
+	 * @param exportflows
+	 * @param invsteps
+	 * @param dt
+	 * @return the stored row
+	 * @throws TorqueException
+	 */
+	private LinkDataTotal fill_total(Link link, boolean exportflows, double invsteps, double dt) throws TorqueException {
+		LinkDataTotal db_ldt = new LinkDataTotal();
+		db_ldt.setLinkId(link.getId());
+		db_ldt.setNetworkId(link.myNetwork.getId());
+		db_ldt.setDataSourceId(data_source_id);
+		db_ldt.setTs(ts.getTime());
+		db_ldt.setAggregation("raw");
+		// mean density, veh
+		double density = SiriusMath.sum(link.cumulative_density[0]) * invsteps;
+		db_ldt.setDensity(new BigDecimal(density));
+		// free flow speed, mph
+		double ffspeed = link.getVfInMPH(0);
+		if (!Double.isNaN(ffspeed)) db_ldt.setFreeFlowSpeed(new BigDecimal(ffspeed));
+		if (exportflows) {
+			db_ldt.setInFlow(new BigDecimal(SiriusMath.sum(link.cumulative_inflow[0])));
+			// output flow, veh
+			double outflow = SiriusMath.sum(link.cumulative_outflow[0]);
+			db_ldt.setOutFlow(new BigDecimal(outflow));
+			// speed, mph
+			double speed = Double.NaN;
+			if (density <= 0)
+				speed = ffspeed;
+			else {
+				speed = outflow * link.getLengthInMiles() / (dt * density);
+				if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
+			}
+			if (!Double.isNaN(speed)) db_ldt.setSpeed(new BigDecimal(speed));
+		}
+		// maximum flow, vph
+		double capacity = link.getCapacityInVPH(0);
+		if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
+		db_ldt.save(conn);
+		return db_ldt;
+	}
+
+	/**
+	 * Fills link_data_detailed table
+	 * @param link
+	 * @param exportflows
+	 * @param invsteps
+	 * @param dt
+	 * @param total_speed
+	 * @throws TorqueException
+	 * @throws SiriusException
+	 */
+	private void fill_detailed(Link link, boolean exportflows, double invsteps, double dt, BigDecimal total_speed) throws TorqueException, SiriusException {
+		for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
+			LinkDataDetailed db_ldd = new LinkDataDetailed();
+			db_ldd.setLinkId(link.getId());
+			db_ldd.setNetworkId(link.myNetwork.getId());
+			db_ldd.setDataSourceId(data_source_id);
+			db_ldd.setVehicleTypeId(getVehicleTypeId(scenario.getVehicleTypeNames()[vt_ind], conn));
+			db_ldd.setTs(ts.getTime());
+			db_ldd.setAggregation("raw");
+			double density = link.cumulative_density[0][vt_ind] * invsteps;
+			db_ldd.setDensity(new BigDecimal(density));
+			if (exportflows) {
+				db_ldd.setInFlow(new BigDecimal(link.cumulative_inflow[0][vt_ind]));
+				double outflow = link.cumulative_outflow[0][vt_ind];
+				db_ldd.setOutFlow(new BigDecimal(outflow));
+				if (density <= 0)
+					db_ldd.setSpeed(total_speed);
+				else {
+					// speed, mph
+					double speed = outflow * link.getLengthInMiles() / (dt * density);
+					// free flow speed, mph
+					double ffspeed = link.getVfInMPH(0);
+					if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
+					db_ldd.setSpeed(new BigDecimal(speed));
+				}
+			}
+			db_ldd.save(conn);
 		}
 	}
 
