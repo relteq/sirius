@@ -27,7 +27,7 @@ public class ScenarioLoader {
 	 * @return a universally unique random string identifier
 	 */
 	private String uuid() {
-		return com.relteq.sirius.db.util.UUID.generate();
+		return com.relteq.sirius.util.UUID.generate();
 	}
 
 	private String project_id;
