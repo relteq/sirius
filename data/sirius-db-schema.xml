@@ -494,7 +494,7 @@
 	</table>
 
 
-	<!-- Events TODO -->
+	<!-- Events -->
 
 	<table name="event_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
@@ -522,15 +522,15 @@
 	<!-- Shared Structures -->
 
 	<table name="parameters">
-		<column name="scenario_element_id" required="true" domain="STRING_ID" description="Reference to the scenario element (sensor, controller, queue controller, or event) with parameters."/>
-		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="scenario_element_id" primaryKey="true" domain="STRING_ID" description="Reference to the scenario element (sensor, controller, queue controller, or event) with parameters."/>
+		<column name="name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="value" required="true" domain="VALUE_BUF"/>
 	</table>
 
 	<table name="referenced_scenario_elements">
-		<column name="parent_element_id" required="true" domain="STRING_ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="feedback" required="true" domain="BOOL" description="Is it a feedback or a target scenario element - true means feedback, false means target."/>
-		<column name="scenario_element_id" required="true" domain="STRING_ID" description="Reference to the scenario element."/>
+		<column name="parent_element_id" primaryKey="true" domain="STRING_ID" description="ID of the controller or the event that works with referenced scenario elements."/>
+		<column name="feedback" primaryKey="true" domain="BOOL" description="Is it a feedback or a target scenario element - true means feedback, false means target."/>
+		<column name="scenario_element_id" primaryKey="true" domain="STRING_ID" description="Reference to the scenario element."/>
 		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|event."/>
 	</table>
 
@@ -740,7 +740,6 @@
 
 
 	<!-- Link Performance Measures -->
-	
 	
 	<table name="link_performance_total">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
