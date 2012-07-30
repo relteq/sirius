@@ -121,73 +121,27 @@
 		</foreign-key>
 	</table>
 
+	<!-- Destination Networks -->
 
-	<!-- ODs, Route Segments, Decision Points TODO -->
-
-	<table name="od_lists">
+	<table name="destination_networks">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-	</table>
-
-	<table name="ods">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_list_id" required="true" domain="STRING_ID"/>
-		<column name="origin_link_id" required="true" domain="STRING_ID"/>
 		<column name="destination_link_id" required="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="od_lists">
-			<reference local="od_list_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="origin_link_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="route_segments">
+	<table name="destination_network_links">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-	</table>
-
-	<table name="route_segment_links">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="number" required="true" type="INTEGER" description="Order of the link in the route segment."/>
+		<column name="destination_network_id" primaryKey="true" domain="STRING_ID"/>
 		<foreign-key foreignTable="link_families">
-			<reference local="link_id" foreign="id"/>
+			<reference local="id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="route_segments">
-			<reference local="route_segment_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
-	<table name="od_route_segments">
-		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="route_segment_id" primaryKey="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="ods">
-			<reference local="od_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="route_segments">
-			<reference local="route_segment_id" foreign="id"/>
+		<foreign-key foreignTable="destination_networks">
+			<reference local="destination_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
-
-	<table name="od_decision_points">
-		<column name="od_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="ods">
-			<reference local="od_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
 
 
 	<!-- Routes TODO -->
@@ -239,6 +193,7 @@
 	<table name="initial_densities">
 		<column name="initial_density_set_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID" "If the destination is not specified, the demand is added to the background flow."/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="density" domain="DECIMAL"/>
 		<foreign-key foreignTable="initial_density_sets">
@@ -246,6 +201,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -296,6 +254,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="split_ratio_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID" "If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="split_ratio_profile_sets">
@@ -303,6 +262,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="node_families">
 			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -321,51 +283,6 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="vehicle_type_families">
-			<reference local="vehicle_type_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
-
-	<!-- Decision Point Splits -->
-
-	<table name="decision_point_split_profile_sets">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-	</table>
-
-	<table name="decision_point_split_profiles">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="decision_point_split_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
-		<foreign-key foreignTable="decision_point_split_profile_sets">
-			<reference local="decision_point_split_profile_set_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
-	<table name="decision_point_splits">
-		<column name="decision_point_split_profile_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="in_route_segment_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="out_route_segment_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="number" primaryKey="true" type="INTEGER" description="Order of the split"/>
-		<column name="split" required="true" domain="DECIMAL" description="Split ratio between 0 and 1."/>
-		<foreign-key foreignTable="decision_point_split_profiles">
-			<reference local="decision_point_split_profile_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="route_segments">
-			<reference local="in_route_segment_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="route_segments">
-			<reference local="out_route_segment_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -423,7 +340,8 @@
 	<table name="demand_profiles">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="link_id" required="true" domain="STRING_ID"/>
+		<column name="origin_link_id" required="true" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID" "If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
@@ -433,7 +351,10 @@
 			<reference local="demand_profile_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
-			<reference local="link_id" foreign="id"/>
+			<reference local="origin_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -444,46 +365,6 @@
 		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<foreign-key foreignTable="demand_profiles">
 			<reference local="demand_profile_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="vehicle_type_families">
-			<reference local="vehicle_type_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
-
-	<!-- Demands by Destination -->
-
-	<table name="od_demand_profile_sets">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-	</table>
-
-	<table name="od_demand_profiles">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_demand_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="od_id" required="true" domain="STRING_ID"/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
-		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
-		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
-		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
-		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
-		<foreign-key foreignTable="od_demand_profile_sets">
-			<reference local="od_demand_profile_set_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="ods">
-			<reference local="od_id" foreign="id"/>
-		</foreign-key>
-	</table>
-
-	<table name="od_demands">
-		<column name="od_demand_profile_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="number" primaryKey="true" type="INTEGER" description="Order of the OD demand"/>
-		<column name="od_demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
-		<foreign-key foreignTable="od_demand_profiles">
-			<reference local="od_demand_profile_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -659,8 +540,6 @@
 		<column name="id" primaryKey="true" type="INTEGER"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="network_connection_list_id" domain="STRING_ID"/>
-		<column name="od_list_id" domain="STRING_ID"/>
-		<column name="decision_point_split_profile_set_id" domain="STRING_ID"/>
 		<column name="vehicle_type_list_id" domain="STRING_ID"/>
 		<column name="signal_list_id" domain="STRING_ID"/>
 		<column name="sensor_list_id" domain="STRING_ID"/>
@@ -669,7 +548,6 @@
 		<column name="initial_density_set_id" domain="STRING_ID"/>
 		<column name="fundamental_diagram_profile_set_id" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" domain="STRING_ID"/>
-		<column name="od_demand_profile_set_id" domain="STRING_ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" domain="STRING_ID"/>
 		<column name="controller_set_id" domain="STRING_ID"/>
 		<column name="event_set_id" domain="STRING_ID"/>
@@ -708,15 +586,6 @@
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="od_lists">
-			<reference local="od_list_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="decision_point_split_profile_sets">
-			<reference local="decision_point_split_profile_set_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="od_demand_profile_sets">
-			<reference local="od_demand_profile_set_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_lists">
 			<reference local="vehicle_type_list_id" foreign="id"/>
 		</foreign-key>
@@ -730,6 +599,17 @@
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+	</table>
+	
+	<table name="destination_network_lists">
+		<column name="scenario_id" required="true" type="INTEGER"/>
+		<column name="destintion_network_id" required="true" domain="STRING_ID"/>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="destination_networks">
+			<reference local="destination_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
@@ -818,7 +698,7 @@
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_id" domain="STRING_ID"/>
-		<column name="route_segment_id" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
@@ -841,6 +721,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -896,7 +779,7 @@
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="od_id" domain="STRING_ID"/>
-		<column name="route_segment_id" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
@@ -915,6 +798,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
