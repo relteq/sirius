@@ -255,7 +255,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="split_ratio_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="node_id" required="true" domain="STRING_ID"/>
-		<column name="destination_link_id" domain="STRING_ID" "If the destination is not specified, the demand is added to the background flow."/>
+		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<foreign-key foreignTable="split_ratio_profile_sets">
@@ -342,7 +342,7 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="origin_link_id" required="true" domain="STRING_ID"/>
-		<column name="destination_link_id" domain="STRING_ID" "If the destination is not specified, the demand is added to the background flow."/>
+		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds."/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds."/>
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
