@@ -6,6 +6,8 @@
 <database name="sirius">
 	<domain name="STRING_ID" type="VARCHAR" size="255"/>
 	<domain name="NAME_BUF" type="VARCHAR" size="64"/>
+	<domain name="VALUE_BUF" type="VARCHAR" size="256"/>
+	<domain name="JAVA_CLASS" type="VARCHAR" size="128"/>
 	<domain name="DESCRIPTION_BUF" type="VARCHAR" size="2048"/>
 	<domain name="ELEMENT_TYPE" type="VARCHAR" size="32"/>
 	<domain name="MODEL_TYPE" type="VARCHAR" size="32"/>
@@ -576,8 +578,79 @@
 
 	<!-- Controllers TODO -->
 
+	<table name="controller_sets">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
+	</table>
+
+	<table name="queue_controllers">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined queue controllers."/>
+		<column name="name" domain="NAME_BUF"/>
+	</table>
+
+	<table name="controllers">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="controller_set_id" required="true" domain="STRING_ID"/>
+		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="dt" required = "true" domain="DECIMAL" description="Invocation period in seconds. Default = 30 seconds."/>
+		<column name="queue_controller_id" domain="STRING_ID"/>
+		<column name="latitude" domain="DECIMAL"/>
+		<column name="longitude" domain="DECIMAL"/>
+		<column name="elevation" domain="DECIMAL"/>
+		<foreign-key foreignTable="controller_sets">
+			<reference local="controller_set_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="queue_controllers">
+			<reference local="queue_controller_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
 
 	<!-- Events TODO -->
+
+	<table name="event_sets">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
+	</table>
+
+	<table name="events">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="event_set_id" required="true" domain="STRING_ID"/>
+		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="latitude" domain="DECIMAL"/>
+		<column name="longitude" domain="DECIMAL"/>
+		<column name="elevation" domain="DECIMAL"/>
+		<column name="enabled" required="true" domain="BOOL" description="If the event is not enabled, it does not fire."/>
+		<foreign-key foreignTable="event_sets">
+			<reference local="event_set_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+
+	<!-- Shared Structures -->
+
+	<table name="parameters">
+		<column name="scenario_element_id" required="true" domain="STRING_ID" description="Reference to the scenario element (sensor, controller, queue controller, or event) with parameters."/>
+		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="value" required="true" domain="VALUE_BUF"/>
+	</table>
+
+	<table name="referenced_scenario_elements">
+		<column name="parent_element_id" required="true" domain="STRING_ID" description="ID of the controller or the event that works with referenced scenario elements."/>
+		<column name="feedback" required="true" domain="BOOL" description="Is it a feedback or a target scenario element - true means feedback, false means target."/>
+		<column name="scenario_element_id" required="true" domain="STRING_ID" description="Reference to the scenario element."/>
+		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|event."/>
+	</table>
 
 
 	<!-- Main Scenario Tables -->
@@ -712,6 +785,7 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
 		<column name="in_flow" domain="DECIMAL"/>
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
@@ -748,6 +822,7 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
 		<column name="in_flow" domain="DECIMAL"/>
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
@@ -790,6 +865,7 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
@@ -824,6 +900,7 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
+		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
@@ -911,14 +988,6 @@
 	<!-- TODO: temporary tables to be replaced with the actual ones -->
 
 	<table name="sensor_lists">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-	</table>
-
-	<table name="controller_sets">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-	</table>
-
-	<table name="event_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
