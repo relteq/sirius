@@ -697,7 +697,6 @@
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_id" domain="STRING_ID"/>
 		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
@@ -778,7 +777,6 @@
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="od_id" domain="STRING_ID"/>
 		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
