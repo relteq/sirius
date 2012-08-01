@@ -61,7 +61,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	// TEMPORARY FOR FLOW UNCERTAINTY MODEL
 	// MOVE THIS TO THE CONFIGURATION
-	protected double std_dev_flow = 10.0;	// [veh]
+	protected double std_dev_flow = 0.0;	// [veh]
 	protected boolean has_flow_unceratinty;
 	
 	/////////////////////////////////////////////////////////////////////
