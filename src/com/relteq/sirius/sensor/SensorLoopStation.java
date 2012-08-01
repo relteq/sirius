@@ -22,6 +22,9 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	private float w;
 	private float q_max;
 	
+	private Double [] cumulative_inflow;	// [veh] 	numEnsemble
+	private Double [] cumulative_outflow;	// [veh] 	numEnsemble
+	       
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -63,7 +66,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 				}
 			}
 		}
-		
 	}
 	
 	@Override
@@ -74,11 +76,23 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 
 	@Override
 	public void reset() {
+		cumulative_inflow = new Double [myScenario.getNumEnsemble()];
+		cumulative_outflow = new Double [myScenario.getNumEnsemble()];
+		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
+			cumulative_inflow[i] = 0d;
+			cumulative_outflow[i] = 0d;
+		}
 		return;
 	}
 
 	@Override
-	public void update() {
+	public void update() {		
+		if(myLink==null)
+			return;
+		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
+			cumulative_inflow[i] += myLink.getTotalInlowInVeh(i);
+			cumulative_outflow[i] += myLink.getTotalOutflowInVeh(i);
+		}
 		return;
 	}
 
@@ -116,6 +130,24 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	// SensorLoopStation API
 	/////////////////////////////////////////////////////////////////////
 
+	public double getCumulativeInflowInVeh(int ensemble){
+		return cumulative_inflow[ensemble];
+	}
+
+	public void resetCumulativeInflowInVeh(){
+		for(int i=0;i<myScenario.getNumEnsemble();i++)
+			cumulative_inflow[i] = 0d;
+	}
+	
+	public double getCumulativeOutflowInVeh(int ensemble){
+		return cumulative_outflow[ensemble];
+	}
+
+	public void resetCumulativeOutflowInVeh(){
+		for(int i=0;i<myScenario.getNumEnsemble();i++)
+			cumulative_outflow[i] = 0d;
+	}
+	
 	public int getVDS() {
 		return VDS;
 	}

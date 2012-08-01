@@ -503,6 +503,34 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		}
 	}
 
+	/** Number of vehicles per vehicle type entering the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
+	 */
+	public Double[] getInflowInVeh(int ensemble) {
+		try{
+			return inflow[ensemble].clone();
+		} catch(Exception e){
+			return null;
+		}
+	}
+
+	/** Total number of vehicles entering the link during the current
+	 * time step.  The return value equals the sum of 
+	 * {@link Link#getInflowInVeh}.
+	 * @return total number of vehicles entering the link in one time step. 0 if something goes wrong.
+	 * 
+	 */
+	public double getTotalInlowInVeh(int ensemble) {
+		try{
+			return SiriusMath.sum(inflow[ensemble]);
+		} catch(Exception e){
+			return 0d;
+		}
+	}
+
 	/** Average speed of traffic in the link in mile/hour. 
 	 * The return value is computed by dividing the total outgoing 
 	 * link flow by the total link density. 

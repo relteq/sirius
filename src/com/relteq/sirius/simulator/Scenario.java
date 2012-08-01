@@ -458,6 +458,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	public int getNumVehicleTypes() {
 		return numVehicleTypes;
 	}
+	
+	/** Number of ensembles in the run.
+	 * @return Integer number of elements in the ensemble.
+	 */
+	public int getNumEnsemble() {
+		return numEnsemble;
+	}
 
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
