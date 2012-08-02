@@ -3,6 +3,8 @@ package com.relteq.sirius.calibrator;
 import java.math.BigDecimal;
 import java.util.*;
 
+import com.relteq.sirius.data.pems.DataReader;
+import com.relteq.sirius.data.pems.FiveMinuteData;
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
 import com.relteq.sirius.sensor.DataSource;
 import com.relteq.sirius.sensor.SensorLoopStation;
@@ -106,7 +108,7 @@ public class FDCalibrator {
 
 		// get data
 		FiveMinuteData D = data.get(vds);
-		int numdatapoints = D.time.size();
+		int numdatapoints = D.getNumDataPoints();
 
 		// degenerate case
 		if(numdatapoints==0)
@@ -394,7 +396,6 @@ public class FDCalibrator {
 		try {
 			C.run();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
