@@ -3,6 +3,7 @@ package com.relteq.sirius.sensor;
 
 import java.util.ArrayList;
 
+import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Scenario;
@@ -12,6 +13,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	
 	private int VDS;								// PeMS vehicle detector station number
 	private ArrayList<com.relteq.sirius.sensor.DataSource> _datasources = new ArrayList<com.relteq.sirius.sensor.DataSource>();
+	private FiveMinuteData data;
 	
 	// nominal values
 	private static float nom_vf = 65;				// [mph]
@@ -183,6 +185,18 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 
 	public float getRho_jam() {
 		return q_max*(1/vf+1/w);
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// data
+	/////////////////////////////////////////////////////////////////////
+	
+	public void set5minData(FiveMinuteData indata){
+		data = indata;
+	}
+	
+	public int getNumDataPoints(){
+		return data==null ? 0 : data.getNumDataPoints();
 	}
 	
 }

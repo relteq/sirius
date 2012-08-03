@@ -7,6 +7,8 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,6 +17,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
+
+import com.relteq.sirius.data.DataFileReader;
+import com.relteq.sirius.data.FiveMinuteData;
+import com.relteq.sirius.sensor.DataSource;
+import com.relteq.sirius.sensor.SensorLoopStation;
 
 /** Load, manipulate, and run scenarios. 
  * <p>
@@ -89,8 +96,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				((Network) network).populate(this);
 		
 		// replace jaxb.Sensor with simulator.Sensor
-		if(getSensorList()!=null)
-			((SensorList) getSensorList()).populate(this);
+		if(getSensorList()!=null){
+			for(int i=0;i<getSensorList().getSensor().size();i++){
+				com.relteq.sirius.jaxb.Sensor sensor = getSensorList().getSensor().get(i);
+				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
+				getSensorList().getSensor().set(i,ObjectFactory.createSensorFromJaxb(this,sensor,myType));
+			}
+		}
 		
 		if(getSignalList()!=null)
 			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
@@ -135,8 +147,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 		// sensor list
 		if(getSensorList()!=null)
-			((SensorList) getSensorList()).validate();
-
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor) sensor).validate();
+		
 		// signal list
 		if(getSignalList()!=null)
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
@@ -189,8 +202,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// sensor list
 		if(getSensorList()!=null)
-			((SensorList) getSensorList()).reset();
-			
+			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor) sensor).reset();
+		
 		// signal list
 		if(getSignalList()!=null)
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
@@ -241,8 +255,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         // NOTE: ensembles have not been implemented for sensors. They do not apply
         // to the loop sensor, but would make a difference for floating sensors.
 		if(getSensorList()!=null)
-			((SensorList) getSensorList()).update();
-			
+			for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
+				((Sensor)sensor).update();
+		
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
 		// to pretimed control, but would make a differnece for feedback control. 
@@ -873,12 +888,55 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 		
 	/** DOC THIS 
-	 * 
-	 * @throws SiriusException
+	 * @throws SiriusException 
 	 */
 	public void loadSensorData() throws SiriusException {
-		if(getSensorList()!=null)
-			((SensorList)getSensorList()).loadSensorData(this);
+
+		if(getSensorList()==null)
+			return;
+
+		HashMap <Integer,FiveMinuteData> data = new HashMap <Integer,FiveMinuteData> ();
+		ArrayList<DataSource> datasources = new ArrayList<DataSource>();
+		ArrayList<String> uniqueurls  = new ArrayList<String>();
+		
+		// construct list of stations to extract from datafile 
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+				continue;
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			int myVDS = S.getVDS();				
+			data.put(myVDS, new FiveMinuteData(myVDS,true));	
+			for(com.relteq.sirius.sensor.DataSource d : S.get_datasources()){
+				String myurl = d.getUrl();
+				int indexOf = uniqueurls.indexOf(myurl);
+				if( indexOf<0 ){
+					DataSource newdatasource = new DataSource(d);
+					newdatasource.add_to_for_vds(myVDS);
+					datasources.add(newdatasource);
+					uniqueurls.add(myurl);
+				}
+				else{
+					datasources.get(indexOf).add_to_for_vds(myVDS);
+				}
+			}
+		}
+		
+		// Read 5 minute data to "data"
+		DataFileReader P = new DataFileReader();
+		P.Read5minData(data,datasources);
+		
+		// distribute data to sensors
+		for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor()){
+			
+			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+				continue;
+
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			
+			// attach to sensor
+			S.set5minData(data.get(S.getVDS()));
+		}
+		
 	}
 	
 	/////////////////////////////////////////////////////////////////////

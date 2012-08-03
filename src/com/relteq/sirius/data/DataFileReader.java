@@ -27,6 +27,8 @@ public class DataFileReader {
     	// step through data file
     	int count = 0;
     	for(DataSource datasource : datasources){
+    		
+    		System.out.println(count);
     		DataSource.Format dataformat = datasource.getFormat();
     		count++;
     		switch(dataformat){
