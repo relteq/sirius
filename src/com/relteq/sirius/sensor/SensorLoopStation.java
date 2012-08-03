@@ -154,12 +154,55 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		data = indata;
 	}
 	
-	public FiveMinuteData get5minData(){
-		return data;
-	}
-	
 	public int getNumDataPoints(){
 		return data==null ? 0 : data.getNumDataPoints();
 	}
+	
+	public ArrayList<Long> getDataTime(){
+		return data==null ? null : data.getTime();
+	}
+
+	/** get aggregate flow vlaue in [veh/hr]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggFlwInVPH(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPH(i);
+	}
+
+	/** get aggregate flow vlaue in [veh/hr/lane]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggFlwInVPHPL(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPHPL(i);
+	}
+	
+	/** get aggregate speed value in [mph]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggSpdInMPH(int i){
+		return data==null ? Float.NaN : data.getAggSpd(i);
+
+	}	
+
+	/** get aggregate density value in [veh/mile]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggDtyInVPM(int i){
+		return data==null ? Float.NaN : data.getAggDtyInVPM(i);
+	}
+
+	/** get aggregate density value in [veh/mile]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggDtyInVPMPL(int i){
+		return data==null ? Float.NaN : data.getAggDtyInVPMPL(i);
+	}
+
+	//////////////////////////////
 	
 }

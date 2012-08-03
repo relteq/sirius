@@ -12,6 +12,7 @@ public class FiveMinuteData {
 
 	protected boolean isaggregate;	// true if object holds only averages over all lanes
 	protected int vds;
+	protected int lanes;
 	protected ArrayList<Long> time = new ArrayList<Long>();
 	protected ArrayList<ArrayList<Float>> flw = new ArrayList<ArrayList<Float>>();		// [veh/hr/lane]
 	protected ArrayList<ArrayList<Float>> spd = new ArrayList<ArrayList<Float>>();		// [mile/hr]
@@ -33,11 +34,15 @@ public class FiveMinuteData {
 		return time.size();
 	}
 
+	public ArrayList<Long> getTime(){
+		return time;
+	}
+	
 	/** get aggregate flow vlaue in [veh/hr/lane]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
-	public float getAggFlw(int i){
+	public float getAggFlwInVPHPL(int i){
 		try{
 			if(isaggregate)
 				return flw.get(0).get(i);
@@ -47,6 +52,10 @@ public class FiveMinuteData {
 		catch(Exception e){
 			return Float.NaN;
 		}
+	}
+	
+	public float getAggFlwInVPH(int i){
+		return getAggFlwInVPHPL(i)*lanes;
 	}
 
 	/** get aggregate speed value in [mph]
@@ -69,7 +78,7 @@ public class FiveMinuteData {
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
-	public float getAggDty(int i){
+	public float getAggDtyInVPMPL(int i){
 		try{
 			if(isaggregate)
 				return flw.get(0).get(i)/spd.get(0).get(i);
@@ -80,6 +89,14 @@ public class FiveMinuteData {
 			return Float.NaN;
 		}
 	}
+	
+	public float getAggDtyInVPM(int i){
+		return getAggDtyInVPMPL(i)*lanes;
+	}
+	
+	public int getLanes(){
+		return lanes;
+	}
 
 	/////////////////////////////////////////////////////////////////////
 	// putters
@@ -88,7 +105,7 @@ public class FiveMinuteData {
 	/** add aggregate flow value in [veh/hr/lane]
 	 * @param value of flow
 	 * */
-	protected void addAggFlw(float val){
+	protected void addAggFlwInVPHPL(float val){
 		if(flw.isEmpty())
 			flw.add(new ArrayList<Float>());
 		if(isaggregate)
@@ -104,6 +121,10 @@ public class FiveMinuteData {
 		if(isaggregate)
 			spd.get(0).add(val);
 	}	
+	
+	protected void setLanes(int lanes){
+		this.lanes = lanes;
+	}
 	
 	/** add array of per lane flow values in [veh/hr/lane]	
 	 * @param array of flow values.
@@ -139,7 +160,7 @@ public class FiveMinuteData {
 	public void writeAggregateToFile(String filename) throws Exception{
 		Writer out = new OutputStreamWriter(new FileOutputStream(filename+"_"+vds+".txt"));
 		for(int i=0;i<time.size();i++)
-			out.write(time.get(i)+"\t"+getAggFlw(i)+"\t"+getAggDty(i)+"\t"+getAggSpd(i)+"\n");
+			out.write(time.get(i)+"\t"+getAggFlwInVPHPL(i)+"\t"+getAggDtyInVPMPL(i)+"\t"+getAggSpd(i)+"\n");
 		out.close();
 	}
 

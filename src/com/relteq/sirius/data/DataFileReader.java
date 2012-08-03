@@ -65,7 +65,7 @@ public class DataFileReader {
     	float val;
     	long time;
     	int actuallanes;
-    	boolean hasflw,hasspd; //,hasocc;
+    	boolean hasflw,hasspd;
 
     	try{
 			URL url = new URL(datasource.getUrl());
@@ -86,7 +86,6 @@ public class DataFileReader {
 		    		time = calendar.getTime().getTime()/1000;
 		    		    
 		        	ArrayList<Float> laneflw = new ArrayList<Float>();
-		//        	ArrayList<Float> laneocc = new ArrayList<Float>();
 		        	ArrayList<Float> lanespd = new ArrayList<Float>();
 		        
 		        	// store in lane-wise ArrayList
@@ -107,14 +106,6 @@ public class DataFileReader {
 		            	else
 		                	laneflw.add(Float.NaN); 
 		            	
-		//            	index = format.laneblocksize*(lane+1)+format.occoffset;
-		//            	str = f[index];
-		//            	hasocc = !str.isEmpty();
-		//            	if(hasocc)
-		//            		laneocc.add(Float.parseFloat(str));
-		//            	else
-		//            		laneocc.add(Float.NaN); 
-		            	
 		            	index = format.laneblocksize*(lane+1)+format.spdoffset;
 		            	str = f[index];
 		            	hasspd = !str.isEmpty();
@@ -131,17 +122,16 @@ public class DataFileReader {
 		
 		            // find the data structure and store. 
 		            FiveMinuteData D = data.get(vds);
+		            D.setLanes(actuallanes);
 		            if(D.isaggregate && actuallanes>0){
 		                totalspd /= actuallanes;
 		                totalflw /= actuallanes;
-		                D.addAggFlw(totalflw);
-		//                D.addAggOcc(totalflw/totalspd);
+		                D.addAggFlwInVPHPL(totalflw);
 		                D.addAggSpd(totalspd);
 		                D.time.add(time);	
 		            }
 		            else{
 			            D.addPerLaneFlw(laneflw,0,actuallanes);
-		//	            D.addPerLaneOcc(laneocc,0,actuallanes);
 			            D.addPerLaneSpd(lanespd,0,actuallanes);
 			            D.time.add(time);
 		            }

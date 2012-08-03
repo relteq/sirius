@@ -3,7 +3,6 @@ package com.relteq.sirius.calibrator;
 import java.math.BigDecimal;
 import java.util.*;
 
-import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
 import com.relteq.sirius.sensor.SensorLoopStation;
 import com.relteq.sirius.simulator.*;
@@ -85,7 +84,6 @@ public class FDCalibrator {
 		float w_max = 19;			// [mph]
 
 		// get data
-		FiveMinuteData D = S.get5minData(); //  data.get(vds);
 		int numdatapoints = S.getNumDataPoints();
 
 		// degenerate case
@@ -95,7 +93,7 @@ public class FDCalibrator {
 		// organize into an array of DataPoint
 		ArrayList<DataPoint> datavec = new ArrayList<DataPoint>();
 		for(i=0;i<numdatapoints;i++)
-			datavec.add(new DataPoint(D.getAggDty(i),D.getAggFlw(i),D.getAggSpd(i)));
+			datavec.add(new DataPoint(S.getDataAggDtyInVPMPL(i),S.getDataAggFlwInVPHPL(i),S.getDataAggSpdInMPH(i)));
 		
 		// Find free-flow velocity ...............................
 

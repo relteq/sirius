@@ -66,9 +66,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected int numEnsemble;
 
-	// TEMPORARY FOR FLOW UNCERTAINTY MODEL
-	// MOVE THIS TO THE CONFIGURATION
-	protected double std_dev_flow = 0.0;	// [veh]
+	// Model uncertainty
+	protected double std_dev_flow = 0.0d;	// [veh]
 	protected boolean has_flow_unceratinty;
 	
 	/////////////////////////////////////////////////////////////////////
