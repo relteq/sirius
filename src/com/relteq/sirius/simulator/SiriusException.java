@@ -14,4 +14,5 @@ public class SiriusException extends Exception {
 	public SiriusException(Throwable exc) {
 		super(exc);
 	}
+
 }

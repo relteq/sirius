@@ -29,7 +29,7 @@ public class FDCalibrator {
 	}
 
 	// execution .................................
-	public void run() throws Exception{
+	public void run() throws SiriusException{
 		
 		if(!readScenario())									// 1. read the original network file 
 			return;	
@@ -61,7 +61,7 @@ public class FDCalibrator {
 	}
 
 	// step 2
-	public void loadTrafficData() throws Exception {
+	public void loadTrafficData() throws SiriusException {
 		
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
@@ -279,7 +279,7 @@ public class FDCalibrator {
 	}
 
 	// step 5
-	private void export() throws Exception{
+	private void export() throws SiriusException{
 		scenario.saveToXML(outputfilename);
 	}
 	
@@ -395,7 +395,7 @@ public class FDCalibrator {
 		FDCalibrator C = new FDCalibrator(args[0],args[1]);
 		try {
 			C.run();
-		} catch (Exception e) {
+		} catch (SiriusException e) {
 			e.printStackTrace();
 		}
 	}

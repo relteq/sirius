@@ -90,11 +90,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(getSensorList()!=null)
-			for(int i=0;i<getSensorList().getSensor().size();i++){
-				com.relteq.sirius.jaxb.Sensor sensor = getSensorList().getSensor().get(i);
-				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
-				getSensorList().getSensor().set(i,ObjectFactory.createSensorFromJaxb(this,sensor,myType));
-			}
+			((SensorList) getSensorList()).populate(this);
 		
 		if(getSignalList()!=null)
 			for(com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
@@ -129,6 +125,51 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}
 
+	/** @y.exclude */
+	public void validate() {
+				
+		// validate network
+		if( getNetworkList()!=null)
+			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
+				((Network)network).validate();
+
+		// sensor list
+		if(getSensorList()!=null)
+			((SensorList) getSensorList()).validate();
+
+		// signal list
+		if(getSignalList()!=null)
+			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
+				((Signal) signal).validate();
+		
+		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
+		// validate initial density profile
+//		if(getInitialDensityProfile()!=null)
+//			((_InitialDensityProfile) getInitialDensityProfile()).validate();
+
+		// validate capacity profiles	
+		if(getDownstreamBoundaryCapacityProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
+				((CapacityProfile)capacityProfile).validate();
+		
+		// validate demand profiles
+		if(getDemandProfileSet()!=null)
+			((DemandProfileSet)getDemandProfileSet()).validate();
+
+		// validate split ratio profiles
+		if(getSplitRatioProfileSet()!=null)
+			((SplitRatioProfileSet)getSplitRatioProfileSet()).validate();
+		
+		// validate fundamental diagram profiles
+		if(getFundamentalDiagramProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
+				((FundamentalDiagramProfile)fd).validate();
+		
+		// validate controllers
+		controllerset.validate();
+
+	}
+	
 	/** Prepare scenario for simulation:
 	 * set the state of the scenario to the initial condition
 	 * sample profiles
@@ -148,8 +189,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// sensor list
 		if(getSensorList()!=null)
-			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				((Sensor) sensor).reset();
+			((SensorList) getSensorList()).reset();
 			
 		// signal list
 		if(getSignalList()!=null)
@@ -201,9 +241,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         // NOTE: ensembles have not been implemented for sensors. They do not apply
         // to the loop sensor, but would make a difference for floating sensors.
 		if(getSensorList()!=null)
-			for(com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				((Sensor)sensor).update();
-        
+			((SensorList) getSensorList()).update();
+			
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
 		// to pretimed control, but would make a differnece for feedback control. 
@@ -299,53 +338,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return vehicletypeindex;
 	}
-	
-	/** @y.exclude */
-	public void validate() {
-				
-		// validate network
-		if( getNetworkList()!=null)
-			for(com.relteq.sirius.jaxb.Network network : getNetworkList().getNetwork())
-				((Network)network).validate();
 
-		// sensor list
-		if(getSensorList()!=null)
-			for (com.relteq.sirius.jaxb.Sensor sensor : getSensorList().getSensor())
-				((Sensor) sensor).validate();
-
-		// signal list
-		if(getSignalList()!=null)
-			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
-				((Signal) signal).validate();
-		
-		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
-		// validate initial density profile
-//		if(getInitialDensityProfile()!=null)
-//			((_InitialDensityProfile) getInitialDensityProfile()).validate();
-
-		// validate capacity profiles	
-		if(getDownstreamBoundaryCapacityProfileSet()!=null)
-			for(com.relteq.sirius.jaxb.CapacityProfile capacityProfile : getDownstreamBoundaryCapacityProfileSet().getCapacityProfile())
-				((CapacityProfile)capacityProfile).validate();
-		
-		// validate demand profiles
-		if(getDemandProfileSet()!=null)
-			((DemandProfileSet)getDemandProfileSet()).validate();
-
-		// validate split ratio profiles
-		if(getSplitRatioProfileSet()!=null)
-			((SplitRatioProfileSet)getSplitRatioProfileSet()).validate();
-		
-		// validate fundamental diagram profiles
-		if(getFundamentalDiagramProfileSet()!=null)
-			for(com.relteq.sirius.jaxb.FundamentalDiagramProfile fd : getFundamentalDiagramProfileSet().getFundamentalDiagramProfile())
-				((FundamentalDiagramProfile)fd).validate();
-		
-		// validate controllers
-		controllerset.validate();
-
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////
@@ -879,6 +872,15 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         scenariolocked = true;	
 	}
 		
+	/** DOC THIS 
+	 * 
+	 * @throws SiriusException
+	 */
+	public void loadSensorData() throws SiriusException {
+		if(getSensorList()!=null)
+			((SensorList)getSensorList()).loadSensorData(this);
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////	
