@@ -3,10 +3,8 @@ package com.relteq.sirius.calibrator;
 import java.math.BigDecimal;
 import java.util.*;
 
-import com.relteq.sirius.data.DataFileReader;
 import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
-import com.relteq.sirius.sensor.DataSource;
 import com.relteq.sirius.sensor.SensorLoopStation;
 import com.relteq.sirius.simulator.*;
 
@@ -19,9 +17,8 @@ import com.relteq.sirius.simulator.*;
 public class FDCalibrator {
 	protected String configfilename;
 	protected String outputfilename;
-	protected ArrayList<DataSource> datasources = new ArrayList<DataSource>();
 	protected Scenario scenario;
-	protected HashMap <Integer,FiveMinuteData> data = new HashMap <Integer,FiveMinuteData> ();
+	HashMap <SensorLoopStation,FDParameters> sensorFD = new HashMap <SensorLoopStation,FDParameters> ();
 	
 	public FDCalibrator(String configfilename,String outputfilename){
 		this.configfilename = configfilename;
@@ -31,12 +28,22 @@ public class FDCalibrator {
 	// execution .................................
 	public void run() throws SiriusException{
 		
-		if(!readScenario())									// 1. read the original network file 
+		// 1. read the original network file 
+		if(!readScenario())
 			return;	
 		
-		loadTrafficData();									// 2. read pems 5 minute file
+		// populate map of sensors and fd parameters
+		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+			SensorLoopStation S = (SensorLoopStation) sensor;
+			if(S.getMyType().compareTo(Sensor.Type.static_point)!=0)
+				continue;
+			sensorFD.put(S, new FDParameters());
+		}
 		
-															// 3. run calibration routine
+		// 2. read pems 5 minute file
+		scenario.loadSensorData();
+		
+		// 3. run calibration routine
 		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			if(S.getMyType().compareTo(Sensor.Type.static_point)!=0)
@@ -44,8 +51,11 @@ public class FDCalibrator {
 			calibrate(S);
 		}
 		
-		propagate();									// 4. extend parameters to the rest of the network
-		export(); 										// 5. export to configuration file
+		// 4. extend parameters to the rest of the network
+		propagate();
+		
+		// 5. export to configuration file
+		export();
 		
 		System.out.println("done");
 	}
@@ -60,42 +70,10 @@ public class FDCalibrator {
 		return true;
 	}
 
-	// step 2
-	public void loadTrafficData() throws SiriusException {
-		
-		ArrayList<String> uniqueurls  = new ArrayList<String>();
-		
-		// construct list of stations to extract from datafile 
-		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
-				continue;
-			SensorLoopStation S = (SensorLoopStation) sensor;
-			int myVDS = S.getVDS();				
-			data.put(myVDS, new FiveMinuteData(myVDS,true));	
-			for(com.relteq.sirius.sensor.DataSource d : S.get_datasources()){
-				String myurl = d.getUrl();
-				int indexOf = uniqueurls.indexOf(myurl);
-				if( indexOf<0 ){
-					DataSource newdatasource = new DataSource(d);
-					newdatasource.add_to_for_vds(myVDS);
-					datasources.add(newdatasource);
-					uniqueurls.add(myurl);
-				}
-				else{
-					datasources.get(indexOf).add_to_for_vds(myVDS);
-				}
-			}
-		}
-		
-		// Read 5 minute data to "data"
-		DataFileReader P = new DataFileReader();
-		P.Read5minData(data,datasources);
-	}
-
 	// step 3
 	public void calibrate(SensorLoopStation S) {
 		int i;
-		int vds = S.getVDS();
+		//int vds = S.getVDS();
 
 		// output:
 		float vf;			// [mph]
@@ -107,8 +85,8 @@ public class FDCalibrator {
 		float w_max = 19;			// [mph]
 
 		// get data
-		FiveMinuteData D = data.get(vds);
-		int numdatapoints = D.getNumDataPoints();
+		FiveMinuteData D = S.get5minData(); //  data.get(vds);
+		int numdatapoints = S.getNumDataPoints();
 
 		// degenerate case
 		if(numdatapoints==0)
@@ -193,8 +171,8 @@ public class FDCalibrator {
 		}
 
 		// store parameters in sensor
-		S.setFD(vf,w,q_max);
-		
+		FDParameters FDp = (FDParameters) sensorFD.get(S);
+		FDp.setFD(vf,w,q_max);
 	}
   
 	// step 4
@@ -263,11 +241,13 @@ public class FDCalibrator {
 				FDprof.setStartTime(new BigDecimal(0));
 				
 				SensorLoopStation S = (SensorLoopStation) G.sensor;
-				FD.setCapacity(new BigDecimal(S.getQ_max()));
+				FDParameters FDp = (FDParameters) sensorFD.get(S);
+				
+				FD.setCapacity(new BigDecimal(FDp.getQ_max()));
 				FD.setCapacityDrop(new BigDecimal(0));
-				FD.setCongestionSpeed(new BigDecimal(S.getW()));
-				FD.setJamDensity(new BigDecimal(S.getRho_jam()));
-				FD.setJamDensity(new BigDecimal(S.getVf()));
+				FD.setCongestionSpeed(new BigDecimal(FDp.getW()));
+				FD.setJamDensity(new BigDecimal(FDp.getRho_jam()));
+				FD.setJamDensity(new BigDecimal(FDp.getVf()));
 				FD.setStdDevCapacity(new BigDecimal(0));
 				
 				FDprof.getFundamentalDiagram().add(FD);
@@ -398,6 +378,5 @@ public class FDCalibrator {
 		} catch (SiriusException e) {
 			e.printStackTrace();
 		}
-	}
-			
+	}	
 }

@@ -15,15 +15,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	private ArrayList<com.relteq.sirius.sensor.DataSource> _datasources = new ArrayList<com.relteq.sirius.sensor.DataSource>();
 	private FiveMinuteData data;
 	
-	// nominal values
-	private static float nom_vf = 65;				// [mph]
-	private static float nom_w = 15;				// [mph]
-	private static float nom_q_max = 2000;			// [veh/hr/lane]
-
-	private float vf;
-	private float w;
-	private float q_max;
-	
 	private Double [] cumulative_inflow;	// [veh] 	numEnsemble
 	private Double [] cumulative_outflow;	// [veh] 	numEnsemble
 	       
@@ -32,9 +23,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	/////////////////////////////////////////////////////////////////////
 
 	public  SensorLoopStation(){
-		vf = SensorLoopStation.nom_vf;
-		w  = SensorLoopStation.nom_w;
-		q_max = SensorLoopStation.nom_q_max;
 	}
 
 	public SensorLoopStation(Scenario myScenario,String linkId){
@@ -157,35 +145,6 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	public ArrayList<com.relteq.sirius.sensor.DataSource> get_datasources() {
 		return _datasources;
 	}
-
-	public void setFD(float vf,float w,float q_max){
-		if(!Float.isNaN(vf))
-			this.vf = vf;
-		if(!Float.isNaN(w))
-			this.w = w;
-		if(!Float.isNaN(q_max))
-			this.q_max = q_max;
-	}
-
-	public float getVf() {
-		return vf;
-	}
-
-	public float getW() {
-		return w;
-	}
-
-	public float getQ_max() {
-		return q_max;
-	}
-
-	public float getRho_crit() {
-		return q_max/vf;
-	}
-
-	public float getRho_jam() {
-		return q_max*(1/vf+1/w);
-	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// data
@@ -193,6 +152,10 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	
 	public void set5minData(FiveMinuteData indata){
 		data = indata;
+	}
+	
+	public FiveMinuteData get5minData(){
+		return data;
 	}
 	
 	public int getNumDataPoints(){
