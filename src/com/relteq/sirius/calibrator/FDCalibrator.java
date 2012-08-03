@@ -3,8 +3,8 @@ package com.relteq.sirius.calibrator;
 import java.math.BigDecimal;
 import java.util.*;
 
-import com.relteq.sirius.data.pems.DataReader;
-import com.relteq.sirius.data.pems.FiveMinuteData;
+import com.relteq.sirius.data.DataFileReader;
+import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
 import com.relteq.sirius.sensor.DataSource;
 import com.relteq.sirius.sensor.SensorLoopStation;
@@ -88,7 +88,7 @@ public class FDCalibrator {
 		}
 		
 		// Read 5 minute data to "data"
-		DataReader P = new DataReader();
+		DataFileReader P = new DataFileReader();
 		P.Read5minData(data,datasources);
 	}
 

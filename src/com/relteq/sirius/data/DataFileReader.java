@@ -1,4 +1,4 @@
-package com.relteq.sirius.data.pems;
+package com.relteq.sirius.data;
 
 import java.net.*;
 import java.io.*;
@@ -12,7 +12,7 @@ import com.relteq.sirius.sensor.DataSource;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
-public class DataReader {
+public class DataFileReader {
 
 	private ColumnFormat PeMSDataClearingHouse = new ColumnFormat(",",5,8,9,10,8,false);
 	private ColumnFormat CaltransDbx 		   = new ColumnFormat("\t",6,20,22,23,8,true);
@@ -30,10 +30,10 @@ public class DataReader {
     		count++;
     		switch(dataformat){
     		case PeMSDataClearinghouse:
-    			ReadDataSource(data,datasource,PeMSDataClearingHouse);
+    			ReadDataFile(data,datasource,PeMSDataClearingHouse);
     			break;
     		case CaltransDBX:
-    			ReadDataSource(data,datasource,CaltransDbx);
+    			ReadDataFile(data,datasource,CaltransDbx);
     			break;
 //    		case BHL:
 //    			ReadDataSource(data,datasource,BHL);
@@ -53,7 +53,7 @@ public class DataReader {
         return formatter.parse(timestr,pp);
     }
 
-    private static void ReadDataSource(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws NumberFormatException, IOException{
+    private static void ReadDataFile(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws NumberFormatException, IOException{
 		int lane;
     	String line,str;
     	int indexof;
