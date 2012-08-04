@@ -18,6 +18,8 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
 
+import com.relteq.sirius.calibrator.FDCalibrator;
+import com.relteq.sirius.calibrator.FDParameters;
 import com.relteq.sirius.data.DataFileReader;
 import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.sensor.DataSource;
@@ -69,6 +71,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	// Model uncertainty
 	protected double std_dev_flow = 0.0d;	// [veh]
 	protected boolean has_flow_unceratinty;
+	
+	// data
+	private boolean sensor_data_loaded = false;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -893,6 +898,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 		if(getSensorList()==null)
 			return;
+		
+		if(sensor_data_loaded)
+			return;
 
 		HashMap <Integer,FiveMinuteData> data = new HashMap <Integer,FiveMinuteData> ();
 		ArrayList<DataSource> datasources = new ArrayList<DataSource>();
@@ -936,6 +944,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			S.set5minData(data.get(S.getVDS()));
 		}
 		
+		sensor_data_loaded = true;
+		
+	}
+	
+	public void calibrate_fundamental_diagrams() throws SiriusException {
+		FDCalibrator.calibrate(this);
 	}
 	
 	/////////////////////////////////////////////////////////////////////

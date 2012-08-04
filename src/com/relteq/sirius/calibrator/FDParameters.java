@@ -17,6 +17,12 @@ public class FDParameters {
 		q_max = FDParameters.nom_q_max;
 	}
 	
+	public FDParameters(float vf,float w,float q_max){
+		this.vf = vf;
+		this.w  = w;
+		this.q_max = q_max;
+	}
+	
 	public void setFD(float vf,float w,float q_max){
 	if(!Float.isNaN(vf))
 		this.vf = vf;
