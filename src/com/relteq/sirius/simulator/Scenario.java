@@ -19,7 +19,6 @@ import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
 
 import com.relteq.sirius.calibrator.FDCalibrator;
-import com.relteq.sirius.calibrator.FDParameters;
 import com.relteq.sirius.data.DataFileReader;
 import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.sensor.DataSource;
@@ -380,6 +379,27 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
 		numEnsemble = 1;
 		run_internal(param,numRepetitions,true,false,owr_props);
+	}
+	
+	/** Run the scenario once, save output to text files.
+	 * 
+	 * <p> The scenario is reset and run once. Output files are
+	 * created with a common prefix with the index of the simulation appended to 
+	 * the file name.
+	 * 
+	 * @param timestart
+	 * @param timeend
+	 * @param outdt
+	 * @param outputfileprefix
+	 * @throws SiriusException 
+	 */
+	public void run(Double timestart,Double timeend,double outdt, String outputfileprefix) throws SiriusException{
+		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+		numEnsemble = 1;
+		Properties owr_props = new Properties();
+		if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+		owr_props.setProperty("type","text");
+		run_internal(param,1,true,false,owr_props);
 	}
 
 	/** Run the scenario once, return the state trajectory.
