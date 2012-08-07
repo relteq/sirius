@@ -28,6 +28,16 @@ public final class Double2DMatrix {
     	this.isempty = nTime==0 && nVTypes==0;
     }
     
+    public Double2DMatrix(double [][] val) {
+    	this.nTime = val.length;
+    	this.nVTypes = val.length>0 ? val[0].length : 0;
+    	data = new Double[nTime][nVTypes];
+    	for(int i=0;i<nTime;i++)
+        	for(int j=0;j<nVTypes;j++)
+        		data[i][j] = val[i][j];
+    	this.isempty = nTime==0 && nVTypes==0;
+    }
+    
     // initialize a 2D matrix from comma/colon separated string of positive numbers
     // negative numbers get replaced with nan.
     public Double2DMatrix(String str) {
@@ -139,11 +149,27 @@ public final class Double2DMatrix {
 		return data[timeslice][vehicletypeindex];
 	}
 
+    @Override
+	public String toString() {
+    	String str = "[";
+    	if(nTime>0 && nVTypes>0){
+	    	for(int i=0;i<data.length;i++){
+	    		for(int j=0;j<data[i].length-1;j++){
+	    			str += data[i][j] + ",";
+	    		}
+	    		str += data[i][data[i].length-1];
+	    		if(i<data.length-1)
+	    			str += ";";
+	    	}
+    	}
+		return str+"]";
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
     
-    public void multiplyscalar(double value){
+	public void multiplyscalar(double value){
     	int i,j;
     	for(i=0;i<nTime;i++)
     		for(j=0;j<nVTypes;j++)

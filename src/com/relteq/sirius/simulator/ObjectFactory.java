@@ -2,6 +2,7 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public final class ObjectFactory {
 	private ObjectFactory(){}
 							  
 	/////////////////////////////////////////////////////////////////////
-	// protected
+	// protected create from Jaxb
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
@@ -185,7 +186,7 @@ public final class ObjectFactory {
 		}
 		return S;
 	}
-			
+	  
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario
 	/////////////////////////////////////////////////////////////////////
@@ -379,7 +380,7 @@ public final class ObjectFactory {
 	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
 	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
 	 * @param gain				The gain for the integral controller in mile/hr.
-	 * @return					_Controller object
+	 * @return					Controller object
 	 */
 	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
 		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
@@ -591,7 +592,7 @@ public final class ObjectFactory {
 	/** Container for a link.
 	 * 
 	 * @param link		The link.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Link link){
 		if(link==null)
@@ -607,7 +608,7 @@ public final class ObjectFactory {
 	/** Container for a sensor.
 	 * 
 	 * @param sensor	The sensor.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Sensor sensor){
 		if(sensor==null)
@@ -624,7 +625,7 @@ public final class ObjectFactory {
 	/** Container for a controller.
 	 * 
 	 * @param controller	The controller.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Controller controller){
 		if(controller==null)
@@ -638,7 +639,7 @@ public final class ObjectFactory {
 	/** Container for an event.
 	 * 
 	 * @param event	The event.
-	 * @return			_ScenarioElement object
+	 * @return ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Event event){
 		if(event==null)
@@ -649,6 +650,43 @@ public final class ObjectFactory {
 		return se;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public: demand profile
+	/////////////////////////////////////////////////////////////////////
+
+
+	/** Create a demand profile.
+	 * 
+	 * @param Scenario scenario
+	 * @param List<List<Float>> dem
+	 * @param BigDecimal starttime
+	 * @param BigDecimal dt
+	 * @param BigDecimal knob
+	 * @param BigDecimal StdDevAdd
+	 * @param BigDecimal StdDevMult
+	 * @return ScenarioElement object
+	 */
+	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
+
+		DemandProfile demandprofile = new DemandProfile();
+		
+		demandprofile.setLinkIdOrigin(linkid);
+		demandprofile.setKnob(new BigDecimal(knob));
+		demandprofile.setStartTime(new BigDecimal(starttime));
+		demandprofile.setDt(new BigDecimal(dt));
+		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
+		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
+		demandprofile.demand_nominal = new Double2DMatrix(dem);
+		demandprofile.demand_nominal.multiplyscalar(scenario.getSimDtInHours());
+		
+		demandprofile.populate(scenario);
+
+		return demandprofile;
+
+	}
+
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////

@@ -41,12 +41,15 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		isdone = false;
 		
 		// required
-		myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
+		if(getLinkIdOrigin()!=null)
+			myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
 
 		// sample demand distribution, convert to vehicle units
-		demand_nominal = new Double2DMatrix(getContent());
-		demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
-
+		if(getContent()!=null){
+			demand_nominal = new Double2DMatrix(getContent());
+			demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
+		}
+		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
@@ -181,6 +184,14 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			demandvalue[j] = Math.max(0.0,myScenario.global_demand_knob*demandvalue[j]*_knob);
 		
 		return demandvalue;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Double2DMatrix get_demand_nominal(){
+		return demand_nominal;
 	}
 	
 }
