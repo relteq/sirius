@@ -6381,8 +6381,7 @@
          <DirectionsCache/>
       </network>
    </NetworkList>
-   
-         <SensorList>
+   <SensorList>
             <sensor id="-1" link_type="other" type="static_point">
                <description>PeMS VDS 768041 , BASELINE RD</description>
                <position>
@@ -6429,20 +6428,6 @@
                </parameters>
                <data_sources>
                   <data_source dt="300" format="PeMS Data Clearinghouse" url="file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt"/>
-
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  
                   <data_source dt="300" format="PeMS Data Clearinghouse" url="file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt"/>
                </data_sources>
                <link_reference id="-288"/>
@@ -11478,5 +11463,4 @@
                <link_reference id="-1"/>
             </sensor>
          </SensorList>   
-   
 </scenario>
