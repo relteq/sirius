@@ -131,7 +131,7 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 				return;
 		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = demand_nominal.getnTime()-1;
-			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			if(step<n)
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
