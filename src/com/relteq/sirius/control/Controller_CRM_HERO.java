@@ -1,6 +1,9 @@
 package com.relteq.sirius.control;
 
 import java.util.ArrayList; 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.relteq.sirius.simulator.Controller;
 import com.relteq.sirius.control.Controller_CRM_HERO;
 import com.relteq.sirius.simulator.Link;
@@ -20,12 +23,11 @@ public class Controller_CRM_HERO extends Controller {
 	private boolean useMainlineSensor;
 	private boolean useQueueSensor;
 	
-	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
-	boolean hasmainlinesensor; 		// true if config file contains entry for mainlinesensor
-	boolean hasqueuesensor; 		// true if config file contains entry for queuesensor
+	boolean hasMainlineLink;		// true if config file contains entry for mainlinelink
+	boolean hasMainlineSensor; 		// true if config file contains entry for mainlinesensor
+	boolean hasQueueSensor; 		// true if config file contains entry for queuesensor
 	
 	private static ArrayList<String> controllersOrdered = new ArrayList<String>();                          // Controller's IDs arranged from Downstream to Upstream
-	private static ArrayList<Integer> controllersOrderedIndex = new ArrayList<Integer>();		            // Ordered Controller Index in Original Controller Arrangement
 	private static ArrayList<Controller_CRM_HERO> controllerList = new ArrayList<Controller_CRM_HERO>();    // Hero Controller List Arranged from Downstream to Upstream
 	
 	private double mainlineVehiclesCurrent;	
@@ -36,14 +38,15 @@ public class Controller_CRM_HERO extends Controller {
 	private double queueCurrent;
     private double queueSum;            //Sum of queueCurrents of Hero Controllers in a Coordination String   		
 	
-	private double queueMin;                 // minimum desired queue length when a slave ramp [veh] 
-	private double queueMinDefault = 0;      //[veh/lane]	
+	private double queueMin;                 // minimum desired queue length when a slave ramp [veh] 	
 	
-	private double queueMax;                 //max admissible queue length of the HERO controlled ramp [veh]   	
+	private double queueMax;                 //max admissible queue length of the HERO controlled ramp [veh/lane]   	
+	private boolean queueMax_Given;
+	
     private double queueMaxSum;         //Sum of queueMax of Hero Controllers in a Coordination String 
-	private double queueMaxDefault = 1000;   //[veh/lane]
     
 	private  status type = status.NOT_USED;   // HERO controlled ramp status: {SLAVE, NOT_USED, MASTER}
+	private  status typePrevious = status.NOT_USED; 
 	protected enum status {MASTER,
         				   SLAVE,
         				   NOT_USED };   
@@ -62,8 +65,10 @@ public class Controller_CRM_HERO extends Controller {
 	private double queueControllerGainNormalized=1;
 	private double queueMinControllerGainNormalized=1;
 	
-	private double minFlow = 200;               // minimum allowed metering rate [veh/hour/lane]
-	private double maxFlow = 1600;              // maximum allowed metering rate [veh/hour/lane]
+	private double minFlow;                 // minimum allowed metering rate [veh/hour/lane]
+	private boolean minFlow_Given;
+	private double maxFlow;              // maximum allowed metering rate [veh/hour/lane]
+	private boolean maxFlow_Given;
 	
 	private double flowQueue;      //metering rate determined by queue controller
 	private double flowQueueMin;   //metering rate determined by minimum queue controller
@@ -100,9 +105,9 @@ public class Controller_CRM_HERO extends Controller {
 		if(jaxbc.getFeedbackElements().getScenarioElement()==null)
 			return;
 		
-		hasmainlinelink = false;
-		hasmainlinesensor = false;
-		hasqueuesensor = false;
+		hasMainlineLink = false;
+		hasMainlineSensor = false;
+		hasQueueSensor = false;
 		
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
@@ -111,7 +116,7 @@ public class Controller_CRM_HERO extends Controller {
 		}
 		
 		
-		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
+		// Feedback elements can be "mainlineSensor","mainlineLink", and "queueSensor"
 		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
 			for(com.relteq.sirius.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
@@ -122,19 +127,19 @@ public class Controller_CRM_HERO extends Controller {
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlineSensor==null){
 					mainlineSensor=myScenario.getSensorWithId(s.getId());
-					hasmainlinesensor = true;
+					hasMainlineSensor = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlineLink==null){
 					mainlineLink=myScenario.getLinkWithId(s.getId());
-					hasmainlinelink = true;
+					hasMainlineLink = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queueSensor==null){
 					queueSensor=(SensorLoopStation)myScenario.getSensorWithId(s.getId());
-					hasqueuesensor = true;
+					hasQueueSensor = true;
 				}				
 			}
 		}
@@ -153,35 +158,23 @@ public class Controller_CRM_HERO extends Controller {
 		
 		if(mainlineLink==null)
 			return;
-		
-		// onramp link should have a SensorLoopStation Sensor (THIS NEEDS CHECKING)
-		if(myScenario.getSensorList().getSensor().size()>0){
-			for(com.relteq.sirius.jaxb.Sensor asensor:myScenario.getSensorList().getSensor()){
-				 SensorLoopStation aSensor = (SensorLoopStation) asensor;
-				 if (aSensor.getMyLink().getId().equals(onrampLink.getId())){
-					queueSensor=(SensorLoopStation) aSensor;
-					System.out.println("Sensor "+aSensor.getId() + " corresponds to onramp link " + onrampLink.getId());	
-				 }
-			}
-		} else {
-			return;
-		}
-		
-		// HERO static variable Initialization (done When First Controller in the List of HERO Controllers is Populated)
+					
+		// HERO controllersList Initialization (done When First Hero Controller in the list of controllers is populated)
 		if(controllersOrdered.size()==0){
-			controllersOrdered =orderHeroControllers();  
-			controllersOrderedIndex =getHeroControllersIndex();  
-			
+			controllersOrdered =orderHeroControllers();  	
 			for(int i=0; i< controllersOrdered.size(); i++){
 				controllerList.add(null);
 			}
 		}
 		
-		// read parameters
-		queueMax=queueMaxDefault*onrampLink.get_Lanes();
+		
+		// Read parameters
 				
 		double gain_in_mph = 50.0;
 		targetDensity_Given = false;
+		minFlow_Given=false;
+		maxFlow_Given=false;
+		queueMax_Given=false;
 		
 		ArrayList<String> setPossibleSlavesUnordered = new  ArrayList<String>();
 		
@@ -190,6 +183,14 @@ public class Controller_CRM_HERO extends Controller {
 								
 				if(p.getName().equals("gainAlinea")){
 					gain_in_mph = Double.parseDouble(p.getValue());
+				}
+				
+				if(p.getName().equals("gainQueueController")){
+					queueControllerGainNormalized = Double.parseDouble(p.getValue());
+				}
+				
+				if(p.getName().equals("gainMinQueueController")){
+					queueMinControllerGainNormalized = Double.parseDouble(p.getValue());
 				}
 
 				if(p.getName().equals("targetDensity")){
@@ -205,7 +206,8 @@ public class Controller_CRM_HERO extends Controller {
 				}
 				
 				if(p.getName().equals("queueMax")){
-					queueMax = Double.parseDouble(p.getValue())*onrampLink.get_Lanes();
+					queueMax = Double.parseDouble(p.getValue())*onrampLink.get_Lanes(); //[veh/onramp]
+					queueMax_Given=true;
 				} 
 				
 				if(p.getName().equals("actThresholdQ")){
@@ -225,22 +227,25 @@ public class Controller_CRM_HERO extends Controller {
 				}
 				
 				if(p.getName().equals("minFlow")){
-					minFlow = Double.parseDouble(p.getValue());
+					minFlow = Double.parseDouble(p.getValue())*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+				    minFlow_Given=true;
 				}
 				
 				if(p.getName().equals("maxFlow")){
-					maxFlow = Double.parseDouble(p.getValue());
+					maxFlow = Double.parseDouble(p.getValue())*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					maxFlow_Given=true;
 				}
 			}	
 		
-		// normalize Alinea gain
-		alineaGainNormalized = gain_in_mph*myScenario.getSimDtInHours()/mainlineLink.getLengthInMiles();
-
-		// min and max flow [vehicles/controller time step/onramp]
-		minFlow=minFlow*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes();
-		maxFlow=maxFlow*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes();
 		
-		// Orders set of Possible Slaves from Downstream to Upstream by Ordered Index
+		// Normalize ALINEA Gain
+		alineaGainNormalized = gain_in_mph*myScenario.getSimDtInHours()/mainlineLink.getLengthInMiles();
+		
+		// Set minFlow equal to zero if not given
+		if(!minFlow_Given)
+			minFlow=1;	
+		
+		// Orders set of Possible Slaves from Downstream to Upstream
 		for(int i=0; i< controllersOrdered.size(); i++){
 			for(String unOrderedC: setPossibleSlavesUnordered) {
 				if(controllersOrdered.get(i).equals(unOrderedC) ){
@@ -249,7 +254,7 @@ public class Controller_CRM_HERO extends Controller {
 			}
 		}
 		
-		// Add controller to controllerLists in its corresponding Downstream to Upstream Order
+		// Add HERO controller to controllerLists in its corresponding Downstream to Upstream Order
 		for(int i=0; i< controllersOrdered.size(); i++){
 			if(this.id.equals(controllersOrdered.get(i))){
 				controllerList.set(i, this);
@@ -270,21 +275,25 @@ public class Controller_CRM_HERO extends Controller {
 			SiriusErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
-		if(hasmainlinesensor && mainlineSensor==null)
+		if(hasMainlineSensor && mainlineSensor==null)
 			SiriusErrorLog.addError("Bad mainline sensor id in HERO controller id=" + getId()+".");
 
 		// bad queue sensor id
-		if(hasqueuesensor && queueSensor==null)
+		if(hasQueueSensor && queueSensor==null)
 			SiriusErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
 		
 		// both link and sensor feedback
-		if(hasmainlinelink && hasmainlinesensor)
+		if(hasMainlineLink && hasMainlineSensor)
 			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
 		
-		// sensor is disconnected
+		// Mainline sensor is disconnected
 		if(useMainlineSensor && mainlineSensor.getMyLink()==null)
 			SiriusErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
 		
+		// Queue sensor is disconnected
+		if(queueSensor!=null && queueSensor.getMyLink()==null)
+				SiriusErrorLog.addError("Queue sensor in HERO controller id=" + getId()+ " is not connected to a link");
+
 		// no feedback
 		if(mainlineLink==null)
 			SiriusErrorLog.addError("Invalid mainline link for HERO controller id=" + getId()+ ".");
@@ -292,10 +301,35 @@ public class Controller_CRM_HERO extends Controller {
 		// Target link id not found, or number of targets not 1.
 		if(onrampLink==null)
 			SiriusErrorLog.addError("Invalid onramp link for HERO controller id=" + getId()+ ".");
-			
+		
+		// No queue sensor
+		if(queueSensor==null)
+			SiriusErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
+		
+		// queueSensor link_reference is not the same as onrampLink id
+		if(queueSensor!=null && (!queueSensor.getMyLink().getId().equals(onrampLink.getId()) || !queueSensor.getMyLink().getType().equals("onramp")))
+			SiriusErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
+				
 		// negative gain
 		if(mainlineLink!=null && alineaGainNormalized<=0f)
-			SiriusErrorLog.addError("Non-positiva gain for HERO controller id=" + getId()+ ".");
+			SiriusErrorLog.addError("Non-positive gainAlinea for HERO controller id=" + getId()+ ".");
+		
+		//Controller Ids not unique
+		Set<String> s = new HashSet<String>(controllersOrdered);  
+		if(controllersOrdered.size()!=s.size())
+			SiriusErrorLog.addError("Controller ID's are not Unique");
+		
+		//negative inputs
+		if(minFlow<0f || maxFlow<0f || queueControllerGainNormalized<0f || queueMinControllerGainNormalized<0f 
+				|| alineaGainNormalized<0f || queueMax<0f ||targetVehicles<0f){
+			SiriusErrorLog.addError("Negative input value(s) for HERO controller id=" + getId()+ ".");
+		}
+		
+		//Thresholds smaller or equal to zero
+		if(actThresholdQ<=0f || deactThresholdQ<=0f || actThresholdM<=0f || deactThresholdM <=0f ) {
+			SiriusErrorLog.addError("Negative threshold value(s) for HERO controller id=" + getId()+ ".");
+		}
+		
 		
 	}
 
@@ -310,10 +344,10 @@ public class Controller_CRM_HERO extends Controller {
 		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
 		if(timeStep!= myScenario.getCurrentTimeStep() ){ 
 			timeStep=myScenario.getCurrentTimeStep();
-			System.out.println("current time step " + timeStep);
+			//System.out.println("current time step " + timeStep);
 		
 			//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
-			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentAndQueueCurrent();
+			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax();
 			
 			//EVERY Tc SECONDS
 			for(Integer i=0; i< controllerList.size(); i++){
@@ -335,6 +369,7 @@ public class Controller_CRM_HERO extends Controller {
 						controllerList.get(i).alineaGainNormalized*(controllerList.get(i).targetVehicles-controllerList.get(i).mainlineVehiclesCurrent);
 				
 				//Queue Controller (EQUATION (2))			
+				
 				//System.out.println("Output Flow: " + controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)*3 + " CumOutFlow: " + controllerList.get(i).queueSensor.getCumulativeOutflowInVeh(0)); // the 3 is to account for difference between dt sim and dt controller
 			
 				controllerList.get(i).flowQueue = -controllerList.get(i).queueControllerGainNormalized*(controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
@@ -352,9 +387,11 @@ public class Controller_CRM_HERO extends Controller {
 			}
 		
 		}
-		System.out.println("Controller "+this.id+": minFlow:"+ minFlow+ ", alineaFlow:"+ this.flowAlinea +",flowHero:"+this.flowHero +", maxFlow:"+ maxFlow);
+//		System.out.println("time "+timeStep+": Controller" +this.id+ "(control_maxflow[0]="+ Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow)+
+//				")-- minFlow:"+ minFlow+ ", alineaFlow:"+ this.flowAlinea +",flowHero:"+this.flowHero +", maxFlow:"+ maxFlow);
+		
 		//DEFINITION OF HERO METERING RATE
-		control_maxflow[0] = this.flowAlinea;//Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
+		control_maxflow[0] = Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
 	}	
 	
 	
@@ -379,7 +416,7 @@ public class Controller_CRM_HERO extends Controller {
 		for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
         	if( ((Link)aLink).getType().equals("freeway")  && ((Link)aLink).getEnd_node().getType().equals("terminal")                ) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
-        		System.out.println("The Most Downstream Freeway Link is " + aLink.getId()+ " with End Node " + nodesOrdered.get(0).getId());
+        		//System.out.println("The Most Downstream Freeway Link is " + aLink.getId()+ " with End Node " + nodesOrdered.get(0).getId());
         		break;
         	}
 		}
@@ -390,7 +427,8 @@ public class Controller_CRM_HERO extends Controller {
 			for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
 	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId().equals(nodesOrdered.get(nodesOrdered.size()-1).getId())  ) { 
 	        		linksOrdered.add(((Link)aLink));
-	        		nodesOrdered.add(((Link)aLink).getBegin_node());	  
+	        		nodesOrdered.add(((Link)aLink).getBegin_node());	 
+	        		//System.out.println("Link: "+ aLink.getId() +" Begin Node: " +((Link)aLink).getBegin_node().getId() );
 	        		if (((Link)aLink).getBegin_node().getType().equals("terminal")){
 	        			isTerminalNode=1;
 	        		}
@@ -402,8 +440,10 @@ public class Controller_CRM_HERO extends Controller {
 		// HERO Controllers Arranged from Downstream to Upstream by Controller Id
 		for(Node aNode: nodesOrdered){	
 			for (com.relteq.sirius.jaxb.Link aLink: aNode.getInput_link()){ 
-				if( ((Link)aLink).getType().equals("onramp") && ((Link)aLink).getEnd_node().getId().equals(aNode.getId()) ){
+				//System.out.println("Input Link: "+ aLink.getId());
+				if( ((Link)aLink).getType().equals("onramp") ){
 					System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
+					
 					for(com.relteq.sirius.jaxb.Controller aController: myScenario.getControllerSet().getController()) {
 						if(aController.getTargetElements().getScenarioElement().get(0).getId().equals(aLink.getId()) && aController.getType().equals("CRM_hero"))   {
 							System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
@@ -418,29 +458,12 @@ public class Controller_CRM_HERO extends Controller {
 	return controllersOrdered;
 	}	
 	
-	public ArrayList<Integer> getHeroControllersIndex() {
-		ArrayList<Integer> controllersOrderedIndex = new ArrayList<Integer>();
-		int index=0;		
-		for(int i=0; i< controllersOrdered.size(); i++){
-			index=0;
-			for(com.relteq.sirius.jaxb.Controller acontroller: myScenario.getControllerSet().getController()) {
-				if(acontroller.getId().equals(controllersOrdered.get(i))) {
-					controllersOrderedIndex.add(index);
-					System.out.println("Controller " + controllersOrdered.get(i) + " has index " + index);
-					break;
-				}
-				index++;		
-			}		
-		}
-			return controllersOrderedIndex;
-	}	
-
 	
 	/////////////////////////////////////////////////////////////////////
 	// Methods related to HERO Algorithm 
 	/////////////////////////////////////////////////////////////////////	
 	
-	public void updateHeroControllerTargetVehiclesMainlineVehiclesCurrentAndQueueCurrent(){
+	public void updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax(){
 		//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
 		for(Integer i=0; i< controllerList.size(); i++){
 			// If target density is not given, it uses the mainline critical density
@@ -457,7 +480,15 @@ public class Controller_CRM_HERO extends Controller {
 			if(controllerList.get(i).useQueueSensor)
 				controllerList.get(i).queueCurrent=controllerList.get(i).queueSensor.getTotalDensityInVeh(0);
 			else
-				controllerList.get(i).queueCurrent=controllerList.get(i).onrampLink.getTotalDensityInVeh(0);						
+				controllerList.get(i).queueCurrent=controllerList.get(i).onrampLink.getTotalDensityInVeh(0);
+			
+
+			if(!controllerList.get(i).maxFlow_Given)
+				controllerList.get(i).maxFlow=onrampLink.getCapacityInVPHPL(0)*myScenario.getSimDtInHours()*onrampLink.get_Lanes(); //[veh/sim_period/onramp];
+
+			if(!controllerList.get(i).queueMax_Given)
+				controllerList.get(i).queueMax = controllerList.get(i).onrampLink.getDensityJamInVeh(0); //[veh/onramp]
+				
 		}
 	}
 	
@@ -467,11 +498,11 @@ public class Controller_CRM_HERO extends Controller {
 		if( controllerList.get(i).type.equals(status.NOT_USED) &&
             controllerList.get(i).queueCurrent/controllerList.get(i).queueMax > controllerList.get(i).actThresholdQ &&
             controllerList.get(i).mainlineVehiclesCurrent>controllerList.get(i).actThresholdM*controllerList.get(i).targetVehicles &&
-            controllerList.get(i).setPossibleSlaves.size()>0)  {            
+            controllerList.get(i).setPossibleSlaves.size()>0 &&
+            controllerList.get(i+1).type.equals(status.NOT_USED)) {            
 	
-			controllerList.get(i).type=status.MASTER;			
-			System.out.println("NOT_USED Controller " + i +" was set to MASTER with "+ controllerList.get(i).setPossibleSlaves.size() +" Possible Slaves");
-		}
+			updateTypeAndPreviousType(i,status.MASTER);
+					}
 	}
 	
 	public void dissolveMasterController(Integer masterControllerIndex){
@@ -481,12 +512,10 @@ public class Controller_CRM_HERO extends Controller {
 			(controllerList.get(i).queueCurrent/controllerList.get(i).queueMax < controllerList.get(i).deactThresholdQ ||
 			controllerList.get(i).mainlineVehiclesCurrent<controllerList.get(i).deactThresholdM*controllerList.get(i).targetVehicles) )  {            
 			
-			controllerList.get(i).type=status.NOT_USED;
-			System.out.println("MASTER Controller " + i +" was set to " + controllerList.get(i).type);
+			updateTypeAndPreviousType(i,status.NOT_USED);
 			
 			for(Integer slaveControllerIndex: controllerList.get(i).setSlaves){
-				controllerList.get(slaveControllerIndex).type=status.NOT_USED;
-				System.out.println("SLAVE Controller " + slaveControllerIndex +" was set to " + controllerList.get(slaveControllerIndex).type);
+				updateTypeAndPreviousType(slaveControllerIndex,status.NOT_USED);
 			}
 		}	
 	}
@@ -516,31 +545,30 @@ public class Controller_CRM_HERO extends Controller {
 				int newSlaveControllerIndex=controllerList.get(i).setPossibleSlaves.get(controllerList.get(i).setSlaves.size());	
 				
 				if (controllerList.get(newSlaveControllerIndex).type.equals(status.MASTER)){     
-					//Master Controller[i] gets as slaves Controller[newSlaveControllerIndex] and newSlaveController's slaves provided they are in setPossibleSlaves[i]
 					controllerList.get(i).setSlaves.add(newSlaveControllerIndex);
-					controllerList.get(newSlaveControllerIndex).type=status.SLAVE;
-																			
+					updateTypeAndPreviousType(newSlaveControllerIndex,status.SLAVE);
+					
 					for(Integer slaveControllerIndex: controllerList.get(newSlaveControllerIndex).setSlaves){
 						if(controllerList.get(i).setPossibleSlaves.contains(slaveControllerIndex)){	
 							controllerList.get(i).setSlaves.add(slaveControllerIndex);
-						}else{
-							controllerList.get(slaveControllerIndex).type=status.NOT_USED;	
+							updateTypeAndPreviousType(slaveControllerIndex,status.SLAVE);
+							}else{
+							updateTypeAndPreviousType(slaveControllerIndex,status.NOT_USED);
 						}	
 					}
+					
 					controllerList.get(newSlaveControllerIndex).setSlaves.clear();
-				
-					System.out.println(controllerList.get(i).type + " Controller " + i +" has multiple new" + controllerList.get(newSlaveControllerIndex).type
-					+" Controllers like" + newSlaveControllerIndex+ " (" + controllerList.get(newSlaveControllerIndex).setSlaves.size() + " active slaves)");
-							
+					
 				} else if(controllerList.get(newSlaveControllerIndex).type.equals(status.NOT_USED)){
 					//Master Controller[i] gets as slave Controller[newSlaveControllerIndex]
 					controllerList.get(i).setSlaves.add(newSlaveControllerIndex);
-					controllerList.get(newSlaveControllerIndex).type=status.SLAVE;
+					updateTypeAndPreviousType(newSlaveControllerIndex,status.SLAVE);
 					
-					System.out.println( controllerList.get(i).type + " Controller " + i +" has as a new " + controllerList.get(newSlaveControllerIndex).type
-						+" Controller " + newSlaveControllerIndex+ " (" + controllerList.get(i).setSlaves.size() + " active slaves)");
+
+				}else if(controllerList.get(newSlaveControllerIndex).type.equals(status.SLAVE)){
+					//System.out.println("time step "+timeStep+": THis HERO Controller is a SLAVE of a Master Controller that is not in setPossibleSlaves");
 				}else{
-					System.out.println("ERROR: Something is WRONG");
+					System.out.println("time step "+timeStep+": ERROR ");
 				}	
 			}	
 		}
@@ -558,5 +586,15 @@ public class Controller_CRM_HERO extends Controller {
 		}	
 	}
 
+    public void updateTypeAndPreviousType(Integer controllerIndex, status newStatus){
+    	Integer i =controllerIndex;
+    	controllerList.get(i).typePrevious=controllerList.get(i).type;	//Update typePrevious
+    	controllerList.get(i).type = newStatus;	//Update type	
+    	
+		System.out.println("time step "+timeStep+ ": " + controllerList.get(i).typePrevious + " Conroller "+i+
+				" (id=" + controllerList.get(i).getId() +") was set to " +controllerList.get(i).type);
+	}	
+	
 }
 
+	
