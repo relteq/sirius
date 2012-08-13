@@ -11,6 +11,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -18,6 +20,9 @@ import org.xml.sax.SAXException;
 
 import com.relteq.sirius.control.*;
 import com.relteq.sirius.event.*;
+import com.relteq.sirius.jaxb.Density;
+import com.relteq.sirius.jaxb.VehicleType;
+import com.relteq.sirius.jaxb.VehicleTypeOrder;
 import com.relteq.sirius.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
@@ -651,10 +656,52 @@ public final class ObjectFactory {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// public: demand profile
+	// public: sets and profiles
 	/////////////////////////////////////////////////////////////////////
 
+	/** Create an initial density.
+	 */
+	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws SiriusException{
+		
+		// check input
+		if(link_id.length!=init_density.length)
+			throw new SiriusException("1st dimension of the initial density matrix does not match the link array.");
+		
+		if(init_density.length==0)
+			throw new SiriusException("Empty initial density matrix.");
 
+		if(vehtype.length!=init_density[0].length)
+			throw new SiriusException("2nd dimension of the initial density matrix does not match the vehicle types array.");
+		
+		// new
+		InitialDensitySet ic = new InitialDensitySet();
+		
+		// populate base class
+		
+		// vehicle types
+		VehicleTypeOrder vto = new VehicleTypeOrder();
+		for(String str : vehtype){
+			VehicleType vt = new VehicleType();
+			vt.setName(str);
+			vto.getVehicleType().add(vt);
+		}
+		ic.setVehicleTypeOrder(vto);
+
+		// initial density
+		int i;
+		for(i=0;i<init_density.length;i++){
+			Density density = new Density();
+			density.setLinkId(link_id[i]);
+			density.setContent(SiriusFormatter.csv(init_density[i],":"));			
+			ic.getDensity().add(density);
+		}
+		ic.setTstamp(new BigDecimal(tstamp));
+		
+		// populate extended properties
+		ic.populate(scenario);
+		return ic;
+	}
+	
 	/** Create a demand profile.
 	 * 
 	 * @param Scenario scenario
@@ -666,26 +713,36 @@ public final class ObjectFactory {
 	 * @param BigDecimal StdDevMult
 	 * @return ScenarioElement object
 	 */
-	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
+	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
 
+		// check input parameters
+		
+		
+		// new
 		DemandProfile demandprofile = new DemandProfile();
 		
+		// copy to base class
 		demandprofile.setLinkIdOrigin(linkid);
 		demandprofile.setKnob(new BigDecimal(knob));
 		demandprofile.setStartTime(new BigDecimal(starttime));
 		demandprofile.setDt(new BigDecimal(dt));
 		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
 		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
-		demandprofile.demand_nominal = new Double2DMatrix(dem);
-		demandprofile.demand_nominal.multiplyscalar(scenario.getSimDtInHours());
+		demandprofile.setContent(SiriusFormatter.csv(dem,":",","));
 		
+		
+		
+		
+		//demandprofile.demand_nominal = new Double2DMatrix(dem);
+		//demandprofile.demand_nominal.multiplyscalar(scenario.getSimDtInHours());
+		
+		// populate extended class properties
 		demandprofile.populate(scenario);
 
 		return demandprofile;
 
 	}
 
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// private
