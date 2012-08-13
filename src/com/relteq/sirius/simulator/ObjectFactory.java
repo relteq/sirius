@@ -716,7 +716,12 @@ public final class ObjectFactory {
 	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
 
 		// check input parameters
-		
+		int i,j;
+		for(i=0;i<dem.length;i++)
+			for(j=0;j<dem[i].length;j++){
+				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
+				dem[i][j] = dem[i][j]<0d ? 0d : dem[i][j];
+			}
 		
 		// new
 		DemandProfile demandprofile = new DemandProfile();
@@ -730,20 +735,12 @@ public final class ObjectFactory {
 		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
 		demandprofile.setContent(SiriusFormatter.csv(dem,":",","));
 		
-		
-		
-		
-		//demandprofile.demand_nominal = new Double2DMatrix(dem);
-		//demandprofile.demand_nominal.multiplyscalar(scenario.getSimDtInHours());
-		
 		// populate extended class properties
 		demandprofile.populate(scenario);
 
 		return demandprofile;
-
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////
