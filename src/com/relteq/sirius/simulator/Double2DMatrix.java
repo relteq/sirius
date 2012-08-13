@@ -78,13 +78,17 @@ public final class Double2DMatrix {
 			
 			j=0;
 			while (slicesXY.hasMoreTokens() && issquare) {				
-				Double value = Double.parseDouble(slicesXY.nextToken());
-				if(value>=0){
-					data[i][j] = value;
-					allnan = false;
-				}
-				else
+				try {
+					Double value = Double.parseDouble(slicesXY.nextToken());
+					if(value>=0){
+						data[i][j] = value;
+						allnan = false;
+					}
+					else
+						data[i][j] = Double.NaN;
+				} catch (NumberFormatException e) {
 					data[i][j] = Double.NaN;
+				}
 				j++;
 			}
 			i++;
@@ -94,7 +98,6 @@ public final class Double2DMatrix {
 			data = null;
 	    	isempty = true;
 			return;
-			
 		}
 		
 		if(!issquare){
@@ -165,11 +168,19 @@ public final class Double2DMatrix {
 		return str+"]";
 	}
 
+    public void set(int timeslice,int vehicletypeindex,double value){
+    	if(timeslice>=nTime || vehicletypeindex>=nVTypes)
+    		return;
+    	data[timeslice][vehicletypeindex] = value;
+    }
+    
 	/////////////////////////////////////////////////////////////////////
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
     
 	public void multiplyscalar(double value){
+    	if(this.isempty)
+    		return;
     	int i,j;
     	for(i=0;i<nTime;i++)
     		for(j=0;j<nVTypes;j++)
@@ -178,7 +189,7 @@ public final class Double2DMatrix {
     
 	/////////////////////////////////////////////////////////////////////
 	// check data
-	////////s/////////////////////////////////////////////////////////////  
+	//////////////////////////////////////////////////////////////////////  
     
     public boolean hasNaN(){
     	if(isempty)

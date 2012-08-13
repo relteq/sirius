@@ -88,13 +88,17 @@ final class Double3DMatrix {
 				
 				k=0;
 				while (slicesXYZ.hasMoreTokens() && issquare) {
-					Double value = Double.parseDouble(slicesXYZ.nextToken());
-					if(value>=0){
-						data[i][j][k] = value;
-						allnan = false;
-					}
-					else
+					try {
+						Double value = Double.parseDouble(slicesXYZ.nextToken());
+						if(value>=0){
+							data[i][j][k] = value;
+							allnan = false;
+						}
+						else
+							data[i][j][k] = Double.NaN;
+					} catch (NumberFormatException e) {
 						data[i][j][k] = Double.NaN;
+					}
 					k++;
 				}
 				j++;
@@ -213,15 +217,21 @@ final class Double3DMatrix {
 	/////////////////////////////////////////////////////////////////////  
 
 	public void set(int i,int j,int k,Double f){
+    	if(isempty)
+    		return;
     	data[i][j][k] = f;
     }
     	
 	public void setAllVehicleTypes(int i,int j,Double [] f){
+    	if(isempty)
+    		return;
 		for(int k=0;k<nVTypes;k++)
 			data[i][j][k] = f[k];
 	}
 	
     public void multiplyscalar(double value){
+    	if(isempty)
+    		return;
     	int i,j,k;
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)
@@ -230,6 +240,8 @@ final class Double3DMatrix {
     }
     
     public void addscalar(double value){
+    	if(isempty)
+    		return;
     	int i,j,k;
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)
