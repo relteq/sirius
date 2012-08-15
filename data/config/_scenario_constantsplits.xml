@@ -546,13 +546,6 @@
          <splitratio link_in="-286" link_out="-345">0.010000</splitratio>
       </splitratioProfile>
    </SplitRatioProfileSet>
-   <EventSet>
-      <event enabled="true" tstamp="1800" type="fundamental_diagram" id="-1">
-         <targetElements>
-            <scenarioElement id="123" type="link"/>
-         </targetElements>
-      </event>
-   </EventSet>
    <DemandProfileSet>
       <demandProfile dt="300" knob="1" link_id_origin="-289">400.000000</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-340">400.000000</demandProfile>

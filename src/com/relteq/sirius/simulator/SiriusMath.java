@@ -144,7 +144,42 @@ public final class SiriusMath {
 	
 	public static boolean equals(double a,double b){
 		return Math.abs(a-b) < SiriusMath.EPSILON;
+	}	
+	
+	public static boolean equals1D(ArrayList<Double> a,ArrayList<Double> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals(a.get(i), b.get(i)) )
+				return false;
+		return true;
 	}
+	
+	public static boolean equals2D(ArrayList<ArrayList<Double>> a,ArrayList<ArrayList<Double>> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals1D(a.get(i), b.get(i)) )
+				return false;
+		return true;
+	}
+	
+	public static boolean equals3D(ArrayList<ArrayList<ArrayList<Double>>> a,ArrayList<ArrayList<ArrayList<Double>>> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals2D(a.get(i), b.get(i)) )
+				return false;
+		return true;
+	}
+	
+	
 	
 	public static boolean greaterthan(double a,double b){
 		return a > b + SiriusMath.EPSILON;

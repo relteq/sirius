@@ -2,18 +2,21 @@ package com.relteq.sirius.simulator;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BlackBoxTest {
-
+	
+	private static String [] config_names = {
+											 "_scenario_2009_02_12",
+											 "Albany & Berkeley_sirius",
+										 	 "_smalltest_multipletypes",
+											 "complete",
+											 "test_event",
+		                                     "_scenario_constantsplits" };
+		
 	private static String CONF_SUFFIX = ".xml";
 	private static String [] outfile = {"_density_0.txt" , 
 								  	    "_inflow_0.txt" , 
@@ -23,51 +26,37 @@ public class BlackBoxTest {
 	private String fixture_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\fixture\\";
 	private String output_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\output\\";
 	private String config_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\config\\";
-	private String configfilename = "_scenario_2009_02_12";
-	
-//	@BeforeClass
-//	public static void beforeClass() {
-//		System.out.println("Before Class");
-//	}
-//
-//	@Before
-//	public void beforeMethod() {
-//		System.out.println("Before Method");
-//	}
 	
 	@Test
-	public void testClassTwo() {
+	public void testSimulator() {
 		
-		String [] args = {config_folder+configfilename+CONF_SUFFIX, 
-				output_folder+configfilename,
-				String.format("%d", 0), 
-				String.format("%d", 3600), 
-				String.format("%d", 300),
-				String.format("%d", 1) };
-		
-		com.relteq.sirius.simulator.Runner.main(args);
+		for(String config_name : config_names ){
 
-		for(String str : outfile){
-			String filename = configfilename + str;
-			File file1 = new File(fixture_folder+filename);
-			File file2 = new File(output_folder+filename);
-			try {
-				assertTrue("The files differ!", FileUtils.contentEquals(file1, file2));
-			} catch (IOException e) {
-				fail("problem reading a file");
+			String [] args = {config_folder+config_name+CONF_SUFFIX, 
+					output_folder+config_name,
+					String.format("%d", 0), 
+					String.format("%d", 3600), 
+					String.format("%d", 300),
+					String.format("%d", 1) };
+			
+			System.out.println("Running " + config_name);
+			com.relteq.sirius.simulator.Runner.main(args);
+
+			for(String str : outfile){
+				String filename = config_name + str;
+				try {
+					System.out.println("Checking " + filename);
+					System.out.println("Reading " + fixture_folder+filename);
+					ArrayList<ArrayList<ArrayList<Double>>> A = SiriusFormatter.readCSV(fixture_folder+filename,"\t",":");
+					System.out.println("Reading " + output_folder+filename);
+					ArrayList<ArrayList<ArrayList<Double>>> B = SiriusFormatter.readCSV(output_folder+filename,"\t",":");
+					assertTrue("The files are not equal.",SiriusMath.equals3D(A,B));
+				} catch (IOException e) {
+					System.out.println(e.getMessage());
+					fail("problem reading a file");
+				}
 			}
 		}
-		
 	}
-
-//	@After
-//	public void afterMethod() {
-//		System.out.println("After method");
-//	}
-//	
-//	@AfterClass
-//	public static void afterClass() {
-//		System.out.println("After class");
-//	}
 
 }
