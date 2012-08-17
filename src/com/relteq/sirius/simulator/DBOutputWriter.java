@@ -166,9 +166,18 @@ public class DBOutputWriter extends OutputWriterBase {
 			}
 			if (!Double.isNaN(speed)) db_ldt.setSpeed(new BigDecimal(speed));
 		}
+		// congestion wave speed, mph
+		double cwspeed = link.getWInMPH(0);
+		if (!Double.isNaN(cwspeed)) db_ldt.setCongestionWaveSpeed(new BigDecimal(cwspeed));
 		// maximum flow, vph
 		double capacity = link.getCapacityInVPH(0);
 		if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
+		// jam density, vehicle per mile per lane
+		double jamdens = link.getDensityJamInVPMPL(0);
+		if (!Double.isNaN(jamdens)) db_ldt.setJamDensity(new BigDecimal(jamdens));
+		// capacity drop, vehicle per hour per lane
+		double capdrop = link.getCapacityDropInVPHPL(0);
+		if (!Double.isNaN(capdrop)) db_ldt.setCapacityDrop(new BigDecimal(capdrop));
 		db_ldt.save(conn);
 		return db_ldt;
 	}
