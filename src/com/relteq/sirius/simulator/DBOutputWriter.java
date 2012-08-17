@@ -178,6 +178,8 @@ public class DBOutputWriter extends OutputWriterBase {
 		// capacity drop, vehicle per hour per lane
 		double capdrop = link.getCapacityDropInVPHPL(0);
 		if (!Double.isNaN(capdrop)) db_ldt.setCapacityDrop(new BigDecimal(capdrop));
+		FundamentalDiagram fd = link.currentFD(0);
+		if (null != fd) db_ldt.setStdDeviationCapacity(fd.getStdDevCapacity());
 		db_ldt.save(conn);
 		return db_ldt;
 	}
