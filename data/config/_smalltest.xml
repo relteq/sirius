@@ -2,6 +2,9 @@
 <scenario id="null" name="null" schemaVersion="1.0.19">
    <settings>
       <units>US</units>
+	  <VehicleTypes>
+		<vehicle_type name="car" weight="1.0"/>
+	  </VehicleTypes>
    </settings>
    <InitialDensitySet/>
    <SplitRatioProfileSet>
