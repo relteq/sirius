@@ -6,6 +6,7 @@
 <database name="sirius">
 	<domain name="STRING_ID" type="VARCHAR" size="255"/>
 	<domain name="NAME_BUF" type="VARCHAR" size="64"/>
+	<domain name="STRING_VERSION" type="VARCHAR" size="64"/>
 	<domain name="VALUE_BUF" type="VARCHAR" size="256"/>
 	<domain name="VALUE_TYPE" type="VARCHAR" size="16"/>
 	<domain name="JAVA_CLASS" type="VARCHAR" size="128"/>
@@ -118,6 +119,16 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="to_link_id" foreign="id"/>
 		</foreign-key>
+		<unique name="network_connections_from">
+			<unique-column name="network_connection_list_id"/>
+			<unique-column name="from_network_id"/>
+			<unique-column name="from_link_id"/>
+		</unique>
+		<unique name="network_connections_to">
+			<unique-column name="network_connection_list_id"/>
+			<unique-column name="to_network_id"/>
+			<unique-column name="to_link_id"/>
+		</unique>
 	</table>
 
 
@@ -280,14 +291,21 @@
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
 
-	<table name="split_ratio_profiles">
+	<table name="split_ratio_profile_families">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="split_ratio_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="node_id" required="true" domain="STRING_ID"/>
+	</table>
+
+	<table name="split_ratio_profiles">
+		<column name="split_ratio_profile_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="split_ratio_profile_set_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<foreign-key foreignTable="split_ratio_profile_families">
+			<reference local="split_ratio_profile_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="split_ratio_profile_sets">
 			<reference local="split_ratio_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -333,13 +351,20 @@
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
 
-	<table name="fundamental_diagram_profiles">
+	<table name="fundamental_diagram_profile_families">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="fundamental_diagram_profile_set_id" required="true" domain="STRING_ID"/>
-		<column name="link_id" required="true" domain="STRING_ID"/>
+	</table>
+
+	<table name="fundamental_diagram_profiles">
+		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="fundamental_diagram_profile_set_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<foreign-key foreignTable="fundamental_diagram_profile_families">
+			<reference local="fundamental_diagram_profile_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="fundamental_diagram_profile_sets">
 			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -377,8 +402,12 @@
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
 
-	<table name="demand_profiles">
+	<table name="demand_profile_families">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+	</table>
+
+	<table name="demand_profiles">
+		<column name="demand_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="demand_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="origin_link_id" required="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
@@ -388,6 +417,9 @@
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
 		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
 		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
+		<foreign-key foreignTable="demand_profile_families">
+			<reference local="demand_profile_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="demand_profile_sets">
 			<reference local="demand_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -425,13 +457,20 @@
 		<column name="description" domain="DESCRIPTION_BUF"/>
 	</table>
 
-	<table name="downstream_boundary_capacity_profiles">
+	<table name="downstream_boundary_capacity_profile_families">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
+	</table>
+
+	<table name="downstream_boundary_capacity_profiles">
+		<column name="downstream_boundary_capacity_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="STRING_ID"/>
 		<column name="link_id" required="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<foreign-key foreignTable="downstream_boundary_capacity_profile_families">
+			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
 			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
 		</foreign-key>
@@ -561,8 +600,6 @@
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
 		<column name="name" domain="NAME_BUF"/>
-		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
-		<column name="duration" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
 		<column name="dt" domain="DECIMAL" description="Invocation period in seconds. Default is 30."/>
 		<column name="queue_controller_id" domain="STRING_ID"/>
 		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
@@ -571,6 +608,15 @@
 		</foreign-key>
 		<foreign-key foreignTable="queue_controllers">
 			<reference local="queue_controller_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="controller_activation_intervals">
+		<column name="controller_id" required="true" domain="STRING_ID"/>
+		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<foreign-key foreignTable="controllers">
+			<reference local="controller_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -594,6 +640,26 @@
 		<column name="enabled" required="true" domain="BOOL" description="If the event is not enabled, it does not fire."/>
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="event_split_ratios">
+		<column name="event_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="in_link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
+		<foreign-key foreignTable="events">
+			<reference local="event_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="in_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="out_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_type_families">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -743,8 +809,15 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="run_number" required="true" type="INTEGER"/>
-		<column name="start_time" required="true" type="TIMESTAMP"/>
-		<column name="end_time" required="false" type="TIMESTAMP"/>
+		<column name="user_id" required="true" domain="STRING_ID"/>
+		<column name="version" required="true" domain="STRING_VERSION"/>
+		<column name="build" required="true" domain="STRING_VERSION"/>
+		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="simulation_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="simulation_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="execution_start_time" required="true" type="TIMESTAMP"/>
+		<column name="execution_end_time" required="false" type="TIMESTAMP"/>
 		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
@@ -756,6 +829,17 @@
 			<unique-column name="scenario_id"/>
 			<unique-column name="run_number"/>
 		</unique>
+	</table>
+
+	<table name="default_simulation_settings">
+		<column name="scenario_id" primaryKey="true" type="INTEGER"/>
+		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="simulation_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="simulation_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
+		</foreign-key>
 	</table>
 	
 
