@@ -380,6 +380,7 @@
 		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the fundamental diagram"/>
 		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in kph."/>
+		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in kph."/>
 		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in kph."/>
 		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per km per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
@@ -866,6 +867,7 @@
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
 		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in kph."/>
+		<column name="critical_speed" domain="DECIMAL" description="Critical speed in kph."/>
 		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in kph."/>
 		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per km per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
