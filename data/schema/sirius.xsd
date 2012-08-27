@@ -703,7 +703,6 @@
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="id" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
