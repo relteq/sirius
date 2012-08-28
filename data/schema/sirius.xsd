@@ -59,11 +59,11 @@
 
   <xs:element name="table">
 	<xs:complexType mixed="true">
-        <xs:attribute name="name" type="xs:string" use="required" />
 		<xs:sequence>
 			<xs:element ref="column_names" minOccurs="1" maxOccurs="1"/>
 			<xs:element ref="row" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
 	</xs:complexType>
   </xs:element>
 
@@ -228,7 +228,7 @@
 				<xs:element ref="position" minOccurs="0" />
 				<xs:element ref="NodeList" minOccurs="0" />
 				<xs:element ref="LinkList" minOccurs="0" />
-				+<xs:element ref="IntersectionCache" minOccurs="0" />
+				<xs:element ref="IntersectionCache" minOccurs="0" />
 			  </xs:all>
 			  <xs:attribute name="name" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in seconds -->
@@ -346,6 +346,8 @@
 					</xs:complexType>
 				  </xs:element>
 
+	<xs:element name="shape" type="xs:string"/>
+
   <!-- IntersectionCache ......................................................... -->
 
 		  <xs:element name="IntersectionCache">
@@ -445,6 +447,8 @@
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
+			</xs:complexType>
+		</xs:element>
 
   <!-- InitialDensitySet ..................................................... -->
 
