@@ -1,5 +1,11 @@
 package com.relteq.sirius.control;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.DecimalFormat;
 import java.util.ArrayList; 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +16,7 @@ import com.relteq.sirius.simulator.Link;
 import com.relteq.sirius.simulator.Node;
 import com.relteq.sirius.simulator.Scenario;
 import com.relteq.sirius.simulator.Sensor;
+import com.relteq.sirius.simulator.SiriusException;
 import com.relteq.sirius.sensor.SensorLoopStation;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
@@ -74,13 +81,16 @@ public class Controller_CRM_HERO extends Controller {
 	private double flowQueueMin;   //metering rate determined by minimum queue controller
 	private double flowAlinea;     //metering rate determined by ALINEA
 	private double flowHero;       //metering rate determined by HERO
+	private double flowControl_MaxFlow; //metering rate output by this controller
+	
+	private static boolean printMessages=true;    // True for printing  debugging messages
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
     public Controller_CRM_HERO() {
-    	// TODO Auto-generated constructor stub
+    	
     }
 
 	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
@@ -243,7 +253,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// Set minFlow equal to zero if not given
 		if(!minFlow_Given)
-			minFlow=1;	
+			minFlow=0;	
 		
 		// Orders set of Possible Slaves from Downstream to Upstream
 		for(int i=0; i< controllersOrdered.size(); i++){
@@ -344,7 +354,6 @@ public class Controller_CRM_HERO extends Controller {
 		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
 		if(timeStep!= myScenario.getCurrentTimeStep() ){ 
 			timeStep=myScenario.getCurrentTimeStep();
-			//System.out.println("current time step " + timeStep);
 		
 			//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
 			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax();
@@ -365,36 +374,40 @@ public class Controller_CRM_HERO extends Controller {
 				defineSlaveControllersMinimumQueue(i);
 
 				// ALINEA Ramp Metering Controller (EQUATION (1))
-				controllerList.get(i).flowAlinea = controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)+
-						controllerList.get(i).alineaGainNormalized*(controllerList.get(i).targetVehicles-controllerList.get(i).mainlineVehiclesCurrent);
+				controllerList.get(i).flowAlinea = controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)+ controllerList.get(i).alineaGainNormalized*
+						                           (controllerList.get(i).targetVehicles-controllerList.get(i).mainlineVehiclesCurrent);
 				
 				//Queue Controller (EQUATION (2))			
-				
-				//System.out.println("Output Flow: " + controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)*3 + " CumOutFlow: " + controllerList.get(i).queueSensor.getCumulativeOutflowInVeh(0)); // the 3 is to account for difference between dt sim and dt controller
-			
-				controllerList.get(i).flowQueue = -controllerList.get(i).queueControllerGainNormalized*(controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
-						controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0);
+				controllerList.get(i).flowQueue = ( -controllerList.get(i).queueControllerGainNormalized*
+						                          (controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
+						                          controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/ 
+						                          (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
 				
 		        //EQUATION (3) vs EQUATIONS(4) and(5)
 				if(controllerList.get(i).type.equals(status.MASTER)|| controllerList.get(i).type.equals(status.NOT_USED))
-					controllerList.get(i).flowHero=Math.min(controllerList.get(i).flowAlinea,controllerList.get(i).flowQueue);
+					controllerList.get(i).flowHero=Math.max(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueue);
 				else{
-					controllerList.get(i).flowQueueMin = -controllerList.get(i).queueMinControllerGainNormalized*(controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
-							controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0);
+					controllerList.get(i).flowQueueMin =(-controllerList.get(i).queueMinControllerGainNormalized*
+							                             (controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
+							                             controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/
+							                             (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
+					
+					
 					controllerList.get(i).flowHero = Math.max(Math.min(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueueMin), controllerList.get(i).flowQueue);
-				}
+				} 
+				
+				//printSensorCumulativeInflowAndOutflow(i);
+				controllerList.get(i).queueSensor.resetCumulativeInflowInVeh();	
 				controllerList.get(i).queueSensor.resetCumulativeOutflowInVeh();	
 			}
-		
 		}
-//		System.out.println("time "+timeStep+": Controller" +this.id+ "(control_maxflow[0]="+ Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow)+
-//				")-- minFlow:"+ minFlow+ ", alineaFlow:"+ this.flowAlinea +",flowHero:"+this.flowHero +", maxFlow:"+ maxFlow);
 		
 		//DEFINITION OF HERO METERING RATE
-		control_maxflow[0] = Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
+		flowControl_MaxFlow=Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
+		control_maxflow[0] = flowControl_MaxFlow;
+		//printFlows(this);
+		//System.out.println(mainlineLink.getDensityJamInVPMPL(0));
 	}	
-	
-	
 	
 	@Override
 	public boolean register() {
@@ -416,7 +429,8 @@ public class Controller_CRM_HERO extends Controller {
 		for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
         	if( ((Link)aLink).getType().equals("freeway")  && ((Link)aLink).getEnd_node().getType().equals("terminal")                ) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
-        		//System.out.println("The Most Downstream Freeway Link is " + aLink.getId()+ " with End Node " + nodesOrdered.get(0).getId());
+        		if(printMessages)
+        		System.out.println("The Most Downstream Freeway Link is " + aLink.getId()+ " with End Node " + nodesOrdered.get(0).getId());
         		break;
         	}
 		}
@@ -427,8 +441,9 @@ public class Controller_CRM_HERO extends Controller {
 			for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
 	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId().equals(nodesOrdered.get(nodesOrdered.size()-1).getId())  ) { 
 	        		linksOrdered.add(((Link)aLink));
-	        		nodesOrdered.add(((Link)aLink).getBegin_node());	 
-	        		//System.out.println("Link: "+ aLink.getId() +" Begin Node: " +((Link)aLink).getBegin_node().getId() );
+	        		nodesOrdered.add(((Link)aLink).getBegin_node());	
+	        		if(printMessages)
+	        		System.out.println("Link: "+ aLink.getId() +" Begin Node: " +((Link)aLink).getBegin_node().getId() );
 	        		if (((Link)aLink).getBegin_node().getType().equals("terminal")){
 	        			isTerminalNode=1;
 	        		}
@@ -442,11 +457,13 @@ public class Controller_CRM_HERO extends Controller {
 			for (com.relteq.sirius.jaxb.Link aLink: aNode.getInput_link()){ 
 				//System.out.println("Input Link: "+ aLink.getId());
 				if( ((Link)aLink).getType().equals("onramp") ){
-					System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
+					if(printMessages)
+						System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
 					for(com.relteq.sirius.jaxb.Controller aController: myScenario.getControllerSet().getController()) {
 						if(aController.getTargetElements().getScenarioElement().get(0).getId().equals(aLink.getId()) && aController.getType().equals("CRM_hero"))   {
-							System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
+							if(printMessages)
+								System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
 							controllersOrdered.add(aController.getId());
 							break;
 						}
@@ -591,10 +608,27 @@ public class Controller_CRM_HERO extends Controller {
     	controllerList.get(i).typePrevious=controllerList.get(i).type;	//Update typePrevious
     	controllerList.get(i).type = newStatus;	//Update type	
     	
-		System.out.println("time step "+timeStep+ ": " + controllerList.get(i).typePrevious + " Conroller "+i+
+    	if (printMessages)
+    		System.out.println("time step "+timeStep+ ": " + controllerList.get(i).typePrevious + " Conroller "+i+
 				" (id=" + controllerList.get(i).getId() +") was set to " +controllerList.get(i).type);
-	}	
-	
+	}
+    
+    public void printSensorCumulativeInflowAndOutflow(Integer controllerIndex){
+    	Integer i =controllerIndex;
+		if (printMessages)
+			System.out.println("time "+timeStep+": Controller " +controllerList.get(i).id + " Sensor cumInflow: " + controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0)+
+							   " Sensor cumOutflow: " + controllerList.get(i).queueSensor.getCumulativeOutflowInVeh(0));
+    }
+    
+    public void printFlows(Controller_CRM_HERO C){
+		if (printMessages){
+			DecimalFormat df = new DecimalFormat("#.##");
+			System.out.println("time "+timeStep+": Controller " +C.id+ " --- control_maxflow[0]:"+ df.format(C.flowControl_MaxFlow) +
+				" --- Min:"+ df.format(C.minFlow)+ ", Alinea:"+ df.format(C.flowAlinea)+ ", Queue:"+ df.format(C.flowQueue)
+				+ ", QueueMin:"+ df.format(C.flowQueueMin) +", Hero:"+df.format(C.flowHero )+", Max:"+ df.format(C.maxFlow));
+		}
+    }
+        
 }
 
 	

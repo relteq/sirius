@@ -52,10 +52,11 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		
 		com.relteq.sirius.jaxb.Sensor jaxbs = (com.relteq.sirius.jaxb.Sensor) jaxbobject;
 
-		for(com.relteq.sirius.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
-			if(param.getName().compareToIgnoreCase("vds")==0)
-				this.VDS = Integer.parseInt(param.getValue());
-		}
+		if(jaxbs.getParameters()!=null)
+			for(com.relteq.sirius.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
+				if(param.getName().compareToIgnoreCase("vds")==0)
+					this.VDS = Integer.parseInt(param.getValue());
+			}
 		
 		if(jaxbs.getDataSources()!=null){
 			for(com.relteq.sirius.jaxb.DataSource datasource : jaxbs.getDataSources().getDataSource()){
