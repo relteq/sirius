@@ -87,4 +87,19 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 		return new Sensor();
 	}
 
+	@Override
+	public com.relteq.sirius.jaxb.Table createTable() {
+		return new Table();
+	}
+
+	@Override
+	public com.relteq.sirius.jaxb.Parameters createParameters() {
+		return new Parameters();
+	}
+
+	@Override
+	public com.relteq.sirius.jaxb.SplitratioEvent createSplitratioEvent() {
+		return new SplitratioEvent();
+	}
+
 }
