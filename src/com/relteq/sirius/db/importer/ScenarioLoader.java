@@ -148,7 +148,7 @@ public class ScenarioLoader {
 		vehicle_type_id = new String[vtlist.size()];
 		int ind = 0;
 		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
-			vehicle_type_id[ind++] = save(vt, db_vtl).getId();
+			vehicle_type_id[ind++] = save(vt, db_vtl).getVehicleTypeId();
 		return db_vtl;
 	}
 
@@ -183,7 +183,7 @@ public class ScenarioLoader {
 		}
 		VehicleTypesInLists db_vtinl = new VehicleTypesInLists();
 		db_vtinl.setVehicleTypeLists(db_vtl);
-		db_vtinl.setVehicleTypeId(db_vtype.getId());
+		db_vtinl.setVehicleTypeId(db_vtype.getVehicleTypeId());
 		db_vtinl.save(conn);
 		return db_vtype;
 	}

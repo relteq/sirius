@@ -110,10 +110,10 @@ public class ScenarioRestorer {
 		if (null == db_vtlists) return null;
 		com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
 		Criteria crit = new Criteria();
-		crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.ID);
+		crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.VEHICLE_TYPE_ID);
 		crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_vtlists.getId());
 		crit.add(VehicleTypesPeer.PROJECT_ID, db_vtlists.getProjectId());
-		crit.addAscendingOrderByColumn(VehicleTypesPeer.ID);
+		crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_ID);
 		try {
 			@SuppressWarnings("unchecked")
 			List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);

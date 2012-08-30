@@ -72,13 +72,13 @@ public class DBOutputWriter extends OutputWriterBase {
 			vt_name2id = new java.util.TreeMap<String, String>();
 			logger.info("Loading vehicle type IDs");
 			Criteria crit = new Criteria();
-			crit.addJoin(VehicleTypesPeer.ID, VehicleTypesInListsPeer.VEHICLE_TYPE_ID);
+			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInListsPeer.VEHICLE_TYPE_ID);
 			crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_scenario.getVehicleTypeListId());
 			try {
 				@SuppressWarnings("unchecked")
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
 				for (VehicleTypes db_vt : db_vt_l)
-					vt_name2id.put(db_vt.getName(), db_vt.getId());
+					vt_name2id.put(db_vt.getName(), db_vt.getVehicleTypeId());
 			} catch (TorqueException exc) {
 				throw new SiriusException(exc);
 			}
