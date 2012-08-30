@@ -48,8 +48,6 @@ public class ScenarioLoader {
 	private Map<String, String> network_id = null;
 	private Map<String, String> link_family_id = null;
 	private Map<String, String> node_family_id = null;
-	private Map<String, String> od_id = null;
-	private Map<String, String> route_segment_id = null;
 
 	public ScenarioLoader() {
 		project_id = "default";
@@ -108,9 +106,6 @@ public class ScenarioLoader {
 		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
 		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
-		save(scenario.getRouteSegments());
-		db_scenario.setOdLists(save(scenario.getODList()));
-		db_scenario.setDecisionPointSplitProfileSets(save(scenario.getDecisionPoints()));
 		db_scenario.setSignalLists(save(scenario.getSignalList()));
 		db_scenario.setSensorLists(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
@@ -118,7 +113,6 @@ public class ScenarioLoader {
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
 		db_scenario.setFundamentalDiagramProfileSets(save(scenario.getFundamentalDiagramProfileSet()));
 		db_scenario.setDemandProfileSets(save(scenario.getDemandProfileSet()));
-		db_scenario.setOdDemandProfileSets(save(scenario.getODDemandProfileSet()));
 		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
 		db_scenario.setControllerSets(save(scenario.getControllerSet()));
 		db_scenario.setEventSets(save(scenario.getEventSet()));
@@ -654,205 +648,6 @@ public class ScenarioLoader {
 			db_nc.setToNetworkId(network_id.get(np.getNetworkB()));
 			db_nc.setToLinkId(link_family_id.get(lp.getLinkB()));
 			db_nc.save(conn);
-		}
-	}
-
-	/**
-	 * Imports route segments
-	 * @param rsegments
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.RouteSegments rsegments) throws TorqueException {
-		if (null == rsegments) return;
-		route_segment_id = new HashMap<String, String>();
-		for (com.relteq.sirius.jaxb.RouteSegment rs : rsegments.getRouteSegment())
-			save(rs);
-	}
-
-	/**
-	 * Imports a route segment
-	 * @param rs
-	 * @return the imported route segment
-	 * @throws TorqueException
-	 */
-	private RouteSegments save(com.relteq.sirius.jaxb.RouteSegment rs) throws TorqueException {
-		RouteSegments db_rs = new RouteSegments();
-		String id = uuid();
-		route_segment_id.put(rs.getId(), id);
-		db_rs.setId(id);
-		db_rs.setProjectId(getProjectId());
-		// TODO db_rs.setName();
-		// TODO db_rs.setDescription();
-		db_rs.save(conn);
-		int count = 0;
-		for (com.relteq.sirius.jaxb.Links links : rs.getLinks())
-			for (com.relteq.sirius.jaxb.LinkReference lr : links.getLinkReference())
-				save(lr, db_rs, count++);
-		return db_rs;
-	}
-
-	/**
-	 * Imports a route segment link
-	 * @param lr
-	 * @param db_rs
-	 * @param number
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.LinkReference lr, RouteSegments db_rs, int number) throws TorqueException {
-		RouteSegmentLinks db_rsl = new RouteSegmentLinks();
-		db_rsl.setLinkId(link_family_id.get(lr.getId()));
-		db_rsl.setRouteSegments(db_rs);
-		db_rsl.setNumber(number);
-		db_rsl.save(conn);
-	}
-
-	/**
-	 * Imports an origin-destination list
-	 * @param odlist
-	 * @return the imported list
-	 * @throws TorqueException
-	 */
-	private OdLists save(com.relteq.sirius.jaxb.ODList odlist) throws TorqueException {
-		if (null == odlist) return null;
-		OdLists db_odlist = new OdLists();
-		db_odlist.setId(uuid());
-		db_odlist.setProjectId(getProjectId());
-		db_odlist.setName(odlist.getName());
-		// TODO db_odlist.setDescription();
-		db_odlist.save(conn);
-		od_id = new HashMap<String, String>();
-		for (com.relteq.sirius.jaxb.Od od : odlist.getOd())
-			save(od, db_odlist);
-		return db_odlist;
-	}
-
-	/**
-	 * Imports an origin-destination pair
-	 * @param od
-	 * @param db_odlist an already imported OD list
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.Od od, OdLists db_odlist) throws TorqueException {
-		Ods db_od = new Ods();
-		String id = uuid();
-		od_id.put(od.getId(), id);
-		db_od.setId(id);
-		db_od.setOdLists(db_odlist);
-		db_od.setOriginLinkId(link_family_id.get(od.getLinkIdOrigin()));
-		db_od.setDestinationLinkId(link_family_id.get(od.getLinkIdDestination()));
-		db_od.save(conn);
-		// TODO od_route_segments table
-		// TODO od_decision_points table
-	}
-
-	/**
-	 * Imports decision point split profiles
-	 * @param dpoints
-	 * @return the imported profile list
-	 * @throws TorqueException
-	 */
-	private DecisionPointSplitProfileSets save(com.relteq.sirius.jaxb.DecisionPoints dpoints) throws TorqueException {
-		if (null == dpoints) return null;
-		DecisionPointSplitProfileSets db_dpsps = new DecisionPointSplitProfileSets();
-		db_dpsps.setId(uuid());
-		db_dpsps.setProjectId(getProjectId());
-		// TODO db_dpsps.setName();
-		// TODO db_dpsps.setDescription();
-		for (com.relteq.sirius.jaxb.DecisionPoint dp : dpoints.getDecisionPoint())
-			save(dp, db_dpsps);
-		db_dpsps.save(conn);
-		return db_dpsps;
-	}
-
-	/**
-	 * Imports a decision point split profile
-	 * @param dp
-	 * @param db_dpsps an already imported split profile set
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.DecisionPoint dp, DecisionPointSplitProfileSets db_dpsps) throws TorqueException {
-		DecisionPointSplitProfiles db_dpsp = new DecisionPointSplitProfiles();
-		db_dpsp.setId(uuid());
-		db_dpsp.setDecisionPointSplitProfileSets(db_dpsps);
-		db_dpsp.setNodeId(node_family_id.get(dp.getNodeId()));
-		db_dpsp.setDt(dp.getDt());
-		db_dpsp.setStartTime(dp.getStartTime());
-		db_dpsp.save(conn);
-		for (com.relteq.sirius.jaxb.DecisionPointSplit split : dp.getDecisionPointSplit())
-			save(split, db_dpsp);
-	}
-
-	/**
-	 * Imports a decision point split
-	 * @param split
-	 * @param db_dpsp an already imported decision point split profile
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.DecisionPointSplit split, DecisionPointSplitProfiles db_dpsp) throws TorqueException {
-		// TODO delimiter = ',' or ':'?
-		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(split.getContent(), ",");
-		if (!values.isEmpty()) {
-			int count = 0;
-			for (Double val : values.getData()) {
-				DecisionPointSplits db_dps = new DecisionPointSplits();
-				db_dps.setDecisionPointSplitProfiles(db_dpsp);
-				db_dps.setInRouteSegmentId(route_segment_id.get(split.getRouteSegmentIn()));
-				db_dps.setOutRouteSegmentId(route_segment_id.get(split.getRouteSegmentOut()));
-				db_dps.setNumber(count++);
-				db_dps.setSplit(new BigDecimal(val));
-				db_dps.save(conn);
-			}
-		}
-	}
-
-	/**
-	 * Imports OD demand profiles
-	 * @param oddps
-	 * @return the imported OD demand profile set
-	 * @throws TorqueException
-	 */
-	private OdDemandProfileSets save(com.relteq.sirius.jaxb.ODDemandProfileSet oddps) throws TorqueException {
-		if (null == oddps) return null;
-		OdDemandProfileSets db_oddps = new OdDemandProfileSets();
-		db_oddps.setId(uuid());
-		db_oddps.setProjectId(getProjectId());
-		db_oddps.setName(oddps.getName());
-		db_oddps.setDescription(oddps.getDescription());
-		db_oddps.save(conn);
-		for (com.relteq.sirius.jaxb.OdDemandProfile oddp : oddps.getOdDemandProfile())
-			save(oddp, db_oddps);
-		return db_oddps;
-	}
-
-	/**
-	 * Imports an OD Demand profile
-	 * @param oddp
-	 * @param db_oddps an already imported OD demand profile set
-	 * @throws TorqueException
-	 */
-	private void save(com.relteq.sirius.jaxb.OdDemandProfile oddp, OdDemandProfileSets db_oddps) throws TorqueException {
-		OdDemandProfiles db_oddp = new OdDemandProfiles();
-		db_oddp.setId(uuid());
-		db_oddp.setOdDemandProfileSets(db_oddps);
-		db_oddp.setOdId(od_id.get(oddp.getOdId()));
-		db_oddp.setDt(oddp.getDt());
-		db_oddp.setStartTime(oddp.getStartTime());
-		db_oddp.setKnob(oddp.getKnob());
-		db_oddp.setStdDeviationAdditive(oddp.getStdDevAdd());
-		db_oddp.setStdDeviationMultiplicative(oddp.getStdDevMult());
-		db_oddp.save(conn);
-		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(oddp.getContent(), ":");
-		if (!values.isEmpty()) {
-			int count = 0;
-			for (Double demand : values.getData()) {
-				OdDemands db_odd = new OdDemands();
-				db_odd.setOdDemandProfiles(db_oddp);
-				db_odd.setVehicleTypeId(vehicle_type_id[count]);
-				db_odd.setNumber(count);
-				db_odd.setOdDemand(new BigDecimal(demand));
-				db_odd.save(conn);
-				++count;
-			}
 		}
 	}
 

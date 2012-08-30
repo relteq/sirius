@@ -79,9 +79,6 @@ public class ScenarioRestorer {
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
-			scenario.setODList(restoreODList(db_scenario.getOdLists()));
-			// TODO scenario.setRouteSegments();
-			scenario.setDecisionPoints(restoreDecisionPoints(db_scenario.getDecisionPointSplitProfileSets()));
 			scenario.setSignalList(restoreSignalList(db_scenario.getSignalLists()));
 			scenario.setSensorList(restoreSensorList(db_scenario.getSensorLists()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
@@ -89,7 +86,6 @@ public class ScenarioRestorer {
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
 			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
 			scenario.setDemandProfileSet(restoreDemandProfileSet(db_scenario.getDemandProfileSets()));
-			scenario.setODDemandProfileSet(restoreODDemandProfileSet(db_scenario.getOdDemandProfileSets()));
 			scenario.setDownstreamBoundaryCapacityProfileSet(restoreDownstreamBoundaryCapacity(db_scenario.getDownstreamBoundaryCapacityProfileSets()));
 			scenario.setControllerSet(restoreControllerSet(db_scenario.getControllerSets()));
 			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
@@ -551,89 +547,6 @@ public class ScenarioRestorer {
 		return nc;
 	}
 
-	private com.relteq.sirius.jaxb.ODList restoreODList(OdLists db_odl) {
-		if (null == db_odl) return null;
-		com.relteq.sirius.jaxb.ODList odlist = factory.createODList();
-		odlist.setId(db_odl.getId());
-		odlist.setName(db_odl.getName());
-		// TODO odlist.setDescription(db_odl.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<Ods> db_od_l = db_odl.getOdss();
-			for (Ods db_od : db_od_l)
-				odlist.getOd().add(restoreOD(db_od));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return odlist;
-	}
-
-	private com.relteq.sirius.jaxb.Od restoreOD(Ods db_od) {
-		com.relteq.sirius.jaxb.Od od = factory.createOd();
-		od.setId(db_od.getId());
-		od.setLinkIdOrigin(db_od.getOriginLinkId());
-		od.setLinkIdDestination(db_od.getDestinationLinkId());
-		// TODO od.setRouteSegments();
-		// TODO od.setDecisionPoints();
-		return od;
-	}
-
-	private com.relteq.sirius.jaxb.DecisionPoints restoreDecisionPoints(DecisionPointSplitProfileSets db_dpsps) {
-		if (null == db_dpsps) return null;
-		com.relteq.sirius.jaxb.DecisionPoints dpoints = factory.createDecisionPoints();
-		// TODO dpoints.setName(db_dpsps.getName());
-		// TODO dpoints.setDescription(db_dpsps.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<DecisionPointSplitProfiles> db_dpsp_l = db_dpsps.getDecisionPointSplitProfiless();
-			for (DecisionPointSplitProfiles db_dpsp : db_dpsp_l)
-				dpoints.getDecisionPoint().add(restoreDecisionPoint(db_dpsp));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return dpoints;
-	}
-
-	private com.relteq.sirius.jaxb.DecisionPoint restoreDecisionPoint(DecisionPointSplitProfiles db_dpsp) {
-		com.relteq.sirius.jaxb.DecisionPoint dpoint = factory.createDecisionPoint();
-		dpoint.setId(db_dpsp.getId());
-		dpoint.setNodeId(db_dpsp.getNodeId());
-		dpoint.setDt(db_dpsp.getDt());
-		dpoint.setStartTime(db_dpsp.getStartTime());
-		Criteria crit = new Criteria();
-		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.IN_ROUTE_SEGMENT_ID);
-		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.OUT_ROUTE_SEGMENT_ID);
-		crit.addAscendingOrderByColumn(DecisionPointSplitsPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<DecisionPointSplits> db_dps_l = db_dpsp.getDecisionPointSplitss(crit);
-			com.relteq.sirius.jaxb.DecisionPointSplit dps = null;
-			StringBuilder sb = new StringBuilder();
-			for (DecisionPointSplits db_dps : db_dps_l) {
-				if (null != dps && (!dps.getRouteSegmentIn().equals(db_dps.getInRouteSegmentId()) || !dps.getRouteSegmentOut().equals(db_dps.getOutRouteSegmentId()))) {
-					dps.setContent(sb.toString());
-					dpoint.getDecisionPointSplit().add(dps);
-					dps = null;
-					sb.setLength(0);
-				}
-				if (null == dps) {
-					dps = factory.createDecisionPointSplit();
-					dps.setRouteSegmentIn(db_dps.getInRouteSegmentId());
-					dps.setRouteSegmentOut(db_dps.getOutRouteSegmentId());
-				} else
-					sb.append(':');
-				sb.append(db_dps.getSplit().toPlainString());
-			}
-			if (null != dps) {
-				dps.setContent(sb.toString());
-				dpoint.getDecisionPointSplit().add(dps);
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return dpoint;
-	}
-
 	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalLists db_sl) {
 		if (null == db_sl) return null;
 		com.relteq.sirius.jaxb.SignalList sl = factory.createSignalList();
@@ -701,49 +614,6 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.SensorList sl = factory.createSensorList();
 		// TODO sl.getSensor().add();
 		return sl;
-	}
-
-	private com.relteq.sirius.jaxb.ODDemandProfileSet restoreODDemandProfileSet(OdDemandProfileSets db_oddps) {
-		if (null == db_oddps) return null;
-		com.relteq.sirius.jaxb.ODDemandProfileSet oddps = factory.createODDemandProfileSet();
-		oddps.setId(db_oddps.getId());
-		oddps.setName(db_oddps.getName());
-		oddps.setDescription(db_oddps.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<OdDemandProfiles> db_oddp_l = db_oddps.getOdDemandProfiless();
-			for (OdDemandProfiles db_oddp : db_oddp_l)
-				oddps.getOdDemandProfile().add(restoreODDemandProfile(db_oddp));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return oddps;
-	}
-
-	private com.relteq.sirius.jaxb.OdDemandProfile restoreODDemandProfile(OdDemandProfiles db_oddp) {
-		com.relteq.sirius.jaxb.OdDemandProfile oddp = factory.createOdDemandProfile();
-		oddp.setOdId(db_oddp.getOdId());
-		oddp.setDt(db_oddp.getDt());
-		oddp.setStartTime(db_oddp.getStartTime());
-		oddp.setKnob(db_oddp.getKnob());
-		oddp.setStdDevAdd(db_oddp.getStdDeviationAdditive());
-		oddp.setStdDevMult(db_oddp.getStdDeviationMultiplicative());
-		Criteria crit = new Criteria();
-		crit.addAscendingOrderByColumn(OdDemandsPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<OdDemands> db_odd_l = db_oddp.getOdDemandss(crit);
-			StringBuilder sb = null;
-			for (OdDemands db_odd : db_odd_l) {
-				if (null == sb) sb = new StringBuilder();
-				else sb.append(':');
-				sb.append(db_odd.getOdDemand().toPlainString());
-			}
-			if (null != sb) oddp.setContent(sb.toString());
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return oddp;
 	}
 
 	private com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) {
