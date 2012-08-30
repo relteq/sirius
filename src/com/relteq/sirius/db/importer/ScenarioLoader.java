@@ -598,7 +598,7 @@ public class ScenarioLoader {
 		DemandProfiles db_dp = new DemandProfiles();
 		db_dp.setDemandProfileId(uuid());
 		db_dp.setDemandProfileSets(db_dpset);
-		db_dp.setLinkId(link_family_id.get(dp.getLinkIdOrigin()));
+		db_dp.setOriginLinkId(link_family_id.get(dp.getLinkIdOrigin()));
 		db_dp.setDt(dp.getDt());
 		db_dp.setStartTime(dp.getStartTime());
 		db_dp.setKnob(dp.getKnob());

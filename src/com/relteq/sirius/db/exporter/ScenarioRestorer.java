@@ -489,7 +489,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) {
 		com.relteq.sirius.jaxb.DemandProfile dp = factory.createDemandProfile();
-		dp.setLinkIdOrigin(db_dp.getLinkId());
+		dp.setLinkIdOrigin(db_dp.getOriginLinkId());
 		dp.setDt(db_dp.getDt());
 		dp.setStartTime(db_dp.getStartTime());
 		dp.setKnob(db_dp.getKnob());
