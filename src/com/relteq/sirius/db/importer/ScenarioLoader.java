@@ -259,7 +259,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.Node node, Networks db_network) throws TorqueException {
 		Nodes db_node = new Nodes();
-		db_node.setId(getNodeFamily(node.getId()));
+		db_node.setNodeId(getNodeFamily(node.getId()));
 		db_node.setNetworks(db_network);
 		db_node.setName(node.getName());
 		db_node.setDescription(node.getDescription());
@@ -284,7 +284,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.Link link, Networks db_network) throws TorqueException {
 		Links db_link = new Links();
-		db_link.setId(getLinkFamily(link.getId()));
+		db_link.setLinkId(getLinkFamily(link.getId()));
 		db_link.setNetworks(db_network);
 		db_link.setBeginNodeId(node_family_id.get(link.getBegin().getNodeId()));
 		db_link.setEndNodeId(node_family_id.get(link.getEnd().getNodeId()));
@@ -479,7 +479,7 @@ public class ScenarioLoader {
 		db_srps.save(conn);
 		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile()) {
 			SplitRatioProfiles db_srp = new SplitRatioProfiles();
-			db_srp.setId(uuid());
+			db_srp.setSplitRatioProfileId(uuid());
 			db_srp.setSplitRatioProfileSets(db_srps);
 			db_srp.setNodeId(node_family_id.get(srp.getNodeId()));
 			db_srp.setDt(srp.getDt());
@@ -544,7 +544,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile, FundamentalDiagramProfileSets db_fdps) throws TorqueException {
 		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
-		db_fdprofile.setId(uuid());
+		db_fdprofile.setFundamentalDiagramProfileId(uuid());
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(link_family_id.get(fdprofile.getLinkId()));
 		db_fdprofile.setDt(fdprofile.getDt());
@@ -602,7 +602,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset) throws TorqueException {
 		DemandProfiles db_dp = new DemandProfiles();
-		db_dp.setId(uuid());
+		db_dp.setDemandProfileId(uuid());
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setLinkId(link_family_id.get(dp.getLinkIdOrigin()));
 		db_dp.setDt(dp.getDt());
@@ -889,7 +889,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.CapacityProfile cp, DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
 		DownstreamBoundaryCapacityProfiles db_dbcp = new DownstreamBoundaryCapacityProfiles();
-		db_dbcp.setId(uuid());
+		db_dbcp.setDownstreamBoundaryCapacityProfileId(uuid());
 		db_dbcp.setDownstreamBoundaryCapacityProfileSets(db_dbcps);
 		db_dbcp.setLinkId(link_family_id.get(cp.getLinkId()));
 		db_dbcp.setDt(cp.getDt());

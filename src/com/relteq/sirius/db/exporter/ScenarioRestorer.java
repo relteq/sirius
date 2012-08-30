@@ -177,7 +177,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
-		node.setId(db_node.getId());
+		node.setId(db_node.getNodeId());
 		node.setName(db_node.getName());
 		node.setDescription(db_node.getDescription());
 		node.setType(db_node.getType());
@@ -198,7 +198,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Inputs inputs = factory.createInputs();
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
-		crit.add(LinksPeer.END_NODE_ID, db_node.getId());
+		crit.add(LinksPeer.END_NODE_ID, db_node.getNodeId());
 		try {
 			@SuppressWarnings("unchecked")
 			List<Links> db_link_l = LinksPeer.doSelect(crit);
@@ -212,7 +212,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Input restoreInput(Links db_link) {
 		com.relteq.sirius.jaxb.Input input = factory.createInput();
-		input.setLinkId(db_link.getId());
+		input.setLinkId(db_link.getLinkId());
 		return input;
 	}
 
@@ -220,7 +220,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Outputs outputs = factory.createOutputs();
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
-		crit.add(LinksPeer.BEGIN_NODE_ID, db_node.getId());
+		crit.add(LinksPeer.BEGIN_NODE_ID, db_node.getNodeId());
 		try {
 			@SuppressWarnings("unchecked")
 			List<Links> db_link_l = LinksPeer.doSelect(crit);
@@ -234,7 +234,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Output restoreOutput(Links db_link) {
 		com.relteq.sirius.jaxb.Output output = factory.createOutput();
-		output.setLinkId(db_link.getId());
+		output.setLinkId(db_link.getLinkId());
 		return output;
 	}
 
@@ -257,7 +257,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
 		com.relteq.sirius.jaxb.Link link = factory.createLink();
-		link.setId(db_link.getId());
+		link.setId(db_link.getLinkId());
 		link.setName(db_link.getName());
 		link.setRoadName(db_link.getRoadName());
 		link.setDescription(db_link.getDescription());
