@@ -57,15 +57,21 @@ public class Event_Node_Split_Ratio extends Event {
 	public void populate(Object jaxbobject) {
 
 		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		
-		if(!jaxbe.isResetToNominal() && jaxbe.getSplitratioEvent()==null)
+		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+
+		// reset_to_nominal
+		boolean reset_to_nominal = false;
+		if (null != params && params.has("reset_to_nominal"))
+			reset_to_nominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
+
+		if(!reset_to_nominal && jaxbe.getSplitratioEvent()==null)
 			return;
 
 		// only accepts single target
 		if(targets.size()!=1)
 			return;
 
-		this.resetToNominal = jaxbe.isResetToNominal();
+		this.resetToNominal = reset_to_nominal;
 		this.myNode = (Node) targets.get(0).getReference();
 		
 		if(myNode==null)
@@ -74,12 +80,12 @@ public class Event_Node_Split_Ratio extends Event {
 		if(resetToNominal)		// nothing else to populate in this case
 			return;
 		
-		com.relteq.sirius.jaxb.SplitratioEvent sre = jaxbe.getSplitratioEvent();
+		com.relteq.sirius.simulator.SplitratioEvent sre = (com.relteq.sirius.simulator.SplitratioEvent) jaxbe.getSplitratioEvent();
 		if(sre==null)
 			return;
-		inputindex = myNode.getInputLinkIndex(sre.getLinkIn());
-		vehicletypeindex = myScenario.getVehicleTypeIndex(sre.getVehicleTypeName());
-		splitrow = readArray(sre.getContent(),",");
+		inputindex = myNode.getInputLinkIndex(sre.getSplitratio().getLinkIn());
+		vehicletypeindex = myScenario.getVehicleTypeIndex(sre.getVehicleType().getName());
+		splitrow = readArray(sre.getSplitratio().getContent(),",");
 	}
 	
 	@Override

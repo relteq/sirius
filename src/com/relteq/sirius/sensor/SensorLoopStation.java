@@ -54,14 +54,18 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 				this.VDS = Integer.parseInt(param.getValue());
 		}
 		
-		if(jaxbs.getDataSources()!=null){
-			for(com.relteq.sirius.jaxb.DataSource datasource : jaxbs.getDataSources().getDataSource()){
-				try {
-					this._datasources.add(new DataSource(datasource.getUrl(),datasource.getFormat()));
-				} catch (Exception e) {
-					continue;
+		if (null != jaxbs.getTable()) {
+			if ("data_sources" == jaxbs.getTable().getName()) {
+				com.relteq.sirius.simulator.Table table = (com.relteq.sirius.simulator.Table) jaxbs.getTable();
+				java.util.Map<String, Integer> imap = table.getColumnNameToIndexMap();
+				if (imap != null && imap.get("url") != null && imap.get("format") != null) {
+					int ind_url = imap.get("url").intValue();
+					int ind_format = imap.get("format").intValue();
+					for (com.relteq.sirius.jaxb.Row row : table.getRowList()) {
+						this._datasources.add(new DataSource(row.getColumn().get(ind_url), row.getColumn().get(ind_format)));
+					}
 				}
-			}
+			} else com.relteq.sirius.simulator.SiriusErrorLog.addWarning("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
 		}
 		
 	}

@@ -39,9 +39,11 @@ public class Event_Control_Toggle extends Event {
 	@Override
 	public void populate(Object jaxbobject) {
 		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		if(jaxbe.getOnOffSwitch()!=null)
-			this.ison = jaxbe.getOnOffSwitch().getValue().equalsIgnoreCase("on");
-		else 
+		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		// on_off_switch
+		if (null != params && params.has("on_off_switch"))
+			this.ison = params.get("on_off_switch").equalsIgnoreCase("on");
+		else
 			this.ison = true;
 	}
 	
