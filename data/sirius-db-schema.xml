@@ -693,7 +693,7 @@
 	<table name="referenced_scenario_elements">
 		<column name="parent_element_id" primaryKey="true" domain="STRING_ID" description="ID of the controller or the event that works with referenced scenario elements."/>
 		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
-		<column name="feedback" primaryKey="true" domain="BOOL" description="Is it a feedback or a target scenario element - true means feedback, false means target."/>
+		<column name="type" primaryKey="true" type="VARCHAR" size="8" description="feedback or target"/>
 		<column name="scenario_element_id" primaryKey="true" domain="STRING_ID" description="Reference to the scenario element."/>
 		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
 	</table>
