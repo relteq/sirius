@@ -685,10 +685,10 @@ public class ScenarioRestorer {
 		try {
 			@SuppressWarnings("unchecked")
 			List<PhaseLinks> db_phl_l = db_ph.getSignals(null).getPhaseLinkss(crit);
-			com.relteq.sirius.jaxb.Links links = factory.createLinks();
+			com.relteq.sirius.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
 			for (PhaseLinks db_phl : db_phl_l)
-				links.getLinkReference().add(restorePhaseLink(db_phl));
-			phase.setLinks(links);
+				linkrefs.getLinkReference().add(restorePhaseLink(db_phl));
+			phase.setLinkReferences(linkrefs);
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addError(exc.getMessage());
 		}
