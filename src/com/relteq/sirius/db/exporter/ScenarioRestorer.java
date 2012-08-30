@@ -466,7 +466,7 @@ public class ScenarioRestorer {
 		fd.setCapacity(db_fd.getCapacity());
 		fd.setJamDensity(db_fd.getJamDensity());
 		fd.setCapacityDrop(db_fd.getCapacityDrop());
-		fd.setStdDevCapacity(db_fd.getStdDeviationCapacity());
+		fd.setStdDevCapacity(db_fd.getCapacityStd());
 		return fd;
 	}
 

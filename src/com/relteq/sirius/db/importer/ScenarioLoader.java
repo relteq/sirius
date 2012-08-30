@@ -565,7 +565,7 @@ public class ScenarioLoader {
 		db_fd.setCapacity(fd.getCapacity());
 		db_fd.setJamDensity(fd.getJamDensity());
 		db_fd.setCapacityDrop(fd.getCapacityDrop());
-		db_fd.setStdDeviationCapacity(fd.getStdDevCapacity());
+		db_fd.setCapacityStd(fd.getStdDevCapacity());
 		db_fd.save(conn);
 	}
 
