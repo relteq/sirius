@@ -181,13 +181,7 @@ public class ScenarioRestorer {
 		node.setName(db_node.getName());
 		node.setDescription(db_node.getDescription());
 		node.setType(db_node.getType());
-		com.relteq.sirius.jaxb.Point point = factory.createPoint();
-		point.setElevation(db_node.getElevation());
-		point.setLat(db_node.getLatitude());
-		point.setLng(db_node.getLongitude());
-		com.relteq.sirius.jaxb.Position pos = factory.createPosition();
-		pos.getPoint().add(point);
-		node.setPosition(pos);
+		// TODO db_node.getGeometry() -> node.setPosition();
 		node.setPostmile(db_node.getPostmile());
 		node.setInputs(restoreInputs(db_node));
 		node.setOutputs(restoreOutputs(db_node));
@@ -262,7 +256,8 @@ public class ScenarioRestorer {
 		link.setRoadName(db_link.getRoadName());
 		link.setDescription(db_link.getDescription());
 		link.setType(db_link.getType());
-		// TODO link.setLinkGeometry();
+		// TODO revise: geometry -> shape
+		link.setShape(db_link.getGeometry());
 		link.setLanes(db_link.getLanes());
 		link.setLength(db_link.getLength());
 		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();

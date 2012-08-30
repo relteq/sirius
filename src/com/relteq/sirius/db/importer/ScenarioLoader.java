@@ -264,13 +264,7 @@ public class ScenarioLoader {
 		db_node.setName(node.getName());
 		db_node.setDescription(node.getDescription());
 		db_node.setType(node.getType());
-		Position pos = node.getPosition();
-		if (null != pos && 1 == pos.getPoint().size()) {
-			Point point = pos.getPoint().get(0);
-			db_node.setLatitude(point.getLat());
-			db_node.setLongitude(point.getLng());
-			db_node.setElevation(point.getElevation());
-		}
+		// TODO node.getPosition() -> db_node.setGeometry();
 		db_node.setPostmile(node.getPostmile());
 		db_node.setModel("STANDARD");
 		db_node.save(conn);
@@ -292,8 +286,8 @@ public class ScenarioLoader {
 		db_link.setRoadName(link.getRoadName());
 		db_link.setDescription(link.getDescription());
 		db_link.setType(link.getType());
-		// TODO the link geometry serialization is to be revised
-		if (null != link.getLinkGeometry()) db_link.setShape(link.getLinkGeometry().toString());
+		// TODO revise: shape -> geometry
+		db_link.setGeometry(link.getShape());
 		db_link.setLanes(link.getLanes());
 		db_link.setLength(link.getLength());
 		db_link.setModel(link.getDynamics().getType());
