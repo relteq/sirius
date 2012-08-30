@@ -557,6 +557,7 @@
 	   name=jam_density, value=decimal
 	   name=free_flow_speed, value=decimal
     type=link_demand_knob
+	   name=reset_to_nominal, value in {true,false} (optional, default is false)
 	   name=knob, value=decimal
     type=link_lanes
 	   name=lane_count_change, value=decimal
@@ -566,6 +567,7 @@
     type=global_control_toggle
 	   name=on_off_switch, value in {on,off}
     type=global_demand_knob
+	   name=reset_to_nominal, value in {true,false} (optional, default is false)
 	   name=knob, value=decimal
 
   -->
