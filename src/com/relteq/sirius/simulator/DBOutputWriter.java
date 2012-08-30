@@ -51,7 +51,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_sr.setDataSources(db_ds);
 			db_sr.setScenarios(db_scenario);
 			db_sr.setRunNumber(run_number);
-			db_sr.setStartTime(Calendar.getInstance().getTime());
+			db_sr.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_sr.setStatus(-1);
 			db_sr.save(conn);
 
@@ -232,7 +232,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		if (null != data_source_id)
 			try {
 				com.relteq.sirius.om.SimulationRuns db_sr = com.relteq.sirius.om.SimulationRunsPeer.retrieveByPK(data_source_id);
-				db_sr.setEndTime(Calendar.getInstance().getTime());
+				db_sr.setExecutionEndTime(Calendar.getInstance().getTime());
 				db_sr.setStatus(success ? 0 : 1);
 				db_sr.save();
 			} catch (Exception exc) {
