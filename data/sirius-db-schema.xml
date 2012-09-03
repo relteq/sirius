@@ -31,9 +31,23 @@
 	<table name="networks">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="seed_network_id" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="source_network_id" domain="STRING_ID"/>
+		<column name="parent_network_id" domain="STRING_ID"/>
+		<column name="depricated" domain="BOOL"/>
+		<column name="mutable" domain="BOOL"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="source_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="parent_network_id" foreign="id"/>
+		</foreign-key>
 	</table>
 
 	<table name="node_families">
@@ -41,20 +55,84 @@
 	</table>
 
 	<table name="nodes">
-		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
-		<column name="postmile" domain="DECIMAL" description="Absolute postmile."/>
-		<column name="model" required="true" domain="MODEL_TYPE" description="Type of node model, e.g. STANDARD."/>
-		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
+		<column name="sync" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="node_families">
 			<reference local="node_id" foreign="id"/>
 		</foreign-key>
+	</table>
+
+	<table name="node_name">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="node_type">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="postmile_highways">
+		<column name="highway_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="highway_name" required="true" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="postmiles">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="highway_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="postmile_highways">
+			<reference local="highway_id" foreign="highway_id"/>
 		</foreign-key>
 	</table>
 
@@ -63,20 +141,18 @@
 	</table>
 
 	<table name="links">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="begin_node_id" required="true" domain="STRING_ID"/>
 		<column name="end_node_id" required="true" domain="STRING_ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="road_name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
-		<column name="lanes" required="true" domain="DECIMAL" description="Number of lanes."/>
 		<column name="length" required="true" domain="DECIMAL" description="Length in meters."/>
-		<column name="model" required="true" domain="MODEL_TYPE" description="Type of link model, e.g. CTM."/>
-		<column name="display_lane_offset" domain="DECIMAL"/>
-		<column name="synchronized" javaName="is_synchronized" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
+		<column name="sync" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -91,21 +167,140 @@
 		</foreign-key>
 	</table>
 
-	<table name="network_connection_lists">
+	<table name="link_name">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="link_type">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="link_lanes">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="lanes" required="true" domain="DECIMAL" description="Number of lanes."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="link_lane_offset">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="display_lane_offset" domain="DECIMAL" descrription="This parameter indicates how link should be displayed at the map."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="link_speed_limit">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="speed_limit" domain="DECIMAL"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="link_turn_restrictions">
+		<column name="from_network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="from_link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="to_network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="to_link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="from_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="from_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="to_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
+			<reference local="to_link_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+	<table name="network_connection_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="network_connections">
-		<column name="network_connection_list_id" required="true" domain="STRING_ID"/>
+		<column name="network_connection_set_id" required="true" domain="STRING_ID"/>
 		<column name="from_network_id" required="true" domain="STRING_ID"/>
 		<column name="from_link_id" required="true" domain="STRING_ID"/>
 		<column name="to_network_id" required="true" domain="STRING_ID"/>
 		<column name="to_link_id" required="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="network_connection_lists">
-			<reference local="network_connection_list_id" foreign="id"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="network_connection_sets">
+			<reference local="network_connection_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="from_network_id" foreign="id"/>
@@ -120,12 +315,12 @@
 			<reference local="to_link_id" foreign="id"/>
 		</foreign-key>
 		<unique name="network_connections_from">
-			<unique-column name="network_connection_list_id"/>
+			<unique-column name="network_connection_set_id"/>
 			<unique-column name="from_network_id"/>
 			<unique-column name="from_link_id"/>
 		</unique>
 		<unique name="network_connections_to">
-			<unique-column name="network_connection_list_id"/>
+			<unique-column name="network_connection_set_id"/>
 			<unique-column name="to_network_id"/>
 			<unique-column name="to_link_id"/>
 		</unique>
@@ -136,8 +331,13 @@
 
 	<table name="destination_networks">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="destination_link_id" required="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
@@ -146,6 +346,11 @@
 	<table name="destination_network_links">
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="destination_network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
@@ -161,12 +366,22 @@
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="route_links">
 		<column name="route_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="order_number" primaryKey="true" type="INTEGER"/>
+		<column name="ordinal" primaryKey="true" type="INTEGER"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="routes">
 			<reference local="route_id" foreign="id"/>
 		</foreign-key>
@@ -178,9 +393,14 @@
 
 	<!-- Vehicle Types -->
 
-	<table name="vehicle_type_lists">
+	<table name="vehicle_type_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="vehicle_type_families">
@@ -193,16 +413,26 @@
 		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
 		<column name="name" required="true" domain="NAME_BUF"/>
 		<column name="standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="vehicle_types_in_lists">
-		<column name="vehicle_type_list_id" required="true" domain="STRING_ID"/>
+	<table name="vehicle_types_in_sets">
+		<column name="vehicle_type_set_id" required="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" required="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="vehicle_type_lists">
-			<reference local="vehicle_type_list_id" foreign="id"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="vehicle_type_sets">
+			<reference local="vehicle_type_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -217,29 +447,35 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="initial_densities">
 		<column name="initial_density_set_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="density" domain="DECIMAL"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="initial_density_sets">
 			<reference local="initial_density_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+		<foreign-key foreignTable="vehicle_type_families">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="vehicle_type_families">
-			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -251,30 +487,32 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="weaving_factors">
 		<column name="weaving_factor_set_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="in_link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="in_network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="out_network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="factor" domain="DECIMAL" description="Should be greater than 1 for downstream merge weaving, or less than -1 for upstream diverge weaving. 1 and -1 represent no weaving."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="weaving_factor_sets">
 			<reference local="weaving_factor_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="in_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="in_network_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="out_network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -289,6 +527,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="split_ratio_profile_families">
@@ -303,6 +546,11 @@
 		<column name="destination_link_id" domain="STRING_ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="split_ratio_profile_families">
 			<reference local="split_ratio_profile_id" foreign="id"/>
 		</foreign-key>
@@ -327,8 +575,13 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the split ratio"/>
 		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="split_ratio_profiles">
-			<reference local="split_ratio_profile_id" foreign="id"/>
+			<reference local="split_ratio_profile_id" foreign="split_ratio_profile_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="in_link_id" foreign="id"/>
@@ -349,6 +602,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="fundamental_diagram_profile_families">
@@ -362,6 +620,11 @@
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="fundamental_diagram_profile_families">
 			<reference local="fundamental_diagram_profile_id" foreign="id"/>
 		</foreign-key>
@@ -388,8 +651,13 @@
 		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in kph. Optional."/>
 		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in kph. Optional."/>
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="fundamental_diagram_profiles">
-			<reference local="fundamental_diagram_profile_id" foreign="id"/>
+			<reference local="fundamental_diagram_profile_id" foreign="fundamental_diagram_profile_id"/>
 		</foreign-key>
 	</table>
 
@@ -401,6 +669,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="demand_profile_families">
@@ -418,6 +691,11 @@
 		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
 		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
 		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="demand_profile_families">
 			<reference local="demand_profile_id" foreign="id"/>
 		</foreign-key>
@@ -440,8 +718,13 @@
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the demand"/>
 		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="demand_profiles">
-			<reference local="demand_profile_id" foreign="id"/>
+			<reference local="demand_profile_id" foreign="demand_profile_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_families">
 			<reference local="vehicle_type_id" foreign="id"/>
@@ -456,6 +739,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="downstream_boundary_capacity_profile_families">
@@ -469,6 +757,11 @@
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profile_families">
 			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>
 		</foreign-key>
@@ -487,35 +780,54 @@
 		<column name="downstream_boundary_capacity_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the downstream boundary capacity"/>
 		<column name="downstream_boundary_capacity" required="true" domain="DECIMAL" description="Maximum flow that can exit this link in vph."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="downstream_boundary_capacity_profiles">
-			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>
+			<reference local="downstream_boundary_capacity_profile_id" foreign="downstream_boundary_capacity_profile_id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Sensors -->
 
-	<table name="sensor_lists">
+	<table name="sensor_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="sensor_families">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="sensors">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="sensor_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="type" required="true" domain="SENSOR_TYPE"/>
-		<column name="sensor_list_id" required="true" domain="STRING_ID"/>
+		<column name="sensor_set_id" required="true" domain="STRING_ID"/>
 		<column name="original_id" domain="STRING_ID" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
-		<column name="data_feed_id" domain="STRING_ID" description="Which data feed does this sensor belon to."/>
+		<column name="data_feed_id" domain="STRING_ID" description="Which data feed does this sensor belong to."/>
 		<column name="display_geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="link_id" domain="STRING_ID" description="If link ID is not present, the sensor is not assigned."/>
-		<column name="network_id" required="true" domain="STRING_ID"/>
-		<column name="link_position" domain="DECIMAL" description="Value in the range [0, 1] defines the position from the beginning of the link. This field is empty when sensor is not assigned to link."/>
+		<column name="link_position" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
 		<column name="lane_number" type="INTEGER" description="Optional parameter indicating at which lane the sensor is located."/>
 		<column name="health_status" required="true" domain="DECIMAL" description="Value in the range of [0, 1], indicating how healthy the detector is: 0 = dead/ totally unreliable, 1 = 100% trustworthy."/>
-		<foreign-key foreignTable="sensor_lists">
-			<reference local="sensor_list_id" foreign="id"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="sensor_sets">
+			<reference local="sensor_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
@@ -528,32 +840,47 @@
 
 	<!-- Signals -->
 
-	<table name="signal_lists">
+	<table name="signal_sets">
 		<column name="id" primaryKey="true" domain="STRING_ID"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="signal_families">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
 	</table>
 
 	<table name="signals">
-		<column name="id" primaryKey="true" domain="STRING_ID"/>
-		<column name="node_id" required="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="signal_list_id" required="true" domain="STRING_ID"/>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
-		</foreign-key>
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="node_id" required="true" domain="STRING_ID"/>
+		<column name="signal_set_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="signal_lists">
-			<reference local="signal_list_id" foreign="id"/>
+		<foreign-key foreignTable="node_families">
+			<reference local="node_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="signal_sets">
+			<reference local="signal_set_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="phases">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="nema" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="protected" javaName="isProtected" required="true" domain="BOOL" description=""/>
 		<column name="permissive" required="true" domain="BOOL" description=""/>
 		<column name="lag" required="true" domain="BOOL" description=""/>
@@ -561,15 +888,29 @@
 		<column name="min_green_time" required="true" domain="DECIMAL" description="Minimum green time in seconds."/>
 		<column name="yellow_time" required="true" domain="DECIMAL" description="Yellow time in seconds."/>
 		<column name="red_clear_time" required="true" domain="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
-		<foreign-key foreignTable="signals">
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="signal_families">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="phase_links">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="nema" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -586,6 +927,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="queue_controllers">
@@ -593,6 +939,11 @@
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined queue controllers."/>
 		<column name="name" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="controllers">
@@ -604,6 +955,11 @@
 		<column name="dt" domain="DECIMAL" description="Invocation period in seconds. Default is 30."/>
 		<column name="queue_controller_id" domain="STRING_ID"/>
 		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="controller_sets">
 			<reference local="controller_set_id" foreign="id"/>
 		</foreign-key>
@@ -616,6 +972,11 @@
 		<column name="controller_id" required="true" domain="STRING_ID"/>
 		<column name="start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
 		<column name="duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="controllers">
 			<reference local="controller_id" foreign="id"/>
 		</foreign-key>
@@ -629,6 +990,11 @@
 		<column name="project_id" required="true" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="events">
@@ -639,6 +1005,11 @@
 		<column name="name" domain="NAME_BUF"/>
 		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="enabled" required="true" domain="BOOL" description="If the event is not enabled, it does not fire."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
 		</foreign-key>
@@ -650,6 +1021,11 @@
 		<column name="out_link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="events">
 			<reference local="event_id" foreign="id"/>
 		</foreign-key>
@@ -672,6 +1048,11 @@
 		<column name="scenario_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
 		<column name="name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="value" required="true" domain="VALUE_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="tabular_data">
@@ -680,6 +1061,11 @@
 		<column name="column_name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="row_number" primaryKey="true" type="INTEGER"/>
 		<column name="value" required="true" domain="VALUE_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 	<table name="tabular_data_keys">
@@ -693,9 +1079,14 @@
 	<table name="referenced_scenario_elements">
 		<column name="parent_element_id" primaryKey="true" domain="STRING_ID" description="ID of the controller or the event that works with referenced scenario elements."/>
 		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
-		<column name="feedback" primaryKey="true" domain="BOOL" description="Is it a feedback or a target scenario element - true means feedback, false means target."/>
+		<column name="type" primaryKey="true" type="VARCHAR" size="8" description="feedback or target"/>
 		<column name="scenario_element_id" primaryKey="true" domain="STRING_ID" description="Reference to the scenario element."/>
 		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
 
@@ -704,10 +1095,10 @@
 	<table name="scenarios" idMethod="native">
 		<column name="id" primaryKey="true" type="INTEGER"/>
 		<column name="project_id" required="true" domain="STRING_ID"/>
-		<column name="network_connection_list_id" domain="STRING_ID"/>
-		<column name="vehicle_type_list_id" domain="STRING_ID"/>
-		<column name="signal_list_id" domain="STRING_ID"/>
-		<column name="sensor_list_id" domain="STRING_ID"/>
+		<column name="network_connection_set_id" domain="STRING_ID"/>
+		<column name="vehicle_type_set_id" domain="STRING_ID"/>
+		<column name="signal_set_id" domain="STRING_ID"/>
+		<column name="sensor_set_id" domain="STRING_ID"/>
 		<column name="split_ratio_profile_set_id" domain="STRING_ID"/>
 		<column name="weaving_factor_set_id" domain="STRING_ID"/>
 		<column name="initial_density_set_id" domain="STRING_ID"/>
@@ -718,14 +1109,19 @@
 		<column name="event_set_id" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
-		<foreign-key foreignTable="network_connection_lists">
-			<reference local="network_connection_list_id" foreign="id"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="network_connection_sets">
+			<reference local="network_connection_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="signal_lists">
-			<reference local="signal_list_id" foreign="id"/>
+		<foreign-key foreignTable="signal_sets">
+			<reference local="signal_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="sensor_lists">
-			<reference local="sensor_list_id" foreign="id"/>
+		<foreign-key foreignTable="sensor_sets">
+			<reference local="sensor_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="initial_density_sets">
 			<reference local="initial_density_set_id" foreign="id"/>
@@ -751,14 +1147,19 @@
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_type_lists">
-			<reference local="vehicle_type_list_id" foreign="id"/>
+		<foreign-key foreignTable="vehicle_type_sets">
+			<reference local="vehicle_type_set_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
-	<table name="network_lists">
+	<table name="network_sets">
 		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="network_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
@@ -767,9 +1168,14 @@
 		</foreign-key>
 	</table>
 	
-	<table name="destination_network_lists">
+	<table name="destination_network_sets">
 		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="destination_network_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
@@ -778,9 +1184,14 @@
 		</foreign-key>
 	</table>
 
-	<table name="route_lists">
+	<table name="route_sets">
 		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="route_id" required="true" domain="STRING_ID"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
@@ -810,7 +1221,6 @@
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="scenario_id" required="true" type="INTEGER"/>
 		<column name="run_number" required="true" type="INTEGER"/>
-		<column name="user_id" required="true" domain="STRING_ID"/>
 		<column name="version" required="true" domain="STRING_VERSION"/>
 		<column name="build" required="true" domain="STRING_VERSION"/>
 		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
@@ -820,6 +1230,11 @@
 		<column name="execution_start_time" required="true" type="TIMESTAMP"/>
 		<column name="execution_end_time" required="false" type="TIMESTAMP"/>
 		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
@@ -838,6 +1253,11 @@
 		<column name="simulation_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
 		<column name="simulation_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
 		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
@@ -855,8 +1275,8 @@
 	<!-- Link Data -->
 	
 	<table name="link_data_total">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
@@ -884,8 +1304,8 @@
 	</table>
 
 	<table name="link_data_detailed">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
@@ -926,8 +1346,8 @@
 	<!-- Link Performance Measures -->
 	
 	<table name="link_performance_total">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
@@ -952,8 +1372,8 @@
 	</table>
 	
 	<table name="link_performance_detailed">
-		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="destination_link_id" domain="STRING_ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="STRING_ID"/>
@@ -1015,8 +1435,8 @@
 	<!-- Signal Data -->
 
 	<table name="signal_data">
-		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
@@ -1042,8 +1462,8 @@
 	<!-- Signal Performance -->
 
 	<table name="signal_phase_performance">
-		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="signal_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="data_source_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
