@@ -565,7 +565,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) {
 		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
-		signal.setId(db_signal.getId());
+		signal.setId(db_signal.getSignalId());
 		signal.setNodeId(db_signal.getNodeId());
 		try {
 			@SuppressWarnings("unchecked")
@@ -580,7 +580,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) {
 		com.relteq.sirius.jaxb.Phase phase = factory.createPhase();
-		phase.setNema(BigInteger.valueOf(db_ph.getPhase()));
+		phase.setNema(BigInteger.valueOf(db_ph.getNema()));
 		phase.setProtected(db_ph.getIsProtected());
 		phase.setPermissive(db_ph.getPermissive());
 		phase.setLag(db_ph.getLag());
@@ -589,7 +589,7 @@ public class ScenarioRestorer {
 		phase.setYellowTime(db_ph.getYellowTime());
 		phase.setRedClearTime(db_ph.getRedClearTime());
 		Criteria crit = new Criteria();
-		crit.add(PhaseLinksPeer.PHASE, db_ph.getPhase());
+		crit.add(PhaseLinksPeer.NEMA, db_ph.getNema());
 		try {
 			@SuppressWarnings("unchecked")
 			List<PhaseLinks> db_phl_l = db_ph.getSignals(null).getPhaseLinkss(crit);
