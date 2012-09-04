@@ -915,7 +915,8 @@
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="signals">
-			<reference local="signal_id" foreign="id"/>
+			<reference local="signal_id" foreign="signal_id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
@@ -1480,7 +1481,8 @@
 		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
 		<column name="duration" required="true" domain="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<foreign-key foreignTable="signals">
-			<reference local="signal_id" foreign="id"/>
+			<reference local="signal_id" foreign="signal_id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
@@ -1510,7 +1512,8 @@
 		<column name="queue_size" domain="DECIMAL" description="Size of the queue waiting for green phase."/>
 		<column name="number_of_stops" type="INTEGER" description="Number of cycles needed to pass through intersection."/>
 		<foreign-key foreignTable="signals">
-			<reference local="signal_id" foreign="id"/>
+			<reference local="signal_id" foreign="signal_id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
