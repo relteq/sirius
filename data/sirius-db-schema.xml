@@ -642,14 +642,14 @@
 	<table name="fundamental_diagrams">
 		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the fundamental diagram"/>
-		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in kph."/>
-		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in kph."/>
-		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in kph."/>
+		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in m/s."/>
+		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in m/s."/>
+		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in m/s."/>
 		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
-		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per km per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
-		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in kph. Optional."/>
-		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in kph. Optional."/>
+		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in m/s. Optional."/>
+		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -911,6 +911,9 @@
 		<column name="created_by" required="true" domain="STRING_ID"/>
 		<column name="modified_by" required="true" domain="STRING_ID"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
+		</foreign-key>
 		<foreign-key foreignTable="signals">
 			<reference local="signal_id" foreign="id"/>
 		</foreign-key>
@@ -979,6 +982,38 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="controllers">
 			<reference local="controller_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
+
+	<!-- Ensamble Kalman Filter -->
+
+	<table name="enkf_noise_parameter_sets">
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="project_id" required="true" domain="STRING_ID"/>
+		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="enkf_noise_parameters">
+		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
+		<column name="id" primaryKey="true" domain="STRING_ID"/>
+		<column name="enkf_noise_parameter_set_id" required="true" domain="STRING_ID"/>
+		<column name="source" domain="NAME_BUF" description="Data source: model, PeMS, probes, etc."/>
+		<column name="mean" required="true" domain="DECIMAL" description="Noise mean in m/s."/>
+		<column name="stdev" required="true" domain="DECIMAL" description="Noise standard deviation in m/s."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="STRING_ID"/>
+		<column name="modified_by" required="true" domain="STRING_ID"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1286,11 +1321,11 @@
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
-		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in kph."/>
-		<column name="critical_speed" domain="DECIMAL" description="Critical speed in kph."/>
-		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in kph."/>
+		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in m/s."/>
+		<column name="critical_speed" domain="DECIMAL" description="Critical speed in m/s."/>
+		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in m/s."/>
 		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
-		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per km per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
