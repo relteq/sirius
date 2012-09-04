@@ -72,8 +72,8 @@ public class DBOutputWriter extends OutputWriterBase {
 			vt_name2id = new java.util.TreeMap<String, String>();
 			logger.info("Loading vehicle type IDs");
 			Criteria crit = new Criteria();
-			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInListsPeer.VEHICLE_TYPE_ID);
-			crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_scenario.getVehicleTypeListId());
+			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInSetsPeer.VEHICLE_TYPE_ID);
+			crit.add(VehicleTypesInSetsPeer.VEHICLE_TYPE_SET_ID, db_scenario.getVehicleTypeSetId());
 			try {
 				@SuppressWarnings("unchecked")
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);

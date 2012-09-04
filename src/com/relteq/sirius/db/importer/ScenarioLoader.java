@@ -103,11 +103,11 @@ public class ScenarioLoader {
 		db_scenario.setDescription(scenario.getDescription());
 		db_scenario.save(conn);
 		scenario_id = db_scenario.getId();
-		db_scenario.setVehicleTypeLists(save(scenario.getSettings().getVehicleTypes()));
+		db_scenario.setVehicleTypeSets(save(scenario.getSettings().getVehicleTypes()));
 		save(scenario.getNetworkList());
-		db_scenario.setNetworkConnectionLists(save(scenario.getNetworkConnections()));
-		db_scenario.setSignalLists(save(scenario.getSignalList()));
-		db_scenario.setSensorLists(save(scenario.getSensorList()));
+		db_scenario.setNetworkConnectionSets(save(scenario.getNetworkConnections()));
+		db_scenario.setSignalSets(save(scenario.getSignalList()));
+		db_scenario.setSensorSets(save(scenario.getSensorList()));
 		db_scenario.setSplitRatioProfileSets(save(scenario.getSplitRatioProfileSet()));
 		db_scenario.setWeavingFactorSets(save(scenario.getWeavingFactorSet()));
 		db_scenario.setInitialDensitySets(save(scenario.getInitialDensitySet()));
@@ -123,14 +123,14 @@ public class ScenarioLoader {
 	/**
 	 * Imports vehicle types
 	 * @param vtypes
-	 * @return the imported vehicle type list
+	 * @return the imported vehicle type set
 	 * @throws TorqueException
 	 */
-	private VehicleTypeLists save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
-		VehicleTypeLists db_vtl = new VehicleTypeLists();
-		db_vtl.setId(uuid());
-		db_vtl.setProjectId(getProjectId());
-		db_vtl.save(conn);
+	private VehicleTypeSets save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
+		VehicleTypeSets db_vts = new VehicleTypeSets();
+		db_vts.setId(uuid());
+		db_vts.setProjectId(getProjectId());
+		db_vts.save(conn);
 		if (null == vtypes) {
 			vtypes = new com.relteq.sirius.jaxb.VehicleTypes();
 			com.relteq.sirius.jaxb.VehicleType vt = new com.relteq.sirius.jaxb.VehicleType();
@@ -142,18 +142,18 @@ public class ScenarioLoader {
 		vehicle_type_id = new String[vtlist.size()];
 		int ind = 0;
 		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
-			vehicle_type_id[ind++] = save(vt, db_vtl).getVehicleTypeId();
-		return db_vtl;
+			vehicle_type_id[ind++] = save(vt, db_vts).getVehicleTypeId();
+		return db_vts;
 	}
 
 	/**
 	 * Imports a vehicle type
 	 * @param vt the vehicle type to be imported
-	 * @param db_vtl an imported vehicle type list
+	 * @param db_vts an imported vehicle type set
 	 * @return the imported (or already existing) vehicle type
 	 * @throws TorqueException
 	 */
-	private VehicleTypes save(com.relteq.sirius.jaxb.VehicleType vt, VehicleTypeLists db_vtl) throws TorqueException {
+	private VehicleTypes save(com.relteq.sirius.jaxb.VehicleType vt, VehicleTypeSets db_vts) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.add(VehicleTypesPeer.PROJECT_ID, getProjectId());
 		crit.add(VehicleTypesPeer.NAME, vt.getName());
@@ -175,10 +175,10 @@ public class ScenarioLoader {
 			// TODO what if db_vt_l.size() > 1
 			db_vtype = db_vt_l.get(0);
 		}
-		VehicleTypesInLists db_vtinl = new VehicleTypesInLists();
-		db_vtinl.setVehicleTypeLists(db_vtl);
-		db_vtinl.setVehicleTypeId(db_vtype.getVehicleTypeId());
-		db_vtinl.save(conn);
+		VehicleTypesInSets db_vtins = new VehicleTypesInSets();
+		db_vtins.setVehicleTypeSets(db_vts);
+		db_vtins.setVehicleTypeId(db_vtype.getVehicleTypeId());
+		db_vtins.save(conn);
 		return db_vtype;
 	}
 
@@ -192,10 +192,10 @@ public class ScenarioLoader {
 		link_family_id = new HashMap<String, String>();
 		node_family_id = new HashMap<String, String>();
 		for (com.relteq.sirius.jaxb.Network network : nl.getNetwork()) {
-			NetworkLists db_nl = new NetworkLists();
-			db_nl.setScenarioId(getScenarioId());
-			db_nl.setNetworks(save(network));
-			db_nl.save(conn);
+			NetworkSets db_ns = new NetworkSets();
+			db_ns.setScenarioId(getScenarioId());
+			db_ns.setNetworks(save(network));
+			db_ns.save(conn);
 		}
 	}
 
@@ -292,33 +292,33 @@ public class ScenarioLoader {
 	/**
 	 * Imports a signal list
 	 * @param sl
-	 * @return the imported signal list
+	 * @return the imported signal set
 	 * @throws TorqueException
 	 */
-	private SignalLists save(com.relteq.sirius.jaxb.SignalList sl) throws TorqueException {
+	private SignalSets save(com.relteq.sirius.jaxb.SignalList sl) throws TorqueException {
 		if (null == sl) return null;
-		SignalLists db_sl = new SignalLists();
-		db_sl.setId(uuid());
-		db_sl.setProjectId(getProjectId());
+		SignalSets db_ss = new SignalSets();
+		db_ss.setId(uuid());
+		db_ss.setProjectId(getProjectId());
 		// TODO db_sl.setName();
 		// TODO db_sl.setDescription();
-		db_sl.save(conn);
+		db_ss.save(conn);
 		for (com.relteq.sirius.jaxb.Signal signal : sl.getSignal())
-			save(signal, db_sl);
-		return db_sl;
+			save(signal, db_ss);
+		return db_ss;
 	}
 
 	/**
 	 * Imports a signal
 	 * @param signal
-	 * @param db_sl an imported signal list
+	 * @param db_ss an imported signal set
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Signal signal, SignalLists db_sl) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
 		Signals db_signal = new Signals();
-		db_signal.setId(uuid());
+		db_signal.setSignalId(uuid());
 		db_signal.setNodeId(node_family_id.get(signal.getNodeId()));
-		db_signal.setSignalLists(db_sl);
+		db_signal.setSignalSets(db_ss);
 		db_signal.save(conn);
 		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase()) {
 			save(phase, db_signal);
@@ -365,26 +365,26 @@ public class ScenarioLoader {
 	 * Imports a sensor list
 	 * @param sl
 	 * @param db_network
-	 * @return the imported sensor list
+	 * @return the imported sensor set
 	 * @throws TorqueException
 	 */
-	private SensorLists save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
+	private SensorSets save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
 		if (null == sl) return null;
-		SensorLists db_sl = new SensorLists();
-		db_sl.setId(uuid());
-		db_sl.save(conn);
+		SensorSets db_ss = new SensorSets();
+		db_ss.setId(uuid());
+		db_ss.save(conn);
 		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
-			save(sensor, db_sl);
+			save(sensor, db_ss);
 		}
-		return db_sl;
+		return db_ss;
 	}
 
 	/**
 	 * Imports a sensor
 	 * @param sensor
-	 * @param db_sl
+	 * @param db_ss
 	 */
-	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorLists db_sl) {
+	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) {
 		// TODO Auto-generated method stub
 	}
 
@@ -617,32 +617,32 @@ public class ScenarioLoader {
 	/**
 	 * Imports a network connection list
 	 * @param nconns
-	 * @return the imported network connection list
+	 * @return the imported network connection set
 	 * @throws TorqueException
 	 */
-	private NetworkConnectionLists save(com.relteq.sirius.jaxb.NetworkConnections nconns) throws TorqueException {
+	private NetworkConnectionSets save(com.relteq.sirius.jaxb.NetworkConnections nconns) throws TorqueException {
 		if (null == nconns) return null;
-		NetworkConnectionLists db_ncl = new NetworkConnectionLists();
-		db_ncl.setId(uuid());
-		db_ncl.setProjectId(getProjectId());
-		db_ncl.setName(nconns.getName());
-		db_ncl.setDescription(nconns.getDescription());
-		db_ncl.save(conn);
+		NetworkConnectionSets db_ncs = new NetworkConnectionSets();
+		db_ncs.setId(uuid());
+		db_ncs.setProjectId(getProjectId());
+		db_ncs.setName(nconns.getName());
+		db_ncs.setDescription(nconns.getDescription());
+		db_ncs.save(conn);
 		for (com.relteq.sirius.jaxb.Networkpair np : nconns.getNetworkpair())
-			save(np, db_ncl);
-		return db_ncl;
+			save(np, db_ncs);
+		return db_ncs;
 	}
 
 	/**
 	 * Imports network connections
 	 * @param np
-	 * @param db_ncl an already imported network connection list
+	 * @param db_ncs an already imported network connection set
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Networkpair np, NetworkConnectionLists db_ncl) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.Networkpair np, NetworkConnectionSets db_ncs) throws TorqueException {
 		for (com.relteq.sirius.jaxb.Linkpair lp : np.getLinkpair()) {
 			NetworkConnections db_nc = new NetworkConnections();
-			db_nc.setNetworkConnectionLists(db_ncl);
+			db_nc.setNetworkConnectionSets(db_ncs);
 			db_nc.setFromNetworkId(network_id.get(np.getNetworkA()));
 			db_nc.setFromLinkId(link_family_id.get(lp.getLinkA()));
 			db_nc.setToNetworkId(network_id.get(np.getNetworkB()));

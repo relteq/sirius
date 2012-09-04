@@ -78,9 +78,9 @@ public class ScenarioRestorer {
 		try{
 			scenario.setSettings(restoreSettings(db_scenario));
 			scenario.setNetworkList(restoreNetworkList(db_scenario));
-			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionLists()));
-			scenario.setSignalList(restoreSignalList(db_scenario.getSignalLists()));
-			scenario.setSensorList(restoreSensorList(db_scenario.getSensorLists()));
+			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionSets()));
+			scenario.setSignalList(restoreSignalList(db_scenario.getSignalSets()));
+			scenario.setSensorList(restoreSensorList(db_scenario.getSensorSets()));
 			scenario.setSplitRatioProfileSet(restoreSplitRatioProfileSet(db_scenario.getSplitRatioProfileSets()));
 			scenario.setWeavingFactorSet(restoreWeavingFactorSet(db_scenario.getWeavingFactorSets()));
 			scenario.setInitialDensitySet(restoreInitialDensitySet(db_scenario.getInitialDensitySets()));
@@ -98,17 +98,17 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Settings restoreSettings(Scenarios db_scenario) throws TorqueException {
 		com.relteq.sirius.jaxb.Settings settings = factory.createSettings();
 		settings.setUnits("US");
-		settings.setVehicleTypes(restoreVehicleTypes(db_scenario.getVehicleTypeLists()));
+		settings.setVehicleTypes(restoreVehicleTypes(db_scenario.getVehicleTypeSets()));
 		return settings;
 	}
 
-	private com.relteq.sirius.jaxb.VehicleTypes restoreVehicleTypes(VehicleTypeLists db_vtlists) {
-		if (null == db_vtlists) return null;
+	private com.relteq.sirius.jaxb.VehicleTypes restoreVehicleTypes(VehicleTypeSets db_vtsets) {
+		if (null == db_vtsets) return null;
 		com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
 		Criteria crit = new Criteria();
-		crit.addJoin(VehicleTypesInListsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.VEHICLE_TYPE_ID);
-		crit.add(VehicleTypesInListsPeer.VEHICLE_TYPE_LIST_ID, db_vtlists.getId());
-		crit.add(VehicleTypesPeer.PROJECT_ID, db_vtlists.getProjectId());
+		crit.addJoin(VehicleTypesInSetsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.VEHICLE_TYPE_ID);
+		crit.add(VehicleTypesInSetsPeer.VEHICLE_TYPE_SET_ID, db_vtsets.getId());
+		crit.add(VehicleTypesPeer.PROJECT_ID, db_vtsets.getProjectId());
 		crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_ID);
 		try {
 			@SuppressWarnings("unchecked")
@@ -131,11 +131,11 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) {
 		try {
 			@SuppressWarnings("unchecked")
-			List<NetworkLists> db_netll = db_scenario.getNetworkListss();
-			if (0 < db_netll.size()) {
+			List<NetworkSets> db_nets_l = db_scenario.getNetworkSetss();
+			if (0 < db_nets_l.size()) {
 				com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
-				for (NetworkLists db_netl : db_netll)
-					nets.getNetwork().add(restoreNetwork(db_netl.getNetworks()));
+				for (NetworkSets db_nets : db_nets_l)
+					nets.getNetwork().add(restoreNetwork(db_nets.getNetworks()));
 				return nets;
 			}
 		} catch (TorqueException exc) {
@@ -512,18 +512,18 @@ public class ScenarioRestorer {
 		return dp;
 	}
 
-	private com.relteq.sirius.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionLists db_ncl) {
-		if (null == db_ncl) return null;
+	private com.relteq.sirius.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionSets db_ncs) {
+		if (null == db_ncs) return null;
 		com.relteq.sirius.jaxb.NetworkConnections nc = factory.createNetworkConnections();
-		nc.setId(db_ncl.getId());
-		nc.setName(db_ncl.getName());
-		nc.setDescription(db_ncl.getDescription());
+		nc.setId(db_ncs.getId());
+		nc.setName(db_ncs.getName());
+		nc.setDescription(db_ncs.getDescription());
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(NetworkConnectionsPeer.FROM_NETWORK_ID);
 		crit.addAscendingOrderByColumn(NetworkConnectionsPeer.TO_NETWORK_ID);
 		try {
 			@SuppressWarnings("unchecked")
-			List<NetworkConnections> db_nc_l = db_ncl.getNetworkConnectionss(crit);
+			List<NetworkConnections> db_nc_l = db_ncs.getNetworkConnectionss(crit);
 			com.relteq.sirius.jaxb.Networkpair np = null;
 			for (NetworkConnections db_nc : db_nc_l) {
 				if (null != np && (!np.getNetworkA().equals(db_nc.getFromNetworkId()) || !np.getNetworkB().equals(db_nc.getToNetworkId()))) {
@@ -547,14 +547,14 @@ public class ScenarioRestorer {
 		return nc;
 	}
 
-	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalLists db_sl) {
-		if (null == db_sl) return null;
+	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalSets db_ss) {
+		if (null == db_ss) return null;
 		com.relteq.sirius.jaxb.SignalList sl = factory.createSignalList();
 		// TODO sl.setName(db_sl.getName());
 		// TODO sl.setDescription(db_sl.getDescription());
 		try {
 			@SuppressWarnings("unchecked")
-			List<Signals> db_signal_l = db_sl.getSignalss();
+			List<Signals> db_signal_l = db_ss.getSignalss();
 			for (Signals db_signal : db_signal_l)
 				sl.getSignal().add(restoreSignal(db_signal));
 		} catch (TorqueException exc) {
@@ -609,8 +609,8 @@ public class ScenarioRestorer {
 		return lr;
 	}
 
-	private com.relteq.sirius.jaxb.SensorList restoreSensorList(SensorLists db_sl) {
-		if (null == db_sl) return null;
+	private com.relteq.sirius.jaxb.SensorList restoreSensorList(SensorSets db_ss) {
+		if (null == db_ss) return null;
 		com.relteq.sirius.jaxb.SensorList sl = factory.createSensorList();
 		// TODO sl.getSensor().add();
 		return sl;
