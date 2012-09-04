@@ -221,7 +221,7 @@
 	<table name="link_lane_offset">
 		<column name="network_id" primaryKey="true" domain="STRING_ID"/>
 		<column name="link_id" primaryKey="true" domain="STRING_ID"/>
-		<column name="display_lane_offset" domain="DECIMAL" descrription="This parameter indicates how link should be displayed at the map."/>
+		<column name="display_lane_offset" domain="DECIMAL" description="This parameter indicates how link should be displayed at the map."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="STRING_ID"/>
