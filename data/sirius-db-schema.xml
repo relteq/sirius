@@ -1142,6 +1142,7 @@
 		<column name="downstream_boundary_capacity_profile_set_id" domain="STRING_ID"/>
 		<column name="controller_set_id" domain="STRING_ID"/>
 		<column name="event_set_id" domain="STRING_ID"/>
+		<column name="enkf_noise_parameter_set_id" domain="STRING_ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
 		<column name="created" required="true" type="DATE"/>
@@ -1181,6 +1182,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="enkf_noise_parameter_sets">
+			<reference local="enkf_noise_parameter_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="vehicle_type_sets">
 			<reference local="vehicle_type_set_id" foreign="id"/>
