@@ -255,12 +255,8 @@ public class ScenarioLoader {
 		Nodes db_node = new Nodes();
 		db_node.setNodeId(getNodeFamily(node.getId()));
 		db_node.setNetworks(db_network);
-		db_node.setName(node.getName());
-		db_node.setDescription(node.getDescription());
-		db_node.setType(node.getType());
+		// TODO save node name, description, type, postmile, model
 		// TODO node.getPosition() -> db_node.setGeometry();
-		db_node.setPostmile(node.getPostmile());
-		db_node.setModel("STANDARD");
 		db_node.save(conn);
 	}
 
@@ -276,16 +272,10 @@ public class ScenarioLoader {
 		db_link.setNetworks(db_network);
 		db_link.setBeginNodeId(node_family_id.get(link.getBegin().getNodeId()));
 		db_link.setEndNodeId(node_family_id.get(link.getEnd().getNodeId()));
-		db_link.setName(link.getName());
-		db_link.setRoadName(link.getRoadName());
-		db_link.setDescription(link.getDescription());
-		db_link.setType(link.getType());
+		// TODO save link name, road name, description, type, lanes, model, display lane offset
 		// TODO revise: shape -> geometry
 		db_link.setGeometry(link.getShape());
-		db_link.setLanes(link.getLanes());
 		db_link.setLength(link.getLength());
-		db_link.setModel(link.getDynamics().getType());
-		db_link.setDisplayLaneOffset(link.getLaneOffset());
 		db_link.save(conn);
 	}
 

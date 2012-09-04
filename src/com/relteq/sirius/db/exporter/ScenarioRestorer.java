@@ -174,11 +174,11 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
 		node.setId(db_node.getNodeId());
-		node.setName(db_node.getName());
-		node.setDescription(db_node.getDescription());
-		node.setType(db_node.getType());
+		// TODO node.setName();
+		// TODO node.setDescription();
+		// TODO node.setType();
 		// TODO db_node.getGeometry() -> node.setPosition();
-		node.setPostmile(db_node.getPostmile());
+		// TODO node.setPostmile();
 		node.setInputs(restoreInputs(db_node));
 		node.setOutputs(restoreOutputs(db_node));
 		return node;
@@ -248,18 +248,18 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
 		com.relteq.sirius.jaxb.Link link = factory.createLink();
 		link.setId(db_link.getLinkId());
-		link.setName(db_link.getName());
-		link.setRoadName(db_link.getRoadName());
-		link.setDescription(db_link.getDescription());
-		link.setType(db_link.getType());
+		// TODO link.setName();
+		// TODO link.setRoadName();
+		// TODO link.setDescription();
+		// TODO link.setType();
 		// TODO revise: geometry -> shape
 		link.setShape(db_link.getGeometry());
-		link.setLanes(db_link.getLanes());
+		// TODO link.setLanes();
 		link.setLength(db_link.getLength());
 		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
-		dynamics.setType(db_link.getModel());
+		// TODO dynamics.setType();
 		link.setDynamics(dynamics);
-		link.setLaneOffset(db_link.getDisplayLaneOffset());
+		// TODO link.setLaneOffset();
 		if (null != db_link.getBeginNodeId()) {
 			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
 			begin.setNodeId(db_link.getBeginNodeId());
