@@ -179,8 +179,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -196,8 +196,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -213,8 +213,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -230,8 +230,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -247,8 +247,8 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="node_id" foreign="id"/>
+		<foreign-key foreignTable="link_families">
+			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
