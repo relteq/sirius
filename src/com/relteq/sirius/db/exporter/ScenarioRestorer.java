@@ -22,7 +22,7 @@ import com.relteq.sirius.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioRestorer {
-	public static void export(int id, String filename) throws SiriusException, JAXBException, SAXException {
+	public static void export(long id, String filename) throws SiriusException, JAXBException, SAXException {
 		com.relteq.sirius.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
 		scenario.setSchemaVersion(com.relteq.sirius.Version.get().getSchemaVersion());
 		JAXBContext jaxbc = JAXBContext.newInstance("com.relteq.sirius.jaxb");
@@ -38,7 +38,7 @@ public class ScenarioRestorer {
 	 * @return the scenario
 	 * @throws SiriusException
 	 */
-	public static com.relteq.sirius.simulator.Scenario getScenario(int id) throws SiriusException {
+	public static com.relteq.sirius.simulator.Scenario getScenario(long id) throws SiriusException {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
 		if (null == scenario) {
 			if (SiriusErrorLog.haserror()) {
@@ -56,7 +56,7 @@ public class ScenarioRestorer {
 		factory = new com.relteq.sirius.simulator.JaxbObjectFactory();
 	}
 
-	private com.relteq.sirius.simulator.Scenario restore(int id) throws SiriusException {
+	private com.relteq.sirius.simulator.Scenario restore(long id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
 		Scenarios db_scenario = null;
 		try {
@@ -69,10 +69,19 @@ public class ScenarioRestorer {
 		return (com.relteq.sirius.simulator.Scenario) restoreScenario(db_scenario);
 	}
 
+	/**
+	 * Converts a numeric ID to a string
+	 * @param id
+	 * @return String
+	 */
+	private static String id2str(long id) {
+		return Long.toString(id);
+	}
+
 	private com.relteq.sirius.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws SiriusException {
 		if (null == db_scenario) return null;
 		com.relteq.sirius.jaxb.Scenario scenario = factory.createScenario();
-		scenario.setId(String.format("%d", db_scenario.getId()));
+		scenario.setId(id2str(db_scenario.getId()));
 		scenario.setName(db_scenario.getName());
 		scenario.setDescription(db_scenario.getDescription());
 		try{
@@ -146,7 +155,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) {
 		com.relteq.sirius.jaxb.Network net = factory.createNetwork();
-		net.setId(db_net.getId());
+		net.setId(id2str(db_net.getId()));
 		net.setName(db_net.getName());
 		net.setDescription(db_net.getDescription());
 		net.setDt(new BigDecimal(1)); // TODO change this when the DB schema is updated
@@ -173,7 +182,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
-		node.setId(db_node.getNodeId());
+		node.setId(id2str(db_node.getNodeId()));
 		// TODO node.setName();
 		// TODO node.setDescription();
 		// TODO node.setType();
@@ -202,7 +211,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Input restoreInput(Links db_link) {
 		com.relteq.sirius.jaxb.Input input = factory.createInput();
-		input.setLinkId(db_link.getLinkId());
+		input.setLinkId(id2str(db_link.getLinkId()));
 		return input;
 	}
 
@@ -224,7 +233,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Output restoreOutput(Links db_link) {
 		com.relteq.sirius.jaxb.Output output = factory.createOutput();
-		output.setLinkId(db_link.getLinkId());
+		output.setLinkId(id2str(db_link.getLinkId()));
 		return output;
 	}
 
@@ -247,7 +256,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
 		com.relteq.sirius.jaxb.Link link = factory.createLink();
-		link.setId(db_link.getLinkId());
+		link.setId(id2str(db_link.getLinkId()));
 		// TODO link.setName();
 		// TODO link.setRoadName();
 		// TODO link.setDescription();
@@ -260,14 +269,14 @@ public class ScenarioRestorer {
 		// TODO dynamics.setType();
 		link.setDynamics(dynamics);
 		// TODO link.setLaneOffset();
-		if (null != db_link.getBeginNodeId()) {
+		if (0 != db_link.getBeginNodeId()) {
 			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
-			begin.setNodeId(db_link.getBeginNodeId());
+			begin.setNodeId(id2str(db_link.getBeginNodeId()));
 			link.setBegin(begin);
 		}
-		if (null != db_link.getEndNodeId()) {
+		if (0 != db_link.getEndNodeId()) {
 			com.relteq.sirius.jaxb.End end = factory.createEnd();
-			end.setNodeId(db_link.getEndNodeId());
+			end.setNodeId(id2str(db_link.getEndNodeId()));
 			link.setEnd(end);
 		}
 		return link;
@@ -276,7 +285,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) {
 		if (null == db_idset) return null;
 		com.relteq.sirius.jaxb.InitialDensitySet idset = factory.createInitialDensitySet();
-		idset.setId(db_idset.getId());
+		idset.setId(id2str(db_idset.getId()));
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
 		// TODO idset.setTstamp();
@@ -296,7 +305,7 @@ public class ScenarioRestorer {
 				}
 				if (null == density) { // new link
 					density = factory.createDensity();
-					density.setLinkId(db_id.getLinkId());
+					density.setLinkId(id2str(db_id.getLinkId()));
 					// TODO density.setNetworkId();
 					sb.setLength(0);
 				} else { // same link, different vehicle type
@@ -318,7 +327,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) {
 		if (null == db_wfset) return null;
 		com.relteq.sirius.jaxb.WeavingFactorSet wfset = factory.createWeavingFactorSet();
-		wfset.setId(db_wfset.getId());
+		wfset.setId(id2str(db_wfset.getId()));
 		wfset.setName(db_wfset.getName());
 		wfset.setDescription(db_wfset.getDescription());
 		Criteria crit = new Criteria();
@@ -363,7 +372,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) {
 		if (null == db_srps) return null;
 		com.relteq.sirius.jaxb.SplitRatioProfileSet srps = factory.createSplitRatioProfileSet();
-		srps.setId(db_srps.getId());
+		srps.setId(id2str(db_srps.getId()));
 		srps.setName(db_srps.getName());
 		srps.setDescription(db_srps.getDescription());
 		try {
@@ -379,7 +388,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.SplitratioProfile restoreSplitRatioProfile(SplitRatioProfiles db_srp) {
 		com.relteq.sirius.jaxb.SplitratioProfile srp = factory.createSplitratioProfile();
-		srp.setNodeId(db_srp.getNodeId());
+		srp.setNodeId(id2str(db_srp.getNodeId()));
 		srp.setDt(db_srp.getDt());
 		srp.setStartTime(db_srp.getStartTime());
 		Criteria crit = new Criteria();
@@ -401,8 +410,8 @@ public class ScenarioRestorer {
 				}
 				if (null == sr) { // new split ratio
 					sr = factory.createSplitratio();
-					sr.setLinkIn(db_sr.getInLinkId());
-					sr.setLinkOut(db_sr.getOutLinkId());
+					sr.setLinkIn(id2str(db_sr.getInLinkId()));
+					sr.setLinkOut(id2str(db_sr.getOutLinkId()));
 					sb.setLength(0);
 				} else { // same split ratio, different time stamp (',') or vehicle type (':')
 					sb.append(db_sr.getNumber() == number ? ':' : ',');
@@ -423,7 +432,7 @@ public class ScenarioRestorer {
 	com.relteq.sirius.jaxb.FundamentalDiagramProfileSet restoreFundamentalDiagramProfileSet(FundamentalDiagramProfileSets db_fdps) {
 		if (null == db_fdps) return null;
 		com.relteq.sirius.jaxb.FundamentalDiagramProfileSet fdps = factory.createFundamentalDiagramProfileSet();
-		fdps.setId(db_fdps.getId());
+		fdps.setId(id2str(db_fdps.getId()));
 		fdps.setName(db_fdps.getName());
 		fdps.setDescription(db_fdps.getDescription());
 		try {
@@ -439,7 +448,7 @@ public class ScenarioRestorer {
 
 	com.relteq.sirius.jaxb.FundamentalDiagramProfile restoreFundamentalDiagramProfile(FundamentalDiagramProfiles db_fdprofile) {
 		com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile = factory.createFundamentalDiagramProfile();
-		fdprofile.setLinkId(db_fdprofile.getLinkId());
+		fdprofile.setLinkId(id2str(db_fdprofile.getLinkId()));
 		fdprofile.setDt(db_fdprofile.getDt());
 		fdprofile.setStartTime(db_fdprofile.getStartTime());
 		Criteria crit = new Criteria();
@@ -469,7 +478,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) {
 		if (null == db_dpset) return null;
 		com.relteq.sirius.jaxb.DemandProfileSet dpset = factory.createDemandProfileSet();
-		dpset.setId(db_dpset.getId());
+		dpset.setId(id2str(db_dpset.getId()));
 		dpset.setName(db_dpset.getName());
 		dpset.setDescription(db_dpset.getDescription());
 		try {
@@ -485,7 +494,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) {
 		com.relteq.sirius.jaxb.DemandProfile dp = factory.createDemandProfile();
-		dp.setLinkIdOrigin(db_dp.getOriginLinkId());
+		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
 		dp.setDt(db_dp.getDt());
 		dp.setStartTime(db_dp.getStartTime());
 		dp.setKnob(db_dp.getKnob());
@@ -515,7 +524,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionSets db_ncs) {
 		if (null == db_ncs) return null;
 		com.relteq.sirius.jaxb.NetworkConnections nc = factory.createNetworkConnections();
-		nc.setId(db_ncs.getId());
+		nc.setId(id2str(db_ncs.getId()));
 		nc.setName(db_ncs.getName());
 		nc.setDescription(db_ncs.getDescription());
 		Criteria crit = new Criteria();
@@ -532,12 +541,12 @@ public class ScenarioRestorer {
 				}
 				if (null == np) {
 					np = factory.createNetworkpair();
-					np.setNetworkA(db_nc.getFromNetworkId());
-					np.setNetworkB(db_nc.getToNetworkId());
+					np.setNetworkA(id2str(db_nc.getFromNetworkId()));
+					np.setNetworkB(id2str(db_nc.getToNetworkId()));
 				}
 				com.relteq.sirius.jaxb.Linkpair lp = factory.createLinkpair();
-				lp.setLinkA(db_nc.getFromLinkId());
-				lp.setLinkB(db_nc.getToLinkId());
+				lp.setLinkA(id2str(db_nc.getFromLinkId()));
+				lp.setLinkB(id2str(db_nc.getToLinkId()));
 				np.getLinkpair().add(lp);
 			}
 			if (null != np) nc.getNetworkpair().add(np);
@@ -565,8 +574,8 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) {
 		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
-		signal.setId(db_signal.getSignalId());
-		signal.setNodeId(db_signal.getNodeId());
+		signal.setId(id2str(db_signal.getSignalId()));
+		signal.setNodeId(id2str(db_signal.getNodeId()));
 		Criteria crit = new Criteria();
 		crit.add(PhasesPeer.NETWORK_ID, db_signal.getNetworkId());
 		crit.add(PhasesPeer.SIGNAL_ID, db_signal.getSignalId());
@@ -610,7 +619,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.LinkReference restorePhaseLink(PhaseLinks db_phl) {
 		com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
-		lr.setId(db_phl.getLinkId());
+		lr.setId(id2str(db_phl.getLinkId()));
 		return lr;
 	}
 
@@ -624,7 +633,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) {
 		if (null == db_dbcps) return null;
 		com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet dbcps = factory.createDownstreamBoundaryCapacityProfileSet();
-		dbcps.setId(db_dbcps.getId());
+		dbcps.setId(id2str(db_dbcps.getId()));
 		dbcps.setName(db_dbcps.getName());
 		dbcps.setDescription(db_dbcps.getDescription());
 		try {
@@ -640,7 +649,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.CapacityProfile restoreCapacityProfile(DownstreamBoundaryCapacityProfiles db_dbcp) {
 		com.relteq.sirius.jaxb.CapacityProfile cprofile = factory.createCapacityProfile();
-		cprofile.setLinkId(db_dbcp.getLinkId());
+		cprofile.setLinkId(id2str(db_dbcp.getLinkId()));
 		cprofile.setDt(db_dbcp.getDt());
 		cprofile.setStartTime(db_dbcp.getStartTime());
 		Criteria crit = new Criteria();
@@ -665,7 +674,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) {
 		if (null == db_cs) return null;
 		com.relteq.sirius.jaxb.ControllerSet cset = factory.createControllerSet();
-		cset.setId(db_cs.getId());
+		cset.setId(id2str(db_cs.getId()));
 		// TODO cset.setName();
 		// TODO cset.setDescription();
 		// TODO cset.getController().add();
@@ -675,7 +684,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.EventSet restoreEventSet(EventSets db_es) {
 		if (null == db_es) return null;
 		com.relteq.sirius.jaxb.EventSet eset = factory.createEventSet();
-		eset.setId(db_es.getId());
+		eset.setId(id2str(db_es.getId()));
 		// TODO eset.setName();
 		// TODO eset.setDescription();
 		// TODO eset.getEvent().add();

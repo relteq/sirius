@@ -23,34 +23,27 @@ import com.relteq.sirius.simulator.SiriusException;
 public class ScenarioLoader {
 	Connection conn = null;
 
-	/**
-	 * @return a universally unique random string identifier
-	 */
-	private String uuid() {
-		return com.relteq.sirius.db.util.UUID.generate();
-	}
-
-	private String project_id;
-	private int scenario_id;
+	private long project_id;
+	private long scenario_id;
 	/**
 	 * @return the project id
 	 */
-	private String getProjectId() {
+	private long getProjectId() {
 		return project_id;
 	}
 	/**
 	 * @return the generated scenario id
 	 */
-	private int getScenarioId() {
+	private long getScenarioId() {
 		return scenario_id;
 	}
-	private String [] vehicle_type_id = null;
-	private Map<String, String> network_id = null;
-	private Map<String, String> link_family_id = null;
-	private Map<String, String> node_family_id = null;
+	private long [] vehicle_type_id = null;
+	private Map<String, Long> network_id = null;
+	private Map<String, Long> link_family_id = null;
+	private Map<String, Long> node_family_id = null;
 
 	public ScenarioLoader() {
-		project_id = "default";
+		project_id = 0;
 	}
 
 	private static Logger logger = Logger.getLogger(ScenarioLoader.class);
@@ -90,6 +83,8 @@ public class ScenarioLoader {
 		}
 	}
 
+	private static long str2id(String id) { return Long.parseLong(id, 10); }
+
 	/**
 	 * Imports a scenario
 	 * @param scenario
@@ -128,7 +123,6 @@ public class ScenarioLoader {
 	 */
 	private VehicleTypeSets save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeSets db_vts = new VehicleTypeSets();
-		db_vts.setId(uuid());
 		db_vts.setProjectId(getProjectId());
 		db_vts.save(conn);
 		if (null == vtypes) {
@@ -139,7 +133,7 @@ public class ScenarioLoader {
 			vtypes.getVehicleType().add(vt);
 		}
 		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
-		vehicle_type_id = new String[vtlist.size()];
+		vehicle_type_id = new long[vtlist.size()];
 		int ind = 0;
 		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
 			vehicle_type_id[ind++] = save(vt, db_vts).getVehicleTypeId();
@@ -163,7 +157,6 @@ public class ScenarioLoader {
 		VehicleTypes db_vtype = null;
 		if (db_vt_l.isEmpty()) {
 			VehicleTypeFamilies db_vtf = new VehicleTypeFamilies();
-			db_vtf.setId(uuid());
 			db_vtf.save(conn);
 			db_vtype = new VehicleTypes();
 			db_vtype.setVehicleTypeFamilies(db_vtf);
@@ -188,9 +181,9 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
-		network_id = new HashMap<String, String>(nl.getNetwork().size());
-		link_family_id = new HashMap<String, String>();
-		node_family_id = new HashMap<String, String>();
+		network_id = new HashMap<String, Long>(nl.getNetwork().size());
+		link_family_id = new HashMap<String, Long>();
+		node_family_id = new HashMap<String, Long>();
 		for (com.relteq.sirius.jaxb.Network network : nl.getNetwork()) {
 			NetworkSets db_ns = new NetworkSets();
 			db_ns.setScenarioId(getScenarioId());
@@ -199,26 +192,22 @@ public class ScenarioLoader {
 		}
 	}
 
-	private String getLinkFamily(String id) throws TorqueException {
+	private long getLinkFamily(String id) throws TorqueException {
 		if (!link_family_id.containsKey(id)) {
 			LinkFamilies db_lf = new LinkFamilies();
-			String lfid = uuid();
-			db_lf.setId(lfid);
 			db_lf.save(conn);
-			link_family_id.put(id, lfid);
+			link_family_id.put(id, Long.valueOf(db_lf.getId()));
 		}
-		return link_family_id.get(id);
+		return link_family_id.get(id).longValue();
 	}
 
-	private String getNodeFamily(String id) throws TorqueException {
+	private long getNodeFamily(String id) throws TorqueException {
 		if (!node_family_id.containsKey(id)) {
 			NodeFamilies db_nf = new NodeFamilies();
-			String nfid = uuid();
-			db_nf.setId(nfid);
 			db_nf.save(conn);
-			node_family_id.put(id, nfid);
+			node_family_id.put(id, Long.valueOf(db_nf.getId()));
 		}
-		return node_family_id.get(id);
+		return node_family_id.get(id).longValue();
 	}
 
 	/**
@@ -229,13 +218,11 @@ public class ScenarioLoader {
 	 */
 	private Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException {
 		Networks db_network = new Networks();
-		String id = uuid();
-		network_id.put(network.getId(), id);
-		db_network.setId(id);
 		db_network.setProjectId(getProjectId());
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
 		db_network.save(conn);
+		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
 		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
 			save(node, db_network);
 		}
@@ -288,7 +275,6 @@ public class ScenarioLoader {
 	private SignalSets save(com.relteq.sirius.jaxb.SignalList sl) throws TorqueException {
 		if (null == sl) return null;
 		SignalSets db_ss = new SignalSets();
-		db_ss.setId(uuid());
 		db_ss.setProjectId(getProjectId());
 		// TODO db_sl.setName();
 		// TODO db_sl.setDescription();
@@ -305,8 +291,11 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
+		SignalFamilies db_sf = new SignalFamilies();
+		db_sf.save(conn);
 		Signals db_signal = new Signals();
-		db_signal.setSignalId(uuid());
+		// TODO replace with db_signal.setSignalFamilies(db_sf);
+		db_signal.setSignalId(db_sf.getId());
 		db_signal.setNodeId(node_family_id.get(signal.getNodeId()));
 		db_signal.setSignalSets(db_ss);
 		db_signal.save(conn);
@@ -361,7 +350,6 @@ public class ScenarioLoader {
 	private SensorSets save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
 		if (null == sl) return null;
 		SensorSets db_ss = new SensorSets();
-		db_ss.setId(uuid());
 		db_ss.save(conn);
 		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
 			save(sensor, db_ss);
@@ -387,7 +375,6 @@ public class ScenarioLoader {
 	private InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
 		if (null == idset) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
-		db_idsets.setId(uuid());
 		db_idsets.setProjectId(getProjectId());
 		db_idsets.setName(idset.getName());
 		db_idsets.setDescription(idset.getDescription());
@@ -412,7 +399,6 @@ public class ScenarioLoader {
 	private WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
 		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
-		db_wfset.setId(uuid());
 		db_wfset.setName(wfset.getName());
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
@@ -450,14 +436,15 @@ public class ScenarioLoader {
 	private SplitRatioProfileSets save(com.relteq.sirius.jaxb.SplitRatioProfileSet srps) throws TorqueException {
 		if (null == srps) return null;
 		SplitRatioProfileSets db_srps = new SplitRatioProfileSets();
-		db_srps.setId(uuid());
 		db_srps.setProjectId(getProjectId());
 		db_srps.setName(srps.getName());
 		db_srps.setDescription(srps.getDescription());
 		db_srps.save(conn);
 		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile()) {
+			SplitRatioProfileFamilies db_srpf = new SplitRatioProfileFamilies();
+			db_srpf.save(conn);
 			SplitRatioProfiles db_srp = new SplitRatioProfiles();
-			db_srp.setSplitRatioProfileId(uuid());
+			db_srp.setSplitRatioProfileFamilies(db_srpf);
 			db_srp.setSplitRatioProfileSets(db_srps);
 			db_srp.setNodeId(node_family_id.get(srp.getNodeId()));
 			db_srp.setDt(srp.getDt());
@@ -479,7 +466,7 @@ public class ScenarioLoader {
 						}
 					}
 				} else {
-					for (String vtid : vehicle_type_id) {
+					for (long vtid : vehicle_type_id) {
 						SplitRatios db_sr = new SplitRatios();
 						db_sr.copy();
 						db_sr.setSplitRatioProfiles(db_srp);
@@ -504,7 +491,6 @@ public class ScenarioLoader {
 	 */
 	private FundamentalDiagramProfileSets save(com.relteq.sirius.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
 		FundamentalDiagramProfileSets db_fdps = new FundamentalDiagramProfileSets();
-		db_fdps.setId(uuid());
 		db_fdps.setProjectId(getProjectId());
 		db_fdps.setName(fdps.getName());
 		db_fdps.setDescription(fdps.getDescription());
@@ -521,8 +507,10 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile, FundamentalDiagramProfileSets db_fdps) throws TorqueException {
+		FundamentalDiagramProfileFamilies db_fdpf = new FundamentalDiagramProfileFamilies();
+		db_fdpf.save(conn);
 		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
-		db_fdprofile.setFundamentalDiagramProfileId(uuid());
+		db_fdprofile.setFundamentalDiagramProfileFamilies(db_fdpf);
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(link_family_id.get(fdprofile.getLinkId()));
 		db_fdprofile.setDt(fdprofile.getDt());
@@ -562,7 +550,6 @@ public class ScenarioLoader {
 	private DemandProfileSets save(com.relteq.sirius.jaxb.DemandProfileSet dpset) throws TorqueException {
 		if (null == dpset) return null;
 		DemandProfileSets db_dpset = new DemandProfileSets();
-		db_dpset.setId(uuid());
 		db_dpset.setProjectId(getProjectId());
 		db_dpset.setName(dpset.getName());
 		db_dpset.setDescription(dpset.getDescription());
@@ -579,8 +566,10 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset) throws TorqueException {
+		DemandProfileFamilies db_dpf = new DemandProfileFamilies();
+		db_dpf.save(conn);
 		DemandProfiles db_dp = new DemandProfiles();
-		db_dp.setDemandProfileId(uuid());
+		db_dp.setDemandProfileFamilies(db_dpf);
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(link_family_id.get(dp.getLinkIdOrigin()));
 		db_dp.setDt(dp.getDt());
@@ -613,7 +602,6 @@ public class ScenarioLoader {
 	private NetworkConnectionSets save(com.relteq.sirius.jaxb.NetworkConnections nconns) throws TorqueException {
 		if (null == nconns) return null;
 		NetworkConnectionSets db_ncs = new NetworkConnectionSets();
-		db_ncs.setId(uuid());
 		db_ncs.setProjectId(getProjectId());
 		db_ncs.setName(nconns.getName());
 		db_ncs.setDescription(nconns.getDescription());
@@ -650,7 +638,6 @@ public class ScenarioLoader {
 	private DownstreamBoundaryCapacityProfileSets save(com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet dbcps) throws TorqueException {
 		if (null == dbcps) return null;
 		DownstreamBoundaryCapacityProfileSets db_dbcps = new DownstreamBoundaryCapacityProfileSets();
-		db_dbcps.setId(uuid());
 		db_dbcps.setProjectId(getProjectId());
 		db_dbcps.setName(dbcps.getName());
 		db_dbcps.setDescription(dbcps.getDescription());
@@ -667,8 +654,10 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.CapacityProfile cp, DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
+		DownstreamBoundaryCapacityProfileFamilies db_dbcpf = new DownstreamBoundaryCapacityProfileFamilies();
+		db_dbcpf.save(conn);
 		DownstreamBoundaryCapacityProfiles db_dbcp = new DownstreamBoundaryCapacityProfiles();
-		db_dbcp.setDownstreamBoundaryCapacityProfileId(uuid());
+		db_dbcp.setDownstreamBoundaryCapacityProfileFamilies(db_dbcpf);
 		db_dbcp.setDownstreamBoundaryCapacityProfileSets(db_dbcps);
 		db_dbcp.setLinkId(link_family_id.get(cp.getLinkId()));
 		db_dbcp.setDt(cp.getDt());

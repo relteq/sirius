@@ -17,7 +17,7 @@ import com.relteq.sirius.om.*;
  */
 public class DBOutputWriter extends OutputWriterBase {
 	private Connection conn = null;
-	private String data_source_id = null;
+	private long data_source_id = 0;
 
 	public DBOutputWriter(Scenario scenario) {
 		super(scenario);
@@ -33,18 +33,18 @@ public class DBOutputWriter extends OutputWriterBase {
 			conn = Transaction.begin();
 
 			if (null == db_scenario)
-				db_scenario = ScenariosPeer.retrieveByPK(Integer.parseInt(getScenario().getId()), conn);
+				db_scenario = ScenariosPeer.retrieveByPK(Long.parseLong(getScenario().getId()), conn);
 
 			com.relteq.sirius.om.DataSources db_ds = new com.relteq.sirius.om.DataSources();
-			db_ds.setId(data_source_id = com.relteq.sirius.db.util.UUID.generate());
 			db_ds.save(conn);
+			data_source_id = db_ds.getId();
 
 			Criteria crit = new Criteria();
 			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);
 			crit.setLimit(1);
 			@SuppressWarnings("unchecked")
 			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = db_scenario.getSimulationRunss(crit);
-			final int run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
+			final long run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
 			logger.info("Run number: " + run_number);
 
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
@@ -60,16 +60,16 @@ public class DBOutputWriter extends OutputWriterBase {
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
-				data_source_id = null;
+				data_source_id = 0;
 			}
 		}
 	}
 
-	java.util.Map<String, String> vt_name2id = null;
+	java.util.Map<String, Long> vt_name2id = null;
 
-	private String getVehicleTypeId(String name, Connection conn) throws SiriusException {
+	private long getVehicleTypeId(String name, Connection conn) throws SiriusException {
 		if (null == vt_name2id) {
-			vt_name2id = new java.util.TreeMap<String, String>();
+			vt_name2id = new java.util.TreeMap<String, Long>();
 			logger.info("Loading vehicle type IDs");
 			Criteria crit = new Criteria();
 			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInSetsPeer.VEHICLE_TYPE_ID);
@@ -78,12 +78,12 @@ public class DBOutputWriter extends OutputWriterBase {
 				@SuppressWarnings("unchecked")
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
 				for (VehicleTypes db_vt : db_vt_l)
-					vt_name2id.put(db_vt.getName(), db_vt.getVehicleTypeId());
+					vt_name2id.put(db_vt.getName(), Long.valueOf(db_vt.getVehicleTypeId()));
 			} catch (TorqueException exc) {
 				throw new SiriusException(exc);
 			}
 		}
-		return vt_name2id.get(name);
+		return vt_name2id.get(name).longValue();
 	}
 
 	@Override
@@ -140,8 +140,8 @@ public class DBOutputWriter extends OutputWriterBase {
 	 */
 	private LinkDataTotal fill_total(Link link, boolean exportflows, double invsteps, double dt) throws TorqueException {
 		LinkDataTotal db_ldt = new LinkDataTotal();
-		db_ldt.setLinkId(link.getId());
-		db_ldt.setNetworkId(link.myNetwork.getId());
+		db_ldt.setLinkId(Long.parseLong(link.getId()));
+		db_ldt.setNetworkId(Long.parseLong(link.myNetwork.getId()));
 		db_ldt.setDataSourceId(data_source_id);
 		db_ldt.setTs(ts.getTime());
 		db_ldt.setAggregation("raw");
@@ -186,8 +186,8 @@ public class DBOutputWriter extends OutputWriterBase {
 	private void fill_detailed(Link link, boolean exportflows, double invsteps, double dt, BigDecimal total_speed) throws TorqueException, SiriusException {
 		for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
-			db_ldd.setLinkId(link.getId());
-			db_ldd.setNetworkId(link.myNetwork.getId());
+			db_ldd.setLinkId(Long.parseLong(link.getId()));
+			db_ldd.setNetworkId(Long.parseLong(link.myNetwork.getId()));
 			db_ldd.setDataSourceId(data_source_id);
 			db_ldd.setVehicleTypeId(getVehicleTypeId(scenario.getVehicleTypeNames()[vt_ind], conn));
 			db_ldd.setTs(ts.getTime());
@@ -229,7 +229,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			}
 		}
 		ts = null;
-		if (null != data_source_id)
+		if (0 != data_source_id)
 			try {
 				com.relteq.sirius.om.SimulationRuns db_sr = com.relteq.sirius.om.SimulationRunsPeer.retrieveByPK(data_source_id);
 				db_sr.setExecutionEndTime(Calendar.getInstance().getTime());
@@ -238,7 +238,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			} catch (Exception exc) {
 				exc.printStackTrace();
 			} finally {
-				data_source_id = null;
+				data_source_id = 0;
 			}
 	}
 

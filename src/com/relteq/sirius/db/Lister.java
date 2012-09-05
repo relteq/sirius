@@ -38,7 +38,7 @@ public class Lister {
 		}
 	}
 
-	public static void listRuns(int scenario_id) throws SiriusException {
+	public static void listRuns(long scenario_id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
 		DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		try {
