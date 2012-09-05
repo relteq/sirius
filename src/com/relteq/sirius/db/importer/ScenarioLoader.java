@@ -350,6 +350,7 @@ public class ScenarioLoader {
 	private SensorSets save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
 		if (null == sl) return null;
 		SensorSets db_ss = new SensorSets();
+		db_ss.setProjectId(getProjectId());
 		db_ss.save(conn);
 		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
 			save(sensor, db_ss);
@@ -399,6 +400,7 @@ public class ScenarioLoader {
 	private WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
 		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
+		db_wfset.setProjectId(getProjectId());
 		db_wfset.setName(wfset.getName());
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
