@@ -351,6 +351,8 @@ public class ScenarioLoader {
 		if (null == sl) return null;
 		SensorSets db_ss = new SensorSets();
 		db_ss.setProjectId(getProjectId());
+		// TODO db_ss.setName();
+		// TODO db_ss.setDescription();
 		db_ss.save(conn);
 		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
 			save(sensor, db_ss);
@@ -515,6 +517,7 @@ public class ScenarioLoader {
 		db_fdprofile.setFundamentalDiagramProfileFamilies(db_fdpf);
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(link_family_id.get(fdprofile.getLinkId()));
+		// TODO db_fdprofile.setNetworkId();
 		db_fdprofile.setDt(fdprofile.getDt());
 		db_fdprofile.setStartTime(fdprofile.getStartTime());
 		db_fdprofile.save(conn);
@@ -574,6 +577,8 @@ public class ScenarioLoader {
 		db_dp.setDemandProfileFamilies(db_dpf);
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(link_family_id.get(dp.getLinkIdOrigin()));
+		// TODO db_dp.setNetworkId();
+		// TODO db_dp.setDestinationLinkId();
 		db_dp.setDt(dp.getDt());
 		db_dp.setStartTime(dp.getStartTime());
 		db_dp.setKnob(dp.getKnob());
