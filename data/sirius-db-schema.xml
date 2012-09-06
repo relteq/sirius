@@ -54,8 +54,8 @@
 		<column name="user_id" primaryKey="true" domain="ID"/>
 		<column name="project_id" primaryKey="true" domain="ID"/>
 		<column name="own" domain="BOOL"/>
-		<column name="read" domain="BOOL"/>
-		<column name="write" domain="BOOL"/>
+		<column name="read_allowed" domain="BOOL"/>
+		<column name="write_allowed" domain="BOOL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="ID"/>
@@ -99,8 +99,8 @@
 		<column name="group_id" primaryKey="true" domain="ID"/>
 		<column name="project_id" primaryKey="true" domain="ID"/>
 		<column name="own" domain="BOOL"/>
-		<column name="read" domain="BOOL"/>
-		<column name="write" domain="BOOL"/>
+		<column name="read_allowed" domain="BOOL"/>
+		<column name="write_allowed" domain="BOOL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="ID"/>
@@ -116,8 +116,8 @@
 
 	<table name="other_permissions">
 		<column name="project_id" primaryKey="true" domain="ID"/>
-		<column name="read" domain="BOOL"/>
-		<column name="write" domain="BOOL"/>
+		<column name="read_allowed" domain="BOOL"/>
+		<column name="write_allowed" domain="BOOL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="ID"/>
@@ -1192,7 +1192,7 @@
 		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
 		<column name="column_name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="column_number" required="true" type="INTEGER"/>
-		<column name="key" required="true" domain="BOOL" description="Indicates if this column is a part of the key for finding table elements."/>
+		<column name="is_key" required="true" domain="BOOL" description="Indicates if this column is a part of the key for finding table elements."/>
 	</table>
 
 	<table name="referenced_scenario_elements">
