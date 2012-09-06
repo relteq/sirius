@@ -394,7 +394,7 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.OUT_LINK_ID);
-		crit.addAscendingOrderByColumn(SplitRatiosPeer.NUMBER);
+		crit.addAscendingOrderByColumn(SplitRatiosPeer.ORDINAL);
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.VEHICLE_TYPE_ID);
 		try {
 			@SuppressWarnings("unchecked")
@@ -414,9 +414,9 @@ public class ScenarioRestorer {
 					sr.setLinkOut(id2str(db_sr.getOutLinkId()));
 					sb.setLength(0);
 				} else { // same split ratio, different time stamp (',') or vehicle type (':')
-					sb.append(db_sr.getNumber() == number ? ':' : ',');
+					sb.append(db_sr.getOrdinal() == number ? ':' : ',');
 				}
-				number = db_sr.getNumber();
+				number = db_sr.getOrdinal();
 				sb.append(db_sr.getSplitRatio().toPlainString());
 			}
 			if (null != sr) {
@@ -574,7 +574,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) {
 		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
-		signal.setId(id2str(db_signal.getSignalId()));
+		signal.setId(id2str(db_signal.getId()));
 		signal.setNodeId(id2str(db_signal.getNodeId()));
 		Criteria crit = new Criteria();
 		crit.add(PhasesPeer.NETWORK_ID, db_signal.getNetworkId());

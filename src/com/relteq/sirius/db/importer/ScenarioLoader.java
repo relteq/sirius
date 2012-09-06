@@ -454,7 +454,7 @@ public class ScenarioLoader {
 							db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
 							db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
 							db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
-							db_sr.setNumber(t);
+							db_sr.setOrdinal(t);
 							db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
 							db_sr.save(conn);
 						}
@@ -467,7 +467,7 @@ public class ScenarioLoader {
 						db_sr.setInLinkId(link_family_id.get(sr.getLinkIn()));
 						db_sr.setOutLinkId(link_family_id.get(sr.getLinkOut()));
 						db_sr.setVehicleTypeId(vtid);
-						db_sr.setNumber(0);
+						db_sr.setOrdinal(0);
 						db_sr.setSplitRatio(new BigDecimal(-1));
 						db_sr.save(conn);
 					}
