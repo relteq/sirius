@@ -542,7 +542,7 @@
 
 	<table name="vehicle_types">
 		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
-		<column name="project_id" primaryKey="true" domain="ID"/>
+		<column name="project_id" required="true" domain="ID"/>
 		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
 		<column name="name" required="true" domain="NAME_BUF"/>
 		<column name="standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
