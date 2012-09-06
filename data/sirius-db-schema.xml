@@ -669,9 +669,9 @@
 
 	<table name="split_ratio_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="split_ratio_profile_set_id" primaryKey="true" domain="ID"/>
-		<column name="node_id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
+		<column name="split_ratio_profile_set_id" required="true" domain="ID"/>
+		<column name="node_id" required="true" domain="ID"/>
+		<column name="network_id" required="true" domain="ID"/>
 		<column name="destination_link_id" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
@@ -737,8 +737,8 @@
 
 	<table name="fundamental_diagram_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="fundamental_diagram_profile_set_id" primaryKey="true" domain="ID"/>
-		<column name="link_id" primaryKey="true" domain="ID"/>
+		<column name="fundamental_diagram_profile_set_id" required="true" domain="ID"/>
+		<column name="link_id" required="true" domain="ID"/>
 		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
 		<column name="created" required="true" type="DATE"/>
