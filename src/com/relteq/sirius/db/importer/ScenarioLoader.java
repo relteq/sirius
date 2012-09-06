@@ -440,6 +440,8 @@ public class ScenarioLoader {
 			SplitRatioProfiles db_srp = new SplitRatioProfiles();
 			db_srp.setSplitRatioProfileSets(db_srps);
 			db_srp.setNodeId(node_family_id.get(srp.getNodeId()));
+			// TODO db_srp.setNetworkId();
+			// TODO db_srp.setDestinationLinkId();
 			db_srp.setDt(srp.getDt());
 			db_srp.setStartTime(srp.getStartTime());
 			db_srp.save(conn);
