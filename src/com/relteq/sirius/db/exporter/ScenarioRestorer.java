@@ -576,12 +576,9 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
 		signal.setId(id2str(db_signal.getId()));
 		signal.setNodeId(id2str(db_signal.getNodeId()));
-		Criteria crit = new Criteria();
-		crit.add(PhasesPeer.NETWORK_ID, db_signal.getNetworkId());
-		crit.add(PhasesPeer.SIGNAL_ID, db_signal.getSignalId());
 		try {
 			@SuppressWarnings("unchecked")
-			List<Phases> db_ph_l = PhasesPeer.doSelect(crit);
+			List<Phases> db_ph_l = db_signal.getPhasess();
 			for (Phases db_ph : db_ph_l)
 				signal.getPhase().add(restorePhase(db_ph));
 		} catch (TorqueException exc) {
@@ -600,13 +597,9 @@ public class ScenarioRestorer {
 		phase.setMinGreenTime(db_ph.getMinGreenTime());
 		phase.setYellowTime(db_ph.getYellowTime());
 		phase.setRedClearTime(db_ph.getRedClearTime());
-		Criteria crit = new Criteria();
-		crit.add(PhaseLinksPeer.NETWORK_ID, db_ph.getNetworkId());
-		crit.add(PhaseLinksPeer.SIGNAL_ID, db_ph.getSignalId());
-		crit.add(PhaseLinksPeer.NEMA, db_ph.getNema());
 		try {
 			@SuppressWarnings("unchecked")
-			List<PhaseLinks> db_phl_l = PhaseLinksPeer.doSelect(crit);
+			List<PhaseLinks> db_phl_l = db_ph.getPhaseLinkss();
 			com.relteq.sirius.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
 			for (PhaseLinks db_phl : db_phl_l)
 				linkrefs.getLinkReference().add(restorePhaseLink(db_phl));

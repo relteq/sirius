@@ -305,7 +305,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.Phase phase, Signals db_signal) throws TorqueException {
 		Phases db_phase = new Phases();
-		db_phase.setSignalId(db_signal.getSignalId());
+		db_phase.setSignals(db_signal);
 		db_phase.setNema(phase.getNema().intValue());
 		db_phase.setIsProtected(phase.isProtected());
 		db_phase.setPermissive(phase.isPermissive());
@@ -327,8 +327,7 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.LinkReference lr, Phases db_phase) throws TorqueException {
 		PhaseLinks db_lr = new PhaseLinks();
-		db_lr.setSignalId(db_phase.getSignalId());
-		db_lr.setNema(db_phase.getNema());
+		db_lr.setPhases(db_phase);
 		db_lr.setLinkId(link_family_id.get(lr.getId()));
 		db_lr.save(conn);
 	}
