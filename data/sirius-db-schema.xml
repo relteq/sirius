@@ -540,7 +540,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="vehicle_types">
+	<table name="vehicle_types" idMethod="native">
 		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
@@ -664,7 +664,7 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
-	<table name="split_ratio_profiles">
+	<table name="split_ratio_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="split_ratio_profile_set_id" primaryKey="true" domain="ID"/>
 		<column name="node_id" primaryKey="true" domain="ID"/>
@@ -732,7 +732,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="fundamental_diagram_profiles">
+	<table name="fundamental_diagram_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="fundamental_diagram_profile_set_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
@@ -791,7 +791,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="demand_profiles">
+	<table name="demand_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="demand_profile_set_id" required="true" domain="ID"/>
 		<column name="origin_link_id" required="true" domain="ID"/>
@@ -850,7 +850,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="downstream_boundary_capacity_profiles">
+	<table name="downstream_boundary_capacity_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="ID"/>
 		<column name="link_id" required="true" domain="ID"/>
@@ -943,7 +943,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="signals">
+	<table name="signals" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="node_id" required="true" domain="ID"/>
 		<column name="signal_set_id" required="true" domain="ID"/>
