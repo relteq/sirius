@@ -50,6 +50,12 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_sr.setDataSources(db_ds);
 			db_sr.setScenarios(db_scenario);
 			db_sr.setRunNumber(run_number);
+			db_sr.setVersion(com.relteq.sirius.Version.get().getEngineVersion());
+			db_sr.setBuild("");
+			db_sr.setSimulationStartTime(BigDecimal.valueOf(scenario.getTimeStart()));
+			db_sr.setSimulationDuration(BigDecimal.valueOf(scenario.getTimeEnd() - scenario.getTimeStart()));
+			db_sr.setSimulationDt(BigDecimal.valueOf(scenario.getSimDtInSeconds()));
+			db_sr.setOutputDt(BigDecimal.valueOf(scenario.getOutputDt()));
 			db_sr.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_sr.setStatus(-1);
 			db_sr.save(conn);
@@ -146,6 +152,8 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setDataSourceId(data_source_id);
 		db_ldt.setTs(ts.getTime());
 		db_ldt.setAggregation("raw");
+		db_ldt.setType("mean");
+		db_ldt.setCellNumber(Integer.valueOf(0));
 		// mean density, veh
 		double density = SiriusMath.sum(link.cumulative_density[0]) * invsteps;
 		db_ldt.setDensity(new BigDecimal(density));
@@ -193,6 +201,8 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setVehicleTypeId(getVehicleTypeId(scenario.getVehicleTypeNames()[vt_ind], conn));
 			db_ldd.setTs(ts.getTime());
 			db_ldd.setAggregation("raw");
+			db_ldd.setType("mean");
+			db_ldd.setCellNumber(Integer.valueOf(0));
 			double density = link.cumulative_density[0][vt_ind] * invsteps;
 			db_ldd.setDensity(new BigDecimal(density));
 			if (exportflows) {

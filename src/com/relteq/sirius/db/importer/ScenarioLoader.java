@@ -161,6 +161,7 @@ public class ScenarioLoader {
 			db_vtype.setProjectId(getProjectId());
 			db_vtype.setName(vt.getName());
 			db_vtype.setWeight(vt.getWeight());
+			db_vtype.setStandard(Boolean.FALSE);
 			db_vtype.save(conn);
 		} else {
 			// TODO what if db_vt_l.size() > 1
@@ -234,6 +235,8 @@ public class ScenarioLoader {
 		db_node.setNetworks(db_network);
 		// TODO save node name, description, type, postmile, model
 		// TODO node.getPosition() -> db_node.setGeometry();
+		db_node.setGeometry("");
+		db_node.setDetailLevel(1);
 		db_node.save(conn);
 		nodes.put(node.getId(), db_node);
 	}
@@ -257,8 +260,9 @@ public class ScenarioLoader {
 		db_link.setEndNodeId(getDBNodeId(link.getEnd().getNodeId()));
 		// TODO save link name, road name, description, type, model, display lane offset
 		// TODO revise: shape -> geometry
-		db_link.setGeometry(link.getShape());
+		db_link.setGeometry(null == link.getShape() ? "" : link.getShape());
 		db_link.setLength(link.getLength());
+		db_link.setDetailLevel(1);
 		if (null != link.getLanes()) {
 			LinkLanes db_llanes = new LinkLanes();
 			db_llanes.setLanes(link.getLanes());
@@ -532,6 +536,8 @@ public class ScenarioLoader {
 		db_fd.setFundamentalDiagramProfiles(db_fdprofile);
 		db_fd.setNumber(number);
 		db_fd.setFreeFlowSpeed(fd.getFreeFlowSpeed());
+		// TODO: revise critical speed
+		db_fd.setCriticalSpeed(fd.getFreeFlowSpeed());
 		db_fd.setCongestionWaveSpeed(fd.getCongestionSpeed());
 		db_fd.setCapacity(fd.getCapacity());
 		db_fd.setJamDensity(fd.getJamDensity());
