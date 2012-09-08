@@ -211,6 +211,9 @@ public class ScenarioLoader {
 		db_network.setProjectId(getProjectId());
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
+		java.util.Date now = java.util.Calendar.getInstance().getTime();
+		db_network.setTimeCreated(now);
+		db_network.setTimeModified(now);
 		db_network.save(conn);
 		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
 		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
