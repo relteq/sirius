@@ -62,7 +62,7 @@ public class Event_Fundamental_Diagram extends Event {
 			this.FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
 			if (params.has("capacity")) this.FD.setCapacity(new BigDecimal(params.get("capacity")));
 			if (params.has("capacity_drop")) this.FD.setCapacityDrop(new BigDecimal(params.get("capacity_drop")));
-			if (params.has("congestion_speed")) this.FD.setCongestionSpeed(new BigDecimal(params.get("conjestion_speed")));
+			if (params.has("congestion_speed")) this.FD.setCongestionSpeed(new BigDecimal(params.get("congestion_speed")));
 			if (params.has("jam_density")) this.FD.setJamDensity(new BigDecimal(params.get("jam_density")));
 			if (params.has("free_flow_speed")) this.FD.setFreeFlowSpeed(new BigDecimal(params.get("free_flow_speed")));
 		} else
