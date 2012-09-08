@@ -3,7 +3,8 @@
 <!DOCTYPE database SYSTEM
 	"http://db.apache.org/torque/dtd/database_3_3.dtd">
 
-<database name="sirius">
+<database name="sirius"
+	defaultJavaType="object">
 	<domain name="ID" type="BIGINT"/>
 	<domain name="NAME_BUF" type="VARCHAR" size="64"/>
 	<domain name="STRING_VERSION" type="VARCHAR" size="64"/>

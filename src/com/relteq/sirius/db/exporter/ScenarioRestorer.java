@@ -269,12 +269,12 @@ public class ScenarioRestorer {
 		// TODO dynamics.setType();
 		link.setDynamics(dynamics);
 		// TODO link.setLaneOffset();
-		if (0 != db_link.getBeginNodeId()) {
+		if (null != db_link.getBeginNodeId()) {
 			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
 			begin.setNodeId(id2str(db_link.getBeginNodeId()));
 			link.setBegin(begin);
 		}
-		if (0 != db_link.getEndNodeId()) {
+		if (null != db_link.getEndNodeId()) {
 			com.relteq.sirius.jaxb.End end = factory.createEnd();
 			end.setNodeId(id2str(db_link.getEndNodeId()));
 			link.setEnd(end);

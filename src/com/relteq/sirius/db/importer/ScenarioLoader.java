@@ -23,20 +23,21 @@ import com.relteq.sirius.simulator.SiriusException;
 public class ScenarioLoader {
 	Connection conn = null;
 
-	private long project_id;
+	private Long project_id;
 	/**
 	 * @return the project id
 	 */
-	private long getProjectId() {
+	private Long getProjectId() {
 		return project_id;
 	}
-	private long [] vehicle_type_id = null;
+
+	private Long [] vehicle_type_id = null;
 	private Map<String, Long> network_id = null;
 	private Map<String, Long> link_family_id = null;
 	private Map<String, Long> node_family_id = null;
 
 	public ScenarioLoader() {
-		project_id = 0;
+		project_id = Long.valueOf(0);
 	}
 
 	private static Logger logger = Logger.getLogger(ScenarioLoader.class);
@@ -125,7 +126,7 @@ public class ScenarioLoader {
 			vtypes.getVehicleType().add(vt);
 		}
 		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
-		vehicle_type_id = new long[vtlist.size()];
+		vehicle_type_id = new Long[vtlist.size()];
 		int ind = 0;
 		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
 			vehicle_type_id[ind++] = save(vt, db_vts).getVehicleTypeId();
@@ -453,7 +454,7 @@ public class ScenarioLoader {
 						}
 					}
 				} else {
-					for (long vtid : vehicle_type_id) {
+					for (Long vtid : vehicle_type_id) {
 						SplitRatios db_sr = new SplitRatios();
 						db_sr.copy();
 						db_sr.setSplitRatioProfiles(db_srp);

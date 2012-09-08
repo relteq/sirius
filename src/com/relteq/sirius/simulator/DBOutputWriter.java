@@ -17,7 +17,7 @@ import com.relteq.sirius.om.*;
  */
 public class DBOutputWriter extends OutputWriterBase {
 	private Connection conn = null;
-	private long data_source_id = 0;
+	private Long data_source_id = null;
 
 	public DBOutputWriter(Scenario scenario) {
 		super(scenario);
@@ -60,7 +60,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
-				data_source_id = 0;
+				data_source_id = null;
 			}
 		}
 	}
@@ -238,7 +238,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			} catch (Exception exc) {
 				exc.printStackTrace();
 			} finally {
-				data_source_id = 0;
+				data_source_id = null;
 			}
 	}
 
