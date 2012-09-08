@@ -40,13 +40,8 @@ public class ScenarioRestorer {
 	 */
 	public static com.relteq.sirius.simulator.Scenario getScenario(long id) throws SiriusException {
 		com.relteq.sirius.simulator.Scenario scenario = com.relteq.sirius.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
-		if (null == scenario) {
-			if (SiriusErrorLog.haserror()) {
-				SiriusErrorLog.print();
-				SiriusErrorLog.clearErrorMessage();
-			}
-			throw new SiriusException("Could not load the scenario");
-		}
+		if (null == scenario)
+			throw new SiriusException("Could not load scenario " + id + " from the database. See error log for details.");
 		return scenario;
 	}
 
