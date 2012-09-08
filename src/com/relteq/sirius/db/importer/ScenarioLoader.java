@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
@@ -14,7 +15,6 @@ import org.apache.torque.util.Transaction;
 import com.relteq.sirius.jaxb.Point;
 import com.relteq.sirius.jaxb.Position;
 import com.relteq.sirius.om.*;
-import com.relteq.sirius.simulator.Double2DMatrix;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
@@ -433,15 +433,16 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset) throws TorqueException {
-		com.relteq.sirius.simulator.Double1DVector factor_vector = new com.relteq.sirius.simulator.Double1DVector(wf.getContent(), ":");
-		if (factor_vector.isEmpty()) return;
-		for (Double factor : factor_vector.getData()) {
-			WeavingFactors db_wf = new WeavingFactors();
-			db_wf.setWeavingFactorSets(db_wfset);
-			// TODO db_wf.setInLinkId();
-			// TODO db_wf.setOutLinkId();
-			db_wf.setFactor(new BigDecimal(factor));
-			// TODO db_wf.save(conn);
+		Data1D data1d = new Data1D(wf.getContent(), ":");
+		if (!data1d.isEmpty()) {
+			for (BigDecimal factor : data1d.getData()) {
+				WeavingFactors db_wf = new WeavingFactors();
+				db_wf.setWeavingFactorSets(db_wfset);
+				// TODO db_wf.setInLinkId();
+				// TODO db_wf.setOutLinkId();
+				db_wf.setFactor(factor);
+				// TODO db_wf.save(conn);
+			}
 		}
 	}
 
@@ -458,47 +459,48 @@ public class ScenarioLoader {
 		db_srps.setName(srps.getName());
 		db_srps.setDescription(srps.getDescription());
 		db_srps.save(conn);
-		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile()) {
-			SplitRatioProfiles db_srp = new SplitRatioProfiles();
-			db_srp.setSplitRatioProfileSets(db_srps);
-			Nodes db_node = nodes.get(srp.getNodeId());
-			db_srp.setNodeId(db_node.getNodeId());
-			db_srp.setNetworkId(db_node.getNetworkId());
-			// TODO db_srp.setDestinationLinkId();
-			db_srp.setDt(srp.getDt());
-			db_srp.setStartTime(srp.getStartTime());
-			db_srp.save(conn);
-			for (com.relteq.sirius.jaxb.Splitratio sr : srp.getSplitratio()) {
-				Double2DMatrix data = new Double2DMatrix(sr.getContent());
-				if (!data.isEmpty()) {
-					for (int t = 0; t < data.getnTime(); ++t) {
-						for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
-							SplitRatios db_sr = new SplitRatios();
-							db_sr.setSplitRatioProfiles(db_srp);
-							db_sr.setInLinkId(getDBLinkId(sr.getLinkIn()));
-							db_sr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
-							db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
-							db_sr.setOrdinal(t);
-							db_sr.setSplitRatio(new BigDecimal(data.get(t, vtn)));
-							db_sr.save(conn);
-						}
-					}
-				} else {
-					for (Long vtid : vehicle_type_id) {
+		// TODO if (null != srps.getVehicleTypeOrder()) ...;
+		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile())
+			save(srp, db_srps);
+		return db_srps;
+	}
+
+	/**
+	 * Imports a split ratio profile
+	 * @param srp
+	 * @param db_srps an already imported split ratio profile set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps) throws TorqueException {
+		SplitRatioProfiles db_srp = new SplitRatioProfiles();
+		db_srp.setSplitRatioProfileSets(db_srps);
+		Nodes db_node = nodes.get(srp.getNodeId());
+		db_srp.setNodeId(db_node.getNodeId());
+		db_srp.setNetworkId(db_node.getNetworkId());
+		// TODO db_srp.setDestinationLinkId();
+		db_srp.setDt(srp.getDt());
+		db_srp.setStartTime(srp.getStartTime());
+		db_srp.save(conn);
+		for (com.relteq.sirius.jaxb.Splitratio sr : srp.getSplitratio()) {
+			BigDecimal[][] data = new Data2D(sr.getContent(), new String[] {",", ":"}).getData();
+			if (null != data) {
+				for (int t = 0; t < data.length; ++t) {
+					for (int vtn = 0; vtn < data[t].length; ++vtn) {
 						SplitRatios db_sr = new SplitRatios();
-						db_sr.copy();
+						// common
 						db_sr.setSplitRatioProfiles(db_srp);
 						db_sr.setInLinkId(getDBLinkId(sr.getLinkIn()));
 						db_sr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
-						db_sr.setVehicleTypeId(vtid);
-						db_sr.setOrdinal(0);
-						db_sr.setSplitRatio(new BigDecimal(-1));
+						// unique
+						db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
+						db_sr.setOrdinal(Integer.valueOf(t));
+						db_sr.setSplitRatio(data[t][vtn]);
+
 						db_sr.save(conn);
 					}
 				}
 			}
 		}
-		return db_srps;
 	}
 
 	/**
@@ -595,15 +597,16 @@ public class ScenarioLoader {
 		db_dp.setStdDeviationAdditive(dp.getStdDevAdd());
 		db_dp.setStdDeviationMultiplicative(dp.getStdDevMult());
 		db_dp.save(conn);
-		Double2DMatrix data = new Double2DMatrix(dp.getContent());
-		if (!data.isEmpty()) {
-			for (int t = 0; t < data.getnTime(); ++t) {
-				for (int vtn = 0; vtn < data.getnVTypes(); ++vtn) {
+		Data2D data2d = new Data2D(dp.getContent(), new String[] {",", ":"});
+		if (!data2d.isEmpty()) {
+			BigDecimal[][] data = data2d.getData();
+			for (int t = 0; t < data.length; ++t) {
+				for (int vtn = 0; vtn < data[t].length; ++vtn) {
 					Demands db_demand = new Demands();
 					db_demand.setDemandProfiles(db_dp);
 					db_demand.setVehicleTypeId(vehicle_type_id[vtn]);
 					db_demand.setNumber(t);
-					db_demand.setDemand(new BigDecimal(data.get(t, vtn)));
+					db_demand.setDemand(data[t][vtn]);
 					db_demand.save(conn);
 				}
 			}
@@ -678,16 +681,15 @@ public class ScenarioLoader {
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
 		// TODO delimiter = ':' or ','?
-		com.relteq.sirius.simulator.Double1DVector values = new com.relteq.sirius.simulator.Double1DVector(cp.getContent(), ":");
-		if (!values.isEmpty()) {
-			int count = 0;
-			for (Double capacity : values.getData()) {
+		Data1D data1d = new Data1D(cp.getContent(), ":");
+		if (!data1d.isEmpty()) {
+			BigDecimal[] data = data1d.getData();
+			for (int number = 0; number < data.length; ++number) {
 				DownstreamBoundaryCapacities db_dbc = new DownstreamBoundaryCapacities();
 				db_dbc.setDownstreamBoundaryCapacityProfiles(db_dbcp);
-				db_dbc.setNumber(count);
-				db_dbc.setDownstreamBoundaryCapacity(new BigDecimal(capacity));
+				db_dbc.setNumber(number);
+				db_dbc.setDownstreamBoundaryCapacity(data[number]);
 				db_dbc.save(conn);
-				++count;
 			}
 		}
 	}
@@ -701,4 +703,65 @@ public class ScenarioLoader {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	protected static class Data1D {
+		private BigDecimal[] data = null;
+
+		/**
+		 * @param str a serialized vector
+		 * @param delim a delimiter
+		 */
+		public Data1D(String str, String delim) {
+			if (null == str) logger.error("str == null");
+			else if (null == delim) logger.error("delim == null");
+			else {
+				StringTokenizer st = new StringTokenizer(str, delim);
+				data = new BigDecimal[st.countTokens()];
+				for (int i = 0; st.hasMoreTokens(); ++i)
+					data[i] = new BigDecimal(st.nextToken());
+			}
+		}
+
+		public boolean isEmpty() {
+			return null == data;
+		}
+
+		public BigDecimal[] getData() {
+			return data;
+		}
+	}
+
+	protected static class Data2D {
+		private BigDecimal[][] data = null;
+
+		/**
+		 * @param str a serialized matrix
+		 * @param delim delimiters, default: ',' for the 1st dimension, ':' for the second
+		 */
+		public Data2D(String str, String[] delim) {
+			if (null == delim) delim = new String[] {",", ":"};
+			if (null == str) logger.error("str == null");
+			else if (2 != delim.length) logger.error("delim.length != 2");
+			else {
+				str = str.replaceAll("\\s", "");
+				StringTokenizer st1 = new StringTokenizer(str, delim[0]);
+				data = new BigDecimal[st1.countTokens()][];
+				for (int i = 0; st1.hasMoreTokens(); ++i) {
+					StringTokenizer st2 = new StringTokenizer(st1.nextToken(), delim[1]);
+					data[i] = new BigDecimal[st2.countTokens()];
+					for (int j = 0; st2.hasMoreTokens(); ++j)
+						data[i][j] = new BigDecimal(st2.nextToken());
+				}
+			}
+		}
+
+		public boolean isEmpty() {
+			return null == data;
+		}
+
+		public BigDecimal[][] getData() {
+			return data;
+		}
+	}
+
 }
