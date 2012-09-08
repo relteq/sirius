@@ -84,8 +84,6 @@ public class ScenarioLoader {
 		}
 	}
 
-	private static long str2id(String id) { return Long.parseLong(id, 10); }
-
 	/**
 	 * Imports a scenario
 	 * @param scenario
