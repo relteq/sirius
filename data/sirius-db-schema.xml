@@ -149,7 +149,7 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
-	<table name="networks">
+	<table name="networks" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
