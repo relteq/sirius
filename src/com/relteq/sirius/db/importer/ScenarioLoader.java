@@ -384,6 +384,27 @@ public class ScenarioLoader {
 	}
 
 	/**
+	 * Builds a vehicle type list from vehicle type order
+	 * @param order vehicle type order
+	 * @return default vehicle type array if order is NULL
+	 */
+	private VehicleTypes[] reorderVehicleTypes(com.relteq.sirius.jaxb.VehicleTypeOrder order) {
+		if (null == order) return vehicle_type;
+		VehicleTypes[] reordered_vt = new VehicleTypes[order.getVehicleType().size()];
+		int i = 0;
+		for (com.relteq.sirius.jaxb.VehicleType vt : order.getVehicleType()) {
+			reordered_vt[i] = null;
+			for (VehicleTypes db_vt : vehicle_type)
+				if (vt.getName().equals(db_vt.getName())) {
+					reordered_vt[i] = db_vt;
+					break;
+				}
+			++i;
+		}
+		return reordered_vt;
+	}
+
+	/**
 	 * Imports initial densities
 	 * @param idset
 	 * @return the imported initial density set
@@ -395,16 +416,16 @@ public class ScenarioLoader {
 		db_idsets.setProjectId(getProjectId());
 		db_idsets.setName(idset.getName());
 		db_idsets.setDescription(idset.getDescription());
-		// TODO if (null != idset.getVehicleTypeOrder()) ...;
+		db_idsets.save(conn);
+		VehicleTypes[] db_vt = reorderVehicleTypes(idset.getVehicleTypeOrder());
 		for (com.relteq.sirius.simulator.InitialDensitySet.Tuple tuple :
 				((com.relteq.sirius.simulator.InitialDensitySet) idset).getData()) {
 			InitialDensities db_density = new InitialDensities();
 			db_density.setInitialDensitySets(db_idsets);
 			db_density.setLinkId(getDBLinkId(tuple.getLinkId()));
-			db_density.setVehicleTypes(vehicle_type[tuple.getVehicleTypeIndex()]);
+			db_density.setVehicleTypes(db_vt[tuple.getVehicleTypeIndex()]);
 			db_density.setDensity(new BigDecimal(tuple.getDensity()));
 		}
-		db_idsets.save(conn);
 		return db_idsets;
 	}
 
@@ -421,10 +442,8 @@ public class ScenarioLoader {
 		db_wfset.setName(wfset.getName());
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
-		// TODO if (null != wfset.getVehicleTypeOrder()) ...;
-		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors()) {
-			save(wf, db_wfset);
-		}
+		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors())
+			save(wf, db_wfset, reorderVehicleTypes(wfset.getVehicleTypeOrder()));
 		return db_wfset;
 	}
 
@@ -432,9 +451,10 @@ public class ScenarioLoader {
 	 * Imports weaving factors
 	 * @param wf weaving factors to be imported
 	 * @param db_wfset an already imported weaving factor set
+	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -443,7 +463,7 @@ public class ScenarioLoader {
 				db_wf.setWeavingFactorSets(db_wfset);
 				db_wf.setInLinkId(getDBLinkId(wf.getLinkIn()));
 				db_wf.setOutLinkId(getDBLinkId(wf.getLinkOut()));
-				db_wf.setVehicleTypes(vehicle_type[i]);
+				db_wf.setVehicleTypes(db_vt[i]);
 				db_wf.setFactor(data[i]);
 				db_wf.save(conn);
 			}
@@ -463,9 +483,8 @@ public class ScenarioLoader {
 		db_srps.setName(srps.getName());
 		db_srps.setDescription(srps.getDescription());
 		db_srps.save(conn);
-		// TODO if (null != srps.getVehicleTypeOrder()) ...;
 		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile())
-			save(srp, db_srps);
+			save(srp, db_srps, reorderVehicleTypes(srps.getVehicleTypeOrder()));
 		return db_srps;
 	}
 
@@ -473,9 +492,10 @@ public class ScenarioLoader {
 	 * Imports a split ratio profile
 	 * @param srp
 	 * @param db_srps an already imported split ratio profile set
+	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps, VehicleTypes[] db_vt) throws TorqueException {
 		SplitRatioProfiles db_srp = new SplitRatioProfiles();
 		db_srp.setSplitRatioProfileSets(db_srps);
 		Nodes db_node = nodes.get(srp.getNodeId());
@@ -496,7 +516,7 @@ public class ScenarioLoader {
 						db_sr.setInLinkId(getDBLinkId(sr.getLinkIn()));
 						db_sr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
 						// unique
-						db_sr.setVehicleTypes(vehicle_type[vtn]);
+						db_sr.setVehicleTypes(db_vt[vtn]);
 						db_sr.setOrdinal(Integer.valueOf(t));
 						db_sr.setSplitRatio(data[t][vtn]);
 
@@ -578,9 +598,8 @@ public class ScenarioLoader {
 		db_dpset.setName(dpset.getName());
 		db_dpset.setDescription(dpset.getDescription());
 		db_dpset.save(conn);
-		// TODO if (null != dpset.getVehicleTypeOrder()) ...;
 		for (com.relteq.sirius.jaxb.DemandProfile dp : dpset.getDemandProfile())
-			save(dp, db_dpset);
+			save(dp, db_dpset, reorderVehicleTypes(dpset.getVehicleTypeOrder()));
 		return db_dpset;
 	}
 
@@ -588,9 +607,10 @@ public class ScenarioLoader {
 	 * Imports a demand profile
 	 * @param dp a demand profile
 	 * @param db_dpset an already imported demand profile set
+	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset, VehicleTypes[] db_vt) throws TorqueException {
 		DemandProfiles db_dp = new DemandProfiles();
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(getDBLinkId(dp.getLinkIdOrigin()));
@@ -609,7 +629,7 @@ public class ScenarioLoader {
 				for (int vtn = 0; vtn < data[t].length; ++vtn) {
 					Demands db_demand = new Demands();
 					db_demand.setDemandProfiles(db_dp);
-					db_demand.setVehicleTypes(vehicle_type[vtn]);
+					db_demand.setVehicleTypes(db_vt[vtn]);
 					db_demand.setNumber(t);
 					db_demand.setDemand(data[t][vtn]);
 					db_demand.save(conn);
