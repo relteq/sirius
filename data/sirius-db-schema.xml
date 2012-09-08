@@ -151,28 +151,18 @@
 
 	<table name="networks" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
 		<column name="description" domain="DESCRIPTION_BUF"/>
-		<column name="source_network_id" domain="ID"/>
-		<column name="parent_network_id" domain="ID"/>
+		<column name="source_network_id" domain="ID" description="Network, from which current network was derived."/>
 		<column name="in_use" domain="BOOL"/>
 		<column name="mutable" domain="BOOL"/>
-		<column name="time_created" required="true" type="TIMESTAMP"/>
-		<column name="time_modified" required="true" type="TIMESTAMP"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="ID"/>
 		<column name="modified_by" required="true" domain="ID"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="projects">
-			<reference local="project_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="map_sources">
 			<reference local="source_network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="parent_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -184,7 +174,6 @@
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="node_id" primaryKey="true" domain="ID"/>
 		<column name="geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
-		<column name="detail_level" required="true" type="INTEGER" description="From 1 (important) to 5 (less so) used for subselection."/>
 		<column name="sync" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
