@@ -169,7 +169,7 @@ public class ScenarioLoader {
 		}
 		VehicleTypesInSets db_vtins = new VehicleTypesInSets();
 		db_vtins.setVehicleTypeSets(db_vts);
-		db_vtins.setVehicleTypeId(db_vtype.getVehicleTypeId());
+		db_vtins.setVehicleTypes(db_vtype);
 		db_vtins.save(conn);
 		return db_vtype;
 	}
