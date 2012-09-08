@@ -485,7 +485,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
-		  <xs:element name="density">													<!-- content in veh/mile -->
+		  <xs:element name="density">													<!-- content in veh/meter -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
 			  <xs:attribute name="link_id_destination" type="xs:string" use="optional" />
@@ -646,14 +646,14 @@
 		</xs:complexType>
 	  </xs:element>
 			  
-		  <xs:element name="demandProfile">									<!-- content in [veh/hr/vehicle type] -->
+		  <xs:element name="demandProfile">									<!-- content in [veh/s/vehicle type] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
 			  <xs:attribute name="link_id_origin" type="xs:string" use="required" />
 			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
-			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
+			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/s/vehicle type] -->
 			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
 			</xs:complexType>
 		  </xs:element>
@@ -855,12 +855,15 @@
 
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
-				  <xs:attribute name="congestion_speed" type="xs:decimal" use="optional" />					<!-- [mile/hr] -->
-				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/hr/lane]   -->
-				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/mile/lane] -->
-				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/hr/lane]   -->
-				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/hr/lane]   -->
+				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
+				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
+				  <xs:attribute name="congestion_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
+				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/s/lane]   -->
+				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
+				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/s/lane]   -->
+				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/s/lane]   -->
+				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>					<!-- [m/s]   -->
+				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>					<!-- [m/s]   -->
 				</xs:complexType>
 			  </xs:element>  
 

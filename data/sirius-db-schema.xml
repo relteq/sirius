@@ -652,9 +652,10 @@
 		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in m/s."/>
 		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in m/s."/>
-		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
+		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
+		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vehicles per second per lane. Optional."/>
 		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in m/s. Optional."/>
 		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
@@ -1303,7 +1304,7 @@
 		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<column name="critical_speed" domain="DECIMAL" description="Critical speed in m/s."/>
 		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in m/s."/>
-		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per hour per lane (vphl)."/>
+		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
 		<foreign-key foreignTable="link_families">
