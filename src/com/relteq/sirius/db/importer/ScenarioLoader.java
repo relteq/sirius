@@ -24,18 +24,11 @@ public class ScenarioLoader {
 	Connection conn = null;
 
 	private long project_id;
-	private long scenario_id;
 	/**
 	 * @return the project id
 	 */
 	private long getProjectId() {
 		return project_id;
-	}
-	/**
-	 * @return the generated scenario id
-	 */
-	private long getScenarioId() {
-		return scenario_id;
 	}
 	private long [] vehicle_type_id = null;
 	private Map<String, Long> network_id = null;
@@ -97,9 +90,8 @@ public class ScenarioLoader {
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
 		db_scenario.save(conn);
-		scenario_id = db_scenario.getId();
 		db_scenario.setVehicleTypeSets(save(scenario.getSettings().getVehicleTypes()));
-		save(scenario.getNetworkList());
+		save(scenario.getNetworkList(), db_scenario);
 		db_scenario.setNetworkConnectionSets(save(scenario.getNetworkConnections()));
 		db_scenario.setSignalSets(save(scenario.getSignalList()));
 		db_scenario.setSensorSets(save(scenario.getSensorList()));
@@ -177,13 +169,13 @@ public class ScenarioLoader {
 	 * @param nl
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.NetworkList nl) throws TorqueException {
+	private void save(com.relteq.sirius.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException {
 		network_id = new HashMap<String, Long>(nl.getNetwork().size());
 		link_family_id = new HashMap<String, Long>();
 		node_family_id = new HashMap<String, Long>();
 		for (com.relteq.sirius.jaxb.Network network : nl.getNetwork()) {
 			NetworkSets db_ns = new NetworkSets();
-			db_ns.setScenarioId(getScenarioId());
+			db_ns.setScenarios(db_scenario);
 			db_ns.setNetworks(save(network));
 			db_ns.save(conn);
 		}
