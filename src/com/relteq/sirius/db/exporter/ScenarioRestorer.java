@@ -365,21 +365,18 @@ public class ScenarioRestorer {
 		try {
 			@SuppressWarnings("unchecked")
 			List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss();
-			// TODO uncomment when the XSD schema is updated
-			/*
 			com.relteq.sirius.jaxb.Weavingfactors wf = null;
 			StringBuilder sb = new StringBuilder();
 			for (WeavingFactors db_wf : db_wf_l) {
-				if (null != wf && !(wf.getLinkIn().equals(db_wf.getInLinkId()) && wf.getLinkOut().equals(db_wf.getOutLinkId()))) {
+				if (null != wf && !(wf.getLinkIn().equals(id2str(db_wf.getInLinkId())) && wf.getLinkOut().equals(id2str(db_wf.getOutLinkId())))) {
 					wf.setContent(sb.toString());
-					wfp.getWeavingfactors().add(wf);
+					wfset.getWeavingfactors().add(wf);
 					wf = null;
 				}
 				if (null == wf) { // new weaving factor
 					wf = factory.createWeavingfactors();
-					wf.setLinkIn(db_wf.getInLinkId());
-					wf.setLinkOut(db_wf.getOutLinkId());
-					// TODO wf.setNetworkId();
+					wf.setLinkIn(id2str(db_wf.getInLinkId()));
+					wf.setLinkOut(id2str(db_wf.getOutLinkId()));
 					sb.setLength(0);
 				} else { // same weaving factor, different vehicle type
 					sb.append(':');
@@ -388,9 +385,8 @@ public class ScenarioRestorer {
 			}
 			if (null != wf) {
 				wf.setContent(sb.toString());
-				wfp.getWeavingfactors().add(wf);
+				wfset.getWeavingfactors().add(wf);
 			}
-			*/
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addError(exc.getMessage());
 		}

@@ -420,6 +420,7 @@ public class ScenarioLoader {
 		db_wfset.setName(wfset.getName());
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
+		// TODO if (null != wfset.getVehicleTypeOrder()) ...;
 		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors()) {
 			save(wf, db_wfset);
 		}
@@ -435,13 +436,15 @@ public class ScenarioLoader {
 	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset) throws TorqueException {
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
-			for (BigDecimal factor : data1d.getData()) {
+			BigDecimal[] data = data1d.getData();
+			for (int i = 0; i < data.length; ++i) {
 				WeavingFactors db_wf = new WeavingFactors();
 				db_wf.setWeavingFactorSets(db_wfset);
-				// TODO db_wf.setInLinkId();
-				// TODO db_wf.setOutLinkId();
-				db_wf.setFactor(factor);
-				// TODO db_wf.save(conn);
+				db_wf.setInLinkId(getDBLinkId(wf.getLinkIn()));
+				db_wf.setOutLinkId(getDBLinkId(wf.getLinkOut()));
+				db_wf.setVehicleTypeId(vehicle_type_id[i]);
+				db_wf.setFactor(data[i]);
+				db_wf.save(conn);
 			}
 		}
 	}
