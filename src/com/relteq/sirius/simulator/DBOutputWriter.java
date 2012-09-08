@@ -35,9 +35,9 @@ public class DBOutputWriter extends OutputWriterBase {
 			if (null == db_scenario)
 				db_scenario = ScenariosPeer.retrieveByPK(Long.parseLong(getScenario().getId()), conn);
 
-			com.relteq.sirius.om.DataSources db_ds = new com.relteq.sirius.om.DataSources();
+			DataSources db_ds = new DataSources();
+			db_ds.setId(data_source_id = DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
 			db_ds.save(conn);
-			data_source_id = db_ds.getId();
 
 			Criteria crit = new Criteria();
 			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);

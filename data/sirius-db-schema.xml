@@ -176,7 +176,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_families" idMethod="native">
+	<table name="node_families" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 
@@ -263,7 +263,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_families" idMethod="native">
+	<table name="link_families" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 
@@ -1342,7 +1342,7 @@
 
 	<!-- Simulation Data -->
 
-	<table name="data_sources" idMethod="native">
+	<table name="data_sources" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 	
