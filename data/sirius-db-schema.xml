@@ -5,6 +5,7 @@
 
 <database name="sirius"
 	baseClass="com.relteq.sirius.db.BaseObject"
+	basePeer="com.relteq.sirius.db.BasePeer"
 	defaultJavaType="object">
 	<domain name="ID" type="BIGINT"/>
 	<domain name="NAME_BUF" type="VARCHAR" size="64"/>
