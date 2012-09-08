@@ -3,7 +3,7 @@
 
   <!-- generic ................................................................... -->
   
-  <xs:element name="position">												<!-- used by network, node, sensor -->
+  <xs:element name="position">	<!-- used by network, node, sensor -->
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="point" maxOccurs="unbounded" />
@@ -20,7 +20,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
-  <xs:element name="description" type="xs:string" />						<!-- used by scenario, network, node, link, sensor, event, and all profiles and sets. -->
+  <xs:element name="description" type="xs:string" />  <!-- used by scenario, network, node, link, sensor, event, and all profiles and sets. -->
   
   <xs:element name="begin"> 												<!-- used by link, od -->
     <xs:complexType>
@@ -156,8 +156,8 @@
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
         <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
         <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
-		<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
-		<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
+	<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
+	<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
@@ -233,6 +233,7 @@
 			  <xs:attribute name="name" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in seconds -->
 			  <xs:attribute name="id" type="xs:string" use="required" />
+			  <xs:attribute name="locked" type="xs:boolean" use="optional" default="false" />
 			</xs:complexType>
 		  </xs:element>
 		  
@@ -249,13 +250,11 @@
 			  <xs:element name="node">
 				<xs:complexType>
 				  <xs:all>
-					<xs:element ref="description" minOccurs="0" />
-					<xs:element ref="postmile" minOccurs="0" />
+					<xs:element ref="roadway_markers" minOccurs="0" maxOccurs="1"/>
 					<xs:element ref="outputs" />
 					<xs:element ref="inputs" />
 					<xs:element ref="position" />
 				  </xs:all>
-				  <xs:attribute name="name" type="xs:string" use="required" />
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
@@ -264,12 +263,25 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="lock" type="xs:boolean" use="optional" default="false" />
+				  <xs:attribute name="in_synch" type="xs:boolean" use="optional" default="true" />
 				</xs:complexType>
 			  </xs:element>
 			  
-				  <xs:element name="postmile" type="xs:decimal" />
-				  
+				  <xs:element name="roadway_markers">
+				  	<xs:complexType>
+					  <xs:sequence>
+						<xs:element ref="marker" minOccurs="1" maxOccurs="unbounded" />
+					  </xs:sequence>
+					</xs:complexType>
+			  	  </xs:element>
+
+				  <xs:element name="marker">
+				  	<xs:complexType>
+				  		<xs:attribute name="name" type="xs:string" use="required" />
+				  		<xs:attribute name="postmile" type="xs:string" use="optional" />
+					</xs:complexType>
+			  	  </xs:element>
+
 				  <xs:element name="outputs">
 					<xs:complexType>
 					  <xs:sequence>
@@ -311,14 +323,12 @@
 			  <xs:element name="link">
 				<xs:complexType>
 				  <xs:all>
-					<xs:element ref="description" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="begin" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="end" minOccurs="0" maxOccurs="1" />
+					<xs:element ref="roads" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="shape" minOccurs="0" />
 				  </xs:all>
-				  <xs:attribute name="name" type="xs:string" use="optional" />
-				  <xs:attribute name="road_name" type="xs:string" use="optional" />
 				  <xs:attribute name="lanes" type="xs:decimal" use="required" />
 				  <xs:attribute name="lane_offset" type="xs:decimal" use="optional" default="0" />
 				  <xs:attribute name="length" type="xs:decimal" use="required" />
@@ -330,9 +340,23 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="record" type="xs:boolean" use="optional" default="true" />
+				  <xs:attribute name="in_synch" type="xs:boolean" use="optional" default="true" />
 				</xs:complexType>
 			  </xs:element>
+
+				  <xs:element name="roads">
+				  	<xs:complexType>
+					  <xs:sequence>
+						<xs:element ref="road" minOccurs="1" maxOccurs="unbounded" />
+					  </xs:sequence>
+					</xs:complexType>
+			  	  </xs:element>
+
+				  <xs:element name="road">
+				  	<xs:complexType>
+				  		<xs:attribute name="name" type="xs:string" use="required" />
+					</xs:complexType>
+			  	  </xs:element>
 
 				  <xs:element name="dynamics">
 					<xs:complexType>
@@ -890,5 +914,23 @@
 			</xs:complexType>
 		  </xs:element>
   
+	 <!-- Routes ...................................................  -->
+
+	  <xs:element name="Routes">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element ref="route" minOccurs="0" maxOccurs="unbounded" />
+		  </xs:sequence>
+		</xs:complexType>
+	  </xs:element>
+
+		  <xs:element name="route">
+			<xs:complexType>
+			  <xs:all>
+				<xs:element ref="link_references" minOccurs="1" maxOccurs="1" />
+			  </xs:all>
+			  <xs:attribute name="id" type="xs:string" use="required" />
+			</xs:complexType>
+		  </xs:element>
 
 </xs:schema>
