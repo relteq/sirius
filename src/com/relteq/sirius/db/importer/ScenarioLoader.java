@@ -199,12 +199,8 @@ public class ScenarioLoader {
 	 */
 	private Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException, SiriusException {
 		Networks db_network = new Networks();
-		db_network.setProjectId(getProjectId());
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
-		java.util.Date now = java.util.Calendar.getInstance().getTime();
-		db_network.setTimeCreated(now);
-		db_network.setTimeModified(now);
 		db_network.save(conn);
 		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
 		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
@@ -234,7 +230,6 @@ public class ScenarioLoader {
 		// TODO save node description, postmile, model
 		// TODO node.getPosition() -> db_node.setGeometry();
 		db_node.setGeometry("");
-		db_node.setDetailLevel(1);
 		if (null != node.getName()) {
 			NodeName db_nname = new NodeName();
 			db_nname.setName(node.getName());
