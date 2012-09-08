@@ -253,12 +253,17 @@ public class ScenarioLoader {
 		Links db_link = new Links();
 		db_link.setLinkFamilies(db_lf);
 		db_link.setNetworks(db_network);
-		// TODO save link name, road name, description, type, lanes, model, display lane offset
 		db_link.setBeginNodeId(getDBNodeId(link.getBegin().getNodeId()));
 		db_link.setEndNodeId(getDBNodeId(link.getEnd().getNodeId()));
+		// TODO save link name, road name, description, type, model, display lane offset
 		// TODO revise: shape -> geometry
 		db_link.setGeometry(link.getShape());
 		db_link.setLength(link.getLength());
+		if (null != link.getLanes()) {
+			LinkLanes db_llanes = new LinkLanes();
+			db_llanes.setLanes(link.getLanes());
+			db_link.addLinkLanes(db_llanes, conn);
+		}
 		db_link.save(conn);
 		links.put(link.getId(), db_link);
 	}

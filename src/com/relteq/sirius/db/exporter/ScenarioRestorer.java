@@ -263,7 +263,17 @@ public class ScenarioRestorer {
 		// TODO link.setType();
 		// TODO revise: geometry -> shape
 		link.setShape(db_link.getGeometry());
-		// TODO link.setLanes();
+		try {
+			@SuppressWarnings("unchecked")
+			List<LinkLanes> db_llanes_l = db_link.getLinkLaness();
+			if (0 < db_llanes_l.size()) {
+				link.setLanes(db_llanes_l.get(0).getLanes());
+				if (1 < db_llanes_l.size())
+					SiriusErrorLog.addWarning("Link " + db_link.getLinkId() + " has " + db_llanes_l.size() + " values for @lanes");
+			}
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addError(exc.getMessage());
+		}
 		link.setLength(db_link.getLength());
 		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
 		// TODO dynamics.setType();

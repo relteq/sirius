@@ -338,11 +338,9 @@
 		<column name="created_by" required="true" domain="ID"/>
 		<column name="modified_by" required="true" domain="ID"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="link_id" foreign="id"/>
+		<foreign-key foreignTable="links">
+			<reference local="network_id" foreign="network_id"/>
+			<reference local="link_id" foreign="link_id"/>
 		</foreign-key>
 	</table>
 
