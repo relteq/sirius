@@ -326,7 +326,7 @@ public class ScenarioRestorer {
 			com.relteq.sirius.jaxb.Density density = null;
 			StringBuilder sb = new StringBuilder();
 			for (InitialDensities db_id : db_idl) {
-				if (null != density && !density.getLinkId().equals(db_id.getLinkId())) {
+				if (null != density && !density.getLinkId().equals(id2str(db_id.getLinkId()))) {
 					density.setContent(sb.toString());
 					idset.getDensity().add(density);
 					density = null;
@@ -428,10 +428,10 @@ public class ScenarioRestorer {
 			@SuppressWarnings("unchecked")
 			List<SplitRatios> db_sr_l = db_srp.getSplitRatioss(crit);
 			com.relteq.sirius.jaxb.Splitratio sr = null;
-			int number = -1;
+			Integer ordinal = null;
 			StringBuilder sb = new StringBuilder();
 			for (SplitRatios db_sr : db_sr_l) {
-				if (null != sr && !(sr.getLinkIn().equals(db_sr.getInLinkId()) && sr.getLinkOut().equals(db_sr.getOutLinkId()))) {
+				if (null != sr && !(sr.getLinkIn().equals(id2str(db_sr.getInLinkId())) && sr.getLinkOut().equals(id2str(db_sr.getOutLinkId())))) {
 					sr.setContent(sb.toString());
 					srp.getSplitratio().add(sr);
 					sr = null;
@@ -442,9 +442,9 @@ public class ScenarioRestorer {
 					sr.setLinkOut(id2str(db_sr.getOutLinkId()));
 					sb.setLength(0);
 				} else { // same split ratio, different time stamp (',') or vehicle type (':')
-					sb.append(db_sr.getOrdinal() == number ? ':' : ',');
+					sb.append(db_sr.getOrdinal().equals(ordinal) ? ':' : ',');
 				}
-				number = db_sr.getOrdinal();
+				ordinal = db_sr.getOrdinal();
 				sb.append(db_sr.getSplitRatio().toPlainString());
 			}
 			if (null != sr) {
@@ -535,10 +535,10 @@ public class ScenarioRestorer {
 			@SuppressWarnings("unchecked")
 			List<Demands> db_demand_l = db_dp.getDemandss(crit);
 			StringBuilder sb = null;
-			int number = -1;
+			Integer number = null;
 			for (Demands db_demand : db_demand_l) {
 				if (null == sb) sb = new StringBuilder();
-				else sb.append(db_demand.getNumber() == number ? ':' : ',');
+				else sb.append(db_demand.getNumber().equals(number) ? ':' : ',');
 				number = db_demand.getNumber();
 				sb.append(db_demand.getDemand().toPlainString());
 			}
