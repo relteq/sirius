@@ -231,10 +231,20 @@ public class ScenarioLoader {
 		Nodes db_node = new Nodes();
 		db_node.setNodeFamilies(db_nf);
 		db_node.setNetworks(db_network);
-		// TODO save node name, description, type, postmile, model
+		// TODO save node description, postmile, model
 		// TODO node.getPosition() -> db_node.setGeometry();
 		db_node.setGeometry("");
 		db_node.setDetailLevel(1);
+		if (null != node.getName()) {
+			NodeName db_nname = new NodeName();
+			db_nname.setName(node.getName());
+			db_node.addNodeName(db_nname, conn);
+		}
+		if (null != node.getType()) {
+			NodeType db_ntype = new NodeType();
+			db_ntype.setType(node.getType());
+			db_node.addNodeType(db_ntype, conn);
+		}
 		db_node.save(conn);
 		nodes.put(node.getId(), db_node);
 	}
@@ -261,6 +271,11 @@ public class ScenarioLoader {
 		db_link.setGeometry(null == link.getShape() ? "" : link.getShape());
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
+		if (null != link.getType()) {
+			LinkType db_ltype = new LinkType();
+			db_ltype.setType(link.getType());
+			db_link.addLinkType(db_ltype, conn);
+		}
 		if (null != link.getLanes()) {
 			LinkLanes db_llanes = new LinkLanes();
 			db_llanes.setLanes(link.getLanes());

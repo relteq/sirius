@@ -183,7 +183,25 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
 		node.setId(id2str(db_node.getNodeId()));
-		// TODO node.setName();
+		try {
+			@SuppressWarnings("unchecked")
+			List<NodeName> db_nname_l = db_node.getNodeNames();
+			if (0 < db_nname_l.size()) {
+				node.setName(db_nname_l.get(0).getName());
+				if (1 < db_nname_l.size())
+					SiriusErrorLog.addWarning("Node " + db_node.getNodeId() + " has " + db_nname_l.size() + " values for @name");
+			}
+			@SuppressWarnings("unchecked")
+			List<NodeType> db_ntype_l = db_node.getNodeTypes();
+			if (0 < db_ntype_l.size()) {
+				node.setType(db_ntype_l.get(0).getType());
+				if (1 < db_ntype_l.size())
+					SiriusErrorLog.addWarning("Node " + db_node.getNodeId() + " has " + db_ntype_l.size() + " values for @type");
+
+			}
+		} catch (TorqueException exc) {
+			SiriusErrorLog.addError(exc.getMessage());
+		}
 		// TODO node.setDescription();
 		// TODO node.setType();
 		// TODO db_node.getGeometry() -> node.setPosition();
@@ -271,13 +289,18 @@ public class ScenarioRestorer {
 				if (1 < db_llanes_l.size())
 					SiriusErrorLog.addWarning("Link " + db_link.getLinkId() + " has " + db_llanes_l.size() + " values for @lanes");
 			}
+			@SuppressWarnings("unchecked")
+			List<LinkType> db_ltype_l = db_link.getLinkTypes();
+			if (0 < db_ltype_l.size()) {
+				link.setType(db_ltype_l.get(0).getType());
+				if (1 < db_ltype_l.size())
+					SiriusErrorLog.addWarning("Link " + db_link.getLinkId() + " has " + db_ltype_l.size() + " values for @type");
+			}
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addError(exc.getMessage());
 		}
 		link.setLength(db_link.getLength());
-		com.relteq.sirius.jaxb.Dynamics dynamics = factory.createDynamics();
-		// TODO dynamics.setType();
-		link.setDynamics(dynamics);
+		// TODO link.setDynamics();
 		// TODO link.setLaneOffset();
 		if (null != db_link.getBeginNodeId()) {
 			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
