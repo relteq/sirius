@@ -31,7 +31,7 @@ public class ScenarioLoader {
 		return project_id;
 	}
 
-	private Long [] vehicle_type_id = null;
+	private VehicleTypes [] vehicle_type = null;
 	private Map<String, Long> network_id = null;
 	private Map<String, Nodes> nodes = null;
 	private Map<String, Links> links = null;
@@ -132,10 +132,10 @@ public class ScenarioLoader {
 			vtypes.getVehicleType().add(vt);
 		}
 		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
-		vehicle_type_id = new Long[vtlist.size()];
+		vehicle_type = new VehicleTypes[vtlist.size()];
 		int ind = 0;
 		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
-			vehicle_type_id[ind++] = save(vt, db_vts).getVehicleTypeId();
+			vehicle_type[ind++] = save(vt, db_vts);
 		return db_vts;
 	}
 
@@ -395,12 +395,13 @@ public class ScenarioLoader {
 		db_idsets.setProjectId(getProjectId());
 		db_idsets.setName(idset.getName());
 		db_idsets.setDescription(idset.getDescription());
+		// TODO if (null != idset.getVehicleTypeOrder()) ...;
 		for (com.relteq.sirius.simulator.InitialDensitySet.Tuple tuple :
 				((com.relteq.sirius.simulator.InitialDensitySet) idset).getData()) {
 			InitialDensities db_density = new InitialDensities();
 			db_density.setInitialDensitySets(db_idsets);
 			db_density.setLinkId(getDBLinkId(tuple.getLinkId()));
-			db_density.setVehicleTypeId(vehicle_type_id[tuple.getVehicleTypeIndex()]);
+			db_density.setVehicleTypes(vehicle_type[tuple.getVehicleTypeIndex()]);
 			db_density.setDensity(new BigDecimal(tuple.getDensity()));
 		}
 		db_idsets.save(conn);
@@ -442,7 +443,7 @@ public class ScenarioLoader {
 				db_wf.setWeavingFactorSets(db_wfset);
 				db_wf.setInLinkId(getDBLinkId(wf.getLinkIn()));
 				db_wf.setOutLinkId(getDBLinkId(wf.getLinkOut()));
-				db_wf.setVehicleTypeId(vehicle_type_id[i]);
+				db_wf.setVehicleTypes(vehicle_type[i]);
 				db_wf.setFactor(data[i]);
 				db_wf.save(conn);
 			}
@@ -495,7 +496,7 @@ public class ScenarioLoader {
 						db_sr.setInLinkId(getDBLinkId(sr.getLinkIn()));
 						db_sr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
 						// unique
-						db_sr.setVehicleTypeId(vehicle_type_id[vtn]);
+						db_sr.setVehicleTypes(vehicle_type[vtn]);
 						db_sr.setOrdinal(Integer.valueOf(t));
 						db_sr.setSplitRatio(data[t][vtn]);
 
@@ -577,6 +578,7 @@ public class ScenarioLoader {
 		db_dpset.setName(dpset.getName());
 		db_dpset.setDescription(dpset.getDescription());
 		db_dpset.save(conn);
+		// TODO if (null != dpset.getVehicleTypeOrder()) ...;
 		for (com.relteq.sirius.jaxb.DemandProfile dp : dpset.getDemandProfile())
 			save(dp, db_dpset);
 		return db_dpset;
@@ -607,7 +609,7 @@ public class ScenarioLoader {
 				for (int vtn = 0; vtn < data[t].length; ++vtn) {
 					Demands db_demand = new Demands();
 					db_demand.setDemandProfiles(db_dp);
-					db_demand.setVehicleTypeId(vehicle_type_id[vtn]);
+					db_demand.setVehicleTypes(vehicle_type[vtn]);
 					db_demand.setNumber(t);
 					db_demand.setDemand(data[t][vtn]);
 					db_demand.save(conn);

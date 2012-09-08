@@ -605,6 +605,9 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		</foreign-key>
 	</table>
 
 
@@ -644,6 +647,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
 		</foreign-key>
 	</table>
 
@@ -709,6 +715,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
 		</foreign-key>
 	</table>
 
@@ -827,6 +836,9 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="demand_profiles">
 			<reference local="demand_profile_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
 		</foreign-key>
 	</table>
 
