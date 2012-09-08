@@ -11,6 +11,7 @@ import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.om.*;
+import com.workingdogs.village.DataSetException;
 
 /**
  * Database output writer
@@ -27,7 +28,7 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	private Scenarios db_scenario = null;
 
-	private void createDataSource() throws TorqueException {
+	private void createDataSource() throws TorqueException, DataSetException {
 		Connection conn = null;
 		try {
 			conn = Transaction.begin();
@@ -40,11 +41,9 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ds.save(conn);
 
 			Criteria crit = new Criteria();
-			crit.addDescendingOrderByColumn(com.relteq.sirius.om.SimulationRunsPeer.RUN_NUMBER);
-			crit.setLimit(1);
-			@SuppressWarnings("unchecked")
-			List<com.relteq.sirius.om.SimulationRuns> db_sr_l = db_scenario.getSimulationRunss(crit);
-			final long run_number = db_sr_l.isEmpty() ? 1 : db_sr_l.get(0).getRunNumber() + 1;
+			crit.add(ScenariosPeer.ID, db_scenario.getId());
+			com.workingdogs.village.Value max_runnum = SimulationRunsPeer.maxColumnValue(SimulationRunsPeer.RUN_NUMBER, crit, conn);
+			final long run_number = null == max_runnum ? 1 : max_runnum.asLong() + 1;
 			logger.info("Run number: " + run_number);
 
 			com.relteq.sirius.om.SimulationRuns db_sr = new com.relteq.sirius.om.SimulationRuns();
@@ -94,6 +93,8 @@ public class DBOutputWriter extends OutputWriterBase {
 			createDataSource();
 			conn = Transaction.begin();
 		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		} catch (DataSetException exc) {
 			throw new SiriusException(exc);
 		}
 		ts = Calendar.getInstance();
