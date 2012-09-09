@@ -9,7 +9,6 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
 import com.relteq.sirius.om.Projects;
-import com.relteq.sirius.om.Users;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
@@ -60,12 +59,6 @@ public class Admin {
 		logger.info("Database tables created");
 
 		try {
-			Users db_users = new Users();
-			db_users.setId(Long.valueOf(0));
-			db_users.setName("root");
-			db_users.save();
-			logger.info("User 'root' [id=1] created");
-
 			Projects db_project = new Projects();
 			db_project.setId(Long.valueOf(0));
 			db_project.setName("default");

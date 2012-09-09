@@ -37,10 +37,10 @@ public class ScenarioLoader {
 	private Map<String, Links> links = null;
 
 	private Long getDBNodeId(String id) {
-		return nodes.get(id).getNodeId();
+		return nodes.get(id).getId();
 	}
 	private Long getDBLinkId(String id) {
-		return links.get(id).getLinkId();
+		return links.get(id).getId();
 	}
 
 	public ScenarioLoader() {
@@ -229,12 +229,15 @@ public class ScenarioLoader {
 		db_node.setNetworks(db_network);
 		// TODO save node description, postmile, model
 		// TODO node.getPosition() -> db_node.setGeometry();
-		db_node.setGeometry("");
+		db_node.setGeom("");
+		// TODO revise and uncomment
+		/*
 		if (null != node.getName()) {
 			NodeName db_nname = new NodeName();
 			db_nname.setName(node.getName());
 			db_node.addNodeName(db_nname, conn);
 		}
+		*/
 		if (null != node.getType()) {
 			NodeType db_ntype = new NodeType();
 			db_ntype.setType(node.getType());
@@ -259,11 +262,11 @@ public class ScenarioLoader {
 		Links db_link = new Links();
 		db_link.setLinkFamilies(db_lf);
 		db_link.setNetworks(db_network);
-		db_link.setBeginNodeId(getDBNodeId(link.getBegin().getNodeId()));
+		db_link.setBegNodeId(getDBNodeId(link.getBegin().getNodeId()));
 		db_link.setEndNodeId(getDBNodeId(link.getEnd().getNodeId()));
 		// TODO save link name, road name, description, type, model, display lane offset
 		// TODO revise: shape -> geometry
-		db_link.setGeometry(null == link.getShape() ? "" : link.getShape());
+		db_link.setGeom(null == link.getShape() ? "" : link.getShape());
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
 		if (null != link.getType()) {
@@ -494,7 +497,7 @@ public class ScenarioLoader {
 		SplitRatioProfiles db_srp = new SplitRatioProfiles();
 		db_srp.setSplitRatioProfileSets(db_srps);
 		Nodes db_node = nodes.get(srp.getNodeId());
-		db_srp.setNodeId(db_node.getNodeId());
+		db_srp.setNodeId(db_node.getId());
 		db_srp.setNetworkId(db_node.getNetworkId());
 		// TODO db_srp.setDestinationLinkId();
 		db_srp.setDt(srp.getDt());

@@ -7,21 +7,21 @@ import java.util.Date;
 public abstract class BaseObject extends org.apache.torque.om.BaseObject {
 	public void setCreated(Date date) {}
 	public void setModified(Date date) {}
-	public void setCreatedBy(Long user_id) {}
-	public void setModifiedBy(Long user_id) {}
+	public void setCreatedBy(String user_name) {}
+	public void setModifiedBy(String user_name) {}
 	public void setModstamp(Date v) {}
 
 	public Date getCreated() { return null; }
 
-	private final static Long default_user = Long.valueOf(0);
+	private final static String default_user = "admin";
 
-	private void create(Long user_id, Date date) {
+	private void create(String user_name, Date date) {
 		setCreated(date);
-		setCreatedBy(user_id);
-		modify(user_id, date);
+		setCreatedBy(user_name);
+		modify(user_name, date);
 	}
 
-	private void modify(Long user_id, Date date) {
+	private void modify(String user_id, Date date) {
 		setModified(date);
 		setModifiedBy(user_id);
 		setModstamp(date);

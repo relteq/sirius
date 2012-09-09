@@ -177,21 +177,24 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
-		node.setId(id2str(db_node.getNodeId()));
+		node.setId(id2str(db_node.getId()));
 		try {
+			// TODO revise and uncomment
+			/*
 			@SuppressWarnings("unchecked")
 			List<NodeName> db_nname_l = db_node.getNodeNames();
 			if (0 < db_nname_l.size()) {
 				node.setName(db_nname_l.get(0).getName());
 				if (1 < db_nname_l.size())
-					SiriusErrorLog.addWarning("Node " + db_node.getNodeId() + " has " + db_nname_l.size() + " values for @name");
+					SiriusErrorLog.addWarning("Node " + db_node.getId() + " has " + db_nname_l.size() + " values for @name");
 			}
+			*/
 			@SuppressWarnings("unchecked")
 			List<NodeType> db_ntype_l = db_node.getNodeTypes();
 			if (0 < db_ntype_l.size()) {
 				node.setType(db_ntype_l.get(0).getType());
 				if (1 < db_ntype_l.size())
-					SiriusErrorLog.addWarning("Node " + db_node.getNodeId() + " has " + db_ntype_l.size() + " values for @type");
+					SiriusErrorLog.addWarning("Node " + db_node.getId() + " has " + db_ntype_l.size() + " values for @type");
 
 			}
 		} catch (TorqueException exc) {
@@ -210,7 +213,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Inputs inputs = factory.createInputs();
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
-		crit.add(LinksPeer.END_NODE_ID, db_node.getNodeId());
+		crit.add(LinksPeer.END_NODE_ID, db_node.getId());
 		try {
 			@SuppressWarnings("unchecked")
 			List<Links> db_link_l = LinksPeer.doSelect(crit);
@@ -224,7 +227,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Input restoreInput(Links db_link) {
 		com.relteq.sirius.jaxb.Input input = factory.createInput();
-		input.setLinkId(id2str(db_link.getLinkId()));
+		input.setLinkId(id2str(db_link.getId()));
 		return input;
 	}
 
@@ -232,7 +235,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Outputs outputs = factory.createOutputs();
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
-		crit.add(LinksPeer.BEGIN_NODE_ID, db_node.getNodeId());
+		crit.add(LinksPeer.BEG_NODE_ID, db_node.getId());
 		try {
 			@SuppressWarnings("unchecked")
 			List<Links> db_link_l = LinksPeer.doSelect(crit);
@@ -246,7 +249,7 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Output restoreOutput(Links db_link) {
 		com.relteq.sirius.jaxb.Output output = factory.createOutput();
-		output.setLinkId(id2str(db_link.getLinkId()));
+		output.setLinkId(id2str(db_link.getId()));
 		return output;
 	}
 
@@ -269,27 +272,27 @@ public class ScenarioRestorer {
 
 	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
 		com.relteq.sirius.jaxb.Link link = factory.createLink();
-		link.setId(id2str(db_link.getLinkId()));
+		link.setId(id2str(db_link.getId()));
 		// TODO link.setName();
 		// TODO link.setRoadName();
 		// TODO link.setDescription();
 		// TODO link.setType();
 		// TODO revise: geometry -> shape
-		link.setShape(db_link.getGeometry());
+		link.setShape(db_link.getGeom());
 		try {
 			@SuppressWarnings("unchecked")
 			List<LinkLanes> db_llanes_l = db_link.getLinkLaness();
 			if (0 < db_llanes_l.size()) {
 				link.setLanes(db_llanes_l.get(0).getLanes());
 				if (1 < db_llanes_l.size())
-					SiriusErrorLog.addWarning("Link " + db_link.getLinkId() + " has " + db_llanes_l.size() + " values for @lanes");
+					SiriusErrorLog.addWarning("Link " + db_link.getId() + " has " + db_llanes_l.size() + " values for @lanes");
 			}
 			@SuppressWarnings("unchecked")
 			List<LinkType> db_ltype_l = db_link.getLinkTypes();
 			if (0 < db_ltype_l.size()) {
 				link.setType(db_ltype_l.get(0).getType());
 				if (1 < db_ltype_l.size())
-					SiriusErrorLog.addWarning("Link " + db_link.getLinkId() + " has " + db_ltype_l.size() + " values for @type");
+					SiriusErrorLog.addWarning("Link " + db_link.getId() + " has " + db_ltype_l.size() + " values for @type");
 			}
 		} catch (TorqueException exc) {
 			SiriusErrorLog.addError(exc.getMessage());
@@ -297,9 +300,9 @@ public class ScenarioRestorer {
 		link.setLength(db_link.getLength());
 		// TODO link.setDynamics();
 		// TODO link.setLaneOffset();
-		if (null != db_link.getBeginNodeId()) {
+		if (null != db_link.getBegNodeId()) {
 			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
-			begin.setNodeId(id2str(db_link.getBeginNodeId()));
+			begin.setNodeId(id2str(db_link.getBegNodeId()));
 			link.setBegin(begin);
 		}
 		if (null != db_link.getEndNodeId()) {
