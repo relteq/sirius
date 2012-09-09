@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario id="null" name="null" schemaVersion="1.0.19">
+<scenario id="null" name="null" schemaVersion="2.0.2">
   <settings>
     <units>US</units>
     <VehicleTypes>
@@ -98,14 +98,14 @@
         <point lat="37.857985471963" lng="-122.300827883184"/>
       </position>
       <NodeList>
-        <node id="-1" name="1" type="terminal">
+        <node id="-1" type="terminal">
           <outputs/>
           <inputs/>
           <position>
             <point lat="37.8399873791942" lng="-122.296725511551"/>
           </position>
         </node>
-        <node id="-2" name="2" type="simple">
+        <node id="-2" type="simple">
           <outputs>
             <output link_id="-2"/>
           </outputs>
@@ -116,7 +116,7 @@
             <point lat="37.8437831193107" lng="-122.297605276108"/>
           </position>
         </node>
-        <node id="-3" name="3" type="simple">
+        <node id="-3" type="simple">
           <outputs>
             <output link_id="-3"/>
           </outputs>
@@ -128,7 +128,7 @@
             <point lat="37.8524075346173" lng="-122.299579381943"/>
           </position>
         </node>
-        <node id="-4" name="4" type="simple">
+        <node id="-4" type="simple">
           <outputs>
             <output link_id="-4"/>
             <output link_id="-7"/>
@@ -140,7 +140,7 @@
             <point lat="37.8639002449351" lng="-122.302840411663"/>
           </position>
         </node>
-        <node id="-5" name="5" type="simple">
+        <node id="-5" type="simple">
           <outputs>
             <output link_id="-5"/>
           </outputs>
@@ -151,21 +151,21 @@
             <point lat="37.8713302695572" lng="-122.305008172989"/>
           </position>
         </node>
-        <node id="-6" name="6" type="terminal">
+        <node id="-6" type="terminal">
           <outputs/>
           <inputs/>
           <position>
             <point lat="37.8764455192813" lng="-122.306660413742"/>
           </position>
         </node>
-        <node id="-7" name="7" type="terminal">
+        <node id="-7" type="terminal">
           <outputs/>
           <inputs/>
           <position>
             <point lat="37.8490527738834" lng="-122.296017408371"/>
           </position>
         </node>
-        <node id="-8" name="8" type="terminal">
+        <node id="-8" type="terminal">
           <outputs/>
           <inputs/>
           <position>
@@ -174,46 +174,57 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="0.266743692783592" name="1" record="true" road_name="I-80 E" type="freeway">
-          <description/>
+        <link id="-1" lanes="1" length="0.266743692783592" type="freeway">
           <begin node_id="-1"/>
           <end node_id="-2"/>
+          <roads>
+            <road name="I-80 E"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
-        <link id="-2" lanes="1" length="0.606473482246043" name="2" record="true" road_name="I-80 E" type="freeway">
-          <description/>
+        <link id="-2" lanes="1" length="0.606473482246043" type="freeway">
           <begin node_id="-2"/>
           <end node_id="-3"/>
+          <roads>
+            <road name="I-80 E"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
-        <link id="-3" lanes="1" length="0.814669238313652" name="3" record="true" road_name="I-80 E" type="freeway">
-          <description/>
+        <link id="-3" lanes="1" length="0.814669238313652" type="freeway">
           <begin node_id="-3"/>
           <end node_id="-4"/>
+          <roads>
+            <road name="I-80 E"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
-        <link id="-4" lanes="1" length="0.527494326813265" name="4" record="true" road_name="I-80 E" type="freeway">
-          <description/>
+        <link id="-4" lanes="1" length="0.527494326813265" type="freeway">
           <begin node_id="-4"/>
           <end node_id="-5"/>
+          <roads>
+            <road name="I-80 E"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
-        <link id="-5" lanes="1" length="0.364901146966108" name="5" record="true" road_name="I-80 E" type="freeway">
-          <description/>
+        <link id="-5" lanes="1" length="0.364901146966108" type="freeway">
           <begin node_id="-5"/>
           <end node_id="-6"/>
+          <roads>
+            <road name="I-80 E"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
-        <link id="-6" lanes="1" length="0.372088439716414" name="6" record="true" road_name="null" type="onramp">
-          <description/>
+        <link id="-6" lanes="1" length="0.372088439716414" type="onramp">
           <begin node_id="-7"/>
           <end node_id="-3"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-7" lanes="1" length="0.239126877222358" name="7" record="true" road_name="University Ave" type="offramp">
-          <description/>
+        <link id="-7" lanes="1" length="0.239126877222358" type="offramp">
           <begin node_id="-4"/>
           <end node_id="-8"/>
+          <roads>
+            <road name="University Ave"/>
+          </roads>
           <dynamics type="CTM"/>
         </link>
       </LinkList>
