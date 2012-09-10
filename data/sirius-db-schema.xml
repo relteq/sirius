@@ -50,7 +50,7 @@
 
 
 	
-	<table name="networks">
+	<table name="networks" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="is_master" domain="BOOL" description="This parameter is used only in the context of large system where maps are imported from Navteq or OSM."/>
 		<column name="name" domain="NAME_BUF"/>
@@ -68,7 +68,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_families">
+	<table name="node_families" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 
@@ -154,7 +154,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_families">
+	<table name="link_families" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 
@@ -295,7 +295,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="network_connection_sets">
+	<table name="network_connection_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -421,7 +421,7 @@
 
 	<!-- Vehicle Types -->
 
-	<table name="vehicle_type_sets">
+	<table name="vehicle_type_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
@@ -434,7 +434,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="vehicle_types">
+	<table name="vehicle_types" idMethod="native">
 		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
 		<column name="project_id" primaryKey="true" domain="ID"/>
 		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
@@ -466,7 +466,7 @@
 	
 	<!-- Initial Conditions -->
 
-	<table name="initial_density_sets">
+	<table name="initial_density_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -506,7 +506,7 @@
 
 	<!-- Weaving -->
 
-	<table name="weaving_factor_sets">
+	<table name="weaving_factor_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -546,7 +546,7 @@
 
 	<!-- Split Ratios -->
 
-	<table name="split_ratio_profile_sets">
+	<table name="split_ratio_profile_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -558,7 +558,7 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
-	<table name="split_ratio_profiles">
+	<table name="split_ratio_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="split_ratio_profile_set_id" primaryKey="true" domain="ID"/>
 		<column name="node_id" primaryKey="true" domain="ID"/>
@@ -611,7 +611,7 @@
 
 	<!-- Fundamental Diagrams -->
 
-	<table name="fundamental_diagram_profile_sets">
+	<table name="fundamental_diagram_profile_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -626,7 +626,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="fundamental_diagram_profiles">
+	<table name="fundamental_diagram_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="fundamental_diagram_profile_set_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
@@ -671,7 +671,7 @@
 
 	<!-- Demands -->
 
-	<table name="demand_profile_sets">
+	<table name="demand_profile_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -686,7 +686,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="demand_profiles">
+	<table name="demand_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="demand_profile_set_id" required="true" domain="ID"/>
 		<column name="origin_link_id" required="true" domain="ID"/>
@@ -730,7 +730,7 @@
 
 	<!-- Downstream Boundary Capacities -->
 	
-	<table name="downstream_boundary_capacity_profile_sets">
+	<table name="downstream_boundary_capacity_profile_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -745,7 +745,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="downstream_boundary_capacity_profiles">
+	<table name="downstream_boundary_capacity_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="ID"/>
 		<column name="link_id" required="true" domain="ID"/>
@@ -781,7 +781,7 @@
 
 	<!-- Sensors -->
 
-	<table name="sensor_sets">
+	<table name="sensor_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -823,7 +823,7 @@
 
 	<!-- Signals -->
 
-	<table name="signal_sets">
+	<table name="signal_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -838,7 +838,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="signals">
+	<table name="signals" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="node_id" required="true" domain="ID"/>
 		<column name="signal_set_id" required="true" domain="ID"/>
@@ -1227,7 +1227,7 @@
 
 	<!-- Simulation Data -->
 
-	<table name="data_sources">
+	<table name="data_sources" idMethod="none">
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 	
