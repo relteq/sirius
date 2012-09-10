@@ -3,6 +3,7 @@ package com.relteq.sirius.sensor;
 
 import java.util.ArrayList;
 
+import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
 import com.relteq.sirius.simulator.Scenario;
@@ -12,24 +13,16 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	
 	private int VDS;								// PeMS vehicle detector station number
 	private ArrayList<com.relteq.sirius.sensor.DataSource> _datasources = new ArrayList<com.relteq.sirius.sensor.DataSource>();
+	private FiveMinuteData data;
 	
-	// nominal values
-	private static float nom_vf = 65;				// [mph]
-	private static float nom_w = 15;				// [mph]
-	private static float nom_q_max = 2000;			// [veh/hr/lane]
-
-	private float vf;
-	private float w;
-	private float q_max;
-	
+	private Double [] cumulative_inflow;	// [veh] 	numEnsemble
+	private Double [] cumulative_outflow;	// [veh] 	numEnsemble
+	       
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
 	public  SensorLoopStation(){
-		vf = SensorLoopStation.nom_vf;
-		w  = SensorLoopStation.nom_w;
-		q_max = SensorLoopStation.nom_q_max;
 	}
 
 	public SensorLoopStation(Scenario myScenario,String linkId){
@@ -63,22 +56,33 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 				}
 			}
 		}
-		
 	}
 	
 	@Override
 	public void validate() {
 		if(myLink==null)
-			SiriusErrorLog.addError("Unknown link reference for sensor id=" + getId() +".");
+			SiriusErrorLog.addWarning("Unknown link reference for sensor id=" + getId() +".");
 	}
 
 	@Override
 	public void reset() {
+		cumulative_inflow = new Double [myScenario.getNumEnsemble()];
+		cumulative_outflow = new Double [myScenario.getNumEnsemble()];
+		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
+			cumulative_inflow[i] = 0d;
+			cumulative_outflow[i] = 0d;
+		}
 		return;
 	}
 
 	@Override
-	public void update() {
+	public void update() {		
+		if(myLink==null)
+			return;
+		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
+			cumulative_inflow[i] += myLink.getTotalInlowInVeh(i);
+			cumulative_outflow[i] += myLink.getTotalOutflowInVeh(i);
+		}
 		return;
 	}
 
@@ -117,50 +121,93 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return myLink.computeSpeedInMPH(ensemble);
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// SensorLoopStation API
 	/////////////////////////////////////////////////////////////////////
 
+	public double getCumulativeInflowInVeh(int ensemble){
+		return cumulative_inflow[ensemble];
+	}
+
+	public void resetCumulativeInflowInVeh(){
+		for(int i=0;i<myScenario.getNumEnsemble();i++)
+			cumulative_inflow[i] = 0d;
+	}
+	
+	public double getCumulativeOutflowInVeh(int ensemble){
+		return cumulative_outflow[ensemble];
+	}
+
+	public void resetCumulativeOutflowInVeh(){
+		for(int i=0;i<myScenario.getNumEnsemble();i++)
+			cumulative_outflow[i] = 0d;
+	}
+	
 	public int getVDS() {
 		return VDS;
 	}
 
-	
 	public ArrayList<com.relteq.sirius.sensor.DataSource> get_datasources() {
 		return _datasources;
 	}
-
-	public void setFD(float vf,float w,float q_max){
-		if(!Float.isNaN(vf))
-			this.vf = vf;
-		if(!Float.isNaN(w))
-			this.w = w;
-		if(!Float.isNaN(q_max))
-			this.q_max = q_max;
-	}
-
 	
-	public float getVf() {
-		return vf;
-	}
-
+	/////////////////////////////////////////////////////////////////////
+	// data
+	/////////////////////////////////////////////////////////////////////
 	
-	public float getW() {
-		return w;
+	public void set5minData(FiveMinuteData indata){
+		data = indata;
 	}
-
 	
-	public float getQ_max() {
-		return q_max;
+	public int getNumDataPoints(){
+		return data==null ? 0 : data.getNumDataPoints();
+	}
+	
+	public ArrayList<Long> getDataTime(){
+		return data==null ? null : data.getTime();
 	}
 
-	public float getRho_crit() {
-		return q_max/vf;
+	/** get aggregate flow vlaue in [veh/hr]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggFlwInVPH(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPH(i);
 	}
 
-	public float getRho_jam() {
-		return q_max*(1/vf+1/w);
+	/** get aggregate flow vlaue in [veh/hr/lane]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggFlwInVPHPL(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPHPL(i);
 	}
+	
+	/** get aggregate speed value in [mph]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggSpdInMPH(int i){
+		return data==null ? Float.NaN : data.getAggSpd(i);
+
+	}	
+
+	/** get aggregate density value in [veh/mile]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggDtyInVPM(int i){
+		return data==null ? Float.NaN : data.getAggDtyInVPM(i);
+	}
+
+	/** get aggregate density value in [veh/mile]
+	 * @param time index
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
+	public float getDataAggDtyInVPMPL(int i){
+		return data==null ? Float.NaN : data.getAggDtyInVPMPL(i);
+	}
+
+	//////////////////////////////
 	
 }

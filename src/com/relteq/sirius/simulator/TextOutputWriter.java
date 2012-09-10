@@ -38,7 +38,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 			out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
 			out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
 		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc.getMessage());
+			throw new SiriusException(exc);
 		}
 	}
 
@@ -66,30 +66,30 @@ public final class TextOutputWriter extends OutputWriterBase {
 				for(int i=0;i<n-1;i++){
 					link = (Link) links.get(i);
 					numbers = SiriusMath.times(link.cumulative_density[0],invsteps);
-					out_density.write(format(numbers,":")+TextOutputWriter.delim);
+					out_density.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
 					if(exportflows){
 						numbers = SiriusMath.times(link.cumulative_outflow[0],invsteps);
-						out_outflow.write(format(numbers,":")+TextOutputWriter.delim);
+						out_outflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
 						numbers = SiriusMath.times(link.cumulative_inflow[0],invsteps);
-						out_inflow.write(format(numbers,":")+TextOutputWriter.delim);
+						out_inflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
 					}
 					link.reset_cumulative();
 				}
 				
 				link = (Link) links.get(n-1);
 				numbers = SiriusMath.times(link.cumulative_density[0],invsteps);
-				out_density.write(format(numbers,":")+"\n");
+				out_density.write(SiriusFormatter.csv(numbers,":")+"\n");
 				if(exportflows){
 					numbers = SiriusMath.times(link.cumulative_outflow[0],invsteps);
-					out_outflow.write(format(numbers,":")+"\n");
+					out_outflow.write(SiriusFormatter.csv(numbers,":")+"\n");
 					numbers = SiriusMath.times(link.cumulative_inflow[0],invsteps);
-					out_inflow.write(format(numbers,":")+"\n");
+					out_inflow.write(SiriusFormatter.csv(numbers,":")+"\n");
 				}
 				link.reset_cumulative();	
 			}
 			
 		} catch (IOException e) {
-			throw new SiriusException(e.getMessage());
+			throw new SiriusException(e);
 		}
 	}
 
@@ -106,16 +106,6 @@ public final class TextOutputWriter extends OutputWriterBase {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	protected String format(Double [] V,String delim){
-		String str="";
-		if(V.length==0)
-			return str;
-		for(int i=0;i<V.length-1;i++)
-			str += V[i] + delim;
-		str += V[V.length-1];
-		return str;
 	}
 
 }

@@ -1,0 +1,2263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns:aurora="http://path.berkeley.edu/aurora" id="null" name="New Scenario" schemaVersion="1.0.20">
+   <network dt="300" id="-1" ml_control="false" name="New Network" q_control="false">
+      <description>Created by Network Editor version xsd-1.0.20-53-g63cb19d</description>
+      <position>
+         <point lat="37.5510900463355" lng="-122.126944363117"/>
+      </position>
+      <MonitorList/>
+      <NetworkList/>
+      <NodeList>
+         <node id="-1" name="Node -1" type="F">
+            <outputs>
+               <output link_id="-1"/>
+            </outputs>
+            <inputs/>
+            <position>
+               <point lat="37.7687480140227" lng="-122.407645583153"/>
+            </position>
+         </node>
+         <node id="-2" name="Node -2" type="F">
+            <outputs/>
+            <inputs>
+               <input link_id="-1">
+                  <weavingfactors/>
+               </input>
+            </inputs>
+            <position>
+               <point lat="37.3334320786483" lng="-121.846243143082"/>
+            </position>
+         </node>
+      </NodeList>
+      <LinkList>
+         <link id="-1" lanes="4" length="48.8647718365611" name="-1 -&gt; -2" record="false" road_name="US-101 S" type="FW">
+            <description/>
+            <begin node_id="-1"/>
+            <end node_id="-2"/>
+            <fd densityCritical="30" densityJam="150" flowMax="1800"/>
+            <dynamics type="CTM"/>
+            <qmax>100</qmax>
+         </link>
+      </LinkList>
+      <SignalList/>
+      <ODList/>
+      <SensorList>
+         <sensor id="-1" link_type="FW" type="loop">
+            <description>valencia street</description>
+            <position>
+               <point lat="37.769613" lng="-122.416876"/>
+            </position>
+            <display_position>
+               <point lat="37.7703865412137" lng="-122.416682614697"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="2"/>
+               <parameter name="length" value="2.52"/>
+               <parameter name="vds" value="401820"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="434.179"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401820"/>
+            </parameters>
+            <links>-1</links>
+         </sensor>
+         <sensor id="-2" link_type="FW" type="loop">
+            <description>13th/ South van Ness</description>
+            <position>
+               <point lat="37.769586" lng="-122.416414"/>
+            </position>
+            <display_position>
+               <point lat="37.7702762470961" lng="-122.416241438226"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="2"/>
+               <parameter name="length" value="0.25"/>
+               <parameter name="vds" value="401405"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="434.139"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401405"/>
+            </parameters>
+            <links>-1</links>
+         </sensor>
+         <sensor id="-3" link_type="FW" type="loop">
+            <description>11th street/bryant street</description>
+            <position>
+               <point lat="37.76935" lng="-122.411093"/>
+            </position>
+            <display_position>
+               <point lat="37.7690103647432" lng="-122.411177908814"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="3"/>
+               <parameter name="length" value="0.754"/>
+               <parameter name="vds" value="401241"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="433.679"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401241"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-4" link_type="FW" type="loop">
+            <description>15th Street/Vermont</description>
+            <position>
+               <point lat="37.762943" lng="-122.405434"/>
+            </position>
+            <display_position>
+               <point lat="37.763135739387" lng="-122.405966327831"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.774"/>
+               <parameter name="vds" value="401231"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="432.63"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401231"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources>
+               <source dt="1" format="" url=""/>
+            </data_sources>
+         </sensor>
+         <sensor id="-5" link_type="FW" type="loop">
+            <description>WB I-80</description>
+            <position>
+               <point lat="37.75869" lng="-122.405643"/>
+            </position>
+            <display_position>
+               <point lat="37.7582517229449" lng="-122.406117800143"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.385"/>
+               <parameter name="vds" value="401408"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="432.13"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401408"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-6" link_type="FW" type="loop">
+            <description>10th St./Army St-3</description>
+            <position>
+               <point lat="37.75671" lng="-122.403619"/>
+            </position>
+            <display_position>
+               <point lat="37.7565476776575" lng="-122.404091210451"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.25"/>
+               <parameter name="vds" value="401410"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="431.86"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401410"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-7" link_type="FW" type="loop">
+            <description>25th St</description>
+            <position>
+               <point lat="37.753591" lng="-122.403092"/>
+            </position>
+            <display_position>
+               <point lat="37.7535371018919" lng="-122.403651425191"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.46"/>
+               <parameter name="vds" value="400043"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="431.63"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400043"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-8" link_type="FW" type="loop">
+            <description>faith street</description>
+            <position>
+               <point lat="37.744018" lng="-122.405853"/>
+            </position>
+            <display_position>
+               <point lat="37.7443366765781" lng="-122.406301138938"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.7"/>
+               <parameter name="vds" value="401285"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="430.94"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401285"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-9" link_type="FW" type="loop">
+            <description>On Bayshore Blvd between Silver</description>
+            <position>
+               <point lat="37.734313" lng="-122.406375"/>
+            </position>
+            <display_position>
+               <point lat="37.7339980724417" lng="-122.406878884093"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.755"/>
+               <parameter name="vds" value="401935"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="430.23"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401935"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-10" link_type="FW" type="loop">
+            <description>Harney Way</description>
+            <position>
+               <point lat="37.723512" lng="-122.401258"/>
+            </position>
+            <display_position>
+               <point lat="37.7232769078365" lng="-122.401853199892"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.625"/>
+               <parameter name="vds" value="401357"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="429.43"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401357"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources>
+               <source dt="1" format="" url=""/>
+            </data_sources>
+         </sensor>
+         <sensor id="-11" link_type="FW" type="loop">
+            <description>Harney Way Off/On-1</description>
+            <position>
+               <point lat="37.717182" lng="-122.399154"/>
+            </position>
+            <display_position>
+               <point lat="37.7170032843184" lng="-122.399795372166"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.874"/>
+               <parameter name="vds" value="401454"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="428.98"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401454"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-12" link_type="FW" type="loop">
+            <description>Harney Way</description>
+            <position>
+               <point lat="37.703072" lng="-122.393983"/>
+            </position>
+            <display_position>
+               <point lat="37.702946224527" lng="-122.394544652543"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.468"/>
+               <parameter name="vds" value="400260"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="427.953"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400260"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-13" link_type="FW" type="loop">
+            <description>Harney Way- Marina Blvd Pkwy/Mar</description>
+            <position>
+               <point lat="37.700511" lng="-122.393392"/>
+            </position>
+            <display_position>
+               <point lat="37.7003814939855" lng="-122.393970311341"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.33"/>
+               <parameter name="vds" value="401501"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="427.773"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401501"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-14" link_type="FW" type="loop">
+            <description>Harney Way- Marina Blvd Pkwy/Mar</description>
+            <position>
+               <point lat="37.693677" lng="-122.391827"/>
+            </position>
+            <display_position>
+               <point lat="37.6935401144128" lng="-122.39243826495"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.37"/>
+               <parameter name="vds" value="401462"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="427.293"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401462"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-15" link_type="FW" type="loop">
+            <description>Sierra Pt Pkwy/ Marina Blvd</description>
+            <position>
+               <point lat="37.689976" lng="-122.390983"/>
+            </position>
+            <display_position>
+               <point lat="37.6898362963203" lng="-122.391598324072"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.77"/>
+               <parameter name="vds" value="400744"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="427.033"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400744"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-16" link_type="FW" type="loop">
+            <description>Sierra Pt Pkwy/Marina Blvd -Old</description>
+            <position>
+               <point lat="37.672034" lng="-122.391057"/>
+            </position>
+            <display_position>
+               <point lat="37.6723760877318" lng="-122.391542206069"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.855"/>
+               <parameter name="vds" value="400781"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="425.753"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400781"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-17" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.666959" lng="-122.395578"/>
+            </position>
+            <display_position>
+               <point lat="37.6673896790935" lng="-122.39602220828"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.325"/>
+               <parameter name="vds" value="402392"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="425.323"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402392"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-18" link_type="FW" type="loop">
+            <description>Oyster Point Blvd</description>
+            <position>
+               <point lat="37.664501" lng="-122.398123"/>
+            </position>
+            <display_position>
+               <point lat="37.6650441058684" lng="-122.398524062795"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.65"/>
+               <parameter name="vds" value="401451"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="425.103"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401451"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-19" link_type="FW" type="loop">
+            <description>Industrial Way</description>
+            <position>
+               <point lat="37.651581" lng="-122.406957"/>
+            </position>
+            <display_position>
+               <point lat="37.6515302252189" lng="-122.407596762241"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.765"/>
+               <parameter name="vds" value="401523"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="424.023"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401523"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-20" link_type="FW" type="loop">
+            <description>S Airport Blvd</description>
+            <position>
+               <point lat="37.645048" lng="-122.406433"/>
+            </position>
+            <display_position>
+               <point lat="37.6449961424826" lng="-122.4070515861"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.505"/>
+               <parameter name="vds" value="400766"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="423.573"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400766"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-21" link_type="FW" type="loop">
+            <description>I-380</description>
+            <position>
+               <point lat="37.63711" lng="-122.404362"/>
+            </position>
+            <display_position>
+               <point lat="37.6367862308611" lng="-122.404948593499"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.355"/>
+               <parameter name="vds" value="400886"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="423.013"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400886"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-22" link_type="FW" type="loop">
+            <description>San Bruno Ave (South San Francis</description>
+            <position>
+               <point lat="37.63503" lng="-122.403511"/>
+            </position>
+            <display_position>
+               <point lat="37.6348110872263" lng="-122.404063494143"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.13"/>
+               <parameter name="vds" value="400763"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="422.863"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400763"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-23" link_type="FW" type="loop">
+            <description>San Bruno Ave - I-380-1</description>
+            <position>
+               <point lat="37.633443" lng="-122.403124"/>
+            </position>
+            <display_position>
+               <point lat="37.6333764828915" lng="-122.403694837731"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.4"/>
+               <parameter name="vds" value="400116"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="422.753"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400116"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-24" link_type="FW" type="loop">
+            <description>S.F.Airportsan Bruno Ave - 4</description>
+            <position>
+               <point lat="37.623521" lng="-122.40095"/>
+            </position>
+            <display_position>
+               <point lat="37.6233098269104" lng="-122.401568381413"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.45"/>
+               <parameter name="vds" value="400340"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="422.063"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400340"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-25" link_type="FW" type="loop">
+            <description>WB I-380</description>
+            <position>
+               <point lat="37.620575" lng="-122.399975"/>
+            </position>
+            <display_position>
+               <point lat="37.620373319566" lng="-122.400565583923"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.195"/>
+               <parameter name="vds" value="400977"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.853"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400977"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-26" link_type="FW" type="loop">
+            <description>I-380 To Airport Blvd</description>
+            <position>
+               <point lat="37.618053" lng="-122.399121"/>
+            </position>
+            <display_position>
+               <point lat="37.6178535356046" lng="-122.399705094663"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.13"/>
+               <parameter name="vds" value="400784"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.673"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400784"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-27" link_type="FW" type="loop">
+            <description>I-380 To Airport Blvd -S.F. Airp</description>
+            <position>
+               <point lat="37.616934" lng="-122.398733"/>
+            </position>
+            <display_position>
+               <point lat="37.6167327406882" lng="-122.399322350745"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.1"/>
+               <parameter name="vds" value="400484"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.593"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400484"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-28" link_type="FW" type="loop">
+            <description>I-380 To Airport Blvd -S.F. Airp</description>
+            <position>
+               <point lat="37.615306" lng="-122.39797"/>
+            </position>
+            <display_position>
+               <point lat="37.6150040526806" lng="-122.398564154403"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="6"/>
+               <parameter name="length" value="0.135"/>
+               <parameter name="vds" value="400991"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.473"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400991"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-29" link_type="FW" type="loop">
+            <description>sb101 near SFO interchnage</description>
+            <position>
+               <point lat="37.613439" lng="-122.396584"/>
+            </position>
+            <display_position>
+               <point lat="37.6130044806924" lng="-122.39707777194"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.1"/>
+               <parameter name="vds" value="401515"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.323"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401515"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-30" link_type="FW" type="loop">
+            <description>I-380 To Airport Blvd -S.F. Airp</description>
+            <position>
+               <point lat="37.61287" lng="-122.39602"/>
+            </position>
+            <display_position>
+               <point lat="37.6123948694815" lng="-122.396460258554"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="6"/>
+               <parameter name="length" value="0.26"/>
+               <parameter name="vds" value="400657"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="421.273"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400657"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-31" link_type="FW" type="loop">
+            <description>Geo</description>
+            <position>
+               <point lat="37.608375" lng="-122.389578"/>
+            </position>
+            <display_position>
+               <point lat="37.6078609402706" lng="-122.38991525884"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="6"/>
+               <parameter name="length" value="0.53"/>
+               <parameter name="vds" value="400568"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="420.803"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400568"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-32" link_type="FW" type="loop">
+            <description>N of Millbrae Ave rm-n-Loop</description>
+            <position>
+               <point lat="37.60296" lng="-122.381221"/>
+            </position>
+            <display_position>
+               <point lat="37.6024556405892" lng="-122.381545863079"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.325"/>
+               <parameter name="vds" value="401631"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="420.213"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401631"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-33" link_type="FW" type="loop">
+            <description>S of Millbrae Ave rm-s-diag</description>
+            <position>
+               <point lat="37.602406" lng="-122.380374"/>
+            </position>
+            <display_position>
+               <point lat="37.6019101802069" lng="-122.380699491111"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="2.53"/>
+               <parameter name="vds" value="401634"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="420.153"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401634"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-34" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.561364" lng="-122.303829"/>
+            </position>
+            <display_position>
+               <point lat="37.5609148165671" lng="-122.304261339054"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="2.75"/>
+               <parameter name="vds" value="402388"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="414.823"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402388"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-35" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.555574" lng="-122.298369"/>
+            </position>
+            <display_position>
+               <point lat="37.5551566571017" lng="-122.29881575467"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.475"/>
+               <parameter name="vds" value="402386"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="414.323"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402386"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-36" link_type="FW" type="loop">
+            <description>Lane Add</description>
+            <position>
+               <point lat="37.550384" lng="-122.293465"/>
+            </position>
+            <display_position>
+               <point lat="37.5499388815807" lng="-122.29394148764"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.24"/>
+               <parameter name="vds" value="400531"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="413.873"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400531"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-37" link_type="FW" type="loop">
+            <description>Lane Drop</description>
+            <position>
+               <point lat="37.550027" lng="-122.293152"/>
+            </position>
+            <display_position>
+               <point lat="37.5495921064422" lng="-122.293617542192"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.15"/>
+               <parameter name="vds" value="400884"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="413.843"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400884"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-38" link_type="FW" type="loop">
+            <description>E Hillsdale Blvd</description>
+            <position>
+               <point lat="37.546868" lng="-122.290231"/>
+            </position>
+            <display_position>
+               <point lat="37.5464186384926" lng="-122.290699898964"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.275"/>
+               <parameter name="vds" value="400272"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="413.573"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400272"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-39" link_type="FW" type="loop">
+            <description>E Hillsdale Blvd</description>
+            <position>
+               <point lat="37.543613" lng="-122.287169"/>
+            </position>
+            <display_position>
+               <point lat="37.5432212279283" lng="-122.287676376945"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.145"/>
+               <parameter name="vds" value="401446"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="413.293"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401446"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-40" link_type="FW" type="loop">
+            <description>E Hillsdale Blvd</description>
+            <position>
+               <point lat="37.543495" lng="-122.287061"/>
+            </position>
+            <display_position>
+               <point lat="37.5430950594882" lng="-122.287578955745"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.335"/>
+               <parameter name="vds" value="401439"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="413.283"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401439"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-41" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.535766" lng="-122.279937"/>
+            </position>
+            <display_position>
+               <point lat="37.535312422597" lng="-122.280410826394"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.73"/>
+               <parameter name="vds" value="402384"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="412.623"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402384"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-42" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.526779" lng="-122.27078"/>
+            </position>
+            <display_position>
+               <point lat="37.526293098281" lng="-122.271205838868"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.635"/>
+               <parameter name="vds" value="402382"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="411.823"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402382"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-43" link_type="FW" type="loop">
+            <description>Harbor Blvd. Collector</description>
+            <position>
+               <point lat="37.521724" lng="-122.265071"/>
+            </position>
+            <display_position>
+               <point lat="37.5212897445025" lng="-122.26544296475"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.41"/>
+               <parameter name="vds" value="401831"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="411.353"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401831"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-44" link_type="FW" type="loop">
+            <description>N of Holly St</description>
+            <position>
+               <point lat="37.517958" lng="-122.26082"/>
+            </position>
+            <display_position>
+               <point lat="37.5175190601248" lng="-122.261203494838"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.36"/>
+               <parameter name="vds" value="401870"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="411.003"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401870"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-45" link_type="FW" type="loop">
+            <description>N of Holly St</description>
+            <position>
+               <point lat="37.513987" lng="-122.256314"/>
+            </position>
+            <display_position>
+               <point lat="37.5135078041808" lng="-122.256738543268"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.22"/>
+               <parameter name="vds" value="401868"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="410.633"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401868"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-46" link_type="FW" type="loop">
+            <description>S of Holly St</description>
+            <position>
+               <point lat="37.51324" lng="-122.255458"/>
+            </position>
+            <display_position>
+               <point lat="37.512754432574" lng="-122.25588818819"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.255"/>
+               <parameter name="vds" value="401883"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="410.563"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401883"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-47" link_type="FW" type="loop">
+            <description>Brittan Ave behind fence: rm-s-d</description>
+            <position>
+               <point lat="37.5085" lng="-122.250123"/>
+            </position>
+            <display_position>
+               <point lat="37.5080219734341" lng="-122.250546507369"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.385"/>
+               <parameter name="vds" value="401651"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="410.123"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401651"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-48" link_type="FW" type="loop">
+            <description>on/off to Brittan Ave rm-s-diag</description>
+            <position>
+               <point lat="37.504928" lng="-122.246148"/>
+            </position>
+            <display_position>
+               <point lat="37.5044781827394" lng="-122.246546515351"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.635"/>
+               <parameter name="vds" value="401928"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="409.793"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401928"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-49" link_type="FW" type="loop">
+            <description>N of Whipple Ave</description>
+            <position>
+               <point lat="37.496279" lng="-122.233258"/>
+            </position>
+            <display_position>
+               <point lat="37.4956979798903" lng="-122.233427911763"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.485"/>
+               <parameter name="vds" value="401861"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="408.853"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401861"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-50" link_type="FW" type="loop">
+            <description>N of Whipple Ave rm-s-diag</description>
+            <position>
+               <point lat="37.496134" lng="-122.232743"/>
+            </position>
+            <display_position>
+               <point lat="37.4955478164247" lng="-122.232914421751"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.425"/>
+               <parameter name="vds" value="401860"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="408.823"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401860"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-51" link_type="FW" type="loop">
+            <description>N of Seaport Blvd rm-n-diag</description>
+            <position>
+               <point lat="37.491361" lng="-122.219254"/>
+            </position>
+            <display_position>
+               <point lat="37.4908194086042" lng="-122.219490415074"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.465"/>
+               <parameter name="vds" value="401876"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="408.003"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401876"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-52" link_type="FW" type="loop">
+            <description>Woodside/Seaport Blvd collector</description>
+            <position>
+               <point lat="37.490595" lng="-122.217518"/>
+            </position>
+            <display_position>
+               <point lat="37.4900602983393" lng="-122.217751407572"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.455"/>
+               <parameter name="vds" value="401837"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="407.893"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401837"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-53" link_type="FW" type="loop">
+            <description>S of Woodside Rd</description>
+            <position>
+               <point lat="37.487195" lng="-122.203699"/>
+            </position>
+            <display_position>
+               <point lat="37.4865855717674" lng="-122.203770589461"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.825"/>
+               <parameter name="vds" value="401875"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="407.093"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401875"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-54" link_type="FW" type="loop">
+            <description>WB Marsh to SB101 loop rm-s-loop</description>
+            <position>
+               <point lat="37.485259" lng="-122.188331"/>
+            </position>
+            <display_position>
+               <point lat="37.4846467335979" lng="-122.188418990381"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.57"/>
+               <parameter name="vds" value="401649"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="406.243"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401649"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-55" link_type="FW" type="loop">
+            <description>800' N of Marsh Rd</description>
+            <position>
+               <point lat="37.484087" lng="-122.183239"/>
+            </position>
+            <display_position>
+               <point lat="37.4834852693714" lng="-122.183423879555"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.25"/>
+               <parameter name="vds" value="401873"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="405.953"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401873"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-56" link_type="FW" type="loop">
+            <description>Marsh Rd rm-s-diag</description>
+            <position>
+               <point lat="37.482866" lng="-122.179725"/>
+            </position>
+            <display_position>
+               <point lat="37.4822996076362" lng="-122.179950056568"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.265"/>
+               <parameter name="vds" value="401913"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="405.743"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401913"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-57" link_type="FW" type="loop">
+            <description>Marsh Rd</description>
+            <position>
+               <point lat="37.480254" lng="-122.174886"/>
+            </position>
+            <display_position>
+               <point lat="37.4797671211877" lng="-122.175168224667"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.485"/>
+               <parameter name="vds" value="400783"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="405.423"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400783"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-58" link_type="FW" type="loop">
+            <description>Marsh Rd-Sr 84-1</description>
+            <position>
+               <point lat="37.474668" lng="-122.165291"/>
+            </position>
+            <display_position>
+               <point lat="37.4741260191034" lng="-122.165605299424"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.615"/>
+               <parameter name="vds" value="401467"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="404.773"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401467"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-59" link_type="FW" type="loop">
+            <description>SB Marsh Rd</description>
+            <position>
+               <point lat="37.469698" lng="-122.156754"/>
+            </position>
+            <display_position>
+               <point lat="37.4691662158511" lng="-122.157067164931"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.39"/>
+               <parameter name="vds" value="400578"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="404.193"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400578"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-60" link_type="FW" type="loop">
+            <description>South Willow Rd</description>
+            <position>
+               <point lat="37.467957" lng="-122.153833"/>
+            </position>
+            <display_position>
+               <point lat="37.4674406882836" lng="-122.154137053296"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.395"/>
+               <parameter name="vds" value="402122"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="403.993"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402122"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-61" link_type="FW" type="loop">
+            <description>Sr 84/University Ave-1</description>
+            <position>
+               <point lat="37.462878" lng="-122.145152"/>
+            </position>
+            <display_position>
+               <point lat="37.4623370402189" lng="-122.145470568414"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.42"/>
+               <parameter name="vds" value="400733"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="403.403"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400733"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-62" link_type="FW" type="loop">
+            <description>Sr 84/University Ave-2</description>
+            <position>
+               <point lat="37.460699" lng="-122.1415"/>
+            </position>
+            <display_position>
+               <point lat="37.4601790946992" lng="-122.141806169539"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="1.054"/>
+               <parameter name="vds" value="400425"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="403.153"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400425"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-63" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.451289" lng="-122.125797"/>
+            </position>
+            <display_position>
+               <point lat="37.4507975758373" lng="-122.126185738517"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.651"/>
+               <parameter name="vds" value="402381"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="402.073"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402381"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-64" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.440293" lng="-122.114141"/>
+            </position>
+            <display_position>
+               <point lat="37.4398394234455" lng="-122.114573351007"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="1"/>
+               <parameter name="vds" value="402378"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="401.073"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402378"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-65" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.42914" lng="-122.102443"/>
+            </position>
+            <display_position>
+               <point lat="37.4286876908972" lng="-122.102874142867"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.95"/>
+               <parameter name="vds" value="402375"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="400.073"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402375"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-66" link_type="FW" type="loop">
+            <description>S of Renstorff Ave rm-s-diag</description>
+            <position>
+               <point lat="37.419828" lng="-122.091045"/>
+            </position>
+            <display_position>
+               <point lat="37.4193185447059" lng="-122.09141271857"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.76"/>
+               <parameter name="vds" value="402000"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="399.173"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402000"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-67" link_type="FW" type="loop">
+            <description>Old Middlefield Way</description>
+            <position>
+               <point lat="37.413855" lng="-122.082578"/>
+            </position>
+            <display_position>
+               <point lat="37.4132935223221" lng="-122.082880128465"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.44"/>
+               <parameter name="vds" value="400264"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="398.553"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400264"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-68" link_type="FW" type="loop">
+            <description>N of Shoreline Blvd rm-s-loop in</description>
+            <position>
+               <point lat="37.411999" lng="-122.078452"/>
+            </position>
+            <display_position>
+               <point lat="37.4113717940842" lng="-122.07870784195"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.145"/>
+               <parameter name="vds" value="401926"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="398.293"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401926"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-69" link_type="FW" type="loop">
+            <description>S Shoreline Boulevard rm-s-diag</description>
+            <position>
+               <point lat="37.4118" lng="-122.077964"/>
+            </position>
+            <display_position>
+               <point lat="37.411172743652" lng="-122.078219862522"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="3"/>
+               <parameter name="length" value="0.05"/>
+               <parameter name="vds" value="400149"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="398.263"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400149"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-70" link_type="FW" type="loop">
+            <description>S Shoreline Boulevard rm-s-diag</description>
+            <position>
+               <point lat="37.411338" lng="-122.076826"/>
+            </position>
+            <display_position>
+               <point lat="37.4107088586454" lng="-122.07708263143"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.385"/>
+               <parameter name="vds" value="401937"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="398.193"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401937"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-71" link_type="FW" type="loop">
+            <description>S of Moffet Blvd rm-s-diag</description>
+            <position>
+               <point lat="37.407282" lng="-122.06515"/>
+            </position>
+            <display_position>
+               <point lat="37.406682796641" lng="-122.065282100344"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.6"/>
+               <parameter name="vds" value="401936"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="397.493"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401936"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-72" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.405335" lng="-122.056343"/>
+            </position>
+            <display_position>
+               <point lat="37.4047409551244" lng="-122.056473963105"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.505"/>
+               <parameter name="vds" value="402373"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="396.993"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402373"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-73" link_type="FW" type="loop">
+            <description>Ellis Street</description>
+            <position>
+               <point lat="37.403153" lng="-122.047463"/>
+            </position>
+            <display_position>
+               <point lat="37.4025650281039" lng="-122.04759696828"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.65"/>
+               <parameter name="vds" value="400435"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="396.483"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400435"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-74" link_type="FW" type="loop">
+            <description>EB 237 To SB 101</description>
+            <position>
+               <point lat="37.40013" lng="-122.033628"/>
+            </position>
+            <display_position>
+               <point lat="37.3995095476188" lng="-122.033764789991"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.545"/>
+               <parameter name="vds" value="400545"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="395.693"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400545"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-75" link_type="FW" type="loop">
+            <description>Mathilda Avenue</description>
+            <position>
+               <point lat="37.398989" lng="-122.028373"/>
+            </position>
+            <display_position>
+               <point lat="37.3983518014349" lng="-122.028513481992"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.195"/>
+               <parameter name="vds" value="400743"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="395.393"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400743"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-76" link_type="FW" type="loop">
+            <description>Mathilda Avenue</description>
+            <position>
+               <point lat="37.398628" lng="-122.026802"/>
+            </position>
+            <display_position>
+               <point lat="37.3980101389681" lng="-122.026935638482"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.31"/>
+               <parameter name="vds" value="400330"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="395.303"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400330"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-77" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.396611" lng="-122.017518"/>
+            </position>
+            <display_position>
+               <point lat="37.396002516454" lng="-122.017660759601"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.465"/>
+               <parameter name="vds" value="402371"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="394.773"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402371"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-78" link_type="FW" type="loop">
+            <description>Fair Oaks Avenue</description>
+            <position>
+               <point lat="37.395067" lng="-122.010518"/>
+            </position>
+            <display_position>
+               <point lat="37.3944588692632" lng="-122.010653698594"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.35"/>
+               <parameter name="vds" value="400904"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="394.373"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400904"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-79" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.393755" lng="-122.005329"/>
+            </position>
+            <display_position>
+               <point lat="37.3931469787427" lng="-122.005490547254"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.455"/>
+               <parameter name="vds" value="402369"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="394.073"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402369"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-80" link_type="FW" type="loop">
+            <description>Lawrence Expressway</description>
+            <position>
+               <point lat="37.390763" lng="-121.994912"/>
+            </position>
+            <display_position>
+               <point lat="37.3901687113625" lng="-121.995094043035"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.34"/>
+               <parameter name="vds" value="400643"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="393.463"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400643"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-81" link_type="FW" type="loop">
+            <description>Lawrence Expressway</description>
+            <position>
+               <point lat="37.390422" lng="-121.993716"/>
+            </position>
+            <display_position>
+               <point lat="37.3898045270034" lng="-121.993905144889"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.245"/>
+               <parameter name="vds" value="400794"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="393.393"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400794"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-82" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.388372" lng="-121.986538"/>
+            </position>
+            <display_position>
+               <point lat="37.3877503926547" lng="-121.986711988739"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.475"/>
+               <parameter name="vds" value="402367"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="392.973"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402367"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-83" link_type="FW" type="loop">
+            <description>Great America Parkway</description>
+            <position>
+               <point lat="37.385758" lng="-121.977493"/>
+            </position>
+            <display_position>
+               <point lat="37.3852127061253" lng="-121.977645628495"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.36"/>
+               <parameter name="vds" value="400069"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="392.443"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400069"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-84" link_type="FW" type="loop">
+            <description>Bowers Avenue</description>
+            <position>
+               <point lat="37.38482" lng="-121.974251"/>
+            </position>
+            <display_position>
+               <point lat="37.3842842101536" lng="-121.974407852294"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.45"/>
+               <parameter name="vds" value="400372"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="392.253"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400372"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-85" link_type="FW" type="loop">
+            <description>Montague Expressway</description>
+            <position>
+               <point lat="37.381356" lng="-121.96211"/>
+            </position>
+            <display_position>
+               <point lat="37.3808065608382" lng="-121.962264374145"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.395"/>
+               <parameter name="vds" value="400206"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="391.543"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400206"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-86" link_type="FW" type="loop">
+            <description>San Tomas Expressway</description>
+            <position>
+               <point lat="37.380958" lng="-121.960741"/>
+            </position>
+            <display_position>
+               <point lat="37.3804050960981" lng="-121.960904567404"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.56"/>
+               <parameter name="vds" value="400895"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="391.463"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400895"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-87" link_type="FW" type="loop">
+            <description>Trimble Road</description>
+            <position>
+               <point lat="37.376835" lng="-121.942537"/>
+            </position>
+            <display_position>
+               <point lat="37.3762094194143" lng="-121.942666144477"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.6"/>
+               <parameter name="vds" value="400586"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="390.423"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400586"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-88" link_type="FW" type="loop">
+            <description>De La Cruz Boulevard</description>
+            <position>
+               <point lat="37.376264" lng="-121.939712"/>
+            </position>
+            <display_position>
+               <point lat="37.3756267264481" lng="-121.939843558366"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.425"/>
+               <parameter name="vds" value="400172"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="390.263"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400172"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-89" link_type="FW" type="loop">
+            <description>SB Rte 101 at 87.</description>
+            <position>
+               <point lat="37.373584" lng="-121.927602"/>
+            </position>
+            <display_position>
+               <point lat="37.3729958819864" lng="-121.927739012109"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.93"/>
+               <parameter name="vds" value="401178"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="389.573"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401178"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-90" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.367859" lng="-121.907971"/>
+            </position>
+            <display_position>
+               <point lat="37.3673791805852" lng="-121.908359625666"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.775"/>
+               <parameter name="vds" value="402365"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="388.403"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402365"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-91" link_type="FW" type="loop">
+            <description>SB 880 To SB 101</description>
+            <position>
+               <point lat="37.364382" lng="-121.902692"/>
+            </position>
+            <display_position>
+               <point lat="37.3637369909215" lng="-121.902945396424"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.28"/>
+               <parameter name="vds" value="400394"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="388.023"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400394"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-92" link_type="FW" type="loop">
+            <description>NB 880 To SB 101</description>
+            <position>
+               <point lat="37.363644" lng="-121.899535"/>
+            </position>
+            <display_position>
+               <point lat="37.3630056179948" lng="-121.899590839561"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.37"/>
+               <parameter name="vds" value="400922"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="387.843"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400922"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-93" link_type="FW" type="loop">
+            <description>Oakland Road</description>
+            <position>
+               <point lat="37.362706" lng="-121.889426"/>
+            </position>
+            <display_position>
+               <point lat="37.3620878983976" lng="-121.889489901481"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.785"/>
+               <parameter name="vds" value="400109"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="387.283"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400109"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-94" link_type="FW" type="loop">
+            <description/>
+            <position>
+               <point lat="37.3588" lng="-121.872094"/>
+            </position>
+            <display_position>
+               <point lat="37.3582735027812" lng="-121.872393380771"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.752"/>
+               <parameter name="vds" value="402363"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="386.273"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="402363"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-95" link_type="FW" type="loop">
+            <description>Julian St/Mckee Rd</description>
+            <position>
+               <point lat="37.353727" lng="-121.865827"/>
+            </position>
+            <display_position>
+               <point lat="37.3532585102983" lng="-121.866232180283"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.482"/>
+               <parameter name="vds" value="400440"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="385.779"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400440"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-96" link_type="FW" type="loop">
+            <description>Alum Rock Av / Route 130</description>
+            <position>
+               <point lat="37.348392" lng="-121.860589"/>
+            </position>
+            <display_position>
+               <point lat="37.3480111966884" lng="-121.861020838807"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="4"/>
+               <parameter name="length" value="0.455"/>
+               <parameter name="vds" value="400160"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="385.309"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="400160"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources/>
+         </sensor>
+         <sensor id="-97" link_type="FW" type="loop">
+            <description>200' S of San Antonio NB 101 loo</description>
+            <position>
+               <point lat="37.343293" lng="-121.855795"/>
+            </position>
+            <display_position>
+               <point lat="37.3429190787901" lng="-121.856198248364"/>
+            </display_position>
+            <parameters>
+               <parameter name="lanes" value="5"/>
+               <parameter name="length" value="0.57"/>
+               <parameter name="vds" value="401891"/>
+               <parameter name="offset_in_link" value="0"/>
+               <parameter name="start_time" value="0"/>
+               <parameter name="hwy_name" value="101"/>
+               <parameter name="postmile" value="384.869"/>
+               <parameter name="hwy_dir" value="S"/>
+               <parameter name="data_id" value="401891"/>
+            </parameters>
+            <links>-1</links>
+            <data_sources>
+               <source dt="1" format="" url=""/>
+            </data_sources>
+         </sensor>
+      </SensorList>
+      <DirectionsCache>
+         <DirectionsCacheEntry avoidHighways="false" road_name="US-101 S">
+            <From>
+               <ALatLng lat="37.7687480140227" lng="-122.407645583153"/>
+            </From>
+            <To>
+               <ALatLng lat="37.3636093704501" lng="-121.899849772453"/>
+            </To>
+            <EncodedPolyline numLevels="18" zoomFactor="2">
+               <Points>wuoeFxvbjVh@gDz@yB|@sAj@_@v@WhHu@hGYvB?jBPrBh@rHpDhB\hAFlAG`Ci@`B_AlAgAbEmGfAiAnA{@~Bk@nAKxQy@lEXjBXr\xHfHnAjBz@xA~@tIzGtAt@bDjAfCb@fDTtABhF]zGyAhIwDnGiDvDcBtCiB~LwEhFcBhn@uQ~VuE~C_A|F_D|IwGfF{BbBc@hpBkXnhAuOxIwAjCYdEG~CFjEl@xCt@pJrDjEzBtGbEpDtCtOvNhK|JhDtD~DbGjOdXxAzBpCxCnAbAdDnBhMtFlCx@tBb@~Ef@pC?vNg@vh@oBfOq@rCYbC]hFqArFoBrHiD|H}BfG}@n\mBbH}@~PyD`r@mPrF{BpEyCtCcChEyEhD}EnHeNdMsTb_@{p@hs@unA|\im@`CmFbB{ErAgGp@_E`@{D`@uH`BcyBFmAn@wEfAoE~@cCt_@_d@ttBw~BrH_IvDsDpKaJ`v@mr@`CkB~V_V|CyBnAsAdGwFjDeCxAaBpLuKbFiErM_M|K{JxLmLlf@_l@`LgN~AyB~GmHvSwVbFoFd}AiiBtEuFvCuE~C{GbBgFv@cDzIed@nCgOdBiHhDeLbRyj@jC{J~AcHbAcGxCkUzCoh@zGmeAn@mIv@kH`BoLrEqTvBmHbCuGdG{MtImQtVyf@v^wu@|cAatBdOaZ|Ok\dIcPdBwCrEkGhlCgsCnNqOdEeFdUw\jg@}v@nBgD`FcLlYy_AzAcGt@{DjPymAbF}YvEs\hXyqBlMwaAxBgOzAgM`DuUjJyi@|AiH~B_NxJqe@j[kdBjLul@rJkh@zG_]jCuOvGeh@jCkVxE_`@jAsLdDkVfL{w@fEyg@x@}Gt@cErBgJbBoHt@gCxBqFpDuFhPkTfBcD|AyDzAmFh@wCr@{H</Points>
+               <Levels>PADB@FBAEACCB@FBDABAEABGACAE@BCAEACAHCA@ACAECAEBCAGA@@IACAECAFABAEABAF@BD@BIABA@EACABEBBFAEBCALB@@AACAH@CAEE@BAIBAF@AAABA@AB@A@@AFA@BAAABAIAD@AADAC@FAD@B@EBCAI@AAB@AA@HBBAFACAJB@FBAB@@@@FBAABA@@AFAAAC@CAG@A@ECABEACAP</Levels>
+            </EncodedPolyline>
+         </DirectionsCacheEntry>
+         <DirectionsCacheEntry avoidHighways="false" road_name="US-101 S">
+            <From>
+               <ALatLng lat="37.7687480140227" lng="-122.407645583153"/>
+            </From>
+            <To>
+               <ALatLng lat="37.3625161650202" lng="-121.887776613236"/>
+            </To>
+            <EncodedPolyline numLevels="18" zoomFactor="2">
+               <Points>wuoeFxvbjVh@gDz@yB|@sAj@_@v@WhHu@hGYvB?jBPrBh@rHpDhB\hAFlAG`Ci@`B_AlAgAbEmGfAiAnA{@~Bk@nAKxQy@lEXjBXr\xHfHnAjBz@xA~@tIzGtAt@bDjAfCb@fDTtABhF]zGyAhIwDnGiDvDcBtCiB~LwEhFcBhn@uQ~VuE~C_A|F_D|IwGfF{BbBc@hpBkXnhAuOxIwAjCYdEG~CFjEl@xCt@pJrDjEzBtGbEpDtCtOvNhK|JhDtD~DbGjOdXxAzBpCxCnAbAdDnBhMtFlCx@tBb@~Ef@pC?vNg@vh@oBfOq@rCYbC]hFqArFoBrHiD|H}BfG}@n\mBbH}@~PyD`r@mPrF{BpEyCtCcChEyEhD}EnHeNdMsTb_@{p@hs@unA|\im@`CmFbB{ErAgGp@_E`@{D`@uH`BcyBFmAn@wEfAoE~@cCt_@_d@ttBw~BrH_IvDsDpKaJ`v@mr@`CkB~V_V|CyBnAsAdGwFjDeCxAaBpLuKbFiErM_M|K{JxLmLlf@_l@`LgN~AyB~GmHvSwVbFoFd}AiiBtEuFvCuE~C{GbBgFv@cDzIed@nCgOdBiHhDeLbRyj@jC{J~AcHbAcGxCkUzCoh@zGmeAn@mIv@kH`BoLrEqTvBmHbCuGdG{MtImQtVyf@v^wu@|cAatBdOaZ|Ok\dIcPdBwCrEkGhlCgsCnNqOdEeFdUw\jg@}v@nBgD`FcLlYy_AzAcGt@{DjPymAbF}YvEs\hXyqBlMwaAxBgOzAgM`DuUjJyi@|AiH~B_NxJqe@j[kdBjLul@rJkh@zG_]jCuOvGeh@jCkVxE_`@jAsLdDkVfL{w@fEyg@x@}Gt@cEvEwSt@gChAwCn@yApDuFhPkTfBcD|AyDvA_Fl@eDn@wGnCor@pAcX</Points>
+               <Levels>PADB@FBAEACCB@FBDABAEABGACAE@BCAEACAHCA@ACAECAEBCAGA@@IACAECAFABAEABAF@BD@BIABA@EACABEBBFAEBCALB@@AACAH@CAEE@BAIBAF@AAABA@AB@A@@AFA@BAAABAIAD@AADAC@FAD@B@EBCAI@AAB@AA@HBBAFACAJB@FBAB@@@@FBAABA@@AFAAAC@CAG@B@EABDACAFB@P</Levels>
+            </EncodedPolyline>
+         </DirectionsCacheEntry>
+         <DirectionsCacheEntry avoidHighways="false" road_name="US-101 S">
+            <From>
+               <ALatLng lat="37.7687480140227" lng="-122.407645583153"/>
+            </From>
+            <To>
+               <ALatLng lat="37.3592756809443" lng="-121.872863531113"/>
+            </To>
+            <EncodedPolyline numLevels="18" zoomFactor="2">
+               <Points>wuoeFxvbjVh@gDz@yB|@sAj@_@v@WhHu@hGYvB?jBPrBh@rHpDhB\hAFlAG`Ci@`B_AlAgAbEmGfAiAnA{@~Bk@nAKxQy@lEXjBXr\xHfHnAjBz@xA~@tIzGtAt@bDjAfCb@fDTtABhF]zGyAhIwDnGiDvDcBtCiB~LwEhFcBhn@uQ~VuE~C_A|F_D|IwGfF{BbBc@hpBkXnhAuOxIwAjCYdEG~CFjEl@xCt@pJrDjEzBtGbEpDtCtOvNhK|JhDtD~DbGjOdXxAzBpCxCnAbAdDnBhMtFlCx@tBb@~Ef@pC?vNg@vh@oBfOq@rCYbC]hFqArFoBrHiD|H}BfG}@n\mBbH}@lPqDvk@cNzH}BrCoAvBsAnFiE`CeCpFqHnHeNdMsTb_@{p@hs@unA|\im@`CmFbB{ErAgGp@_E`@{D`@uH`BcyBFmAn@wEfAoE~@cCt_@_d@ttBw~BrH_IvDsDpKaJ`v@mr@`CkB~V_V|CyBnAsAdGwFjDeCxAaBpLuKbFiErM_M|K{JxLmLlf@_l@`LgN~AyB~GmHvSwVbFoFd}AiiBtEuFvCuE~C{GbBgFv@cDzIed@nCgOdBiHhDeLbRyj@jC{J~AcHbAcGxCkUzCoh@zGmeAn@mIv@kH`BoLrEqTvBmHbCuGdG{MtImQtVyf@v^wu@|cAatBdOaZ|Ok\dIcPdBwCrEkGhlCgsCnNqOdEeFdUw\jg@}v@nBgD`FcLlYy_AzAcGt@{DjPymAbF}YvEs\hXyqBlMwaAxBgOzAgM`DuUjJyi@|AiH~B_NxJqe@j[kdBjLul@rJkh@zG_]jCuOvGeh@jCkVxE_`@jAsLdDkVfL{w@fEyg@x@}Gt@cEvEwSt@gChAwCn@yApDuFhPkTfBcD|AyDvA_Fl@eDn@wGrC{s@lBg`@dCed@|@qHhBcLrB}HhBuFdB_E</Points>
+               <Levels>PADB@FBAEACCB@FBDABAEABGACAE@BCAEACAHCA@ACAECAEBCAGA@@IACAECAFABAEABAF@BD@BIABA@EACABEBBG@BFABDAL@@AACAH@CAEE@BAIBAF@AAABA@AB@A@@AFA@BAAABAIAD@AADAC@FAD@B@EBCAI@AAB@AA@HBBAFACAKB@FBAB@@@@FBAABA@@AFAAAC@CAG@B@EABDACAGBB@EADBAP</Levels>
+            </EncodedPolyline>
+         </DirectionsCacheEntry>
+         <DirectionsCacheEntry avoidHighways="false" road_name="US-101 S">
+            <From>
+               <ALatLng lat="37.7687480140227" lng="-122.407645583153"/>
+            </From>
+            <To>
+               <ALatLng lat="37.3525896085069" lng="-121.864602327347"/>
+            </To>
+            <EncodedPolyline numLevels="18" zoomFactor="2">
+               <Points>wuoeFxvbjVh@gDz@yB|@sAj@_@v@WhHu@hGYvB?jBPrBh@rHpDhB\hAFlAG`Ci@`B_AlAgAbEmGfAiAnA{@~Bk@nAKxQy@lEXjBXr\xHfHnAjBz@xA~@tIzGtAt@bDjAfCb@fDTtABhF]zGyAhIwDnGiDvDcBtCiB~LwEhFcBhn@uQ~VuE~C_A|F_D|IwGfF{BbBc@hpBkXnhAuOxIwAjCYdEG~CFjEl@xCt@pJrDjEzBtGbEpDtCtOvNhK|JhDtD~DbGjOdXxAzBpCxCnAbAdDnBhMtFlCx@tBb@~Ef@pC?vNg@vh@oBfOq@rCYbC]hFqArFoBrHiD|H}BfG}@n\mBbH}@lPqDvk@cNzH}BrCoAvBsAnFiE`CeCpFqHnHeNdMsTb_@{p@hs@unA|\im@`CmFbB{ErAgGp@_E`@{D`@uH`BcyBFmAn@wEfAoE~@cCt_@_d@ttBw~BrH_IvDsDpKaJ`v@mr@`CkB~V_V|CyBnAsAdGwFjDeCxAaBpLuKbFiErM_M|K{JxLmLlf@_l@`LgN~AyB~GmHvSwVbFoFd}AiiBtEuFvCuE~C{GbBgFv@cDzIed@nCgOdBiHhDeLbRyj@jC{J~AcHbAcGxCkUzCoh@zGmeAn@mIv@kH`BoLrEqTvBmHbCuGdG{MtImQtVyf@v^wu@|cAatBdOaZ|Ok\dIcPdBwCrEkGhlCgsCnNqOdEeFdUw\jg@}v@nBgD`FcLlYy_AzAcGt@{DjPymAbF}YvEs\hXyqBlMwaAxBgOzAgM`DuUjJyi@|AiH~B_NxJqe@j[kdBjLul@rJkh@zG_]jCuOvGeh@jCkVxE_`@jAsLdDkVfL{w@fEyg@x@}Gt@cEvEwSt@gChAwCn@yApDuFhPkTfBcD|AyDvA_Fl@eDn@wGrC{s@lBg`@dCed@|@qHhBcLrB}H|A{EzFuMlJyNhIwIfNwP</Points>
+               <Levels>PADB@FBAEACCB@FBDABAEABGACAE@BCAEACAHCA@ACAECAEBCAGA@@IACAECAFABAEABAF@BD@BIABA@EACABEBBG@BFABDAL@@AACAH@CAEE@BAIBAF@AAABA@AB@A@@AFA@BAAABAIAD@AADAC@FAD@B@EBCAI@AAB@AA@HBBAFACAJB@FBAB@@@@FBAABA@@AFAAAC@CAG@B@EABDACAGBB@DAGACECAP</Levels>
+            </EncodedPolyline>
+         </DirectionsCacheEntry>
+         <DirectionsCacheEntry avoidHighways="false" road_name="US-101 S">
+            <From>
+               <ALatLng lat="37.7687480140227" lng="-122.407645583153"/>
+            </From>
+            <To>
+               <ALatLng lat="37.3334320786483" lng="-121.846243143082"/>
+            </To>
+            <EncodedPolyline numLevels="18" zoomFactor="2">
+               <Points>wuoeFxvbjVh@gDz@yB|@sAj@_@v@WhHu@hGYvB?jBPrBh@rHpDhB\hAFlAG`Ci@`B_AlAgAbEmGfAiAnA{@~Bk@nAKxQy@lEXjBXr\xHfHnAjBz@xA~@tIzGtAt@bDjAfCb@fDTtABhF]zGyAhIwDnGiDvDcBtCiB~LwEhFcBhn@uQ~VuE~C_A|F_D|IwGfF{BbBc@hpBkXnhAuOxIwAjCYdEG~CFjEl@xCt@pJrDjEzBtGbEpDtCtOvNhK|JhDtD~DbGjOdXxAzBpCxCnAbAdDnBhMtFlCx@tBb@~Ef@pC?vNg@vh@oBfOq@rCYbC]hFqArFoBrHiD|H}BfG}@n\mBbH}@~PyD`r@mPrF{BpEyCtCcChEyEhD}EnHeNdMsTb_@{p@hs@unA|\im@`CmFbB{ErAgGp@_E`@{D`@uH`BcyBFmAn@wEfAoE~@cCt_@_d@ttBw~BrH_IvDsDpKaJ`v@mr@`CkB~V_V|CyBnAsAdGwFjDeCxAaBpLuKbFiErM_M|K{JxLmLlf@_l@`LgN~AyB~GmHvSwVbFoFd}AiiBtEuFvCuE~C{GbBgFv@cDzIed@nCgOdBiHhDeLbRyj@jC{J~AcHbAcGxCkUzCoh@zGmeAn@mIv@kH`BoLrEqTvBmHbCuGdG{MtImQtVyf@v^wu@|cAatBdOaZ|Ok\dIcPdBwCrEkGhlCgsCnNqOdEeFdUw\jg@}v@nBgD`FcLlYy_AzAcGt@{DjPymAbF}YvEs\hXyqBlMwaAxBgOzAgM`DuUjJyi@|AiH~B_NxJqe@j[kdBjLul@rJkh@zG_]jCuOvGeh@jCkVxE_`@jAsLdDkVfL{w@fEyg@x@}Gt@cEvEwSt@gChAwCn@yApDuFhPkTfBcD|AyDvA_Fl@eDn@wGrC{s@lBg`@dCed@|@qHhBcLrB}H|A{E`EoJx@eBlJyNhIwI~NoQ|GoHnZgWdPaPzEkElK}KdIaHtFqDjAeAbMuL`F_FzC}D</Points>
+               <Levels>PADB@FBAEACCB@FBDABAEABGACAE@BCAEACAHCA@ACAECAEBCAGA@@IACAECAFABAEABAF@BD@BIABA@EACABEBBFAEBCALB@@AACAH@CAEE@BAIBAF@AAABA@AB@A@@AFA@BAAABAIAD@AADAC@FAD@B@EBCAI@AAB@AA@HBBAFACAJB@FBAB@@@@FBAABA@@AFAAAC@CAG@B@EABDACAGBB@DAIAC?ECAFBB@ACAAC?BP</Levels>
+            </EncodedPolyline>
+         </DirectionsCacheEntry>
+      </DirectionsCache>
+   </network>
+   <settings>
+      <units>US</units>
+   </settings>
+   <InitialDensityProfile/>
+   <SplitRatioProfileSet>
+      <splitratios dt="300" node_id="-1"/>
+      <splitratios dt="300" node_id="-2"/>
+   </SplitRatioProfileSet>
+   <CapacityProfileSet>
+      <capacity dt="1" link_id="-1"/>
+   </CapacityProfileSet>
+   <EventSet/>
+   <DemandProfileSet>
+      <demand dt="1" knob="1" link_id="-1"/>
+   </DemandProfileSet>
+   <ControllerSet/>
+</scenario>

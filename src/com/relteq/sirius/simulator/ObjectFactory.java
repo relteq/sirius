@@ -2,6 +2,7 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,9 @@ import org.xml.sax.SAXException;
 
 import com.relteq.sirius.control.*;
 import com.relteq.sirius.event.*;
+import com.relteq.sirius.jaxb.Density;
+import com.relteq.sirius.jaxb.VehicleType;
+import com.relteq.sirius.jaxb.VehicleTypeOrder;
 import com.relteq.sirius.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
@@ -34,7 +38,7 @@ public final class ObjectFactory {
 	private ObjectFactory(){}
 							  
 	/////////////////////////////////////////////////////////////////////
-	// protected
+	// protected create from Jaxb
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
@@ -185,7 +189,7 @@ public final class ObjectFactory {
 		}
 		return S;
 	}
-			
+	  
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario
 	/////////////////////////////////////////////////////////////////////
@@ -383,7 +387,7 @@ public final class ObjectFactory {
 	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
 	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
 	 * @param gain				The gain for the integral controller in mile/hr.
-	 * @return					_Controller object
+	 * @return					Controller object
 	 */
 	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
 		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
@@ -466,9 +470,9 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario			The scenario.
 	 * @param timestampinseconds	Activation time for the event.
-	 * @param controllers			List of target _Controller objects.
+	 * @param controllers			List of target Controller objects.
 	 * @param ison					<code>true</code> turns controllers on, <code>false</code> turns controllers off.
-	 * @return						_Event object
+	 * @return						Event object
 	 */
 	public static Event createEvent_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
 		return  new com.relteq.sirius.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
@@ -481,14 +485,14 @@ public final class ObjectFactory {
 	 * of the input parameters to indicate that the current value of the parameter should be kept. The
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param links				List of _Link objects.
+	 * @param links				List of Link objects.
 	 * @param freeflowSpeed		Freeflow speed in [mile/hr]
 	 * @param congestionSpeed	Congestion wave speed in [mile/hr]
 	 * @param capacity			Capacity in [veh/hr/lane]
 	 * @param densityJam		Jam density in [veh/mile/lane]
 	 * @param capacityDrop		Capacity drop in [veh/hr/lane]
 	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/hr/lane]
-	 * @return					_Event object
+	 * @return					Event object
 	 */
 	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
 		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
@@ -497,8 +501,8 @@ public final class ObjectFactory {
 	/** Revert to original parameters for a list of links.
 	 * 
 	 * @param myScenario		The scenario.
-	 * @param links				List of _Link objects.
-	 * @return					_Event object
+	 * @param links				List of Link objects.
+	 * @return					Event object
 	 */
 	public static Event createEvent_Fundamental_Diagram_Revert(Scenario myScenario,List <Link> links) {		
 		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links);
@@ -508,7 +512,7 @@ public final class ObjectFactory {
 	 * <p> This is equivalent to passing the full set of controllers to {@link ObjectFactory#createEvent_Control_Toggle}.
 	 *
 	 * @param myScenario		The scenario.
-	 * @return					_Event object
+	 * @return					Event object
 	 */
 	public static Event createEvent_Global_Control_Toggle(Scenario myScenario,boolean ison){
 		return  new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario,ison);
@@ -522,7 +526,7 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param newknob 			New value of the knob.
-	 * @return			_Event object
+	 * @return			Event object
 	 */
 	public static Event createEvent_Global_Demand_Knob(Scenario myScenario,double newknob){
 		return  new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario,newknob);
@@ -534,7 +538,7 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param newknob 			New value of the knob.
-	 * @return					_Event object
+	 * @return					Event object
 	 */
 	public static Event createEvent_Link_Demand_Knob(Scenario myScenario,double newknob){
 		return  new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario,newknob);
@@ -545,7 +549,7 @@ public final class ObjectFactory {
 	 * @param myScenario		The scenario.
 	 * @param links 			List of links to change.
 	 * @param deltalanes		Number of lanes to add to each link in the list
-	 * @return					_Event object
+	 * @return					Event object
 	 */
 	public static Event createEvent_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes){
 		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
@@ -558,7 +562,7 @@ public final class ObjectFactory {
 	 * @param inlink			String id of the input link 
 	 * @param vehicleType		String name of the vehicle type
 	 * @param splits			An array of splits for every link exiting the node.
-	 * @return					_Event object
+	 * @return					Event object
 	 */		
 	public static Event createEvent_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicleType,ArrayList<Double>splits){
 		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
@@ -575,7 +579,7 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return					_Sensor object
+	 * @return					Sensor object
 	 */
 	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
 		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,linkId);
@@ -589,7 +593,7 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return			XXX
+	 * @return			Sensor The sensor object
 	 */
 	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
 		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,linkId);
@@ -611,7 +615,6 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = node.getMyNetwork().myScenario;
 		se.myType = ScenarioElement.Type.node;
-//		se.setNetworkId(node.myNetwork.getId());
 		se.reference = node;
 		return se;
 	}
@@ -619,7 +622,7 @@ public final class ObjectFactory {
 	/** Container for a link.
 	 * 
 	 * @param link		The link.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Link link){
 		if(link==null)
@@ -627,7 +630,6 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = link.getMyNetwork().myScenario;
 		se.myType = ScenarioElement.Type.link;
-//		se.setNetworkId(link.myNetwork.getId());
 		se.reference = link;
 		return se;
 	}
@@ -635,7 +637,7 @@ public final class ObjectFactory {
 	/** Container for a sensor.
 	 * 
 	 * @param sensor	The sensor.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Sensor sensor){
 		if(sensor==null)
@@ -643,8 +645,6 @@ public final class ObjectFactory {
 		ScenarioElement se = new ScenarioElement();
 		se.myScenario = sensor.myScenario;
 		se.myType = ScenarioElement.Type.sensor;
-//		if(sensor.myLink!=null)
-//			se.setNetworkId(sensor.myLink.myNetwork.getId());
 		se.reference = sensor;
 		return se;
 	}
@@ -652,7 +652,7 @@ public final class ObjectFactory {
 	/** Container for a controller.
 	 * 
 	 * @param controller	The controller.
-	 * @return			_ScenarioElement object
+	 * @return			ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Controller controller){
 		if(controller==null)
@@ -666,7 +666,7 @@ public final class ObjectFactory {
 	/** Container for an event.
 	 * 
 	 * @param event	The event.
-	 * @return			_ScenarioElement object
+	 * @return ScenarioElement object
 	 */
 	public static ScenarioElement createScenarioElement(Event event){
 		if(event==null)
@@ -675,6 +675,100 @@ public final class ObjectFactory {
 		se.myType = ScenarioElement.Type.event;
 		se.reference = event;
 		return se;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public: sets and profiles
+	/////////////////////////////////////////////////////////////////////
+
+	/** Create an initial density.
+	 * 
+	 * @param scenario The scenario
+	 * @param tstamp A double with the time stamp in seconds after midnight
+	 * @param link_id The String id of the link
+	 * @param vehtype An array of String link type names
+	 * @param init_density 2-D matrix of doubles with densities per link and vehicle type.
+	 * @throws SiriusException
+	 * @return InitialDensitySet
+	 */
+	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws SiriusException{
+		
+		// check input
+		if(link_id.length!=init_density.length)
+			throw new SiriusException("1st dimension of the initial density matrix does not match the link array.");
+		
+		if(init_density.length==0)
+			throw new SiriusException("Empty initial density matrix.");
+
+		if(vehtype.length!=init_density[0].length)
+			throw new SiriusException("2nd dimension of the initial density matrix does not match the vehicle types array.");
+		
+		// new
+		InitialDensitySet ic = new InitialDensitySet();
+		
+		// populate base class
+		
+		// vehicle types
+		VehicleTypeOrder vto = new VehicleTypeOrder();
+		for(String str : vehtype){
+			VehicleType vt = new VehicleType();
+			vt.setName(str);
+			vto.getVehicleType().add(vt);
+		}
+		ic.setVehicleTypeOrder(vto);
+
+		// initial density
+		int i;
+		for(i=0;i<init_density.length;i++){
+			Density density = new Density();
+			density.setLinkId(link_id[i]);
+			density.setContent(SiriusFormatter.csv(init_density[i],":"));			
+			ic.getDensity().add(density);
+		}
+		ic.setTstamp(new BigDecimal(tstamp));
+		
+		// populate extended properties
+		ic.populate(scenario);
+		return ic;
+	}
+	
+	/** Create a demand profile.
+	 * 
+	 * @param scenario The scenario
+	 * @param dem A list of list of demand values.
+	 * @param starttime start time float
+	 * @param dt time step float
+	 * @param knob scalar multiplier float
+	 * @param StdDevAdd additive uncertainty
+	 * @param StdDevMult multiplicative uncertainty
+	 * @return DemandProfile
+	 */
+	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
+
+		// check input parameters
+		int i,j;
+		for(i=0;i<dem.length;i++)
+			for(j=0;j<dem[i].length;j++){
+				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
+				dem[i][j] = dem[i][j]<0d ? 0d : dem[i][j];
+			}
+		
+		// new
+		DemandProfile demandprofile = new DemandProfile();
+		
+		// copy to base class
+		demandprofile.setLinkIdOrigin(linkid);
+		demandprofile.setKnob(new BigDecimal(knob));
+		demandprofile.setStartTime(new BigDecimal(starttime));
+		demandprofile.setDt(new BigDecimal(dt));
+		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
+		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
+		demandprofile.setContent(SiriusFormatter.csv(dem,":",","));
+		
+		// populate extended class properties
+		demandprofile.populate(scenario);
+
+		return demandprofile;
 	}
 
 	/////////////////////////////////////////////////////////////////////

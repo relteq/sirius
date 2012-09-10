@@ -146,7 +146,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(isdone)
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
-			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
 			myNode.normalizeSplitRatioMatrix(currentSplitRatio);

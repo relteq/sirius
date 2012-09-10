@@ -17,7 +17,7 @@ public final class Double2DMatrix {
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
-    
+
     public Double2DMatrix(int nTime,int nVTypes,Double val) {
     	this.nTime = nTime;
     	this.nVTypes = nVTypes;
@@ -25,6 +25,16 @@ public final class Double2DMatrix {
     	for(int i=0;i<nTime;i++)
         	for(int j=0;j<nVTypes;j++)
         		data[i][j] = val;
+    	this.isempty = nTime==0 && nVTypes==0;
+    }
+    
+    public Double2DMatrix(double [][] val) {
+    	this.nTime = val.length;
+    	this.nVTypes = val.length>0 ? val[0].length : 0;
+    	data = new Double[nTime][nVTypes];
+    	for(int i=0;i<nTime;i++)
+        	for(int j=0;j<nVTypes;j++)
+        		data[i][j] = val[i][j];
     	this.isempty = nTime==0 && nVTypes==0;
     }
     
@@ -68,13 +78,17 @@ public final class Double2DMatrix {
 			
 			j=0;
 			while (slicesXY.hasMoreTokens() && issquare) {				
-				Double value = Double.parseDouble(slicesXY.nextToken());
-				if(value>=0){
-					data[i][j] = value;
-					allnan = false;
-				}
-				else
+				try {
+					Double value = Double.parseDouble(slicesXY.nextToken());
+					if(value>=0){
+						data[i][j] = value;
+						allnan = false;
+					}
+					else
+						data[i][j] = Double.NaN;
+				} catch (NumberFormatException e) {
 					data[i][j] = Double.NaN;
+				}
 				j++;
 			}
 			i++;
@@ -84,7 +98,6 @@ public final class Double2DMatrix {
 			data = null;
 	    	isempty = true;
 			return;
-			
 		}
 		
 		if(!issquare){
@@ -139,11 +152,35 @@ public final class Double2DMatrix {
 		return data[timeslice][vehicletypeindex];
 	}
 
+    @Override
+	public String toString() {
+    	String str = "[";
+    	if(nTime>0 && nVTypes>0){
+	    	for(int i=0;i<data.length;i++){
+	    		for(int j=0;j<data[i].length-1;j++){
+	    			str += data[i][j] + ",";
+	    		}
+	    		str += data[i][data[i].length-1];
+	    		if(i<data.length-1)
+	    			str += ";";
+	    	}
+    	}
+		return str+"]";
+	}
+
+    public void set(int timeslice,int vehicletypeindex,double value){
+    	if(timeslice>=nTime || vehicletypeindex>=nVTypes)
+    		return;
+    	data[timeslice][vehicletypeindex] = value;
+    }
+    
 	/////////////////////////////////////////////////////////////////////
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
     
-    public void multiplyscalar(double value){
+	public void multiplyscalar(double value){
+    	if(this.isempty)
+    		return;
     	int i,j;
     	for(i=0;i<nTime;i++)
     		for(j=0;j<nVTypes;j++)
@@ -152,7 +189,7 @@ public final class Double2DMatrix {
     
 	/////////////////////////////////////////////////////////////////////
 	// check data
-	////////s/////////////////////////////////////////////////////////////  
+	//////////////////////////////////////////////////////////////////////  
     
     public boolean hasNaN(){
     	if(isempty)

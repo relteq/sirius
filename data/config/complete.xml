@@ -2,8 +2,10 @@
 <scenario id="null" name="null" schemaVersion="1.0.19">
    <settings>
       <units>US</units>
+	  <VehicleTypes>
+		<vehicle_type name="car" weight="1.0"/>
+	  </VehicleTypes>
    </settings>
-   
    <NetworkList>
       <network dt="5" id="1" name="New Network">
          <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
@@ -132,12 +134,6 @@
          </LinkList>
       </network>
    </NetworkList>
-   
-   <!--
-   <SignalList>
-   </SignalList>
-   -->
-   
    <SensorList>
 		<sensor id="1" link_type="other" type="static_point">
 		   <link_reference id="1"/>
@@ -190,7 +186,6 @@
 		   </data_sources>
 		</sensor>  
    </SensorList>
-   
    <InitialDensitySet>
       <density link_id="1">2.0</density>
       <density link_id="2">2.0</density>
@@ -201,12 +196,6 @@
       <density link_id="7">2.0</density>
       <density link_id="100">2.0</density>
    </InitialDensitySet>
-   
-   <!--
-   <WeavingFactorSet>
-   </WeavingFactorSet>
-   -->
-
    <SplitRatioProfileSet>
       <splitratioProfile dt="300" node_id="2">
          <splitratio link_in="1" link_out="2">1</splitratio>
@@ -218,12 +207,6 @@
          <splitratio link_in="4" link_out="5">1</splitratio>
       </splitratioProfile>
    </SplitRatioProfileSet>
-
-   <!--
-   <DownstreamBoundaryCapacityProfileSet>
-   </DownstreamBoundaryCapacityProfileSet>
-   -->
-
    <EventSet>
       <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
          <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="13.8461538461538" jam_density="150" free_flow_speed="90"/>
@@ -231,22 +214,11 @@
             <scenarioElement id="2" type="link"/>
          </targetElements>
       </event>
-	  
-      <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
-         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="13.8461538461538" jam_density="150" free_flow_speed="90"/>
-         <targetElements>
-            <scenarioElement id="200" type="link"/>
-         </targetElements>
-      </event>
-	  
    </EventSet>
-
    <DemandProfileSet>
       <demandProfile dt="300" knob="1" link_id_origin="6">400</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="1">100</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="100">100</demandProfile>
    </DemandProfileSet>
-   
    <ControllerSet>
       <controller dt="5" type="IRM_alinea" id="1">
          <parameters>
@@ -259,21 +231,7 @@
             <scenarioElement id="2" type="link" usage="mainlinelink"/>
          </feedbackElements>
       </controller>
-	  
-      <controller dt="5" type="IRM_alinea" id="1">
-         <parameters>
-            <parameter name="gain" value="50"/>
-         </parameters>
-         <targetElements>
-            <scenarioElement id="600" type="link"/>
-         </targetElements>
-         <feedbackElements>
-            <scenarioElement id="200" type="link" usage="mainlinelink"/>
-         </feedbackElements>
-      </controller>
-	  
    </ControllerSet>
-   
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="1">
          <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
@@ -296,12 +254,5 @@
       <fundamentalDiagramProfile link_id="7">
          <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
       </fundamentalDiagramProfile>
-	  <fundamentalDiagramProfile link_id="700">
-         <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>
-      </fundamentalDiagramProfile>
    </FundamentalDiagramProfileSet>
-
-   <NetworkConnections>
-   </NetworkConnections>
-
 </scenario>

@@ -38,11 +38,11 @@ public class Lister {
 				System.out.println(sb.toString());
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 
-	public static void listRuns(String scenario_id) throws SiriusException {
+	public static void listRuns(int scenario_id) throws SiriusException {
 		initDB();
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);
@@ -61,7 +61,7 @@ public class Lister {
 		} catch (NoRowsException exc) {
 			throw new SiriusException("Scenario '" + scenario_id + "\' does not exist");
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc.getMessage(), exc);
+			throw new SiriusException(exc);
 		}
 	}
 

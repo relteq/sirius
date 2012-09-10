@@ -35,6 +35,9 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	    std_dev_capacity  = Double.NaN;
 	    density_critical  = Double.NaN;
 	    
+	    if(myLink==null)
+	    	return;
+	    
 	    // procedure for determining fd parameters.
 	    // jaxbfd may contain up to 4 of: densityJam, capacity, vf, and w. 
 	    // if any of these is missing, assume the fd is triangular. 
@@ -203,7 +206,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 			return;
 		double alpha = newlanes/lanes;
 		_densityJam 	  *= alpha; 
-		_capacity  *= alpha; 
+		_capacity  		  *= alpha; 
 		_capacityDrop 	  *= alpha; 
 		density_critical  *= alpha;
 		lanes = newlanes;
@@ -271,6 +274,21 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		density_critical =  _capacity / _vf;
         
 	}
+
+ 	// clone a fd
+	protected void copyfrom(com.relteq.sirius.simulator.FundamentalDiagram that){
+		if(that==null)
+			return;
+		this.myLink = that.myLink;
+		this._capacity = that._capacity;
+		this._capacityDrop = that._capacityDrop;
+		this._densityJam = that._densityJam;
+		this._vf = that._vf;
+		this._w = that._w;
+		this.density_critical = that.density_critical;
+		this.lanes = that.lanes;
+		this.std_dev_capacity = that.std_dev_capacity;
+	}	
 	
 	protected void reset(Scenario.UncertaintyType uncertaintyModel){
 		if(myLink==null)
@@ -287,7 +305,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 		FundamentalDiagram samp = new FundamentalDiagram(myLink,this);
 		
 		// perturb it
-		if(!std_dev_capacity.isNaN()){
+		if(!std_dev_capacity.isNaN() && std_dev_capacity>0){
 			switch(myLink.myNetwork.myScenario.uncertaintyModel){
 			case uniform:
 				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);
@@ -316,31 +334,30 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	
 	protected void validate(){
 				
-		String myLinkId;
-		
-		myLinkId = myLink==null ? "[invalid link id]" : myLink.getId();
+		if(myLink==null)
+			return;
 		
 //		if(_vf.isNaN() || _w.isNaN() || _densityJam.isNaN() || _capacity.isNaN() || _capacityDrop.isNaN())
 //			SiriusErrorLog.addError("Undefined fundamental diagram parameters for link id=" + myLinkIdparameters in the fundamental diagram.");
 		
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
-			SiriusErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLinkId);
+			SiriusErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
 
 		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
 		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion))
-			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLinkId + " is " + dens_crit_congestion);
+			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion);
 		
 		if(_vf>1)
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLinkId + " has vf=" + _vf);
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
 
 		if(_w>1)
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLinkId + " has w=" + _w);
+			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 		
 		if(myLink!=null)
 			for(int e=0;e<myLink.myNetwork.myScenario.numEnsemble;e++)
 				if(myLink.getTotalDensityInVeh(e)>_densityJam)
-					SiriusErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLinkId + " exceeds jam density=" + _densityJam);
+					SiriusErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLink.getId() + " exceeds jam density=" + _densityJam);
 	}
 
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuroraRNM>
+  <network name="My Network" controlled="true" top="true" tp="1" id="-1">
+    <description>Created by TOPL flash app version 0.2.137</description>
+    <position>
+      <point x="-122.00456857681274" y="-37.53630465164848" z="0"/>
+    </position>
+    <MonitorList/>
+    <NodeList>
+      <node name="Node 1" type="F" id="1">
+        <outputs>
+          <output id="3"/>
+        </outputs>
+        <inputs/>
+        <splitratios tp="0.08333333333333333"></splitratios>
+        <position>
+          <point x="-122.03480243682861" y="-37.55987075136961" z="0"/>
+        </position>
+      </node>
+      <node name="Node 2" type="F" id="2">
+        <outputs/>
+        <inputs>
+          <input id="3">
+            <splitratios tp="0"></splitratios>
+            <weavingfactors></weavingfactors>
+          </input>
+        </inputs>
+        <splitratios tp="0.08333333333333333"></splitratios>
+        <position>
+          <point x="-121.97433471679688" y="-37.51273855192735" z="0"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList>
+      <link name="1 -> 2" lanes="1" length="24963.910799100002" type="ST" id="3">
+        <begin id="1"/>
+        <end id="2"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <density>0</density>
+        <dynamics type="CTM"/>
+        <position>
+          <point x="0" y="0" z="0"/>
+          <point x="0" y="0" z="0"/>
+        </position>
+        <qmax>100</qmax>
+      </link>
+    </LinkList>
+    <ODList/>
+    <SensorList/>
+  </network>
+  <settings>
+    <display timeMax="24" tsMax="100000" timeout="1000" tp="0.08333333333333333"/>
+    <VehicleTypes>
+      <vtype name="General" weight="1"/>
+    </VehicleTypes>
+  </settings>
+  <EventList/>
+  <DirectionsCache>
+    <DirectionsCacheEntry avoidHighways="false">
+      <From>
+        <ALatLng lat="37.55987075136961" lng="-122.03480243682861"/>
+      </From>
+      <To>
+        <ALatLng lat="37.51273855192735" lng="-121.97433471679688"/>
+      </To>
+      <EncodedPolyline zoomFactor="2" numLevels="18">
+        <Points>i|fdFh|ygV~X_[dJeJbM_J|c@gZxQoMfX}QnE{D|EsGpD_Hvn@{vAtk@uyArB{DvIoMlc@ok@</Points>
+        <Levels>PAEAA@DBHBDFACP</Levels>
+      </EncodedPolyline>
+    </DirectionsCacheEntry>
+  </DirectionsCache>
+</AuroraRNM>
