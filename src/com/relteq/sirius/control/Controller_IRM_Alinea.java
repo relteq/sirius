@@ -138,7 +138,11 @@ public class Controller_IRM_Alinea extends Controller {
 		if(jaxbc.getParameters()!=null)
 			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 				if(p.getName().equals("gain")){
-					gain_in_mph = Double.parseDouble(p.getValue());
+					try {
+						gain_in_mph = Double.parseDouble(p.getValue());
+					} catch (NumberFormatException e) {
+						gain_in_mph = 0d;
+					}
 				}
 				if(p.getName().equals("targetdensity")){
 					if(mainlinelink!=null){

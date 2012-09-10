@@ -81,8 +81,12 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 			SiriusErrorLog.addError("Bad link id=" + getLinkId() + " in fundamental diagram.");
 		
 		// check dtinseconds
-		if( dtinseconds<=0 )
-			SiriusErrorLog.addError("Non-positive dt in fundamental diagram profile for link id=" + getLinkId() + ".");
+		if( SiriusMath.lessthan(dtinseconds,0d) )
+			SiriusErrorLog.addError("Negative dt in fundamental diagram profile for link id=" + getLinkId() + ".");
+		
+		// check dtinseconds
+		if( SiriusMath.equals(dtinseconds,0d) && FD.size()>1 )
+			SiriusErrorLog.addError("dt=0 in fundamental diagram profile for link id=" + getLinkId() + ".");
 		
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
@@ -118,7 +122,7 @@ final class FundamentalDiagramProfile extends com.relteq.sirius.jaxb.Fundamental
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = FD.size()-1;
-			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			if(step<n)
 				myLink.setFundamentalDiagramFromProfile( FD.get(step) );

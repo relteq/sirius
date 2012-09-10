@@ -8,6 +8,10 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/** Signal class.
+*
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
+*/
 public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
 	public static enum CommandType {hold,forceoff};

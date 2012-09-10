@@ -2,6 +2,9 @@
 <scenario id="null" name="null" schemaVersion="1.0.19">
    <settings>
       <units>US</units>
+	  <VehicleTypes>
+		<vehicle_type name="car" weight="1.0"/>
+	  </VehicleTypes>
    </settings>
    <InitialDensitySet/>
    <SplitRatioProfileSet>
@@ -111,7 +114,6 @@
          </phase>
       </signal>
    </SignalList>
-   
    <FundamentalDiagramProfileSet>
       <fundamentalDiagramProfile link_id="-1">
          <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60"/>

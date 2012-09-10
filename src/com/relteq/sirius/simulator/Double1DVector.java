@@ -35,13 +35,17 @@ public final class Double1DVector {
 		boolean allnan = true;
 		data = new Double[slicesX.countTokens()];
 		while (slicesX.hasMoreTokens()) {			
-			Double value = Double.parseDouble(slicesX.nextToken());
-			if(value>=0){
-				data[i] = value;
-				allnan = false;
-			}
-			else
+			try {
+				Double value = Double.parseDouble(slicesX.nextToken());
+				if(value>=0){
+					data[i] = value;
+					allnan = false;
+				}
+				else
+					data[i] = Double.NaN;
+			} catch (NumberFormatException e) {
 				data[i] = Double.NaN;
+			}
 			i++;
 		}
 		if(allnan)

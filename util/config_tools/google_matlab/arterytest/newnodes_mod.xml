@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuroraRNM>
+  <network name="none" controlled="true" top="true" tp="0" id="-1">
+    <description>none</description>
+    <position>
+      <point x="-122.29766666666667" y="-37.8864" z="0"/>
+    </position>
+    <MonitorList/>
+    <NodeList>
+      <node name="node 1" type="F" id="1">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2944" y="-37.8764" z="0"/>
+        </position>
+      </node>
+      <node name="node 2" type="F" id="2">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2948" y="-37.8776" z="0"/>
+        </position>
+      </node>
+      <node name="node 3" type="F" id="3">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2952" y="-37.8788" z="0"/>
+        </position>
+      </node>
+      <node name="node 4" type="F" id="4">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2957" y="-37.8805" z="0"/>
+        </position>
+      </node>
+      <node name="node 5" type="F" id="5">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2963" y="-37.8823" z="0"/>
+        </position>
+      </node>
+      <node name="node 6" type="F" id="6">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2968" y="-37.8839" z="0"/>
+        </position>
+      </node>
+      <node name="node 7" type="F" id="7">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2971" y="-37.8846" z="0"/>
+        </position>
+      </node>
+      <node name="node 8" type="F" id="8">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2973" y="-37.8852" z="0"/>
+        </position>
+      </node>
+      <node name="node 9" type="F" id="9">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2977" y="-37.8867" z="0"/>
+        </position>
+      </node>
+      <node name="node 10" type="F" id="10">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2978" y="-37.8868" z="0"/>
+        </position>
+      </node>
+      <node name="node 11" type="F" id="11">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2981" y="-37.8878" z="0"/>
+        </position>
+      </node>
+      <node name="node 12" type="F" id="12">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2982" y="-37.888" z="0"/>
+        </position>
+      </node>
+      <node name="node 13" type="F" id="13">
+        <postmile></postmile>
+        <position>
+          <point x="-122.299" y="-37.8903" z="0"/>
+        </position>
+      </node>
+      <node name="node 14" type="F" id="14">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2995" y="-37.8918" z="0"/>
+        </position>
+      </node>
+      <node name="node 15" type="F" id="15">
+        <postmile></postmile>
+        <position>
+          <point x="-122.2996" y="-37.8923" z="0"/>
+        </position>
+      </node>
+      <node name="node 16" type="F" id="16">
+        <postmile></postmile>
+        <position>
+          <point x="-122.3" y="-37.8935" z="0"/>
+        </position>
+      </node>
+      <node name="node 17" type="F" id="17">
+        <postmile></postmile>
+        <position>
+          <point x="-122.3002" y="-37.8942" z="0"/>
+        </position>
+      </node>
+      <node name="node 18" type="F" id="18">
+        <postmile></postmile>
+        <position>
+          <point x="-122.3003" y="-37.8945" z="0"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList/>
+    <ODList/>
+    <SensorList/>
+  </network>
+  <settings>
+    <display timeMax="24" tsMax="50000" timeout="50" tp="0"/>
+    <VehicleTypes>
+      <vtype name="SOV" weight="1"/>
+    </VehicleTypes>
+  </settings>
+</AuroraRNM>

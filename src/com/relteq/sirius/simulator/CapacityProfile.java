@@ -86,7 +86,7 @@ final class CapacityProfile extends com.relteq.sirius.jaxb.CapacityProfile {
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = capacity.getLength()-1;
-			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			if(step<n)
 				myLink.setCapacityFromVeh(capacity.get(step));
 			if(step>=n && !isdone){

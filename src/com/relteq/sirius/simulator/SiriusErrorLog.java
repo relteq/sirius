@@ -27,35 +27,39 @@ public final class SiriusErrorLog {
 		return !error.isEmpty();
 	}
 
-	public static void print(){
-
+	public static String format(){
+		String str = "";
 		int c;
 		if(haserror){
-			System.out.println("----------------------------------------");
-			System.out.println("ERRORS");
-			System.out.println("----------------------------------------");
+			str += "----------------------------------------\n";
+			str += "ERRORS\n";
+			str += "----------------------------------------\n";
 			c=0;
 			for(int i=0;i<error.size();i++){
 				SiriusError e = error.get(i);
 				if(e.mylevel.compareTo(SiriusErrorLog.level.Error)==0)
-					System.out.println(++c + ") " + e.description );
+					str += ++c + ") " + e.description +"\n";
 			}
 		}
 		if(haswarning){
-			System.out.println("----------------------------------------");
-			System.out.println("WARNINGS");
-			System.out.println("----------------------------------------");
+			str += "----------------------------------------\n";
+			str += "WARNINGS\n";
+			str += "----------------------------------------\n";
 			c=0;
 			for(int i=0;i<error.size();i++){
 				SiriusError e = error.get(i);
 				if(e.mylevel.compareTo(SiriusErrorLog.level.Warning)==0)
-					System.out.println(++c + ") " + e.description );
+					str += ++c + ") " + e.description + "\n";
 			}
 			
 		}
 		if (haserror || haswarning)
-			System.out.println("----------------------------------------");
-		
+			str += "----------------------------------------\n";
+		return str;
+	}
+	
+	public static void print(){
+		System.out.println(SiriusErrorLog.format());
 	}
 
 	public static void addError(String str){
