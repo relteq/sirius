@@ -55,9 +55,13 @@ public class FDCalibrator {
 		float q_max;		// [veh/hr/lane]
 	    float rho_crit;		// [veh/mile/lane]
 	   
-		float w_min = 10;			// [mph]
-		float w_max = 19;			// [mph]
+		float w_min = 10;	// [mph]
+		float w_max = 19;	// [mph]
 
+		// ignore non-freeway links
+		if(!Link.isFreewayType(S.getMyLink()))
+			return new FDParameters();
+		
 		// get data
 		int numdatapoints = S.getNumDataPoints();
 
@@ -89,7 +93,10 @@ public class FDCalibrator {
 			else
 				freeflow.add(datavec.get(i));
 
+		// vf is the average freeflow speed
 		vf = percentile("spd",freeflow,0.5f);
+		
+		// compute critical density
 		rho_crit = q_max/vf;
 
 		// BINNING
@@ -154,21 +161,24 @@ public class FDCalibrator {
 		// create new fd profile set
 		FundamentalDiagramProfileSet FDprofileset = new FundamentalDiagramProfileSet();
 							
-		// populate the grow network
+		// populate the grow network with freeway links
 		ArrayList<GrowLink> arraygrownetwork = new ArrayList<GrowLink>();
 		HashMap<String,GrowLink> hashgrownetwork = new HashMap<String,GrowLink>();
 			for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-			for(com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()){
-				GrowLink G = new GrowLink((Link) link);
-				hashgrownetwork.put(link.getId(),G);
-				arraygrownetwork.add(G);
-			}
+				for(com.relteq.sirius.jaxb.Link jlink : network.getLinkList().getLink()){
+					Link link = (Link) jlink;
+					if(Link.isFreewayType(link)){
+						GrowLink G = new GrowLink(link);
+						hashgrownetwork.put(link.getId(),G);
+						arraygrownetwork.add(G);
+					}
+				}
 		}
 
 		// initialize the grow network with sensored links 
 		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
-			if(S.getVDS()!=0 & S.getMyLink()!=null){
+			if(S.getVDS()!=0 && S.getMyLink()!=null && Link.isFreewayType(S.getMyLink())){
 				String linkid = S.getMyLink().getId();
 				GrowLink G = hashgrownetwork.get(linkid);
 				G.sensor = S;
@@ -201,6 +211,7 @@ public class FDCalibrator {
 		}
 
 		// copy parameters to the links
+		float value;
 		for(i=0;i<arraygrownetwork.size();i++){
 			GrowLink G = arraygrownetwork.get(i);
 			if(G.isassigned){
@@ -214,11 +225,31 @@ public class FDCalibrator {
 				SensorLoopStation S = (SensorLoopStation) G.sensor;
 				FDParameters FDp = (FDParameters) sensorFD.get(S);
 				
-				FD.setCapacity(new BigDecimal(FDp.getQ_max()));
+				value = FDp.getQ_max();
+				if(!Float.isNaN(value))
+					FD.setCapacity(new BigDecimal(value));
+				else
+					FD.setCapacity(null);
+				
+				value = FDp.getW();
+				if(!Float.isNaN(value))
+					FD.setCongestionSpeed(new BigDecimal(value));
+				else
+					FD.setCongestionSpeed(null);
+
+				value = FDp.getRho_jam();
+				if(!Float.isNaN(value))
+					FD.setJamDensity(new BigDecimal(value));
+				else
+					FD.setJamDensity(null);
+				
+				value = FDp.getVf();
+				if(!Float.isNaN(value))
+					FD.setFreeFlowSpeed(new BigDecimal(value));
+				else
+					FD.setFreeFlowSpeed(null);				
+				
 				FD.setCapacityDrop(new BigDecimal(0));
-				FD.setCongestionSpeed(new BigDecimal(FDp.getW()));
-				FD.setJamDensity(new BigDecimal(FDp.getRho_jam()));
-				FD.setJamDensity(new BigDecimal(FDp.getVf()));
 				FD.setStdDevCapacity(new BigDecimal(0));
 				
 				FDprof.getFundamentalDiagram().add(FD);
@@ -276,8 +307,10 @@ public class FDCalibrator {
 
 		for(int i=0;i<newlinks.length;i++){
 			GrowLink nG = H.get(newlinks[i].getId());
-			// propagate if nG is unassigned and of the same type as G
+			if(nG==null)
+				continue;
 			
+			// propagate if nG is unassigned and of the same type as G
 			if( !nG.isassigned & nG.link.getType().compareTo(G.link.getType())==0 ){
 				nG.sensor = G.sensor;
 				nG.isassigned = true;

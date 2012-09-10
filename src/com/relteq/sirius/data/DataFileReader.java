@@ -84,7 +84,7 @@ public class DataFileReader {
 		            
 		    		calendar.setTime(ConvertTime(f[0]));
 		    		time = calendar.getTime().getTime()/1000;
-		    		    
+		    		
 		        	ArrayList<Float> laneflw = new ArrayList<Float>();
 		        	ArrayList<Float> lanespd = new ArrayList<Float>();
 		        

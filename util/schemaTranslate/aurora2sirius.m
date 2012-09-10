@@ -495,13 +495,13 @@ end
 x.ATTRIBUTE.type = newtype;
 
 switch x.ATTRIBUTE.link_type
-    case 'FW'
+    case {'FW','mainline'}
         newtype = 'freeway';
     case 'HOV'
         newtype = 'HOV';
-    case 'OR'
+    case {'OR','onramp'}
         newtype = 'onramp';
-    case 'offramp'
+    case {'FR','offramp'}
         newtype = 'offramp';
     otherwise
         newtype = 'other';
