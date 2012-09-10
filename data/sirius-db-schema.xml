@@ -646,7 +646,6 @@
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vehicles per second per lane. Optional."/>
 		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in m/s. Optional."/>
 		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
-		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vphl. Optional."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1076,7 +1075,7 @@
 		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
 		<column name="column_name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="column_number" required="true" type="INTEGER"/>
-		<column name="key" required="true" domain="BOOL" description="Indicates if this column is a part of the key for finding table elements."/>
+		<column name="is_key" required="true" domain="BOOL" description="Indicates if this column is a part of the key for finding table elements."/>
 	</table>
 
 	<table name="referenced_scenario_elements">
@@ -1230,7 +1229,7 @@
 	<table name="simulation_runs">
 		<column name="data_source_id" primaryKey="true" domain="ID"/>
 		<column name="scenario_id" required="true" domain="ID"/>
-		<column name="run_number" required="true" type="INTEGER"/>
+		<column name="run_number" required="true" type="BIGINT"/>
 		<column name="version" required="true" domain="STRING_VERSION"/>
 		<column name="build" required="true" domain="STRING_VERSION"/>
 		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
