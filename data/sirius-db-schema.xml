@@ -99,11 +99,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="node_families">
+		<foreign-key foreignTable="nodes">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -116,11 +114,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="node_families">
+		<foreign-key foreignTable="nodes">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -143,11 +139,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="node_families">
-			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+		<foreign-key foreignTable="nodes">
+			<reference local="node_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="postmile_highways">
 			<reference local="highway_id" foreign="id"/>
@@ -178,11 +172,13 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
-			<reference local="begin_node_id" foreign="id"/>
+		<foreign-key foreignTable="nodes">
+			<reference local="beg_node_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
+		<foreign-key foreignTable="nodes">
 			<reference local="end_node_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -195,11 +191,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -212,11 +206,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -229,11 +221,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -246,11 +236,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -263,11 +251,9 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -281,17 +267,13 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="networks">
-			<reference local="from_network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="from_link_id" foreign="id"/>
+			<reference local="from_network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="to_network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="to_link_id" foreign="id"/>
+			<reference local="to_network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -324,17 +306,13 @@
 		<foreign-key foreignTable="network_connection_sets">
 			<reference local="network_connection_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="from_network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="from_link_id" foreign="id"/>
+			<reference local="from_network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="to_network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="to_link_id" foreign="id"/>
+			<reference local="to_network_id" foreign="network_id"/>
 		</foreign-key>
 		<unique name="network_connections_from">
 			<unique-column name="network_connection_set_id"/>
@@ -574,14 +552,13 @@
 		<foreign-key foreignTable="split_ratio_profile_sets">
 			<reference local="split_ratio_profile_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="node_families">
+		<foreign-key foreignTable="nodes">
 			<reference local="node_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="destination_link_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -1306,11 +1283,9 @@
 		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
@@ -1331,17 +1306,16 @@
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="destination_link_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -1371,11 +1345,9 @@
 		<column name="productivity_loss" domain="DECIMAL"/>
 		<column name="los" domain="DECIMAL" description="LOS - Level Of Service as defined in Highway Capacity Manual."/>
 		<column name="vc_ratio" domain="DECIMAL" description="Volume to capacity ratio."/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
@@ -1395,17 +1367,16 @@
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="link_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="networks">
-			<reference local="network_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
+		<foreign-key foreignTable="links">
 			<reference local="destination_link_id" foreign="id"/>
+			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
