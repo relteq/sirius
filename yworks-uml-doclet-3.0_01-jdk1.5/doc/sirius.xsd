@@ -224,7 +224,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal|highway|stop_intersection|other"/>
+						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>
@@ -290,7 +290,7 @@
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_approach|heavy_vehicle|electric_toll"/>
+						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_apporach"/>
 					  </xs:restriction>
 					</xs:simpleType>
 				  </xs:attribute>

@@ -224,5 +224,9 @@ public class Controller_IRM_Alinea extends Controller {
 	public boolean register() {
 		return registerFlowController(onramplink,0);
 	}
+	
+	public boolean deregister() {
+		return deregisterFlowController(onramplink);
+	}
 
 }

@@ -39,4 +39,10 @@ public class Controller_SIG_Actuated extends Controller {
 		
 	}
 
+	@Override
+	public boolean deregister() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

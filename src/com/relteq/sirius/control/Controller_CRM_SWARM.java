@@ -39,4 +39,10 @@ public class Controller_CRM_SWARM extends Controller {
 		
 	}
 
+	@Override
+	public boolean deregister() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
