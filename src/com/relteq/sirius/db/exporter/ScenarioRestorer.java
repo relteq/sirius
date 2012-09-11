@@ -69,8 +69,8 @@ public class ScenarioRestorer {
 	 * @param id
 	 * @return String
 	 */
-	private static String id2str(long id) {
-		return Long.toString(id);
+	private static String id2str(Long id) {
+		return id.toString();
 	}
 
 	private com.relteq.sirius.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws SiriusException {
