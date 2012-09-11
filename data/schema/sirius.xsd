@@ -168,6 +168,7 @@
         <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
         <xs:element ref="DestinationNetworks" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="Routes" minOccurs="0" />
       </xs:all>
       <xs:attribute name="id" type="xs:string" use="optional" />
       <xs:attribute name="name" type="xs:string" use="optional" />
