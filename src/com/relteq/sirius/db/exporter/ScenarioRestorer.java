@@ -107,23 +107,20 @@ public class ScenarioRestorer {
 		return settings;
 	}
 
-	private com.relteq.sirius.jaxb.VehicleTypes restoreVehicleTypes(VehicleTypeSets db_vtsets) {
+	private com.relteq.sirius.jaxb.VehicleTypes restoreVehicleTypes(VehicleTypeSets db_vtsets) throws TorqueException {
 		if (null == db_vtsets) return null;
-		com.relteq.sirius.jaxb.VehicleTypes vts = factory.createVehicleTypes();
 		Criteria crit = new Criteria();
 		crit.addJoin(VehicleTypesInSetsPeer.VEHICLE_TYPE_ID, VehicleTypesPeer.VEHICLE_TYPE_ID);
 		crit.add(VehicleTypesInSetsPeer.VEHICLE_TYPE_SET_ID, db_vtsets.getId());
 		crit.add(VehicleTypesPeer.PROJECT_ID, db_vtsets.getProjectId());
 		crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
-			for (VehicleTypes db_vt : db_vt_l)
-				vts.getVehicleType().add(restoreVehicleType(db_vt));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return vts;
+		@SuppressWarnings("unchecked")
+		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
+		if (0 == db_vt_l.size()) return null;
+		com.relteq.sirius.jaxb.VehicleTypes vtypes = factory.createVehicleTypes();
+		for (VehicleTypes db_vt : db_vt_l)
+			vtypes.getVehicleType().add(restoreVehicleType(db_vt));
+		return vtypes;
 	}
 
 	private com.relteq.sirius.jaxb.VehicleType restoreVehicleType(VehicleTypes db_vt) {
