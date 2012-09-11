@@ -382,8 +382,9 @@ public class ScenarioLoader {
 		db_phase.setYellowTime(phase.getYellowTime());
 		db_phase.setRedClearTime(phase.getRedClearTime());
 		db_phase.save(conn);
-		for (com.relteq.sirius.jaxb.LinkReference lr : phase.getLinkReferences().getLinkReference())
-			save(lr, db_phase);
+		if (null != phase.getLinkReferences())
+			for (com.relteq.sirius.jaxb.LinkReference lr : phase.getLinkReferences().getLinkReference())
+				save(lr, db_phase);
 	}
 
 	/**

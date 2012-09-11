@@ -555,38 +555,30 @@ public class ScenarioRestorer {
 		return nc;
 	}
 
-	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalSets db_ss) {
+	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalSets db_ss) throws TorqueException {
 		if (null == db_ss) return null;
 		com.relteq.sirius.jaxb.SignalList sl = factory.createSignalList();
 		// TODO sl.setName(db_sl.getName());
 		// TODO sl.setDescription(db_sl.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<Signals> db_signal_l = db_ss.getSignalss();
-			for (Signals db_signal : db_signal_l)
-				sl.getSignal().add(restoreSignal(db_signal));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<Signals> db_signal_l = db_ss.getSignalss();
+		for (Signals db_signal : db_signal_l)
+			sl.getSignal().add(restoreSignal(db_signal));
 		return sl;
 	}
 
-	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) {
+	private com.relteq.sirius.jaxb.Signal restoreSignal(Signals db_signal) throws TorqueException {
 		com.relteq.sirius.jaxb.Signal signal = factory.createSignal();
 		signal.setId(id2str(db_signal.getId()));
 		signal.setNodeId(id2str(db_signal.getNodeId()));
-		try {
-			@SuppressWarnings("unchecked")
-			List<Phases> db_ph_l = db_signal.getPhasess();
-			for (Phases db_ph : db_ph_l)
-				signal.getPhase().add(restorePhase(db_ph));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<Phases> db_ph_l = db_signal.getPhasess();
+		for (Phases db_ph : db_ph_l)
+			signal.getPhase().add(restorePhase(db_ph));
 		return signal;
 	}
 
-	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) {
+	private com.relteq.sirius.jaxb.Phase restorePhase(Phases db_ph) throws TorqueException {
 		com.relteq.sirius.jaxb.Phase phase = factory.createPhase();
 		phase.setNema(BigInteger.valueOf(db_ph.getNema()));
 		phase.setProtected(db_ph.getIsProtected());
@@ -596,16 +588,12 @@ public class ScenarioRestorer {
 		phase.setMinGreenTime(db_ph.getMinGreenTime());
 		phase.setYellowTime(db_ph.getYellowTime());
 		phase.setRedClearTime(db_ph.getRedClearTime());
-		try {
-			@SuppressWarnings("unchecked")
-			List<PhaseLinks> db_phl_l = db_ph.getPhaseLinkss();
-			com.relteq.sirius.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
-			for (PhaseLinks db_phl : db_phl_l)
-				linkrefs.getLinkReference().add(restorePhaseLink(db_phl));
-			phase.setLinkReferences(linkrefs);
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<PhaseLinks> db_phl_l = db_ph.getPhaseLinkss();
+		com.relteq.sirius.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
+		for (PhaseLinks db_phl : db_phl_l)
+			linkrefs.getLinkReference().add(restorePhaseLink(db_phl));
+		phase.setLinkReferences(linkrefs);
 		return phase;
 	}
 
