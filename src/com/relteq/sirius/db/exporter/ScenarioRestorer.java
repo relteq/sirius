@@ -462,49 +462,43 @@ public class ScenarioRestorer {
 		return fd;
 	}
 
-	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) {
+	private com.relteq.sirius.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) throws TorqueException {
 		if (null == db_dpset) return null;
 		com.relteq.sirius.jaxb.DemandProfileSet dpset = factory.createDemandProfileSet();
 		dpset.setId(id2str(db_dpset.getId()));
 		dpset.setName(db_dpset.getName());
 		dpset.setDescription(db_dpset.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<DemandProfiles> db_dp_l = db_dpset.getDemandProfiless();
-			for (DemandProfiles db_dp : db_dp_l)
-				dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<DemandProfiles> db_dp_l = db_dpset.getDemandProfiless();
+		for (DemandProfiles db_dp : db_dp_l)
+			dpset.getDemandProfile().add(restoreDemandProfile(db_dp));
 		return dpset;
 	}
 
-	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) {
+	private com.relteq.sirius.jaxb.DemandProfile restoreDemandProfile(DemandProfiles db_dp) throws TorqueException {
 		com.relteq.sirius.jaxb.DemandProfile dp = factory.createDemandProfile();
-		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
-		dp.setDt(db_dp.getDt());
-		dp.setStartTime(db_dp.getStartTime());
 		dp.setKnob(db_dp.getKnob());
+		dp.setStartTime(db_dp.getStartTime());
+		dp.setDt(db_dp.getDt());
+		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
+		// TODO dp.setDestinationNetworkId();
 		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
 		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
+
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(DemandsPeer.NUMBER);
 		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<Demands> db_demand_l = db_dp.getDemandss(crit);
-			StringBuilder sb = null;
-			Integer number = null;
-			for (Demands db_demand : db_demand_l) {
-				if (null == sb) sb = new StringBuilder();
-				else sb.append(db_demand.getNumber().equals(number) ? ':' : ',');
-				number = db_demand.getNumber();
-				sb.append(db_demand.getDemand().toPlainString());
-			}
-			if (null != sb) dp.setContent(sb.toString());
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
+		@SuppressWarnings("unchecked")
+		List<Demands> db_demand_l = db_dp.getDemandss(crit);
+		StringBuilder sb = null;
+		Integer number = null;
+		for (Demands db_demand : db_demand_l) {
+			if (null == sb) sb = new StringBuilder();
+			else sb.append(db_demand.getNumber().equals(number) ? ':' : ',');
+			number = db_demand.getNumber();
+			sb.append(db_demand.getDemand().toPlainString());
 		}
+		if (null != sb) dp.setContent(sb.toString());
 		return dp;
 	}
 

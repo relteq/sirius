@@ -680,8 +680,9 @@ public class ScenarioLoader {
 		db_dpset.setName(dpset.getName());
 		db_dpset.setDescription(dpset.getDescription());
 		db_dpset.save(conn);
+		VehicleTypes[] db_vt = reorderVehicleTypes(dpset.getVehicleTypeOrder());
 		for (com.relteq.sirius.jaxb.DemandProfile dp : dpset.getDemandProfile())
-			save(dp, db_dpset, reorderVehicleTypes(dpset.getVehicleTypeOrder()));
+			save(dp, db_dpset, db_vt);
 		return db_dpset;
 	}
 
@@ -696,7 +697,6 @@ public class ScenarioLoader {
 		DemandProfiles db_dp = new DemandProfiles();
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(getDBLinkId(dp.getLinkIdOrigin()));
-		// TODO db_dp.setNetworkId();
 		// TODO db_dp.setDestinationLinkId();
 		db_dp.setDt(dp.getDt());
 		db_dp.setStartTime(dp.getStartTime());
