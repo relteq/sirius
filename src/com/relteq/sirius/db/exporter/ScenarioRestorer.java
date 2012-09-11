@@ -331,43 +331,41 @@ public class ScenarioRestorer {
 		return idset;
 	}
 
-	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) {
+	private com.relteq.sirius.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) throws TorqueException {
 		if (null == db_wfset) return null;
 		com.relteq.sirius.jaxb.WeavingFactorSet wfset = factory.createWeavingFactorSet();
 		wfset.setId(id2str(db_wfset.getId()));
 		wfset.setName(db_wfset.getName());
 		wfset.setDescription(db_wfset.getDescription());
+
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.OUT_LINK_ID);
 		crit.addAscendingOrderByColumn(WeavingFactorsPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss();
-			com.relteq.sirius.jaxb.Weavingfactors wf = null;
-			StringBuilder sb = new StringBuilder();
-			for (WeavingFactors db_wf : db_wf_l) {
-				if (null != wf && !(wf.getLinkIn().equals(id2str(db_wf.getInLinkId())) && wf.getLinkOut().equals(id2str(db_wf.getOutLinkId())))) {
-					wf.setContent(sb.toString());
-					wfset.getWeavingfactors().add(wf);
-					wf = null;
-				}
-				if (null == wf) { // new weaving factor
-					wf = factory.createWeavingfactors();
-					wf.setLinkIn(id2str(db_wf.getInLinkId()));
-					wf.setLinkOut(id2str(db_wf.getOutLinkId()));
-					sb.setLength(0);
-				} else { // same weaving factor, different vehicle type
-					sb.append(':');
-				}
-				sb.append(db_wf.getFactor().toPlainString());
-			}
-			if (null != wf) {
+		@SuppressWarnings("unchecked")
+		List<WeavingFactors> db_wf_l = db_wfset.getWeavingFactorss(crit);
+		com.relteq.sirius.jaxb.Weavingfactors wf = null;
+		StringBuilder sb = new StringBuilder();
+		for (WeavingFactors db_wf : db_wf_l) {
+			if (null != wf && !(wf.getLinkIn().equals(id2str(db_wf.getInLinkId())) && wf.getLinkOut().equals(id2str(db_wf.getOutLinkId())))) {
 				wf.setContent(sb.toString());
 				wfset.getWeavingfactors().add(wf);
+				wf = null;
 			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
+			if (null == wf) { // new weaving factor
+				wf = factory.createWeavingfactors();
+				wf.setLinkIn(id2str(db_wf.getInLinkId()));
+				wf.setLinkOut(id2str(db_wf.getOutLinkId()));
+				sb.setLength(0);
+			} else { // same weaving factor, different vehicle type
+				// TODO delimiter = ':' or ','?
+				sb.append(':');
+			}
+			sb.append(db_wf.getFactor().toPlainString());
+		}
+		if (null != wf) {
+			wf.setContent(sb.toString());
+			wfset.getWeavingfactors().add(wf);
 		}
 		return wfset;
 	}

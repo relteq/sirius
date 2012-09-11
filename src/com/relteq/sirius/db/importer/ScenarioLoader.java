@@ -500,8 +500,9 @@ public class ScenarioLoader {
 		db_wfset.setName(wfset.getName());
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
+		VehicleTypes[] db_vt = reorderVehicleTypes(wfset.getVehicleTypeOrder());
 		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors())
-			save(wf, db_wfset, reorderVehicleTypes(wfset.getVehicleTypeOrder()));
+			save(wf, db_wfset, db_vt);
 		return db_wfset;
 	}
 
@@ -513,6 +514,7 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
+		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
