@@ -636,7 +636,6 @@ public class ScenarioLoader {
 		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(getDBLinkId(fdprofile.getLinkId()));
-		// TODO db_fdprofile.setNetworkId();
 		db_fdprofile.setDt(fdprofile.getDt());
 		db_fdprofile.setStartTime(fdprofile.getStartTime());
 		db_fdprofile.save(conn);
@@ -657,13 +656,14 @@ public class ScenarioLoader {
 		db_fd.setFundamentalDiagramProfiles(db_fdprofile);
 		db_fd.setNumber(number);
 		db_fd.setFreeFlowSpeed(fd.getFreeFlowSpeed());
-		// TODO: revise critical speed
-		db_fd.setCriticalSpeed(fd.getFreeFlowSpeed());
+		db_fd.setCriticalSpeed(fd.getCriticalSpeed());
 		db_fd.setCongestionWaveSpeed(fd.getCongestionSpeed());
 		db_fd.setCapacity(fd.getCapacity());
 		db_fd.setJamDensity(fd.getJamDensity());
 		db_fd.setCapacityDrop(fd.getCapacityDrop());
 		db_fd.setCapacityStd(fd.getStdDevCapacity());
+		db_fd.setFreeFlowSpeedStd(fd.getStdDevFreeFlowSpeed());
+		db_fd.setCongestionWaveSpeedStd(fd.getStdDevCongestionSpeed());
 		db_fd.save(conn);
 	}
 
