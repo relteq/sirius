@@ -225,27 +225,44 @@ public class ScenarioLoader {
 		NodeFamilies db_nf = new NodeFamilies();
 		db_nf.setId(NodeFamiliesPeer.nextId(NodeFamiliesPeer.ID, conn));
 		db_nf.save(conn);
+
 		Nodes db_node = new Nodes();
 		db_node.setNodeFamilies(db_nf);
 		db_node.setNetworks(db_network);
-		// TODO save node description, postmile, model
-		// TODO node.getPosition() -> db_node.setGeometry();
+		// TODO node.getPosition() -> db_node.setGeom();
 		db_node.setGeom("");
-		// TODO revise and uncomment
-		/*
-		if (null != node.getName()) {
-			NodeName db_nname = new NodeName();
-			db_nname.setName(node.getName());
-			db_node.addNodeName(db_nname, conn);
-		}
-		*/
-		if (null != node.getType()) {
-			NodeType db_ntype = new NodeType();
-			db_ntype.setType(node.getType());
-			db_node.addNodeType(db_ntype, conn);
-		}
+		db_node.setInSynch(node.isInSynch());
+		// TODO fill node_name table
+
+		// node type
+		NodeType db_ntype = new NodeType();
+		db_ntype.setType(node.getType());
+		db_node.addNodeType(db_ntype, conn);
+
 		db_node.save(conn);
 		nodes.put(node.getId(), db_node);
+
+		save(node.getRoadwayMarkers(), db_node);
+	}
+
+	/**
+	 * Imports roadway markers
+	 * @param markers
+	 * @param db_node an imported node
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.RoadwayMarkers markers, Nodes db_node) throws TorqueException {
+		// TODO revise the whole method
+		if (null == markers) return;
+		for (com.relteq.sirius.jaxb.Marker marker : markers.getMarker()) {
+			PostmileHighways db_pmhw = new PostmileHighways();
+			db_pmhw.setHighwayName(marker.getName());
+			db_pmhw.save(conn);
+			Postmiles db_postmile = new Postmiles();
+			db_postmile.setNodes(db_node);
+			db_postmile.setPostmileHighways(db_pmhw);
+			db_postmile.save(conn);
+		}
 	}
 
 	/**

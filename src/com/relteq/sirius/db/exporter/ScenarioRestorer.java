@@ -140,7 +140,7 @@ public class ScenarioRestorer {
 		return nets;
 	}
 
-	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) {
+	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) throws TorqueException {
 		com.relteq.sirius.jaxb.Network net = factory.createNetwork();
 		net.setId(id2str(db_net.getId()));
 		net.setName(db_net.getName());
@@ -153,69 +153,55 @@ public class ScenarioRestorer {
 		return net;
 	}
 
-	private com.relteq.sirius.jaxb.NodeList restoreNodeList(Networks db_net) {
-		try {
-			@SuppressWarnings("unchecked")
-			List<Nodes> db_nl = db_net.getNodess();
-			if (0 < db_nl.size()) {
-				com.relteq.sirius.jaxb.NodeList nl = factory.createNodeList();
-				for (Nodes db_node : db_nl)
-					nl.getNode().add(restoreNode(db_node));
-				return nl;
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return null;
+	private com.relteq.sirius.jaxb.NodeList restoreNodeList(Networks db_net) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<Nodes> db_nl = db_net.getNodess();
+		if (0 == db_nl.size()) return null;
+		com.relteq.sirius.jaxb.NodeList nl = factory.createNodeList();
+		for (Nodes db_node : db_nl)
+			nl.getNode().add(restoreNode(db_node));
+		return nl;
 	}
 
-	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) {
+	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) throws TorqueException {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
 		node.setId(id2str(db_node.getId()));
-		try {
-			// TODO revise and uncomment
-			/*
-			@SuppressWarnings("unchecked")
-			List<NodeName> db_nname_l = db_node.getNodeNames();
-			if (0 < db_nname_l.size()) {
-				node.setName(db_nname_l.get(0).getName());
-				if (1 < db_nname_l.size())
-					SiriusErrorLog.addWarning("Node " + db_node.getId() + " has " + db_nname_l.size() + " values for @name");
-			}
-			*/
-			@SuppressWarnings("unchecked")
-			List<NodeType> db_ntype_l = db_node.getNodeTypes();
-			if (0 < db_ntype_l.size()) {
-				node.setType(db_ntype_l.get(0).getType());
-				if (1 < db_ntype_l.size())
-					SiriusErrorLog.addWarning("Node " + db_node.getId() + " has " + db_ntype_l.size() + " values for @type");
+		node.setInSynch(db_node.getInSynch());
 
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		// TODO node.setDescription();
-		// TODO node.setType();
-		// TODO db_node.getGeometry() -> node.setPosition();
-		// TODO node.setPostmile();
+		NodeType db_nodetype = NodeTypePeer.retrieveByPK(db_node.getId(), db_node.getNetworkId());
+		node.setType(db_nodetype.getType());
+
+		node.setRoadwayMarkers(restoreRoadwayMarkers(db_node));
 		node.setInputs(restoreInputs(db_node));
 		node.setOutputs(restoreOutputs(db_node));
+		// TODO db_node.getGeom() -> node.setPosition();
 		return node;
 	}
 
-	private com.relteq.sirius.jaxb.Inputs restoreInputs(Nodes db_node) {
-		com.relteq.sirius.jaxb.Inputs inputs = factory.createInputs();
+	private com.relteq.sirius.jaxb.RoadwayMarkers restoreRoadwayMarkers(Nodes db_node) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<Postmiles> db_postmile_l = db_node.getPostmiless();
+		if (0 == db_postmile_l.size()) return null;
+		com.relteq.sirius.jaxb.RoadwayMarkers markers = factory.createRoadwayMarkers();
+		for (Postmiles db_postmile : db_postmile_l) {
+			com.relteq.sirius.jaxb.Marker marker = factory.createMarker();
+			// TODO revise
+			marker.setName(db_postmile.getPostmileHighways().getHighwayName());
+			// TODO marker.setPostmile();
+			markers.getMarker().add(marker);
+		}
+		return markers;
+	}
+
+	private com.relteq.sirius.jaxb.Inputs restoreInputs(Nodes db_node) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
 		crit.add(LinksPeer.END_NODE_ID, db_node.getId());
-		try {
-			@SuppressWarnings("unchecked")
-			List<Links> db_link_l = LinksPeer.doSelect(crit);
-			for (Links db_link : db_link_l)
-				inputs.getInput().add(restoreInput(db_link));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<Links> db_link_l = LinksPeer.doSelect(crit);
+		com.relteq.sirius.jaxb.Inputs inputs = factory.createInputs();
+		for (Links db_link : db_link_l)
+			inputs.getInput().add(restoreInput(db_link));
 		return inputs;
 	}
 
@@ -225,19 +211,15 @@ public class ScenarioRestorer {
 		return input;
 	}
 
-	private com.relteq.sirius.jaxb.Outputs restoreOutputs(Nodes db_node) {
-		com.relteq.sirius.jaxb.Outputs outputs = factory.createOutputs();
+	private com.relteq.sirius.jaxb.Outputs restoreOutputs(Nodes db_node) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.add(LinksPeer.NETWORK_ID, db_node.getNetworkId());
 		crit.add(LinksPeer.BEG_NODE_ID, db_node.getId());
-		try {
-			@SuppressWarnings("unchecked")
-			List<Links> db_link_l = LinksPeer.doSelect(crit);
-			for (Links db_link : db_link_l)
-				outputs.getOutput().add(restoreOutput(db_link));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<Links> db_link_l = LinksPeer.doSelect(crit);
+		com.relteq.sirius.jaxb.Outputs outputs = factory.createOutputs();
+		for (Links db_link : db_link_l)
+			outputs.getOutput().add(restoreOutput(db_link));
 		return outputs;
 	}
 
