@@ -112,6 +112,7 @@ public class ScenarioLoader {
 		db_scenario.setEventSets(save(scenario.getEventSet()));
 		// TODO db_scenario.setEnkfNoiseParameterSets();
 		save(scenario.getDestinationNetworks(), db_scenario);
+		save(scenario.getRoutes(), db_scenario);
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -816,6 +817,43 @@ public class ScenarioLoader {
 		db_dnl.setLinkId(getDBLinkId(linkref.getId()));
 		db_dnl.setDestinationNetworks(db_destnet);
 		db_dnl.save(conn);
+	}
+
+	/**
+	 * Imports routes
+	 * @param routes
+	 * @param db_scenario an imported scenario
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Routes routes, Scenarios db_scenario) throws TorqueException {
+		if (null == routes) return;
+		for (com.relteq.sirius.jaxb.Route route : routes.getRoute()) {
+			RouteSets db_rs = new RouteSets();
+			db_rs.setScenarios(db_scenario);
+			db_rs.setRoutes(save(route));
+			db_rs.save(conn);
+		}
+	}
+
+	/**
+	 * Imports a route
+	 * @param route
+	 * @return an imported route
+	 * @throws TorqueException
+	 */
+	private Routes save(com.relteq.sirius.jaxb.Route route) throws TorqueException {
+		Routes db_route = new Routes();
+		db_route.setProjectId(getProjectId());
+		// TODO db_route.setName();
+		int ordinal = 0;
+		for (com.relteq.sirius.jaxb.LinkReference lr : route.getLinkReferences().getLinkReference()) {
+			RouteLinks db_rl = new RouteLinks();
+			db_rl.setLinkId(getDBLinkId(lr.getId()));
+			db_rl.setOrdinal(Integer.valueOf(ordinal++));
+			db_route.addRouteLinks(db_rl);
+		}
+		db_route.save(conn);
+		return db_route;
 	}
 
 	protected static class Data1D {

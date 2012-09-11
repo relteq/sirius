@@ -94,6 +94,7 @@ public class ScenarioRestorer {
 			scenario.setFundamentalDiagramProfileSet(restoreFundamentalDiagramProfileSet(db_scenario.getFundamentalDiagramProfileSets()));
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionSets()));
 			scenario.setDestinationNetworks(restoreDestinationNetworks(db_scenario));
+			scenario.setRoutes(restoreRoutes(db_scenario));
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
@@ -709,6 +710,33 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.LinkReference linkref = factory.createLinkReference();
 		linkref.setId(id2str(db_dnl.getLinkId()));
 		return linkref;
+	}
+
+	private com.relteq.sirius.jaxb.Routes restoreRoutes(Scenarios db_scenario) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<RouteSets> db_rset_l = db_scenario.getRouteSetss();
+		if (0 == db_rset_l.size()) return null;
+		com.relteq.sirius.jaxb.Routes routes = factory.createRoutes();
+		for (RouteSets db_rset : db_rset_l)
+			routes.getRoute().add(restoreRoute(db_rset.getRoutes()));
+		return routes;
+	}
+
+	private com.relteq.sirius.jaxb.Route restoreRoute(Routes db_route) throws TorqueException {
+		com.relteq.sirius.jaxb.Route route = factory.createRoute();
+		route.setId(id2str(db_route.getId()));
+		com.relteq.sirius.jaxb.LinkReferences lrs = factory.createLinkReferences();
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(RouteLinksPeer.ORDINAL);
+		@SuppressWarnings("unchecked")
+		List<RouteLinks> db_rl_l = db_route.getRouteLinkss(crit);
+		for (RouteLinks db_rl : db_rl_l) {
+			com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
+			lr.setId(id2str(db_rl.getLinkId()));
+			lrs.getLinkReference().add(lr);
+		}
+		route.setLinkReferences(lrs);
+		return route;
 	}
 
 }
