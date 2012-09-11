@@ -608,44 +608,37 @@ public class ScenarioRestorer {
 		return sensor;
 	}
 
-	private com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) {
+	private com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
 		if (null == db_dbcps) return null;
 		com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet dbcps = factory.createDownstreamBoundaryCapacityProfileSet();
 		dbcps.setId(id2str(db_dbcps.getId()));
 		dbcps.setName(db_dbcps.getName());
 		dbcps.setDescription(db_dbcps.getDescription());
-		try {
-			@SuppressWarnings("unchecked")
-			List<DownstreamBoundaryCapacityProfiles> db_dbcp_l = db_dbcps.getDownstreamBoundaryCapacityProfiless();
-			for (DownstreamBoundaryCapacityProfiles db_dbcp : db_dbcp_l)
-				dbcps.getCapacityProfile().add(restoreCapacityProfile(db_dbcp));
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+		@SuppressWarnings("unchecked")
+		List<DownstreamBoundaryCapacityProfiles> db_dbcp_l = db_dbcps.getDownstreamBoundaryCapacityProfiless();
+		for (DownstreamBoundaryCapacityProfiles db_dbcp : db_dbcp_l)
+			dbcps.getCapacityProfile().add(restoreCapacityProfile(db_dbcp));
 		return dbcps;
 	}
 
-	private com.relteq.sirius.jaxb.CapacityProfile restoreCapacityProfile(DownstreamBoundaryCapacityProfiles db_dbcp) {
+	private com.relteq.sirius.jaxb.CapacityProfile restoreCapacityProfile(DownstreamBoundaryCapacityProfiles db_dbcp) throws TorqueException {
 		com.relteq.sirius.jaxb.CapacityProfile cprofile = factory.createCapacityProfile();
 		cprofile.setLinkId(id2str(db_dbcp.getLinkId()));
 		cprofile.setDt(db_dbcp.getDt());
 		cprofile.setStartTime(db_dbcp.getStartTime());
+
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(DownstreamBoundaryCapacitiesPeer.NUMBER);
-		try {
-			@SuppressWarnings("unchecked")
-			List<DownstreamBoundaryCapacities> db_dbc_l = db_dbcp.getDownstreamBoundaryCapacitiess(crit);
-			StringBuilder sb = null;
-			for (DownstreamBoundaryCapacities db_dbc : db_dbc_l) {
-				// TODO delimiter = ',' or ':'?
-				if (null == sb) sb = new StringBuilder();
-				else sb.append(',');
-				sb.append(db_dbc.getDownstreamBoundaryCapacity().toPlainString());
-			}
-			if (null != sb) cprofile.setContent(sb.toString());
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
+		@SuppressWarnings("unchecked")
+		List<DownstreamBoundaryCapacities> db_dbc_l = db_dbcp.getDownstreamBoundaryCapacitiess(crit);
+		StringBuilder sb = null;
+		for (DownstreamBoundaryCapacities db_dbc : db_dbc_l) {
+			// TODO delimiter = ',' or ':'?
+			if (null == sb) sb = new StringBuilder();
+			else sb.append(',');
+			sb.append(db_dbc.getDownstreamBoundaryCapacity().toPlainString());
 		}
+		if (null != sb) cprofile.setContent(sb.toString());
 		return cprofile;
 	}
 

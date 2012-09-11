@@ -788,7 +788,7 @@ public class ScenarioLoader {
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
 		// TODO delimiter = ':' or ','?
-		Data1D data1d = new Data1D(cp.getContent(), ":");
+		Data1D data1d = new Data1D(cp.getContent(), ",");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
 			for (int number = 0; number < data.length; ++number) {
