@@ -130,20 +130,14 @@ public class ScenarioRestorer {
 		return vt;
 	}
 
-	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) {
-		try {
-			@SuppressWarnings("unchecked")
-			List<NetworkSets> db_nets_l = db_scenario.getNetworkSetss();
-			if (0 < db_nets_l.size()) {
-				com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
-				for (NetworkSets db_nets : db_nets_l)
-					nets.getNetwork().add(restoreNetwork(db_nets.getNetworks()));
-				return nets;
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return null;
+	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<NetworkSets> db_nets_l = db_scenario.getNetworkSetss();
+		if (0 == db_nets_l.size()) return null;
+		com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
+		for (NetworkSets db_nets : db_nets_l)
+			nets.getNetwork().add(restoreNetwork(db_nets.getNetworks()));
+		return nets;
 	}
 
 	private com.relteq.sirius.jaxb.Network restoreNetwork(Networks db_net) {
@@ -151,7 +145,9 @@ public class ScenarioRestorer {
 		net.setId(id2str(db_net.getId()));
 		net.setName(db_net.getName());
 		net.setDescription(db_net.getDescription());
+		// TODO net.setPosition();
 		net.setDt(new BigDecimal(1)); // TODO change this when the DB schema is updated
+		net.setLocked(db_net.getLocked());
 		net.setNodeList(restoreNodeList(db_net));
 		net.setLinkList(restoreLinkList(db_net));
 		return net;

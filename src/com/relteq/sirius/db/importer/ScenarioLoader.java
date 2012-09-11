@@ -203,14 +203,13 @@ public class ScenarioLoader {
 		Networks db_network = new Networks();
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
+		db_network.setLocked(network.isLocked());
 		db_network.save(conn);
 		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
-		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
+		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode())
 			save(node, db_network);
-		}
-		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
+		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink())
 			save(link, db_network);
-		}
 		return db_network;
 	}
 
