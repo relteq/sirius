@@ -794,7 +794,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="sensors">
+	<table name="sensors" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="type" required="true" domain="SENSOR_TYPE"/>
 		<column name="sensor_set_id" required="true" domain="ID"/>
