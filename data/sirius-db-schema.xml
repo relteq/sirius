@@ -173,13 +173,11 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="nodes">
+		<foreign-key foreignTable="node_families">
 			<reference local="beg_node_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="nodes">
+		<foreign-key foreignTable="node_families">
 			<reference local="end_node_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -268,13 +266,17 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="from_link_id" foreign="id"/>
-			<reference local="from_network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="networks">
+			<reference local="from_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
 			<reference local="to_link_id" foreign="id"/>
-			<reference local="to_network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="to_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -307,13 +309,17 @@
 		<foreign-key foreignTable="network_connection_sets">
 			<reference local="network_connection_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="from_link_id" foreign="id"/>
-			<reference local="from_network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="networks">
+			<reference local="from_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_families">
 			<reference local="to_link_id" foreign="id"/>
-			<reference local="to_network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="to_network_id" foreign="id"/>
 		</foreign-key>
 		<unique name="network_connections_from">
 			<unique-column name="network_connection_set_id"/>
@@ -1325,16 +1331,17 @@
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
@@ -1386,16 +1393,17 @@
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="networks">
+			<reference local="network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="data_sources">
 			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
+		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
