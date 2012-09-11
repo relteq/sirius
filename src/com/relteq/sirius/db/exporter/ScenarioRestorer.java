@@ -229,64 +229,63 @@ public class ScenarioRestorer {
 		return output;
 	}
 
-	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) {
-		try {
-			@SuppressWarnings("unchecked")
-			List<Links> db_ll = db_net.getLinkss();
-			if (0 < db_ll.size()) {
-				com.relteq.sirius.jaxb.LinkList ll = factory.createLinkList();
-				for (Links db_link : db_ll) {
-					ll.getLink().add(restoreLink(db_link));
-				}
-				return ll;
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
-		return null;
+	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<Links> db_ll = db_net.getLinkss();
+		if (0 == db_ll.size()) return null;
+		com.relteq.sirius.jaxb.LinkList ll = factory.createLinkList();
+		for (Links db_link : db_ll)
+			ll.getLink().add(restoreLink(db_link));
+		return ll;
 	}
 
-	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) {
+	private com.relteq.sirius.jaxb.Link restoreLink(Links db_link) throws TorqueException {
 		com.relteq.sirius.jaxb.Link link = factory.createLink();
 		link.setId(id2str(db_link.getId()));
-		// TODO link.setName();
-		// TODO link.setRoadName();
-		// TODO link.setDescription();
-		// TODO link.setType();
+
+		// begin node
+		com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
+		begin.setNodeId(id2str(db_link.getBegNodeId()));
+		link.setBegin(begin);
+
+		// end node
+		com.relteq.sirius.jaxb.End end = factory.createEnd();
+		end.setNodeId(id2str(db_link.getEndNodeId()));
+		link.setEnd(end);
+
+		link.setRoads(restoreRoads(db_link));
+		// TODO link.setDynamics();
 		// TODO revise: geometry -> shape
 		link.setShape(db_link.getGeom());
-		try {
-			@SuppressWarnings("unchecked")
-			List<LinkLanes> db_llanes_l = db_link.getLinkLaness();
-			if (0 < db_llanes_l.size()) {
-				link.setLanes(db_llanes_l.get(0).getLanes());
-				if (1 < db_llanes_l.size())
-					SiriusErrorLog.addWarning("Link " + db_link.getId() + " has " + db_llanes_l.size() + " values for @lanes");
-			}
-			@SuppressWarnings("unchecked")
-			List<LinkType> db_ltype_l = db_link.getLinkTypes();
-			if (0 < db_ltype_l.size()) {
-				link.setType(db_ltype_l.get(0).getType());
-				if (1 < db_ltype_l.size())
-					SiriusErrorLog.addWarning("Link " + db_link.getId() + " has " + db_ltype_l.size() + " values for @type");
-			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
-		}
+
+		LinkLanes db_llanes = LinkLanesPeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
+		link.setLanes(db_llanes.getLanes());
+
+		@SuppressWarnings("unchecked")
+		List<LinkLaneOffset> db_lloffset_l = db_link.getLinkLaneOffsets();
+		if (0 < db_lloffset_l.size())
+			link.setLaneOffset(db_lloffset_l.get(0).getDisplayLaneOffset());
+
 		link.setLength(db_link.getLength());
-		// TODO link.setDynamics();
-		// TODO link.setLaneOffset();
-		if (null != db_link.getBegNodeId()) {
-			com.relteq.sirius.jaxb.Begin begin = factory.createBegin();
-			begin.setNodeId(id2str(db_link.getBegNodeId()));
-			link.setBegin(begin);
-		}
-		if (null != db_link.getEndNodeId()) {
-			com.relteq.sirius.jaxb.End end = factory.createEnd();
-			end.setNodeId(id2str(db_link.getEndNodeId()));
-			link.setEnd(end);
-		}
+
+		LinkType db_linktype = LinkTypePeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
+		link.setType(db_linktype.getType());
+
+		link.setInSynch(db_link.getInSynch());
 		return link;
+	}
+
+	private com.relteq.sirius.jaxb.Roads restoreRoads(Links db_link) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<LinkName> db_lname_l = db_link.getLinkNames();
+		if (0 == db_lname_l.size()) return null;
+		com.relteq.sirius.jaxb.Roads roads = factory.createRoads();
+		for (LinkName db_lname : db_lname_l) {
+			com.relteq.sirius.jaxb.Road road = factory.createRoad();
+			road.setName(db_lname.getName());
+			roads.getRoad().add(road);
+		}
+		return roads;
 	}
 
 	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) {

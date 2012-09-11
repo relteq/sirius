@@ -277,6 +277,7 @@ public class ScenarioLoader {
 		LinkFamilies db_lf = new LinkFamilies();
 		db_lf.setId(LinkFamiliesPeer.nextId(LinkFamiliesPeer.ID, conn));
 		db_lf.save(conn);
+
 		Links db_link = new Links();
 		db_link.setLinkFamilies(db_lf);
 		db_link.setNetworks(db_network);
@@ -287,18 +288,45 @@ public class ScenarioLoader {
 		db_link.setGeom(null == link.getShape() ? "" : link.getShape());
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
-		if (null != link.getType()) {
-			LinkType db_ltype = new LinkType();
-			db_ltype.setType(link.getType());
-			db_link.addLinkType(db_ltype, conn);
+		db_link.setInSynch(link.isInSynch());
+
+		// link type
+		LinkType db_ltype = new LinkType();
+		db_ltype.setType(link.getType());
+		db_link.addLinkType(db_ltype, conn);
+
+		// link lanes
+		LinkLanes db_llanes = new LinkLanes();
+		db_llanes.setLanes(link.getLanes());
+		db_link.addLinkLanes(db_llanes, conn);
+
+		// link lane offset
+		if (null != link.getLaneOffset()) {
+			LinkLaneOffset db_lloffset = new LinkLaneOffset();
+			db_lloffset.setDisplayLaneOffset(link.getLaneOffset());
+			db_link.addLinkLaneOffset(db_lloffset, conn);
 		}
-		if (null != link.getLanes()) {
-			LinkLanes db_llanes = new LinkLanes();
-			db_llanes.setLanes(link.getLanes());
-			db_link.addLinkLanes(db_llanes, conn);
-		}
+
 		db_link.save(conn);
 		links.put(link.getId(), db_link);
+
+		save(link.getRoads(), db_link);
+	}
+
+	/**
+	 * Imports link roads
+	 * @param roads
+	 * @param db_link an imported link
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Roads roads, Links db_link) throws TorqueException {
+		if (null == roads) return;
+		for (com.relteq.sirius.jaxb.Road road : roads.getRoad()) {
+			LinkName db_lname = new LinkName();
+			db_lname.setLinks(db_link);
+			db_lname.setName(road.getName());
+			db_lname.save(conn);
+		}
 	}
 
 	/**
