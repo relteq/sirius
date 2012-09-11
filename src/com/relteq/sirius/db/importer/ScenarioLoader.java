@@ -96,8 +96,8 @@ public class ScenarioLoader {
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
-		db_scenario.save(conn);
 		db_scenario.setVehicleTypeSets(save(scenario.getSettings().getVehicleTypes()));
+		db_scenario.save(conn);
 		save(scenario.getNetworkList(), db_scenario);
 		db_scenario.setNetworkConnectionSets(save(scenario.getNetworkConnections()));
 		db_scenario.setSignalSets(save(scenario.getSignalList()));
@@ -110,6 +110,7 @@ public class ScenarioLoader {
 		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
 		db_scenario.setControllerSets(save(scenario.getControllerSet()));
 		db_scenario.setEventSets(save(scenario.getEventSet()));
+		// TODO db_scenario.setEnkfNoiseParameterSets();
 		save(scenario.getDestinationNetworks(), db_scenario);
 		db_scenario.save(conn);
 		return db_scenario;
