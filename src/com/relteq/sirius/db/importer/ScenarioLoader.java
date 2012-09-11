@@ -476,15 +476,35 @@ public class ScenarioLoader {
 		db_idsets.setDescription(idset.getDescription());
 		db_idsets.save(conn);
 		VehicleTypes[] db_vt = reorderVehicleTypes(idset.getVehicleTypeOrder());
-		for (com.relteq.sirius.simulator.InitialDensitySet.Tuple tuple :
-				((com.relteq.sirius.simulator.InitialDensitySet) idset).getData()) {
-			InitialDensities db_density = new InitialDensities();
-			db_density.setInitialDensitySets(db_idsets);
-			db_density.setLinkId(getDBLinkId(tuple.getLinkId()));
-			db_density.setVehicleTypes(db_vt[tuple.getVehicleTypeIndex()]);
-			db_density.setDensity(new BigDecimal(tuple.getDensity()));
-		}
+		for (com.relteq.sirius.jaxb.Density density : idset.getDensity())
+			save(density, db_idsets, db_vt);
 		return db_idsets;
+	}
+
+	/**
+	 * Imports an initial density
+	 * @param density
+	 * @param db_idsets an imported initial density set
+	 * @param db_vt [possibly reordered] vehicle types
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Density density, InitialDensitySets db_idsets, VehicleTypes[] db_vt) throws TorqueException {
+		Data1D data1d = new Data1D(density.getContent(), ":");
+		if (!data1d.isEmpty()) {
+			BigDecimal[] data = data1d.getData();
+			if (data.length != db_vt.length)
+				logger.warn("initial density [link id=" + density.getLinkId() + "]: data.length=" + data.length + " and vehicle_types.length=" + db_vt.length + " differ");
+			for (int i = 0; i < data.length; ++i) {
+				InitialDensities db_id = new InitialDensities();
+				db_id.setInitialDensitySets(db_idsets);
+				db_id.setLinkId(getDBLinkId(density.getLinkId()));
+				db_id.setVehicleTypes(db_vt[i]);
+				if (null != density.getLinkIdDestination())
+					db_id.setDestinationLinkId(getDBLinkId(density.getLinkIdDestination()));
+				db_id.setDensity(data[i]);
+				db_id.save(conn);
+			}
+		}
 	}
 
 	/**

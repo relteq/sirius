@@ -289,44 +289,41 @@ public class ScenarioRestorer {
 		return roads;
 	}
 
-	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) {
+	private com.relteq.sirius.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) throws TorqueException {
 		if (null == db_idset) return null;
 		com.relteq.sirius.jaxb.InitialDensitySet idset = factory.createInitialDensitySet();
 		idset.setId(id2str(db_idset.getId()));
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
 		// TODO idset.setTstamp();
+
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.VEHICLE_TYPE_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
-			com.relteq.sirius.jaxb.Density density = null;
-			StringBuilder sb = new StringBuilder();
-			for (InitialDensities db_id : db_idl) {
-				if (null != density && !density.getLinkId().equals(id2str(db_id.getLinkId()))) {
-					density.setContent(sb.toString());
-					idset.getDensity().add(density);
-					density = null;
-				}
-				if (null == density) { // new link
-					density = factory.createDensity();
-					density.setLinkId(id2str(db_id.getLinkId()));
-					// TODO density.setNetworkId();
-					sb.setLength(0);
-				} else { // same link, different vehicle type
-					sb.append(":");
-				}
-				sb.append(db_id.getDensity().toPlainString());
-			}
-			// last link
-			if (null != density) {
+		@SuppressWarnings("unchecked")
+		List<InitialDensities> db_idl = db_idset.getInitialDensitiess(crit);
+		com.relteq.sirius.jaxb.Density density = null;
+		StringBuilder sb = new StringBuilder();
+		for (InitialDensities db_id : db_idl) {
+			if (null != density && !density.getLinkId().equals(id2str(db_id.getLinkId()))) {
 				density.setContent(sb.toString());
 				idset.getDensity().add(density);
+				density = null;
 			}
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
+			if (null == density) { // new link
+				density = factory.createDensity();
+				density.setLinkId(id2str(db_id.getLinkId()));
+				// TODO density.setNetworkId();
+				sb.setLength(0);
+			} else { // same link, different vehicle type
+				sb.append(":");
+			}
+			sb.append(db_id.getDensity().toPlainString());
+		}
+		// last link
+		if (null != density) {
+			density.setContent(sb.toString());
+			idset.getDensity().add(density);
 		}
 		return idset;
 	}
