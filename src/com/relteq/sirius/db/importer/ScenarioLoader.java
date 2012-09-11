@@ -110,6 +110,7 @@ public class ScenarioLoader {
 		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
 		db_scenario.setControllerSets(save(scenario.getControllerSet()));
 		db_scenario.setEventSets(save(scenario.getEventSet()));
+		save(scenario.getDestinationNetworks(), db_scenario);
 		db_scenario.save(conn);
 		return db_scenario;
 	}
@@ -725,6 +726,51 @@ public class ScenarioLoader {
 	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * Imports destination networks
+	 * @param destnets destination networks
+	 * @param db_scenario an imported scenario
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.DestinationNetworks destnets, Scenarios db_scenario) throws TorqueException {
+		if (null == destnets) return;
+		for (com.relteq.sirius.jaxb.DestinationNetwork destnet : destnets.getDestinationNetwork()) {
+			DestinationNetworkSets db_destnetset = new DestinationNetworkSets();
+			db_destnetset.setScenarios(db_scenario);
+			db_destnetset.setDestinationNetworks(save(destnet));
+			db_destnetset.save(conn);
+		}
+	}
+
+	/**
+	 * Imports a destination network
+	 * @param destnet a destination network
+	 * @return an imported destination network
+	 * @throws TorqueException
+	 */
+	private DestinationNetworks save(com.relteq.sirius.jaxb.DestinationNetwork destnet) throws TorqueException {
+		DestinationNetworks db_destnet = new DestinationNetworks();
+		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getLinkIdDestination()));
+		db_destnet.setProjectId(getProjectId());
+		db_destnet.save(conn);
+		for (com.relteq.sirius.jaxb.LinkReference linkref : destnet.getLinkReferences().getLinkReference())
+			save(linkref, db_destnet);
+		return db_destnet;
+	}
+
+	/**
+	 * Imports destination network's link reference
+	 * @param linkref a link reference
+	 * @param db_destnet an imported destination network
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.LinkReference linkref, DestinationNetworks db_destnet) throws TorqueException {
+		DestinationNetworkLinks db_dnl = new DestinationNetworkLinks();
+		db_dnl.setLinkId(getDBLinkId(linkref.getId()));
+		db_dnl.setDestinationNetworks(db_destnet);
+		db_dnl.save(conn);
 	}
 
 	protected static class Data1D {

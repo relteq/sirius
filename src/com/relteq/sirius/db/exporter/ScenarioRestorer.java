@@ -93,6 +93,7 @@ public class ScenarioRestorer {
 			scenario.setDownstreamBoundaryCapacityProfileSet(restoreDownstreamBoundaryCapacity(db_scenario.getDownstreamBoundaryCapacityProfileSets()));
 			scenario.setControllerSet(restoreControllerSet(db_scenario.getControllerSets()));
 			scenario.setEventSet(restoreEventSet(db_scenario.getEventSets()));
+			scenario.setDestinationNetworks(restoreDestinationNetworks(db_scenario));
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
@@ -710,4 +711,34 @@ public class ScenarioRestorer {
 		// TODO eset.getEvent().add();
 		return eset;
 	}
+
+	private com.relteq.sirius.jaxb.DestinationNetworks restoreDestinationNetworks(Scenarios db_scenario) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<DestinationNetworkSets> db_dns_l = db_scenario.getDestinationNetworkSetss();
+		if (0 == db_dns_l.size()) return null;
+		com.relteq.sirius.jaxb.DestinationNetworks dns = factory.createDestinationNetworks();
+		for (DestinationNetworkSets db_dns : db_dns_l)
+			dns.getDestinationNetwork().add(restoreDestinationNetwork(db_dns.getDestinationNetworks()));
+		return dns;
+	}
+
+	private com.relteq.sirius.jaxb.DestinationNetwork restoreDestinationNetwork(DestinationNetworks db_destnet) throws TorqueException {
+		com.relteq.sirius.jaxb.DestinationNetwork destnet = factory.createDestinationNetwork();
+		destnet.setId(id2str(db_destnet.getId()));
+		destnet.setLinkIdDestination(id2str(db_destnet.getDestinationLinkId()));
+		com.relteq.sirius.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
+		@SuppressWarnings("unchecked")
+		List<DestinationNetworkLinks> db_dnl_l = db_destnet.getDestinationNetworkLinkss();
+		for (DestinationNetworkLinks db_dnl : db_dnl_l)
+			linkrefs.getLinkReference().add(restoreDestinationNetworkLinks(db_dnl));
+		destnet.setLinkReferences(linkrefs);
+		return destnet;
+	}
+
+	private com.relteq.sirius.jaxb.LinkReference restoreDestinationNetworkLinks(DestinationNetworkLinks db_dnl) {
+		com.relteq.sirius.jaxb.LinkReference linkref = factory.createLinkReference();
+		linkref.setId(id2str(db_dnl.getLinkId()));
+		return linkref;
+	}
+
 }
