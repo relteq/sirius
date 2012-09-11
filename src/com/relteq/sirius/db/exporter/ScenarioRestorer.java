@@ -603,11 +603,31 @@ public class ScenarioRestorer {
 		return lr;
 	}
 
-	private com.relteq.sirius.jaxb.SensorList restoreSensorList(SensorSets db_ss) {
+	private com.relteq.sirius.jaxb.SensorList restoreSensorList(SensorSets db_ss) throws TorqueException {
 		if (null == db_ss) return null;
 		com.relteq.sirius.jaxb.SensorList sl = factory.createSensorList();
-		// TODO sl.getSensor().add();
+		@SuppressWarnings("unchecked")
+		List<Sensors> db_sensor_l = db_ss.getSensorss();
+		for (Sensors db_sensor: db_sensor_l)
+			sl.getSensor().add(restoreSensor(db_sensor));
 		return sl;
+	}
+
+	private com.relteq.sirius.jaxb.Sensor restoreSensor(Sensors db_sensor) {
+		com.relteq.sirius.jaxb.Sensor sensor = factory.createSensor();
+		sensor.setId(id2str(db_sensor.getId()));
+		// TODO sensor.setDescription();
+		// TODO sensor.setPosition();
+		// TODO sensor.setDisplayPosition();
+		if (null != db_sensor.getLinkId()) {
+			com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
+			lr.setId(id2str(db_sensor.getLinkId()));
+		}
+		sensor.setLinkPosition(db_sensor.getLinkPosition());
+		sensor.setType(db_sensor.getType());
+		// TODO sensor.setParameters();
+		// TODO sensor.setTable();
+		return sensor;
 	}
 
 	private com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) {

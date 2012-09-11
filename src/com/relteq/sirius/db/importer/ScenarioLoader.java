@@ -414,19 +414,31 @@ public class ScenarioLoader {
 		// TODO db_ss.setName();
 		// TODO db_ss.setDescription();
 		db_ss.save(conn);
-		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor()) {
+		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor())
 			save(sensor, db_ss);
-		}
 		return db_ss;
 	}
 
 	/**
 	 * Imports a sensor
 	 * @param sensor
-	 * @param db_ss
+	 * @param db_ss and imported sensor set
+	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) {
-		// TODO Auto-generated method stub
+	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
+		Sensors db_sensor = new Sensors();
+		db_sensor.setType(sensor.getType());
+		db_sensor.setSensorSets(db_ss);
+		// TODO db_sensor.setOriginalId();
+		// TODO db_sensor.setDataFeedId();
+		// TODO sensor.getDisplayPosition() -> db_sensor.setDisplayGeometry();
+		db_sensor.setDisplayGeometry("");
+		if (null != sensor.getLinkReference())
+			db_sensor.setLinkId(getDBLinkId(sensor.getLinkReference().getId()));
+		db_sensor.setLinkPosition(sensor.getLinkPosition());
+		// TODO db_sensor.setLaneNumber();
+		// TODO db_sensor.setHealthStatus();
+		db_sensor.save(conn);
 	}
 
 	/**
