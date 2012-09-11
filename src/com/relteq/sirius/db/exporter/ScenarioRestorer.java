@@ -523,7 +523,7 @@ public class ScenarioRestorer {
 		return dp;
 	}
 
-	private com.relteq.sirius.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionSets db_ncs) {
+	private com.relteq.sirius.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionSets db_ncs) throws TorqueException {
 		if (null == db_ncs) return null;
 		com.relteq.sirius.jaxb.NetworkConnections nc = factory.createNetworkConnections();
 		nc.setId(id2str(db_ncs.getId()));
@@ -532,29 +532,25 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(NetworkConnectionsPeer.FROM_NETWORK_ID);
 		crit.addAscendingOrderByColumn(NetworkConnectionsPeer.TO_NETWORK_ID);
-		try {
-			@SuppressWarnings("unchecked")
-			List<NetworkConnections> db_nc_l = db_ncs.getNetworkConnectionss(crit);
-			com.relteq.sirius.jaxb.Networkpair np = null;
-			for (NetworkConnections db_nc : db_nc_l) {
-				if (null != np && (!np.getNetworkA().equals(db_nc.getFromNetworkId()) || !np.getNetworkB().equals(db_nc.getToNetworkId()))) {
-					nc.getNetworkpair().add(np);
-					np = null;
-				}
-				if (null == np) {
-					np = factory.createNetworkpair();
-					np.setNetworkA(id2str(db_nc.getFromNetworkId()));
-					np.setNetworkB(id2str(db_nc.getToNetworkId()));
-				}
-				com.relteq.sirius.jaxb.Linkpair lp = factory.createLinkpair();
-				lp.setLinkA(id2str(db_nc.getFromLinkId()));
-				lp.setLinkB(id2str(db_nc.getToLinkId()));
-				np.getLinkpair().add(lp);
+		@SuppressWarnings("unchecked")
+		List<NetworkConnections> db_nc_l = db_ncs.getNetworkConnectionss(crit);
+		com.relteq.sirius.jaxb.Networkpair np = null;
+		for (NetworkConnections db_nc : db_nc_l) {
+			if (null != np && (!np.getNetworkA().equals(id2str(db_nc.getFromNetworkId())) || !np.getNetworkB().equals(id2str(db_nc.getToNetworkId())))) {
+				nc.getNetworkpair().add(np);
+				np = null;
 			}
-			if (null != np) nc.getNetworkpair().add(np);
-		} catch (TorqueException exc) {
-			SiriusErrorLog.addError(exc.getMessage());
+			if (null == np) {
+				np = factory.createNetworkpair();
+				np.setNetworkA(id2str(db_nc.getFromNetworkId()));
+				np.setNetworkB(id2str(db_nc.getToNetworkId()));
+			}
+			com.relteq.sirius.jaxb.Linkpair lp = factory.createLinkpair();
+			lp.setLinkA(id2str(db_nc.getFromLinkId()));
+			lp.setLinkB(id2str(db_nc.getToLinkId()));
+			np.getLinkpair().add(lp);
 		}
+		if (null != np) nc.getNetworkpair().add(np);
 		return nc;
 	}
 
