@@ -567,6 +567,8 @@ public class ScenarioLoader {
 			BigDecimal[][] data = new Data2D(sr.getContent(), new String[] {",", ":"}).getData();
 			if (null != data) {
 				for (int t = 0; t < data.length; ++t) {
+					if (data[t].length != db_vt.length)
+						logger.warn("split ratio data: data[time=" + t + "].length=" + data[t].length + " and vehicle_types.length=" + db_vt.length + " differ");
 					for (int vtn = 0; vtn < data[t].length; ++vtn) {
 						SplitRatios db_sr = new SplitRatios();
 						// common
