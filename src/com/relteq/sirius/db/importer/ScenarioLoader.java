@@ -439,6 +439,8 @@ public class ScenarioLoader {
 		// TODO db_sensor.setLaneNumber();
 		// TODO db_sensor.setHealthStatus();
 		db_sensor.save(conn);
+		save(sensor.getParameters(), db_sensor);
+		save(sensor.getTable(), db_sensor);
 	}
 
 	/**
