@@ -7,6 +7,9 @@
 	  </VehicleTypes>
    </settings>
    <SplitRatioProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="car"/>
+	  </VehicleTypeOrder>
       <splitratioProfile dt="300" node_id="-2">
          <splitratio link_in="-1" link_out="-2">1.000000</splitratio>
       </splitratioProfile>
@@ -21,8 +24,7 @@
       <splitratioProfile dt="300" node_id="-5">
          <splitratio link_in="-4" link_out="-5">1.000000</splitratio>
       </splitratioProfile>
-   </SplitRatioProfileSet>
-   
+   </SplitRatioProfileSet>  
    <ControllerSet>
    <!--
       <controller id="0" dt="300" type="IRM_alinea" name="c1">
@@ -36,7 +38,6 @@
       </controller>
 	  -->
    </ControllerSet>   
-   
    <EventSet>
    
 	  <!--
@@ -118,6 +119,9 @@
 	  
    </EventSet>
    <DemandProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="car"/>
+	  </VehicleTypeOrder>
       <demandProfile dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-1">200.000000</demandProfile>
    </DemandProfileSet>

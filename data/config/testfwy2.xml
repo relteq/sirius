@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario id="null" name="null" schemaVersion="1.0.19">
    <settings>
+      <VehicleTypes>
+         <vehicle_type name="car" weight="1"/>
+      </VehicleTypes>
       <units>US</units>
    </settings>
-   <InitialDensitySet/>
    <SplitRatioProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="car"/>
+	  </VehicleTypeOrder>
       <splitratioProfile dt="300" node_id="-2">
          <splitratio link_in="-1" link_out="-2">1.000000</splitratio>
       </splitratioProfile>
@@ -29,6 +34,9 @@
       </event>
    </EventSet>
    <DemandProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="car"/>
+	  </VehicleTypeOrder>
       <demandProfile dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
    </DemandProfileSet>

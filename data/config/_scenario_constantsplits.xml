@@ -20,6 +20,9 @@
       </controller>
    </ControllerSet>
    <InitialDensitySet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="SOV"/>
+	  </VehicleTypeOrder>
       <density link_id="-1">1.151128343</density>
       <density link_id="-2">2.323622691</density>
       <density link_id="-3">11.78780162</density>
@@ -368,6 +371,9 @@
       <density link_id="-346">3.96e-007</density>
    </InitialDensitySet>
    <SplitRatioProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="SOV"/>
+	  </VehicleTypeOrder>
       <splitratioProfile dt="300" node_id="-67">
          <splitratio link_in="-8" link_out="-9">-1.000000</splitratio>
          <splitratio link_in="-8" link_out="-153">-1.000000</splitratio>
@@ -547,6 +553,9 @@
       </splitratioProfile>
    </SplitRatioProfileSet>
    <DemandProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="SOV"/>
+	  </VehicleTypeOrder>
       <demandProfile dt="300" knob="1" link_id_origin="-289">400.000000</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-340">400.000000</demandProfile>
       <demandProfile dt="300" knob="1" link_id_origin="-290">400.000000</demandProfile>

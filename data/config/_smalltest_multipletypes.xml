@@ -7,7 +7,6 @@
 		<vehicle_type name="truck" weight="2.5"/>
 	  </VehicleTypes>
    </settings>
-   <InitialDensitySet/>
    <SplitRatioProfileSet>
 	  <VehicleTypeOrder>
 		<vehicle_type name="car"/>
