@@ -912,6 +912,11 @@ public class ScenarioLoader {
 		}
 	}
 
+	private void save(com.relteq.sirius.jaxb.Table table, com.relteq.sirius.db.BaseObject db_obj) {
+		if (null == table) return;
+		// TODO method stub
+	}
+
 	protected static class Data1D {
 		private BigDecimal[] data = null;
 

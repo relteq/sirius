@@ -739,4 +739,9 @@ public class ScenarioRestorer {
 		return param;
 	}
 
+	private com.relteq.sirius.jaxb.Table restoreTable(com.relteq.sirius.db.BaseObject db_obj) {
+		return null;
+		// TODO method stub
+	}
+
 }
