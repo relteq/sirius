@@ -3,6 +3,8 @@ package com.relteq.sirius.db;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.torque.TorqueException;
+
 @SuppressWarnings("serial")
 public abstract class BaseObject extends org.apache.torque.om.BaseObject {
 	public void setCreated(Date date) {}
@@ -49,6 +51,19 @@ public abstract class BaseObject extends org.apache.torque.om.BaseObject {
 				if (null == getCreated()) createNow();
 			} else if (!was_modified) modifyNow();
 		}
+	}
+
+	public Long getId() { return null; }
+
+	/**
+	 * Retrieves an element type which is a transformed table name
+	 * @return String element type
+	 * @throws TorqueException
+	 */
+	public String getElementType() throws TorqueException {
+		String name = getTableMap().getName();
+		if (name.endsWith("s")) name = name.substring(0, name.length() - 1);
+		return name.replace('_', ' ');
 	}
 
 }

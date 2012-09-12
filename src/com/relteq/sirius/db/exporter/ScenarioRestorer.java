@@ -718,4 +718,25 @@ public class ScenarioRestorer {
 		return route;
 	}
 
+	private com.relteq.sirius.jaxb.Parameters restoreParameters(com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+		com.relteq.sirius.jaxb.Parameters params = factory.createParameters();
+
+		Criteria crit = new Criteria();
+		crit.add(ParametersPeer.SCENARIO_ELEMENT_ID, db_obj.getId());
+		crit.add(ParametersPeer.SCENARIO_ELEMENT_TYPE, db_obj.getElementType());
+		@SuppressWarnings("unchecked")
+		List<Parameters> db_param_l = ParametersPeer.doSelect(crit);
+		for (Parameters db_param : db_param_l)
+			params.getParameter().add(restoreParameter(db_param));
+
+		return params;
+	}
+
+	private com.relteq.sirius.jaxb.Parameter restoreParameter(Parameters db_param) {
+		com.relteq.sirius.jaxb.Parameter param = factory.createParameter();
+		param.setName(db_param.getName());
+		param.setValue(db_param.getValue());
+		return param;
+	}
+
 }

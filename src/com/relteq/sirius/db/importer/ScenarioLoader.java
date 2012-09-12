@@ -893,6 +893,25 @@ public class ScenarioLoader {
 		return db_route;
 	}
 
+	/**
+	 * Imports parameters
+	 * @param params
+	 * @param db_obj an imported parent element
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Parameters params, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+		if (null == params) return;
+		String element_type = db_obj.getElementType();
+		for (com.relteq.sirius.jaxb.Parameter param : params.getParameter()) {
+			Parameters db_param = new Parameters();
+			db_param.setScenarioElementId(db_obj.getId());
+			db_param.setScenarioElementType(element_type);
+			db_param.setName(param.getName());
+			db_param.setValue(param.getValue());
+			db_param.save(conn);
+		}
+	}
+
 	protected static class Data1D {
 		private BigDecimal[] data = null;
 
