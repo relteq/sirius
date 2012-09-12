@@ -345,8 +345,9 @@ public class ScenarioLoader {
 		// TODO db_sl.setName();
 		// TODO db_sl.setDescription();
 		db_ss.save(conn);
+		signals = new HashMap<String, Signals>(sl.getSignal().size());
 		for (com.relteq.sirius.jaxb.Signal signal : sl.getSignal())
-			save(signal, db_ss);
+			signals.put(signal.getId(), save(signal, db_ss));
 		return db_ss;
 	}
 
@@ -354,16 +355,17 @@ public class ScenarioLoader {
 	 * Imports a signal
 	 * @param signal
 	 * @param db_ss an imported signal set
+	 * @return an imported signal
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
+	private Signals save(com.relteq.sirius.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
 		Signals db_signal = new Signals();
 		db_signal.setNodeId(getDBNodeId(signal.getNodeId()));
 		db_signal.setSignalSets(db_ss);
 		db_signal.save(conn);
-		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase()) {
+		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase())
 			save(phase, db_signal);
-		}
+		return db_signal;
 	}
 
 	/**
@@ -416,8 +418,9 @@ public class ScenarioLoader {
 		// TODO db_ss.setName();
 		// TODO db_ss.setDescription();
 		db_ss.save(conn);
+		sensors = new HashMap<String, Sensors>(sl.getSensor().size());
 		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor())
-			save(sensor, db_ss);
+			sensors.put(sensor.getId(), save(sensor, db_ss));
 		return db_ss;
 	}
 
@@ -425,9 +428,10 @@ public class ScenarioLoader {
 	 * Imports a sensor
 	 * @param sensor
 	 * @param db_ss and imported sensor set
+	 * @return an imported sensor
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
+	private Sensors save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
 		Sensors db_sensor = new Sensors();
 		db_sensor.setType(sensor.getType());
 		db_sensor.setSensorSets(db_ss);
@@ -443,6 +447,7 @@ public class ScenarioLoader {
 		db_sensor.save(conn);
 		save(sensor.getParameters(), db_sensor);
 		save(sensor.getTable(), db_sensor);
+		return db_sensor;
 	}
 
 	/**
@@ -818,8 +823,9 @@ public class ScenarioLoader {
 		db_cset.setName(cset.getName());
 		db_cset.setDescription(cset.getDescription());
 		db_cset.save(conn);
+		controllers = new HashMap<String, Controllers>(cset.getController().size());
 		for (com.relteq.sirius.jaxb.Controller controller : cset.getController())
-			save(controller, db_cset);
+			controllers.put(controller.getId(), save(controller, db_cset));
 		return db_cset;
 	}
 
@@ -827,9 +833,10 @@ public class ScenarioLoader {
 	 * Imports a controller
 	 * @param cntr a controller
 	 * @param db_cset an imported controller set
+	 * @return an imported controller
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
+	private Controllers save(com.relteq.sirius.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
 		Controllers db_cntr = new Controllers();
 		db_cntr.setControllerSets(db_cset);
 		db_cntr.setType(cntr.getType());
@@ -842,6 +849,7 @@ public class ScenarioLoader {
 		save(cntr.getParameters(), db_cntr);
 		save(cntr.getTable(), db_cntr);
 		save(cntr.getActivationIntervals(), db_cntr);
+		return db_cntr;
 	}
 
 	/**
