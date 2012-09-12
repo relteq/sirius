@@ -116,6 +116,13 @@ public class ScenarioLoader {
 		save(scenario.getDestinationNetworks(), db_scenario);
 		save(scenario.getRoutes(), db_scenario);
 		db_scenario.save(conn);
+
+		if (null != scenario.getControllerSet())
+			for (com.relteq.sirius.jaxb.Controller cntr : scenario.getControllerSet().getController()) {
+				save(cntr.getTargetElements(), controllers.get(cntr.getId()));
+				save(cntr.getFeedbackElements(), controllers.get(cntr.getId()));
+			}
+
 		return db_scenario;
 	}
 

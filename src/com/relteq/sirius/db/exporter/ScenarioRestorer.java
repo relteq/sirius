@@ -665,8 +665,8 @@ public class ScenarioRestorer {
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE); // TODO revise
 		// TODO db_cntr.getDisplayGeometry() -> cntr.setDisplayPosition();
-		// TODO cntr.setTargetElements();
-		// TODO cntr.setFeedbackElements();
+		cntr.setTargetElements(restoreTargetElements(db_cntr));
+		cntr.setFeedbackElements(restoreFeedbackElements(db_cntr));
 		if (null != db_cntr.getQueueControllerId())
 			cntr.setQueueController(restoreQueueController(db_cntr.getQueueControllers()));
 		cntr.setParameters(restoreParameters(db_cntr));
