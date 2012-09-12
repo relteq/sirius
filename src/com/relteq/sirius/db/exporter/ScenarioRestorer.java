@@ -15,7 +15,6 @@ import org.apache.torque.util.Criteria;
 import org.xml.sax.SAXException;
 
 import com.relteq.sirius.om.*;
-import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
 /**
