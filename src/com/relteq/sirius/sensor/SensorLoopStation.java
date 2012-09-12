@@ -42,10 +42,11 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		
 		com.relteq.sirius.jaxb.Sensor jaxbs = (com.relteq.sirius.jaxb.Sensor) jaxbobject;
 
-		for(com.relteq.sirius.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
-			if(param.getName().compareToIgnoreCase("vds")==0)
-				this.VDS = Integer.parseInt(param.getValue());
-		}
+		if(jaxbs.getParameters()!=null)
+			for(com.relteq.sirius.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
+				if(param.getName().compareToIgnoreCase("vds")==0)
+					this.VDS = Integer.parseInt(param.getValue());
+			}
 		
 		if(jaxbs.getDataSources()!=null){
 			for(com.relteq.sirius.jaxb.DataSource datasource : jaxbs.getDataSources().getDataSource()){
@@ -101,6 +102,11 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles();
 	}
 
+	@Override
+	public double getOccupancy(int ensemble) {
+		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles()/this.getRho_jam()*100;
+	}
+	
 	@Override
 	public Double[] getFlowInVPH(int ensemble) {
 		return SiriusMath.times(myLink.getOutflowInVeh(ensemble),1/myScenario.getSimDtInHours());

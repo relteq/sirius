@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import com.relteq.sirius.calibrator.FDParameters;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -15,6 +17,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Node begin_node;
 	/** @y.exclude */ 	protected Node end_node;
 
+	// link type
+	protected Link.Type myType;
+	/** Type of link. */
+	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
+	
 	/** @y.exclude */ 	protected double _length;							// [miles]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
 	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
@@ -37,10 +44,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Controller myFlowController;
 	/** @y.exclude */ 	protected Controller mySpeedController;
    
-	/** @y.exclude */ 	protected Double [][] density;    		// [veh]	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double []spaceSupply;        	// [veh]	numEnsemble
-	/** @y.exclude */ 	protected boolean issource; 			// [boolean]
-	/** @y.exclude */ 	protected boolean issink;     			// [boolean]
+	/** @y.exclude */ 	protected Double [][] density;    			// [veh]	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double []spaceSupply;        		// [veh]	numEnsemble
+	/** @y.exclude */ 	protected boolean issource; 				// [boolean]
+	/** @y.exclude */ 	protected boolean issink;     				// [boolean]
 	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
@@ -83,6 +90,26 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		else{
 			mySpeedController = c;
 			control_maxspeed_index = index;
+			return true;
+		}
+	}
+	
+	/** @y.exclude */
+	protected boolean deregisterFlowController(Controller c){
+		if(myFlowController!=c)
+			return false;
+		else{
+			myFlowController = null;			
+			return true;
+		}
+	}
+
+	/** @y.exclude */
+	protected boolean deregisterSpeedController(Controller c){
+		if(mySpeedController!=c)
+			return false;
+		else{
+			mySpeedController = null;			
 			return true;
 		}
 	}
@@ -284,7 +311,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
-
+        
+        // link type
+        this.myType = Link.Type.valueOf(getType());
+        
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
@@ -399,6 +429,26 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
+	
+	// Link type ........................
+	
+	public Link.Type getMyType() {
+		return myType;
+	}
+	
+	public static boolean isFreewayType(Link link){
+		
+		if(link==null)
+			return false;
+		
+		Link.Type linktype = link.getMyType();
+		
+		return  linktype.compareTo(Link.Type.intersection_approach)!=0 &&
+				linktype.compareTo(Link.Type.offramp)!=0 &&
+				linktype.compareTo(Link.Type.onramp)!=0 &&
+				linktype.compareTo(Link.Type.street)!=0;		
+	}
+	
 	
 	// Link geometry ....................
 	

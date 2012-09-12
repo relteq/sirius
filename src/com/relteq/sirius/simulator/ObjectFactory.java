@@ -289,55 +289,59 @@ public final class ObjectFactory {
 	 * @return the updated scenario or null if an error occurred
 	 */
 	public static Scenario process(Scenario S) {
-        // copy data to static variables ..............................................
-        S.global_control_on = true;
-        S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
-        S.simdtinhours = S.simdtinseconds/3600.0;
-        S.uncertaintyModel = Scenario.UncertaintyType.uniform;
-        S.global_demand_knob = 1d;
-        S.numVehicleTypes = 1;
-        S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
-        
-        if(S.getSettings()!=null)
+		
+	    // copy data to static variables ..............................................
+	    S.global_control_on = true;
+	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
+	    S.simdtinhours = S.simdtinseconds/3600.0;
+	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
+	    S.global_demand_knob = 1d;
+	    S.numVehicleTypes = 1;
+	    S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
+	    
+	    if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
 	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
 	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-	            	
-	            	
-        // populate the scenario ....................................................
-        try{
-        	S.populate();
-        } catch (SiriusException e){
-        	SiriusErrorLog.addError(e.getMessage());
-            SiriusErrorLog.print();
-        	return null;
-        }
-        
-        // register controllers with their targets ..................................
-        boolean registersuccess = true;
-        for(Controller controller : S.controllerset.controllers)
-        	registersuccess &= controller.register();
-    	if(S.getSignalList()!=null)
-        	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
-        		registersuccess &= ((Signal)signal).register();
-        
-        if(!registersuccess){
-        	SiriusErrorLog.addError("Controller registration failure.");
-            SiriusErrorLog.print();
-        	return null;
-        }
-		
+
+	    // populate the scenario ....................................................
+	    try{
+	    	S.populate();
+	    } catch (SiriusException e){
+	    	SiriusErrorLog.addError(e.getMessage());
+	        SiriusErrorLog.print();
+	    	return null;
+	    }
+	    
+	    // register signals with their targets ..................................
+	    boolean registersuccess = true;
+		if(S.getSignalList()!=null)
+	    	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
+	    		registersuccess &= ((Signal)signal).register();
+	    if(!registersuccess){
+	    	SiriusErrorLog.addError("Signal registration failure.");
+	        SiriusErrorLog.print();
+	    	return null;
+	    }
+
+	    if(S.controllerset!=null)
+	    	if(!S.controllerset.register()){
+		    	SiriusErrorLog.addError("Controller registration failure.");
+		        SiriusErrorLog.print();
+		    	return null;
+		    }
+	    
 		// validate scenario ......................................
-        SiriusErrorLog.clearErrorMessage();
-        S.validate();
-        
-        // print errors and warnings
-        SiriusErrorLog.print();
-        
-        if(SiriusErrorLog.haserror())
-        	return null;
-        else
-        	return S;	
+	    SiriusErrorLog.clearErrorMessage();
+	    S.validate();
+	    
+	    // print errors and warnings
+	    SiriusErrorLog.print();
+	    
+	    if(SiriusErrorLog.haserror())
+	    	return null;
+	    else
+	    	return S;	
 	}
 
 	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
@@ -389,21 +393,45 @@ public final class ObjectFactory {
 		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
 	}
 	
-	/** [NOT IMPLEMENTED] Time of day isolated ramp metering.
+	/** TOD isolated ramp metering.
 	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_IRM_Time_of_Day(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario);
-	}
-
-	/** [NOT IMPLEMENTED] Traffic responsive isolated ramp metering.
+	 * <p> Generates a controller executing the TOD algorithm. A queue override algorithm will be 
+	 * employed if the <code>queuesensor</code> is non-null. The time of day profile is provided in a table.
+	 * Each row of the table contains a TOD entry, denoting the start time and the metering rates. This rate applies 
+	 * until the next entry becomes active/ the simulation ends. 
 	 * 
-	 * @return			_Controller object
+	 * @param myScenario		The scenario that contains the controller and its referenced links.
+	 * @param onramplink		The onramp link being controlled.
+	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+	 * @param todtable			The time of day profile is provided in a table. It contains two columns - StartTime and MeteringRates. 
+	 * @return					_Controller object
 	 */
-	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario);
+	public static Controller createController_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
+		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
 	}
+	
+	/** Traffic responsive isolated ramp metering.
+	 * 
+	 * <p> Generates a controller executing the Traffic responsive algorithm. Feedback for the controller is taken
+	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
+	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
+	 * employed if the <code>queuesensor</code> is non-null. trtable specifies the occupancy, flow and speed thresholds.
+	 * Unused threshold types can be omitted from the table definition, or set to 0, for all entries. 
+	 * At least one of these thresholds should be available.  
+	 * 
+	 * @param myScenario		The scenario that contains the controller and its referenced links.
+	 * @param onramplink		The onramp link being controlled.
+	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
+	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
+	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+	 * @param trtable			The traffic responsive levels are provided in a table. It can contain four columns - MeteringRates, OccupancyThresholds, SpeedThresholds, FlowThresholds. 
+	 * @return					_Controller object
+	 */
+	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
+		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
+	}
+	
+	
 
 	/** [NOT IMPLEMENTED] Actuated signal control.
 	 * 

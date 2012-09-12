@@ -6,6 +6,7 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /** Base implementation of {@link InterfaceController}.
  * 
@@ -47,6 +48,13 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** On/off switch for this controller */
 	protected boolean ison;
 	
+	/** Activation times for this controller */
+	protected ArrayList<ActivationTimes> activationTimes;
+	
+	/** Table of parameters. */
+	protected Table table;
+	
+	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
 	 * <ul>
@@ -84,7 +92,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		 this.control_maxspeed = new Double [targets.size()];
 	 }
 	
-		 
 	/////////////////////////////////////////////////////////////////////
 	// registration
 	/////////////////////////////////////////////////////////////////////
@@ -103,6 +110,32 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 			return link.registerFlowController(this,index);
 	}
 
+   	/** Use this method within {@link InterfaceController#deregister} to deregister
+   	 * speed control with a target link. The return value is <code>true</code> if
+   	 * the deregistration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for speed control.
+   	 * @return A boolean indicating success of the deregistration. 
+   	 */
+	protected boolean deregisterSpeedController(Link link){
+		if(link!=null)			
+			return link.deregisterSpeedController(this);
+		else
+			return false;
+	}
+	
+	/** Use this method within {@link InterfaceController#deregister} to deregister
+   	 * flow control with a target link. The return value is <code>true</code> if
+   	 * the deregistration is successful, and <code>false</code> otherwise. 
+   	 * @param link The target link for flow control.
+   	 * @return A boolean indicating success of the deregistration. 
+   	 */
+	protected boolean deregisterFlowController(Link link){
+		if(link==null)
+			return false;
+		else
+			return link.deregisterFlowController(this);
+	}
+
    	/** Use this method within {@link InterfaceController#register} to register
    	 * speed control with a target link. The return value is <code>true</code> if
    	 * the registration is successful, and <code>false</code> otherwise. 
@@ -117,7 +150,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 			return link.registerSpeedController(this,index);
 	}
 	
-	
 //   	/** DESCRIPTION
 //   	 * 
 //   	 */
@@ -128,6 +160,30 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 //			return node.registerSplitRatioController(this,index);
 //	}
 	
+	// Returns the start and end times of the controller.
+	
+	protected double myStartTime(){
+		double starttime=myScenario.getTimeStart();
+		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+			if (ActTimesIndex == 0)
+				starttime=activationTimes.get(ActTimesIndex).getBegintime();
+			else
+				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
+		
+		return starttime;
+	}
+	
+	protected double myEndTime(){
+		double endtime=myScenario.getTimeEnd();
+		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+			if (ActTimesIndex == 0)
+				endtime=activationTimes.get(ActTimesIndex).getEndtime();
+			else
+				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
+		
+		return endtime;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
@@ -137,10 +193,22 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.id = c.getId();
-		this.ison = true;
+		this.ison = false; //c.isEnabled(); 
+		this.activationTimes=new ArrayList<ActivationTimes>();
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
-
+		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
+		
+		// Copy table
+		if (c.getTable()!=null)
+			this.table = new Table(c.getTable());
+		
+		// Get activation times and sort	
+		if (c.getActivationIntervals()!=null)
+			for (com.relteq.sirius.jaxb.Interval tinterval : c.getActivationIntervals().getInterval())		
+				if(tinterval!=null)
+					activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
+		Collections.sort(activationTimes);
+		
 		// store targets ......
 		targets = new ArrayList<ScenarioElement>();
 		if(c.getTargetElements()!=null)
@@ -161,13 +229,12 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 				if(se!=null)
 					feedbacks.add(se);	
 			}
-
 	}
 
 	/** @y.exclude */
 	public void validate() {
 		
-		// check that type was reaad correctly
+		// check that type was read correctly
 		if(myType==null)
 			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
 		
@@ -179,11 +246,20 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
 
+		// check that activation times are valid.
+		for (int i=0; i<activationTimes.size(); i++ ){
+			activationTimes.get(i).validate();
+			if (i<activationTimes.size()-1)
+				activationTimes.get(i).validateWith(activationTimes.get(i+1));
+		}
+
 	}
 
 	/** @y.exclude */
 	public void reset() {
-		ison = true;
+		//switch on conroller if it is always on by default.
+		if (activationTimes==null)
+			ison = true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -213,5 +289,76 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	public boolean isIson() {
 		return ison;
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// internal classes
+	/////////////////////////////////////////////////////////////////////
+	
+	/** Creates a new class that stores begin and end times for each period of controller activation */
+	protected class ActivationTimes implements Comparable<ActivationTimes>{
+		
+		/** Start time for each activation interval */
+		protected double begintime; 
+		
+		/** End time for each activation interval */
+		protected double endtime;
+		
+		protected ActivationTimes(double begintime, double endtime) {
+			super();
+			this.begintime = begintime;
+			this.endtime = endtime;
+		}
+		
+		public double getBegintime() {
+			return begintime;
+		}
+		
+		protected void setBegintime(double begintime) {
+			this.begintime = begintime;
+		}
+		
+		public double getEndtime() {
+			return endtime;
+		}
+		
+		protected void setEndtime(double endtime) {
+			this.endtime = endtime;
+		}		
+		
+		protected void validate(){			
+			if (begintime-endtime>=0)
+				SiriusErrorLog.addError("Begin time must be larger than end time.");		  
+		}
+		
+		protected void validateWith(ActivationTimes that){			
+			if (Math.max(this.begintime-that.getEndtime(), that.getBegintime()-this.endtime)<0)  // Assumption - activation times is sorted before this is invoked, should remove this assumption later.
+				SiriusErrorLog.addError("Activation Periods of the controllers must not overlap.");
+		}
+		
+		/////////////////////////////////////////////////////////////////////
+		// Comparable
+		/////////////////////////////////////////////////////////////////////		
+
+		@Override
+		public int compareTo(ActivationTimes that) {
+			if(that==null)
+				return 1;
+			
+			// Order first by begintimes.
+			int compare = ((Double) this.getBegintime()).compareTo((Double) that.getBegintime());
+		
+			if (compare!=0)
+				return compare;
+				
+		    // Order next by endtimes.
+			compare = ((Double) this.getEndtime()).compareTo((Double) that.getEndtime());
+				
+			return compare;
+				
+				
+		}
+		
+	}
+	
 	
 }
