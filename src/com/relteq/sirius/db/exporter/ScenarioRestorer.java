@@ -642,14 +642,65 @@ public class ScenarioRestorer {
 		return cprofile;
 	}
 
-	private com.relteq.sirius.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) {
+	private com.relteq.sirius.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) throws TorqueException {
 		if (null == db_cs) return null;
 		com.relteq.sirius.jaxb.ControllerSet cset = factory.createControllerSet();
 		cset.setId(id2str(db_cs.getId()));
-		// TODO cset.setName();
-		// TODO cset.setDescription();
-		// TODO cset.getController().add();
+		cset.setName(db_cs.getName());
+		cset.setDescription(db_cs.getDescription());
+
+		@SuppressWarnings("unchecked")
+		List<Controllers> db_cntr_l = db_cs.getControllerss();
+		for (Controllers db_cntr : db_cntr_l)
+			cset.getController().add(restoreController(db_cntr));
+
 		return cset;
+	}
+
+	private com.relteq.sirius.jaxb.Controller restoreController(Controllers db_cntr) throws TorqueException {
+		com.relteq.sirius.jaxb.Controller cntr = factory.createController();
+		cntr.setId(id2str(db_cntr.getId()));
+		cntr.setName(db_cntr.getName());
+		// TODO cntr.setLinkPosition();
+		cntr.setType(db_cntr.getType());
+		cntr.setDt(db_cntr.getDt());
+		cntr.setEnabled(Boolean.TRUE); // TODO revise
+		// TODO db_cntr.getDisplayGeometry() -> cntr.setDisplayPosition();
+		// TODO cntr.setTargetElements();
+		// TODO cntr.setFeedbackElements();
+		if (null != db_cntr.getQueueControllerId())
+			cntr.setQueueController(restoreQueueController(db_cntr.getQueueControllers()));
+		cntr.setParameters(restoreParameters(db_cntr));
+		cntr.setTable(restoreTable(db_cntr));
+		cntr.setActivationIntervals(restoreActivationIntervals(db_cntr));
+		// TODO cntr.setPlanSequence();
+		// TODO cntr.setPlanList();
+		return cntr;
+	}
+
+	private com.relteq.sirius.jaxb.QueueController restoreQueueController(QueueControllers db_qc) throws TorqueException {
+		if (null == db_qc) return null;
+		com.relteq.sirius.jaxb.QueueController qc = factory.createQueueController();
+		qc.setType(db_qc.getType());
+		qc.setParameters(restoreParameters(db_qc));
+		return qc;
+	}
+
+	private com.relteq.sirius.jaxb.ActivationIntervals restoreActivationIntervals(Controllers db_cntr) throws TorqueException {
+		@SuppressWarnings("unchecked")
+		List<ControllerActivationIntervals> db_cai_l = db_cntr.getControllerActivationIntervalss();
+		if (0 == db_cai_l.size()) return null;
+		com.relteq.sirius.jaxb.ActivationIntervals ais = factory.createActivationIntervals();
+		for (ControllerActivationIntervals db_cai : db_cai_l)
+			ais.getInterval().add(restoreInterval(db_cai));
+		return ais;
+	}
+
+	private com.relteq.sirius.jaxb.Interval restoreInterval(ControllerActivationIntervals db_cai) {
+		com.relteq.sirius.jaxb.Interval interval = factory.createInterval();
+		interval.setStartTime(db_cai.getStartTime());
+		interval.setEndTime(db_cai.getStartTime().add(db_cai.getDuration()));
+		return interval;
 	}
 
 	private com.relteq.sirius.jaxb.EventSet restoreEventSet(EventSets db_es) {

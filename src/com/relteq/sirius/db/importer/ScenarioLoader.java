@@ -803,9 +803,77 @@ public class ScenarioLoader {
 		}
 	}
 
-	private ControllerSets save(com.relteq.sirius.jaxb.ControllerSet cset) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Imports a controller set
+	 * @param cset
+	 * @return an imported controller set
+	 * @throws TorqueException
+	 */
+	private ControllerSets save(com.relteq.sirius.jaxb.ControllerSet cset) throws TorqueException {
+		if (null == cset) return null;
+		ControllerSets db_cset = new ControllerSets();
+		db_cset.setProjectId(getProjectId());
+		db_cset.setName(cset.getName());
+		db_cset.setDescription(cset.getDescription());
+		db_cset.save(conn);
+		for (com.relteq.sirius.jaxb.Controller controller : cset.getController())
+			save(controller, db_cset);
+		return db_cset;
+	}
+
+	/**
+	 * Imports a controller
+	 * @param cntr a controller
+	 * @param db_cset an imported controller set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
+		Controllers db_cntr = new Controllers();
+		db_cntr.setControllerSets(db_cset);
+		db_cntr.setType(cntr.getType());
+		// TODO db_cntr.setJavaClass();
+		db_cntr.setName(cntr.getName());
+		db_cntr.setDt(cntr.getDt());
+		db_cntr.setQueueControllers(save(cntr.getQueueController()));
+		// TODO cntr.getDisplayPosition() -> db_cntr.setDisplayGeometry()
+		db_cntr.save(conn);
+		save(cntr.getParameters(), db_cntr);
+		save(cntr.getTable(), db_cntr);
+		save(cntr.getActivationIntervals(), db_cntr);
+	}
+
+	/**
+	 * Imports a queue controller
+	 * @param qc
+	 * @return an imported queue controller
+	 * @throws TorqueException
+	 */
+	private QueueControllers save(com.relteq.sirius.jaxb.QueueController qc) throws TorqueException {
+		if (null == qc) return null;
+		QueueControllers db_qc = new QueueControllers();
+		db_qc.setType(qc.getType());
+		// TODO db_qc.setJavaClass();
+		// TODO db_qc.setName();
+		db_qc.save(conn);
+		save(qc.getParameters(), db_qc);
+		return db_qc;
+	}
+
+	/**
+	 * Imports controller activation intervals
+	 * @param ais activation intervals
+	 * @param db_cntr an imported controller
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.ActivationIntervals ais, Controllers db_cntr) throws TorqueException {
+		if (null == ais) return;
+		for (com.relteq.sirius.jaxb.Interval interval : ais.getInterval()) {
+			ControllerActivationIntervals db_cai = new ControllerActivationIntervals();
+			db_cai.setControllers(db_cntr);
+			db_cai.setStartTime(interval.getStartTime());
+			db_cai.setDuration(interval.getEndTime().subtract(interval.getStartTime()));
+			db_cai.save(conn);
+		}
 	}
 
 	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) {
