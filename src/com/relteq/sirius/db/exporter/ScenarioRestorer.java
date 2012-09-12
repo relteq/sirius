@@ -794,4 +794,38 @@ public class ScenarioRestorer {
 		// TODO method stub
 	}
 
+	private com.relteq.sirius.jaxb.TargetElements restoreTargetElements(com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
+		com.relteq.sirius.jaxb.TargetElements elems = factory.createTargetElements();
+		Criteria crit = new Criteria();
+		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
+		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE, db_parent.getElementType());
+		crit.add(ReferencedScenarioElementsPeer.TYPE, "target");
+		@SuppressWarnings("unchecked")
+		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
+		for (ReferencedScenarioElements db_elem : db_elem_l)
+			elems.getScenarioElement().add(restoreScenarioElement(db_elem));
+		return elems;
+	}
+
+	private com.relteq.sirius.jaxb.FeedbackElements restoreFeedbackElements(com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
+		com.relteq.sirius.jaxb.FeedbackElements elems = factory.createFeedbackElements();
+		Criteria crit = new Criteria();
+		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
+		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE, db_parent.getElementType());
+		crit.add(ReferencedScenarioElementsPeer.TYPE, "feedback");
+		@SuppressWarnings("unchecked")
+		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
+		for (ReferencedScenarioElements db_elem : db_elem_l)
+			elems.getScenarioElement().add(restoreScenarioElement(db_elem));
+		return elems;
+	}
+
+	private com.relteq.sirius.jaxb.ScenarioElement restoreScenarioElement(ReferencedScenarioElements db_elem) {
+		com.relteq.sirius.jaxb.ScenarioElement elem = factory.createScenarioElement();
+		elem.setId(id2str(db_elem.getScenarioElementId()));
+		elem.setType(db_elem.getScenarioElementType());
+		// TODO elem.setUsage();
+		return elem;
+	}
+
 }

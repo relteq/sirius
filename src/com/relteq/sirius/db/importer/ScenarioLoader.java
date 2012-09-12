@@ -33,6 +33,10 @@ public class ScenarioLoader {
 	private Map<String, Long> network_id = null;
 	private Map<String, Nodes> nodes = null;
 	private Map<String, Links> links = null;
+	private Map<String, Controllers> controllers = null;
+	private Map<String, Sensors> sensors = null;
+	private Map<String, Events> events = null;
+	private Map<String, Signals> signals = null;
 
 	private Long getDBNodeId(String id) {
 		return nodes.get(id).getId();
@@ -983,6 +987,65 @@ public class ScenarioLoader {
 	private void save(com.relteq.sirius.jaxb.Table table, com.relteq.sirius.db.BaseObject db_obj) {
 		if (null == table) return;
 		// TODO method stub
+	}
+
+	/**
+	 * Imports target elements
+	 * @param elems
+	 * @param db_obj an imported parent element
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.TargetElements elems, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+		if (null == elems) return;
+		for (com.relteq.sirius.jaxb.ScenarioElement elem : elems.getScenarioElement())
+			save(elem, "target", db_obj);
+	}
+
+	/**
+	 * Imports feedback elements
+	 * @param elems
+	 * @param db_obj an imported parent element
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.FeedbackElements elems, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+		if (null == elems) return;
+		for (com.relteq.sirius.jaxb.ScenarioElement elem : elems.getScenarioElement())
+			save(elem, "feedback", db_obj);
+	}
+
+	/**
+	 * Imports a referenced scenario element
+	 * @param elem scenario element
+	 * @param type "target" or "feedback"
+	 * @param db_parent an imported parent element
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.ScenarioElement elem, String type, com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
+		ReferencedScenarioElements db_elems = new ReferencedScenarioElements();
+		db_elems.setParentElementId(db_parent.getId());
+		db_elems.setParentElementType(db_parent.getElementType());
+		db_elems.setType(type);
+		com.relteq.sirius.db.BaseObject db_ref = null;
+		if (elem.getType().equals("link")) {
+			if (null != links) db_ref = links.get(elem.getId());
+		} else if (elem.getType().equals("node")) {
+			if (null != nodes) db_ref = nodes.get(elem.getId());
+		} else if (elem.getType().equals("controller")) {
+			if (null != controllers) db_ref = controllers.get(elem.getId());
+		} else if (elem.getType().equals("sensor")) {
+			if (null != sensors) db_ref = sensors.get(elem.getId());
+		} else if (elem.getType().equals("event")) {
+			if (null != events) db_ref = events.get(elem.getId());
+		} else if (elem.getType().equals("signal")) {
+			if (null != signals) db_ref = signals.get(elem.getId());
+		} else
+			logger.error("Reference to a " + elem.getType() + " is not implemented");
+		if (null != db_ref) {
+			db_elems.setScenarioElementId(db_ref.getId());
+			db_elems.setScenarioElementType(db_ref.getElementType());
+			db_elems.save(conn);
+		} else
+			logger.error("Object " + elem.getType() + " [id=" + elem.getId() + "] not found");
 	}
 
 	protected static class Data1D {
