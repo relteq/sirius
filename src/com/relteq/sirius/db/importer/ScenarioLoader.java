@@ -12,8 +12,6 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
-import com.relteq.sirius.jaxb.Point;
-import com.relteq.sirius.jaxb.Position;
 import com.relteq.sirius.om.*;
 import com.relteq.sirius.simulator.SiriusException;
 
