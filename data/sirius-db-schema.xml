@@ -336,7 +336,7 @@
 
 	<!-- Destination Networks -->
 
-	<table name="destination_networks">
+	<table name="destination_networks" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="destination_link_id" required="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>

@@ -766,10 +766,10 @@ public class ScenarioRestorer {
 		@SuppressWarnings("unchecked")
 		List<DestinationNetworkSets> db_dns_l = db_scenario.getDestinationNetworkSetss();
 		if (db_dns_l.isEmpty()) return null;
-		com.relteq.sirius.jaxb.DestinationNetworks dns = factory.createDestinationNetworks();
+		com.relteq.sirius.jaxb.DestinationNetworks destnets = factory.createDestinationNetworks();
 		for (DestinationNetworkSets db_dns : db_dns_l)
-			dns.getDestinationNetwork().add(restoreDestinationNetwork(db_dns.getDestinationNetworks()));
-		return dns;
+			destnets.getDestinationNetwork().add(restoreDestinationNetwork(db_dns.getDestinationNetworks()));
+		return destnets;
 	}
 
 	private com.relteq.sirius.jaxb.DestinationNetwork restoreDestinationNetwork(DestinationNetworks db_destnet) throws TorqueException {
