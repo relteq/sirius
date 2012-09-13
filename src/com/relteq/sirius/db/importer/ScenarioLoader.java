@@ -122,6 +122,9 @@ public class ScenarioLoader {
 				save(cntr.getTargetElements(), controllers.get(cntr.getId()));
 				save(cntr.getFeedbackElements(), controllers.get(cntr.getId()));
 			}
+		if (null != scenario.getEventSet())
+			for (com.relteq.sirius.jaxb.Event event : scenario.getEventSet().getEvent())
+				save(event.getTargetElements(), events.get(event.getId()));
 
 		return db_scenario;
 	}
@@ -893,9 +896,68 @@ public class ScenarioLoader {
 		}
 	}
 
-	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Imports an event set
+	 * @param eset
+	 * @return an imported event set
+	 * @throws TorqueException
+	 */
+	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) throws TorqueException {
+		if (null == eset) return null;
+		EventSets db_eset = new EventSets();
+		db_eset.setProjectId(getProjectId());
+		db_eset.setName(eset.getName());
+		db_eset.setDescription(eset.getDescription());
+		db_eset.save(conn);
+
+		for (com.relteq.sirius.jaxb.Event event : eset.getEvent())
+			save(event, db_eset);
+
+		return db_eset;
+	}
+
+	/**
+	 * Imports an event
+	 * @param event
+	 * @param db_eset an improted event set
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Event event, EventSets db_eset) throws TorqueException {
+		Events db_event = new Events();
+		db_event.setEventSets(db_eset);
+		db_event.setType(event.getType());
+		// TODO db_event.setJavaClass();
+		// TODO db_event.setName();
+		// TODO event.getDisplayPosition() -> db_event.setDisplayGeometry();
+		db_event.setEnabled(event.isEnabled());
+		db_event.save(conn);
+		save(event.getParameters(), db_event);
+		save(event.getSplitratioEvent(), db_event);
+	}
+
+	/**
+	 * Imports a split ratio event
+	 * @param srevent
+	 * @param db_event an imported event
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.SplitratioEvent srevent, Events db_event) throws TorqueException {
+		if (null == srevent) return;
+		EventSplitRatios db_esr = new EventSplitRatios();
+		db_esr.setEvents(db_event);
+		for (Object obj : srevent.getContent()) {
+			if (obj instanceof com.relteq.sirius.jaxb.VehicleType) {
+				for (VehicleTypes db_vt : vehicle_type)
+					if (db_vt.getName().equals(((com.relteq.sirius.jaxb.VehicleType) obj).getName()))
+						db_esr.setVehicleTypes(db_vt);
+			} else if (obj instanceof com.relteq.sirius.jaxb.Splitratio) {
+				com.relteq.sirius.jaxb.Splitratio sr = (com.relteq.sirius.jaxb.Splitratio) obj;
+				db_esr.setInLinkId(getDBLinkId(sr.getLinkIn()));
+				db_esr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
+				db_esr.setSplitRatio(new BigDecimal(sr.getContent()));
+			}
+		}
+		db_esr.save(conn);
 	}
 
 	/**

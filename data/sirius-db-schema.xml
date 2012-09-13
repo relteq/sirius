@@ -994,7 +994,7 @@
 
 	<!-- Events -->
 
-	<table name="event_sets">
+	<table name="event_sets" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="project_id" required="true" domain="ID"/>
 		<column name="name" domain="NAME_BUF"/>
@@ -1009,7 +1009,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="events">
+	<table name="events" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="event_set_id" required="true" domain="ID"/>
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
@@ -1046,6 +1046,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
 		</foreign-key>
 	</table>
 

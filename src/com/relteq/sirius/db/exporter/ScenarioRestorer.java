@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.log4j.Logger;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
@@ -49,6 +50,8 @@ public class ScenarioRestorer {
 	private ScenarioRestorer() {
 		factory = new com.relteq.sirius.simulator.JaxbObjectFactory();
 	}
+
+	private static Logger logger = Logger.getLogger(ScenarioRestorer.class);
 
 	private com.relteq.sirius.simulator.Scenario restore(long id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
@@ -702,14 +705,58 @@ public class ScenarioRestorer {
 		return interval;
 	}
 
-	private com.relteq.sirius.jaxb.EventSet restoreEventSet(EventSets db_es) {
-		if (null == db_es) return null;
+	private com.relteq.sirius.jaxb.EventSet restoreEventSet(EventSets db_eset) throws TorqueException {
+		if (null == db_eset) return null;
 		com.relteq.sirius.jaxb.EventSet eset = factory.createEventSet();
-		eset.setId(id2str(db_es.getId()));
-		// TODO eset.setName();
-		// TODO eset.setDescription();
-		// TODO eset.getEvent().add();
+		eset.setId(id2str(db_eset.getId()));
+		eset.setName(db_eset.getName());
+		eset.setDescription(db_eset.getDescription());
+
+		@SuppressWarnings("unchecked")
+		List<Events> db_event_l = db_eset.getEventss();
+		for (Events db_event : db_event_l)
+			eset.getEvent().add(restoreEvent(db_event));
+
 		return eset;
+	}
+
+	private com.relteq.sirius.jaxb.Event restoreEvent(Events db_event) throws TorqueException {
+		com.relteq.sirius.jaxb.Event event = factory.createEvent();
+		event.setId(id2str(db_event.getId()));
+		event.setTstamp(BigDecimal.valueOf(-1)); // TODO revise
+		event.setEnabled(db_event.getEnabled());
+		event.setType(db_event.getType());
+		// TODO event.setDescription();
+		// TODO db_event.getDisplayGeometry() -> event.setDisplayPosition();
+		event.setTargetElements(restoreTargetElements(db_event));
+		event.setParameters(restoreParameters(db_event));
+
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.IN_LINK_ID);
+		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.OUT_LINK_ID);
+		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.VEHICLE_TYPE_ID);
+		@SuppressWarnings("unchecked")
+		List<EventSplitRatios> db_esr_l = db_event.getEventSplitRatioss(crit);
+		if (!db_esr_l.isEmpty()) {
+			event.setSplitratioEvent(restoreSplitratioEvent(db_esr_l.get(0)));
+			if (1 < db_esr_l.size())
+				logger.warn("Found " + db_esr_l.size() + " splitratio events for event[id=" + db_event.getId() + "]");
+		}
+
+		return event;
+	}
+
+	private com.relteq.sirius.jaxb.SplitratioEvent restoreSplitratioEvent(EventSplitRatios db_esr) throws TorqueException {
+		com.relteq.sirius.jaxb.SplitratioEvent srevent = factory.createSplitratioEvent();
+		com.relteq.sirius.jaxb.VehicleType vtype = factory.createVehicleType();
+		vtype.setName(db_esr.getVehicleTypes().getName());
+		srevent.getContent().add(vtype);
+		com.relteq.sirius.jaxb.Splitratio splitratio = factory.createSplitratio();
+		splitratio.setLinkIn(id2str(db_esr.getInLinkId()));
+		splitratio.setLinkOut(id2str(db_esr.getOutLinkId()));
+		splitratio.setContent(db_esr.getSplitRatio().toPlainString());
+		srevent.getContent().add(splitratio);
+		return srevent;
 	}
 
 	private com.relteq.sirius.jaxb.DestinationNetworks restoreDestinationNetworks(Scenarios db_scenario) throws TorqueException {
