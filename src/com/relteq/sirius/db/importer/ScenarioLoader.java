@@ -177,8 +177,9 @@ public class ScenarioLoader {
 			db_vtype.setStandard(Boolean.FALSE);
 			db_vtype.save(conn);
 		} else {
-			// TODO what if db_vt_l.size() > 1
 			db_vtype = db_vt_l.get(0);
+			if (1 < db_vt_l.size())
+				logger.warn("Found " + db_vt_l.size() + " vehicle types with name=" + vt.getName() + ", weight=" + vt.getWeight());
 		}
 		VehicleTypesInSets db_vtins = new VehicleTypesInSets();
 		db_vtins.setVehicleTypeSets(db_vts);

@@ -119,7 +119,7 @@ public class ScenarioRestorer {
 		crit.addAscendingOrderByColumn(VehicleTypesPeer.VEHICLE_TYPE_ID);
 		@SuppressWarnings("unchecked")
 		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
-		if (0 == db_vt_l.size()) return null;
+		if (db_vt_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.VehicleTypes vtypes = factory.createVehicleTypes();
 		for (VehicleTypes db_vt : db_vt_l)
 			vtypes.getVehicleType().add(restoreVehicleType(db_vt));
@@ -136,7 +136,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.NetworkList restoreNetworkList(Scenarios db_scenario) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<NetworkSets> db_nets_l = db_scenario.getNetworkSetss();
-		if (0 == db_nets_l.size()) return null;
+		if (db_nets_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.NetworkList nets = factory.createNetworkList();
 		for (NetworkSets db_nets : db_nets_l)
 			nets.getNetwork().add(restoreNetwork(db_nets.getNetworks()));
@@ -159,7 +159,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.NodeList restoreNodeList(Networks db_net) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<Nodes> db_nl = db_net.getNodess();
-		if (0 == db_nl.size()) return null;
+		if (db_nl.isEmpty()) return null;
 		com.relteq.sirius.jaxb.NodeList nl = factory.createNodeList();
 		for (Nodes db_node : db_nl)
 			nl.getNode().add(restoreNode(db_node));
@@ -184,7 +184,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.RoadwayMarkers restoreRoadwayMarkers(Nodes db_node) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<Postmiles> db_postmile_l = db_node.getPostmiless();
-		if (0 == db_postmile_l.size()) return null;
+		if (db_postmile_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.RoadwayMarkers markers = factory.createRoadwayMarkers();
 		for (Postmiles db_postmile : db_postmile_l) {
 			com.relteq.sirius.jaxb.Marker marker = factory.createMarker();
@@ -235,7 +235,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.LinkList restoreLinkList(Networks db_net) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<Links> db_ll = db_net.getLinkss();
-		if (0 == db_ll.size()) return null;
+		if (db_ll.isEmpty()) return null;
 		com.relteq.sirius.jaxb.LinkList ll = factory.createLinkList();
 		for (Links db_link : db_ll)
 			ll.getLink().add(restoreLink(db_link));
@@ -266,8 +266,11 @@ public class ScenarioRestorer {
 
 		@SuppressWarnings("unchecked")
 		List<LinkLaneOffset> db_lloffset_l = db_link.getLinkLaneOffsets();
-		if (0 < db_lloffset_l.size())
+		if (!db_lloffset_l.isEmpty()) {
 			link.setLaneOffset(db_lloffset_l.get(0).getDisplayLaneOffset());
+			if (1 < db_lloffset_l.size())
+				logger.warn("Found " + db_lloffset_l.size() + " lane offsets for link[id=" + db_link.getId() + "]");
+		}
 
 		link.setLength(db_link.getLength());
 
@@ -281,7 +284,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Roads restoreRoads(Links db_link) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<LinkName> db_lname_l = db_link.getLinkNames();
-		if (0 == db_lname_l.size()) return null;
+		if (db_lname_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.Roads roads = factory.createRoads();
 		for (LinkName db_lname : db_lname_l) {
 			com.relteq.sirius.jaxb.Road road = factory.createRoad();
@@ -691,7 +694,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.ActivationIntervals restoreActivationIntervals(Controllers db_cntr) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<ControllerActivationIntervals> db_cai_l = db_cntr.getControllerActivationIntervalss();
-		if (0 == db_cai_l.size()) return null;
+		if (db_cai_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.ActivationIntervals ais = factory.createActivationIntervals();
 		for (ControllerActivationIntervals db_cai : db_cai_l)
 			ais.getInterval().add(restoreInterval(db_cai));
@@ -762,7 +765,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.DestinationNetworks restoreDestinationNetworks(Scenarios db_scenario) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<DestinationNetworkSets> db_dns_l = db_scenario.getDestinationNetworkSetss();
-		if (0 == db_dns_l.size()) return null;
+		if (db_dns_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.DestinationNetworks dns = factory.createDestinationNetworks();
 		for (DestinationNetworkSets db_dns : db_dns_l)
 			dns.getDestinationNetwork().add(restoreDestinationNetwork(db_dns.getDestinationNetworks()));
@@ -791,7 +794,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Routes restoreRoutes(Scenarios db_scenario) throws TorqueException {
 		@SuppressWarnings("unchecked")
 		List<RouteSets> db_rset_l = db_scenario.getRouteSetss();
-		if (0 == db_rset_l.size()) return null;
+		if (db_rset_l.isEmpty()) return null;
 		com.relteq.sirius.jaxb.Routes routes = factory.createRoutes();
 		for (RouteSets db_rset : db_rset_l)
 			routes.getRoute().add(restoreRoute(db_rset.getRoutes()));
