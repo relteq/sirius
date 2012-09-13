@@ -5,8 +5,6 @@
 
 package com.relteq.sirius.simulator;
 
-import com.relteq.sirius.calibrator.FDParameters;
-
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)

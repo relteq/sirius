@@ -102,10 +102,10 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles();
 	}
 
-	@Override
-	public double getOccupancy(int ensemble) {
-		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles()/this.getRho_jam()*100;
-	}
+//	@Override
+//	public double getOccupancy(int ensemble) {
+//		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles()/this.getRho_jam()*100;
+//	}
 	
 	@Override
 	public Double[] getFlowInVPH(int ensemble) {

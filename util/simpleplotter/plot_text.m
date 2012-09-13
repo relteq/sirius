@@ -6,7 +6,7 @@ fprintf('Reading %s\n', configfile);
 scenario = xml_read(configfile);
 
 if(length(length(scenario.NetworkList.network))~=1)
-    error('simplot does not work for scenarios with multiple networks')
+    error('plot_text does not work for scenarios with multiple networks')
 end
 
 dt = round(2*scenario.NetworkList.network(1).ATTRIBUTE.dt)/2;

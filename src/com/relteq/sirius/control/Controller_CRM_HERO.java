@@ -93,6 +93,10 @@ public class Controller_CRM_HERO extends Controller {
     	
     }
 
+	public Controller_CRM_HERO(Scenario myScenario) {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
 		// TODO Auto-generated constructor stub		
 	}
