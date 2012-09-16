@@ -88,11 +88,6 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Table createTable() {
-		return new Table();
-	}
-
-	@Override
 	public com.relteq.sirius.jaxb.Parameters createParameters() {
 		return new Parameters();
 	}

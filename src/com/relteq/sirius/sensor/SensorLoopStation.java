@@ -3,6 +3,8 @@ package com.relteq.sirius.sensor;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
@@ -32,7 +34,9 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	    this.myType = Sensor.Type.static_point;
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
-	
+
+	private static Logger logger = Logger.getLogger(SensorLoopStation.class);
+
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////	
@@ -50,16 +54,20 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		
 		if (null != jaxbs.getTable()) {
 			if ("data_sources" == jaxbs.getTable().getName()) {
-				com.relteq.sirius.simulator.Table table = (com.relteq.sirius.simulator.Table) jaxbs.getTable();
-				java.util.Map<String, Integer> imap = table.getColumnNameToIndexMap();
-				if (imap != null && imap.get("url") != null && imap.get("format") != null) {
-					int ind_url = imap.get("url").intValue();
-					int ind_format = imap.get("format").intValue();
-					for (com.relteq.sirius.jaxb.Row row : table.getRowList()) {
-						this._datasources.add(new DataSource(row.getColumn().get(ind_url), row.getColumn().get(ind_format)));
+				com.relteq.sirius.simulator.Table table = new com.relteq.sirius.simulator.Table(jaxbs.getTable());
+				final String[] colname = {"url", "format"};
+				int[] colnum = new int[2];
+				boolean colnotfound = false;
+				for (int i = 0; i < colname.length; ++i)
+					if (-1 == (colnum[i] = table.getColumnNo(colname[i]))) {
+						logger.warn("Column '" + colname[i] + "' not found");
+						colnotfound = true;
 					}
-				}
-			} else com.relteq.sirius.simulator.SiriusErrorLog.addWarning("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
+				if (!colnotfound)
+					for (int i = 0; i < table.getNoRows(); ++i)
+						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));;
+			} else
+				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
 		}
 	}
 	
