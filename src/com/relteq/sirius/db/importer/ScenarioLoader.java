@@ -918,8 +918,9 @@ public class ScenarioLoader {
 		db_eset.setDescription(eset.getDescription());
 		db_eset.save(conn);
 
+		events = new HashMap<String, Events>(eset.getEvent().size());
 		for (com.relteq.sirius.jaxb.Event event : eset.getEvent())
-			save(event, db_eset);
+			events.put(event.getId(), save(event, db_eset));
 
 		return db_eset;
 	}
@@ -927,10 +928,11 @@ public class ScenarioLoader {
 	/**
 	 * Imports an event
 	 * @param event
-	 * @param db_eset an improted event set
+	 * @param db_eset an imported event set
+	 * @return an imported event
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Event event, EventSets db_eset) throws TorqueException {
+	private Events save(com.relteq.sirius.jaxb.Event event, EventSets db_eset) throws TorqueException {
 		Events db_event = new Events();
 		db_event.setEventSets(db_eset);
 		db_event.setType(event.getType());
@@ -941,6 +943,7 @@ public class ScenarioLoader {
 		db_event.save(conn);
 		save(event.getParameters(), db_event);
 		save(event.getSplitratioEvent(), db_event);
+		return db_event;
 	}
 
 	/**
