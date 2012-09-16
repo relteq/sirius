@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario id="null" name="null" schemaVersion="2.0.2">
+<scenario name="Multiple Types" schemaVersion="2.0.2">
   <settings>
     <units>US</units>
     <VehicleTypes>
@@ -55,6 +55,7 @@
     <demandProfile dt="300" knob="1" link_id_origin="-6">400:200</demandProfile>
     <demandProfile dt="300" knob="1" link_id_origin="-1">100:50</demandProfile>
   </DemandProfileSet>
+<!-- TODO uncomment
   <ControllerSet>
     <controller dt="5" type="IRM_alinea" id="-1" enabled="true">
       <parameters>
@@ -68,6 +69,7 @@
       </feedbackElements>
     </controller>
   </ControllerSet>
+-->
   <FundamentalDiagramProfileSet>
     <fundamentalDiagramProfile link_id="-1">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
