@@ -7,6 +7,9 @@
       <units>US</units>
    </settings>
    <SplitRatioProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="General vehicle"/>
+	  </VehicleTypeOrder>
       <splitratioProfile dt="900" node_id="-51">
          <splitratio link_in="-5121" link_out="-5123">0.930000</splitratio>
          <splitratio link_in="-5121" link_out="-5143">0.070000</splitratio>
@@ -771,6 +774,9 @@
       </splitratioProfile>
    </SplitRatioProfileSet>
    <DemandProfileSet>
+	  <VehicleTypeOrder>
+		<vehicle_type name="General vehicle"/>
+	  </VehicleTypeOrder>
       <demandProfile dt="900" knob="1" link_id_origin="-5180">108.000000,184.000000,224.000000,288.000000,212.000000,148.000000,180.000000,156.000000,0.000000</demandProfile>
       <demandProfile dt="900" knob="1" link_id_origin="-5240">24.000000,28.000000,20.000000,60.000000,56.000000,56.000000,28.000000,40.000000,0.000000</demandProfile>
       <demandProfile dt="900" knob="1" link_id_origin="-5380">0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000</demandProfile>

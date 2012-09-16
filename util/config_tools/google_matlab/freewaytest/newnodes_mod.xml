@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuroraRNM>
+  <network name="none" controlled="true" top="true" tp="0" id="-1">
+    <description>none</description>
+    <position>
+      <point x="-122.00397777777779" y="-37.53263333333333" z="0"/>
+    </position>
+    <MonitorList/>
+    <NodeList>
+      <node name="node 1" type="F" id="1">
+        <postmile></postmile>
+        <position>
+          <point x="-121.9838" y="-37.5203" z="0"/>
+        </position>
+      </node>
+      <node name="node 2" type="F" id="2">
+        <postmile></postmile>
+        <position>
+          <point x="-121.9859" y="-37.5215" z="0"/>
+        </position>
+      </node>
+      <node name="node 3" type="F" id="3">
+        <postmile></postmile>
+        <position>
+          <point x="-121.9922" y="-37.5246" z="0"/>
+        </position>
+      </node>
+      <node name="node 4" type="F" id="4">
+        <postmile></postmile>
+        <position>
+          <point x="-121.9981" y="-37.5275" z="0"/>
+        </position>
+      </node>
+      <node name="node 5" type="F" id="5">
+        <postmile></postmile>
+        <position>
+          <point x="-122.0011" y="-37.5291" z="0"/>
+        </position>
+      </node>
+      <node name="node 6" type="F" id="6">
+        <postmile></postmile>
+        <position>
+          <point x="-122.0066" y="-37.532" z="0"/>
+        </position>
+      </node>
+      <node name="node 7" type="F" id="7">
+        <postmile></postmile>
+        <position>
+          <point x="-122.0204" y="-37.5432" z="0"/>
+        </position>
+      </node>
+      <node name="node 8" type="F" id="8">
+        <postmile></postmile>
+        <position>
+          <point x="-122.0224" y="-37.5458" z="0"/>
+        </position>
+      </node>
+      <node name="node 9" type="F" id="9">
+        <postmile></postmile>
+        <position>
+          <point x="-122.0253" y="-37.5497" z="0"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList/>
+    <ODList/>
+    <SensorList/>
+  </network>
+  <settings>
+    <display timeMax="24" tsMax="50000" timeout="50" tp="0"/>
+    <VehicleTypes>
+      <vtype name="SOV" weight="1"/>
+    </VehicleTypes>
+  </settings>
+</AuroraRNM>

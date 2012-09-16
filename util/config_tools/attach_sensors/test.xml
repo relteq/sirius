@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario id="null" name="New Scenario" schemaVersion="1.0.20" xmlns:aurora="http://path.berkeley.edu/aurora">
+  <network name="New Network" ml_control="false" q_control="false" dt="300" id="-1">
+    <description>Created by Network Editor version xsd-1.0.20-53-g63cb19d</description>
+    <position>
+      <point lat="37.55201448805241" lng="-122.12722331285477"/>
+    </position>
+    <NodeList>
+      <node name="Node -1" type="F" id="-1">
+        <outputs>
+          <output link_id="-1"/>
+        </outputs>
+        <inputs/>
+        <position>
+          <point lat="37.334602482867766" lng="-121.84688687324524"/>
+        </position>
+      </node>
+      <node name="Node -2" type="F" id="-2">
+        <outputs/>
+        <inputs>
+          <input link_id="-1">
+            <weavingfactors></weavingfactors>
+          </input>
+        </inputs>
+        <position>
+          <point lat="37.76942649323705" lng="-122.40755975246431"/>
+        </position>
+      </node>
+    </NodeList>
+    <LinkList>
+	<!--
+      <link name="-1 -> -2" road_name="US-101 N" lanes="4" length="48.79948970634393" type="FW" id="-1" record="false">
+        <description></description>
+        <begin node_id="-1"/>
+        <end node_id="-2"/>
+        <fd densityCritical="30.0" flowMax="1800.0" densityJam="150.0"/>
+        <dynamics type="CTM"/>
+        <qmax>100</qmax>
+      </link> -->
+    </LinkList>
+    <DirectionsCache>
+      <DirectionsCacheEntry avoidHighways="false" road_name="US-101 N">
+        <From>
+          <ALatLng lat="37.334602482867766" lng="-121.84688687324524"/>
+        </From>
+        <To>
+          <ALatLng lat="37.76963003578745" lng="-122.41585314273836"/>
+        </To>
+        <EncodedPolyline zoomFactor="2" numLevels="18">
+          <Points>c|zbFhfufVu`@z_@_EhDuKvKcXpVw@~@{P|NqJbJoBtBcZn]{HjLqDhH_CxFsE`PmBdLe@jEy@rKmA~VuA`UkCnl@g@~Ou@nJ]zB}@nEg@bBiChG}@bBwRhW_CdEcBpEy@|CaGjXaAfH_Ftk@uM~|@oEja@yIlu@wCrV_CrPyJ|h@aMjn@yj@tyCcCxKcEvS{Gz^wFd]_f@hqDc@`CaJpr@UlCsDjVkFfZoN`fA{@bFgAnEeMza@uMnd@aBvEiDzGwCvEmt@zhA}DvFcE`FuMnNcIhIuvA|zAkNpOw]f_@iEtGgB~C}e@paAaK|RuVlh@qzAfzCaO|Z_H`RgBpGiD|PuBzOq@bHeM`pBk@jHkAfKwAnI_FfUuAnE{Qvi@eDjLwBdJIpAuL~m@iCrIcB|D_BzCuFrHoz@bbAif@zk@wa@ze@}OrR{e@vj@aFzEsOnNeBfBka@x^wJlI_@n@gC~B}f@pc@mgAzbAkd@ng@sEnFcFbFuLpN{c@tf@ip@vt@cDlEwAbDkAfFu@vFWtDEdScA`~Ac@`KkA~IaA|EuAhEgEvJijChtE{CzDcDpDwEjDeFlC{Aj@aEdAgd@lKkXbHqH`AqVnAwGl@mEr@_IzBiKnEmFbBgFfAwANeNt@wp@nCiKXmDEuEg@kD{@_OgGsCgBkA_AmAmAaDmE}NsWuE}G_DiDoYqXcG{EwGeEmEyBiJwDsC}@iBYkCU{DE_CHyC^y`@fFe`BrTybAvNiDbAoB~@mBhA}IzGuAz@mDrA}NbCuJvBcRxFuJ|BgNzDqAb@gHnDqJ|DeJhEmNhHwBt@qCj@kDR_D@eE_@}AYmFsBwKiIcAk@}DsAaF}@a[{GaGm@sBKgRx@wB^}@\oBvAkArAkEnGyBtA_Cn@yBBgB[_JkE{Bc@wFQcCD]J}Ij@{Ap@i@f@eGxI_BjDKj@BrArA`DJtAUdJUtW</Points>
+          <Levels>PA@B@AA@FCEACIB@D@BABAG@C@DBEABGACC@AAFAAB@BAF@A@CACFACAAJAB@FAA@A@CH@AAAAIBDBFACABFC@ADAADB@IB@AA@F@@A@AAAAF@AAA@BIBCAE@DCAHADL@CBF@AAGBBAEBAC@E@BAIADB@FACBEABFACAE@B@I?ABGACABAEACAAEA@B@CAHAC@ECB@E@C@GCAEABDBFBCBEAC@HACBAFBBDAP</Levels>
+        </EncodedPolyline>
+      </DirectionsCacheEntry>
+      <DirectionsCacheEntry avoidHighways="false" road_name="US-101 N">
+        <From>
+          <ALatLng lat="37.334602482867766" lng="-121.84688687324524"/>
+        </From>
+        <To>
+          <ALatLng lat="37.768459658471436" lng="-122.4061006307602"/>
+        </To>
+        <EncodedPolyline zoomFactor="2" numLevels="18">
+          <Points>c|zbFhfufVu`@z_@_EhDuKvKcXpVw@~@{P|NqJbJoBtBcZn]{HjLqDhH_CxFsE`PmBdLe@jEy@rKmA~VuA`UkCnl@g@~Ou@nJ]zB}@nEg@bBiChG}@bBwRhW_CdEcBpEy@|CaGjXaAfH_Ftk@uM~|@oEja@yIlu@wCrV_CrPyJ|h@aMjn@yj@tyCcCxKcEvS{Gz^wFd]_f@hqDc@`CaJpr@UlCsDjVkFfZoN`fA{@bFgAnEeMza@uMnd@aBvEiDzGwCvEmt@zhA}DvFcE`FuMnNcIhIuvA|zAkNpOw]f_@iEtGgB~C}e@paAaK|RuVlh@qzAfzCaO|Z_H`RgBpGiD|PuBzOq@bHeM`pBk@jHkAfKwAnI_FfUuAnE{Qvi@eDjLwBdJIpAuL~m@iCrIcB|D_BzCuFrHoz@bbAif@zk@wa@ze@}OrR{e@vj@aFzEsOnNeBfBka@x^wJlI_@n@gC~B}f@pc@mgAzbAkd@ng@sEnFcFbFuLpN{c@tf@ip@vt@cDlEwAbDkAfFu@vFWtDEdScA`~Ac@`KkA~IaA|EuAhEgEvJijChtE{CzDcDpDwEjDeFlC{Aj@aEdAgd@lKkXbHqH`AqVnAwGl@mEr@_IzBiKnEmFbBgFfAwANeNt@wp@nCiKXmDEuEg@kD{@_OgGsCgBkA_AmAmAaDmE}NsWuE}G_DiDoYqXcG{EwGeEmEyBiJwDsC}@iBYkCU{DE_CHyC^y`@fFe`BrTybAvNiDbAoB~@mBhA}IzGuAz@mDrA}NbCuJvBcRxFuJ|BgNzDqAb@gHnDqJ|DeJhEmNhHwBt@qCj@kDR_D@eE_@}AYmFsBwKiIcAk@}DsAaF}@a[{GsDc@aEUgRx@wB^}@\oBvAkArAkEnGyBtA_Cn@yBBkCk@eB}@}BgByCkAGQEqAg_@bBNrF</Points>
+          <Levels>PA@B@AA@FCEACIB@D@BABAG@C@DBEABGACC@AAFAAB@BAF@A@CACFACAAJAB@FAA@A@CH@AAAAIBDBFACABFC@ADAADB@IB@AA@F@@A@AAAAF@AAA@BIBCAE@DCAHADL@CBF@AAGBBAEBAC@E@BAIADB@FACBEABFABDACAIAABAGACABAEACAAEA@B@CAHAC@ECB@E@C@GCAEABDBFBDABD@FEP</Levels>
+        </EncodedPolyline>
+      </DirectionsCacheEntry>
+      <DirectionsCacheEntry avoidHighways="false" road_name="US-101 N">
+        <From>
+          <ALatLng lat="37.334602482867766" lng="-121.84688687324524"/>
+        </From>
+        <To>
+          <ALatLng lat="37.76975555341429" lng="-122.4078816175461"/>
+        </To>
+        <EncodedPolyline zoomFactor="2" numLevels="18">
+          <Points>c|zbFhfufVu`@z_@_EhDuKvKcXpVw@~@{P|NqJbJoBtBcZn]{HjLqDhH_CxFsE`PmBdLe@jEy@rKmA~VuA`UkCnl@g@~Ou@nJ]zB}@nEg@bBiChG}@bBwRhW_CdEcBpEy@|CaGjXaAfH_Ftk@uM~|@oEja@yIlu@wCrV_CrPyJ|h@aMjn@yj@tyCcCxKcEvS{Gz^wFd]_f@hqDc@`CaJpr@UlCsDjVkFfZoN`fA{@bFgAnEeMza@uMnd@aBvEiDzGwCvEmt@zhA}DvFcE`FuMnNcIhIuvA|zAkNpOw]f_@iEtGgB~C}e@paAaK|RuVlh@qzAfzCaO|Z_H`RgBpGiD|PuBzOq@bHeM`pBk@jHkAfKwAnI_FfUuAnE{Qvi@eDjLwBdJIpAuL~m@iCrIcB|D_BzCuFrHoz@bbAif@zk@wa@ze@}OrR{e@vj@aFzEsOnNeBfBka@x^wJlI_@n@gC~B}f@pc@mgAzbAkd@ng@sEnFcFbFuLpN{c@tf@ip@vt@cDlEwAbDkAfFu@vFWtDEdScA`~Ac@`KkA~IaA|EuAhEgEvJijChtE{CzDcDpDwEjDeFlC{Aj@aEdAgd@lKkXbHqH`AqVnAwGl@mEr@_IzBiKnEmFbBgFfAwANeNt@wp@nCiKXmDEuEg@kD{@_OgGsCgBkA_AmAmAaDmE}NsWuE}G_DiDoYqXcG{EwGeEmEyBiJwDsC}@iBYkCU{DE_CHyC^y`@fFe`BrTybAvNiDbAoB~@mBhA}IzGuAz@mDrA}NbCuJvBcRxFuJ|BgNzDqAb@gHnDqJ|DeJhEmNhHwBt@qCj@kDR_D@eE_@}AYmFsBwKiIcAk@}DsAaF}@a[{GaGm@sBKgRx@wB^}@\oBvAkArAkEnGyBtA_Cn@yBBgB[_JkE{Bc@wFQcCD]J}Ij@{Ap@i@f@eGxIUP{BdDsAlAq@?eB[wFrH|AvBvHcK`@SpBwC</Points>
+          <Levels>PA@B@AA@FCEACIB@D@BABAG@C@DBEABGACC@AAFAAB@BAF@A@CACFACAAJAB@FAA@A@CH@AAAAIBDBFACABFC@ADAADB@IB@AA@F@@A@AAAAF@AAA@BIBCAE@DCAHADL@CBF@AAGBBAEBAC@E@BAIADB@FACBEABFACAE@B@I?ABGACABAEACAAEA@B@CAHAC@ECB@E@C@GCAEABDBFBCBEAC@GAC@?BDAEEGAAP</Levels>
+        </EncodedPolyline>
+      </DirectionsCacheEntry>
+	  <DirectionsCacheEntry avoidHighways="false" road_name="US-101 N">
+        <From>
+          <ALatLng lat="37.334602482867766" lng="-121.84688687324524"/>
+        </From>
+        <To>
+          <ALatLng lat="37.76942649323705" lng="-122.40755975246431"/>
+        </To>
+        <EncodedPolyline zoomFactor="2" numLevels="18">
+          <Points>c|zbFhfufVu`@z_@_EhDuKvKcXpVw@~@{P|NqJbJoBtBcZn]{HjLqDhH_CxFsE`PmBdLe@jEy@rKmA~VuA`UkCnl@g@~Ou@nJ]zB}@nEg@bBiChG}@bBwRhW_CdEcBpEy@|CaGjXaAfH_Ftk@uM~|@oEja@yIlu@wCrV_CrPyJ|h@aMjn@yj@tyCcCxKcEvS{Gz^wFd]_f@hqDc@`CaJpr@UlCsDjVkFfZoN`fA{@bFgAnEeMza@uMnd@aBvEiDzGwCvEmt@zhA}DvFcE`FuMnNcIhIuvA|zAkNpOw]f_@iEtGgB~C}e@paAaK|RuVlh@qzAfzCaO|Z_H`RgBpGiD|PuBzOq@bHeM`pBk@jHkAfKwAnI_FfUuAnE{Qvi@eDjLwBdJIpAuL~m@iCrIcB|D_BzCuFrHoz@bbAif@zk@wa@ze@}OrR{e@vj@aFzEsOnNeBfBka@x^wJlI_@n@gC~B}f@pc@mgAzbAkd@ng@sEnFcFbFuLpN{c@tf@ip@vt@cDlEwAbDkAfFu@vFWtDEdScA`~Ac@`KkA~IaA|EuAhEgEvJijChtE{CzDcDpDwEjDeFlC{Aj@aEdAgd@lKkXbHqH`AqVnAwGl@mEr@_IzBiKnEmFbBgFfAwANeNt@wp@nCiKXmDEuEg@kD{@_OgGsCgBkA_AmAmAaDmE}NsWuE}G_DiDoYqXcG{EwGeEmEyBiJwDsC}@iBYkCU{DE_CHyC^y`@fFe`BrTybAvNiDbAoB~@mBhA}IzGuAz@mDrA}NbCuJvBcRxFuJ|BgNzDqAb@gHnDqJ|DeJhEmNhHwBt@qCj@kDR_D@eE_@}AYmFsBwKiIcAk@}DsAaF}@a[{GaGm@sBKgRx@wB^}@\oBvAkArAkEnGyBtA_Cn@yBBgB[_JkE{Bc@wFQcCD]J}Ij@{Ap@i@f@iCpDmCfE</Points>
+          <Levels>PA@B@AA@FCEACIB@D@BABAG@C@DBEABGACC@AAFAAB@BAF@A@CACFACAAJAB@FAA@A@CH@AAAAIBDBFACABFC@ADAADB@IB@AA@F@@A@AAAAF@AAA@BIBCAE@DCAHADL@CBF@AAGBBAEBAC@E@BAIADB@FACBEABFACAE@B@I?ABGACABAEACAAEA@B@CAHAC@ECB@E@C@GCAEABDBFBCBEAC@FAC@P</Levels>
+        </EncodedPolyline>
+      </DirectionsCacheEntry>
+    </DirectionsCache> 
+  </network>
+  <settings>
+    <units>US</units>
+  </settings>
+</scenario>

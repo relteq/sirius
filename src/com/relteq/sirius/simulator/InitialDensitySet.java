@@ -135,6 +135,26 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		return d;
 	}
 
+	public Double[][] getInitial_density() {
+		return initial_density;
+	}
+
+	public Link[] getLink() {
+		return link;
+	}
+
+	public Integer[] getVehicletypeindex() {
+		return vehicletypeindex;
+	}
+
+	public double getTimestamp() {
+		return timestamp;
+	}
+		
+	/////////////////////////////////////////////////////////////////////
+	// database API
+	/////////////////////////////////////////////////////////////////////
+	
 	public class Tuple {
 		private String link_id;
 		private String network_id;

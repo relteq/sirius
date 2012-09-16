@@ -138,7 +138,11 @@ public class Controller_IRM_Alinea extends Controller {
 		if(jaxbc.getParameters()!=null)
 			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 				if(p.getName().equals("gain")){
-					gain_in_mph = Double.parseDouble(p.getValue());
+					try {
+						gain_in_mph = Double.parseDouble(p.getValue());
+					} catch (NumberFormatException e) {
+						gain_in_mph = 0d;
+					}
 				}
 				if(p.getName().equals("targetdensity")){
 					if(mainlinelink!=null){
@@ -213,12 +217,16 @@ public class Controller_IRM_Alinea extends Controller {
 			targetvehicles = mainlinelink.getDensityCriticalInVeh(0);
 		
 		// metering rate
-		control_maxflow[0] = onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles);
+		control_maxflow[0] = Math.max(Math.min(onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles), 1705),0);
 	}
 
 	@Override
 	public boolean register() {
 		return registerFlowController(onramplink,0);
+	}
+	
+	public boolean deregister() {
+		return deregisterFlowController(onramplink);
 	}
 
 }

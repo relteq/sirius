@@ -140,11 +140,15 @@ public class Event_Node_Split_Ratio extends Event {
     	str.replaceAll("\\s","");    	
 		StringTokenizer slicesX = new StringTokenizer(str,delim);
 		while (slicesX.hasMoreTokens()) {			
-			Double value = Double.parseDouble(slicesX.nextToken());
-			if(value>=0)
-				data.add(value);
-			else
+			try {
+				Double value = Double.parseDouble(slicesX.nextToken());
+				if(value>=0)
+					data.add(value);
+				else
+					data.add(Double.NaN);
+			} catch (NumberFormatException e) {
 				data.add(Double.NaN);
+			}
 		}
 		return data;
     }
