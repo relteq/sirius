@@ -1346,6 +1346,9 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
+		<foreign-key foreignTable="vehicle_types">
+			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		</foreign-key>
 	</table>
 
 
