@@ -62,11 +62,11 @@ public class XMLOutputWriterTest {
 
 	/**
 	 * Lists configuration files
-	 * @return a Vector of configuration files <code>data/config/*.xml</code>
+	 * @return a Vector of configuration files <code>data/test/config/*.xml</code>
 	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
-		File confdir = new File("data" + File.separator + "config");
+		File confdir = new File("data" + File.separator + "test" + File.separator + "config");
 		File [] files = confdir.listFiles();
 		Vector<Object[]> res = new Vector<Object[]>(files.length);
 		for (File file : files) {
