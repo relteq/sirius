@@ -958,8 +958,9 @@ public class ScenarioLoader {
 		Events db_event = new Events();
 		db_event.setEventSets(db_eset);
 		db_event.setType(event.getType());
-		// TODO db_event.setJavaClass();
-		// TODO db_event.setName();
+		db_event.setTstamp(event.getTstamp());
+		db_event.setJavaClass(event.getJavaClass());
+		db_event.setDescription(event.getDescription());
 		// TODO event.getDisplayPosition() -> db_event.setDisplayGeometry();
 		db_event.setEnabled(event.isEnabled());
 		db_event.save(conn);

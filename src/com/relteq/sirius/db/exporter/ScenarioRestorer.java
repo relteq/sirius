@@ -736,10 +736,11 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Event restoreEvent(Events db_event) throws TorqueException {
 		com.relteq.sirius.jaxb.Event event = factory.createEvent();
 		event.setId(id2str(db_event.getId()));
-		event.setTstamp(BigDecimal.valueOf(-1)); // TODO revise
+		event.setTstamp(db_event.getTstamp());
 		event.setEnabled(db_event.getEnabled());
 		event.setType(db_event.getType());
-		// TODO event.setDescription();
+		event.setJavaClass(db_event.getJavaClass());
+		event.setDescription(db_event.getDescription());
 		// TODO db_event.getDisplayGeometry() -> event.setDisplayPosition();
 		event.setTargetElements(restoreTargetElements(db_event));
 		event.setParameters(restoreParameters(db_event));

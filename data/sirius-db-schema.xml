@@ -1015,9 +1015,10 @@
 	<table name="events" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="event_set_id" required="true" domain="ID"/>
+		<column name="tstamp" required="true" type="DECIMAL"/>
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
-		<column name="name" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
 		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="enabled" required="true" domain="BOOL" description="If the event is not enabled, it does not fire."/>
 		<column name="created" required="true" type="DATE"/>
