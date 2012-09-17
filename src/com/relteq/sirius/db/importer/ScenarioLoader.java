@@ -470,14 +470,18 @@ public class ScenarioLoader {
 		Sensors db_sensor = new Sensors();
 		db_sensor.setType(sensor.getType());
 		db_sensor.setSensorSets(db_ss);
-		// TODO db_sensor.setOriginalId();
-		// TODO db_sensor.setDataFeedId();
+		db_sensor.setOriginalId(sensor.getOriginalId());
+		DataSources db_ds = new DataSources();
+		db_ds.setId(DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
+		db_ds.save(conn);
+		db_sensor.setDataSources(db_ds);
 		// TODO sensor.getDisplayPosition() -> db_sensor.setDisplayGeometry();
 		db_sensor.setDisplayGeometry("");
 		if (null != sensor.getLinkReference())
 			db_sensor.setLinkId(getDBLinkId(sensor.getLinkReference().getId()));
 		db_sensor.setLinkPosition(sensor.getLinkPosition());
-		// TODO db_sensor.setLaneNumber();
+		if (null != sensor.getLaneNumber())
+			db_sensor.setLaneNumber(Integer.valueOf(sensor.getLaneNumber().intValue()));
 		// TODO db_sensor.setHealthStatus();
 		db_sensor.save(conn);
 		save(sensor.getParameters(), db_sensor);

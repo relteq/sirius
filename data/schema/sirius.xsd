@@ -456,8 +456,6 @@
 		  <xs:element name="sensor">
 			<xs:complexType>
 			  <xs:all>
-				<xs:element ref="description" minOccurs="0" />
-				<xs:element ref="position" minOccurs="0" />
 				<xs:element ref="display_position" minOccurs="0" />
 				<xs:element ref="link_reference" minOccurs="0" />
 				<xs:element ref="parameters" minOccurs="0" />
@@ -474,6 +472,8 @@
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
+			  <xs:attribute name="original_id" type="xs:string" use="optional" />
+			  <xs:attribute name="lane_number" type="xs:integer" use="optional" />
 			</xs:complexType>
 		</xs:element>
 

@@ -799,8 +799,8 @@
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="type" required="true" domain="SENSOR_TYPE"/>
 		<column name="sensor_set_id" required="true" domain="ID"/>
-		<column name="original_id" domain="ID" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
-		<column name="data_feed_id" domain="ID" description="Which data feed does this sensor belong to."/>
+		<column name="original_id" domain="NAME_BUF" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
+		<column name="data_source_id" domain="ID" description="Which data feed does this sensor belong to."/>
 		<column name="display_geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="link_id" domain="ID" description="If link ID is not present, the sensor is not assigned."/>
 		<column name="link_position" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
@@ -816,6 +816,9 @@
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="data_sources">
+			<reference local="data_source_id" foreign="id"/>
 		</foreign-key>
 	</table>
 

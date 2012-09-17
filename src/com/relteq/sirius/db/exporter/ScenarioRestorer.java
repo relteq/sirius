@@ -604,15 +604,17 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Sensor restoreSensor(Sensors db_sensor) throws TorqueException {
 		com.relteq.sirius.jaxb.Sensor sensor = factory.createSensor();
 		sensor.setId(id2str(db_sensor.getId()));
-		// TODO sensor.setDescription();
-		// TODO sensor.setPosition();
-		// TODO sensor.setDisplayPosition();
+		sensor.setLinkPosition(db_sensor.getLinkPosition());
+		sensor.setType(db_sensor.getType());
+		sensor.setOriginalId(db_sensor.getOriginalId());
+		if (null != db_sensor.getLaneNumber())
+			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
+		// TODO db_sensor.getDisplayGeometry() -> sensor.setDisplayPosition();
 		if (null != db_sensor.getLinkId()) {
 			com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
 			lr.setId(id2str(db_sensor.getLinkId()));
+			sensor.setLinkReference(lr);
 		}
-		sensor.setLinkPosition(db_sensor.getLinkPosition());
-		sensor.setType(db_sensor.getType());
 		sensor.setParameters(restoreParameters(db_sensor));
 		sensor.setTable(restoreTable(db_sensor));
 		return sensor;
