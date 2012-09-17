@@ -865,10 +865,10 @@
 
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
-				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
-				  <xs:attribute name="congestion_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
-				  <xs:attribute name="capacity" type="xs:decimal" use="optional" />							<!-- [veh/s/lane]   -->
+				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="critical_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="capacity" type="xs:decimal" use="required" />							<!-- [veh/s/lane]   -->
 				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
 				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/s/lane]   -->
 				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/s/lane]   -->
