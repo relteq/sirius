@@ -809,6 +809,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Route restoreRoute(Routes db_route) throws TorqueException {
 		com.relteq.sirius.jaxb.Route route = factory.createRoute();
 		route.setId(id2str(db_route.getId()));
+		route.setName(db_route.getName());
 		com.relteq.sirius.jaxb.LinkReferences lrs = factory.createLinkReferences();
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(RouteLinksPeer.ORDINAL);

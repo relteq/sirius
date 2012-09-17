@@ -1058,7 +1058,7 @@ public class ScenarioLoader {
 	private Routes save(com.relteq.sirius.jaxb.Route route) throws TorqueException {
 		Routes db_route = new Routes();
 		db_route.setProjectId(getProjectId());
-		// TODO db_route.setName();
+		db_route.setName(route.getName());
 		int ordinal = 0;
 		for (com.relteq.sirius.jaxb.LinkReference lr : route.getLinkReferences().getLinkReference()) {
 			RouteLinks db_rl = new RouteLinks();
