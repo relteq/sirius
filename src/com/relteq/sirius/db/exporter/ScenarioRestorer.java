@@ -492,7 +492,8 @@ public class ScenarioRestorer {
 		dp.setStartTime(db_dp.getStartTime());
 		dp.setDt(db_dp.getDt());
 		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
-		// TODO dp.setDestinationNetworkId();
+		if (null != db_dp.getDestinationLinkId())
+			dp.setDestinationLinkId(id2str(db_dp.getDestinationLinkId()));
 		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
 		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
 
