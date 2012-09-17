@@ -253,7 +253,6 @@ public class ScenarioLoader {
 		// TODO node.getPosition() -> db_node.setGeom();
 		db_node.setGeom("");
 		db_node.setInSynch(node.isInSynch());
-		// TODO fill node_name table
 
 		// node type
 		NodeType db_ntype = new NodeType();
@@ -275,15 +274,33 @@ public class ScenarioLoader {
 	private void save(com.relteq.sirius.jaxb.RoadwayMarkers markers, Nodes db_node) throws TorqueException {
 		// TODO revise the whole method
 		if (null == markers) return;
-		for (com.relteq.sirius.jaxb.Marker marker : markers.getMarker()) {
-			PostmileHighways db_pmhw = new PostmileHighways();
-			db_pmhw.setHighwayName(marker.getName());
-			db_pmhw.save(conn);
-			Postmiles db_postmile = new Postmiles();
-			db_postmile.setNodes(db_node);
-			db_postmile.setPostmileHighways(db_pmhw);
-			db_postmile.save(conn);
-		}
+		for (com.relteq.sirius.jaxb.Marker marker : markers.getMarker())
+			if (null == marker.getPostmile()) { // importing node name
+				NodeName db_nname = new NodeName();
+				db_nname.setNodes(db_node);
+				db_nname.setName(marker.getName());
+				db_nname.save(conn);
+			} else { // importing highway postmile
+				PostmileHighways db_pmhw = null;
+				Criteria crit = new Criteria();
+				crit.add(PostmileHighwaysPeer.HIGHWAY_NAME, marker.getName());
+				@SuppressWarnings("unchecked")
+				List<PostmileHighways> db_pmhw_l = PostmileHighwaysPeer.doSelect(crit);
+				if (!db_pmhw_l.isEmpty()) {
+					db_pmhw = db_pmhw_l.get(0);
+					if (1 < db_pmhw_l.size())
+						logger.warn("There are " + db_pmhw_l.size() + " hoghways with name=" + marker.getName());
+				} else {
+					db_pmhw = new PostmileHighways();
+					db_pmhw.setHighwayName(marker.getName());
+					db_pmhw.save(conn);
+				}
+				Postmiles db_postmile = new Postmiles();
+				db_postmile.setNodes(db_node);
+				db_postmile.setPostmileHighways(db_pmhw);
+				db_postmile.setPostmile(marker.getPostmile());
+				db_postmile.save(conn);
+			}
 	}
 
 	/**

@@ -121,7 +121,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="postmile_highways">
+	<table name="postmile_highways" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="highway_name" required="true" domain="NAME_BUF"/>
 		<column name="created" required="true" type="DATE"/>
@@ -135,6 +135,7 @@
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="node_id" primaryKey="true" domain="ID"/>
 		<column name="highway_id" primaryKey="true" domain="ID"/>
+		<column name="postmile" required="true" domain="DECIMAL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>

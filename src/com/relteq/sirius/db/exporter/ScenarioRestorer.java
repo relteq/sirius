@@ -182,15 +182,20 @@ public class ScenarioRestorer {
 	}
 
 	private com.relteq.sirius.jaxb.RoadwayMarkers restoreRoadwayMarkers(Nodes db_node) throws TorqueException {
+		com.relteq.sirius.jaxb.RoadwayMarkers markers = factory.createRoadwayMarkers();
+		@SuppressWarnings("unchecked")
+		List<NodeName> db_nname_l = db_node.getNodeNames();
+		for (NodeName db_nname : db_nname_l) {
+			com.relteq.sirius.jaxb.Marker marker = factory.createMarker();
+			marker.setName(db_nname.getName());
+			markers.getMarker().add(marker);
+		}
 		@SuppressWarnings("unchecked")
 		List<Postmiles> db_postmile_l = db_node.getPostmiless();
-		if (db_postmile_l.isEmpty()) return null;
-		com.relteq.sirius.jaxb.RoadwayMarkers markers = factory.createRoadwayMarkers();
 		for (Postmiles db_postmile : db_postmile_l) {
 			com.relteq.sirius.jaxb.Marker marker = factory.createMarker();
-			// TODO revise
 			marker.setName(db_postmile.getPostmileHighways().getHighwayName());
-			// TODO marker.setPostmile();
+			marker.setPostmile(db_postmile.getPostmile());
 			markers.getMarker().add(marker);
 		}
 		return markers;
