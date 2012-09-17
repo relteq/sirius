@@ -917,7 +917,6 @@
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="type" required="true" domain="ELEMENT_TYPE"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined queue controllers."/>
-		<column name="name" domain="NAME_BUF"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>

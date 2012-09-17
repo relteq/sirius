@@ -903,8 +903,7 @@ public class ScenarioLoader {
 		if (null == qc) return null;
 		QueueControllers db_qc = new QueueControllers();
 		db_qc.setType(qc.getType());
-		// TODO db_qc.setJavaClass();
-		// TODO db_qc.setName();
+		db_qc.setJavaClass(qc.getJavaClass());
 		db_qc.save(conn);
 		save(qc.getParameters(), db_qc);
 		return db_qc;

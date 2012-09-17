@@ -696,6 +696,7 @@ public class ScenarioRestorer {
 		if (null == db_qc) return null;
 		com.relteq.sirius.jaxb.QueueController qc = factory.createQueueController();
 		qc.setType(db_qc.getType());
+		qc.setJavaClass(db_qc.getJavaClass());
 		qc.setParameters(restoreParameters(db_qc));
 		return qc;
 	}
