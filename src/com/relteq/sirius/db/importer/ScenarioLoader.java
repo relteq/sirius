@@ -377,8 +377,8 @@ public class ScenarioLoader {
 		if (null == sl) return null;
 		SignalSets db_ss = new SignalSets();
 		db_ss.setProjectId(getProjectId());
-		// TODO db_sl.setName();
-		// TODO db_sl.setDescription();
+		db_ss.setName(sl.getName());
+		db_ss.setDescription(sl.getDescription());
 		db_ss.save(conn);
 		signals = new HashMap<String, Signals>(sl.getSignal().size());
 		for (com.relteq.sirius.jaxb.Signal signal : sl.getSignal())

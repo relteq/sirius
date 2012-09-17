@@ -400,8 +400,10 @@
 	  <xs:element name="SignalList">
 		<xs:complexType>
 		  <xs:sequence>
+			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="signal" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
+		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
 	  

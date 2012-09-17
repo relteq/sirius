@@ -546,8 +546,8 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.SignalList restoreSignalList(SignalSets db_ss) throws TorqueException {
 		if (null == db_ss) return null;
 		com.relteq.sirius.jaxb.SignalList sl = factory.createSignalList();
-		// TODO sl.setName(db_sl.getName());
-		// TODO sl.setDescription(db_sl.getDescription());
+		sl.setName(db_ss.getName());
+		sl.setDescription(db_ss.getDescription());
 		@SuppressWarnings("unchecked")
 		List<Signals> db_signal_l = db_ss.getSignalss();
 		for (Signals db_signal : db_signal_l)
