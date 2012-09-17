@@ -488,7 +488,6 @@
 		  </xs:sequence>
 		  <xs:attribute name="id" type="xs:string" use="optional" default="" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
-		  <xs:attribute name="tstamp" type="xs:decimal" use="optional" />
 		</xs:complexType>
 	  </xs:element>
 	  
