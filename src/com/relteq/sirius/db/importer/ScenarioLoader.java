@@ -881,7 +881,7 @@ public class ScenarioLoader {
 		Controllers db_cntr = new Controllers();
 		db_cntr.setControllerSets(db_cset);
 		db_cntr.setType(cntr.getType());
-		// TODO db_cntr.setJavaClass();
+		db_cntr.setJavaClass(cntr.getJavaClass());
 		db_cntr.setName(cntr.getName());
 		db_cntr.setDt(cntr.getDt());
 		db_cntr.setQueueControllers(save(cntr.getQueueController()));

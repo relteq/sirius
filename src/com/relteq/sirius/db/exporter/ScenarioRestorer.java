@@ -675,10 +675,10 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.Controller cntr = factory.createController();
 		cntr.setId(id2str(db_cntr.getId()));
 		cntr.setName(db_cntr.getName());
-		// TODO cntr.setLinkPosition();
 		cntr.setType(db_cntr.getType());
 		cntr.setDt(db_cntr.getDt());
-		cntr.setEnabled(Boolean.TRUE); // TODO revise
+		cntr.setEnabled(Boolean.TRUE);
+		cntr.setJavaClass(db_cntr.getJavaClass());
 		// TODO db_cntr.getDisplayGeometry() -> cntr.setDisplayPosition();
 		cntr.setTargetElements(restoreTargetElements(db_cntr));
 		cntr.setFeedbackElements(restoreFeedbackElements(db_cntr));

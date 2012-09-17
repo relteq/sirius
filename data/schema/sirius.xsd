@@ -728,7 +728,6 @@
 				<xs:element ref="PlanList" minOccurs="0" />
 			  </xs:all>
 			  <xs:attribute name="name" type="xs:string" use="optional" />
-			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -739,6 +738,7 @@
 			  <xs:attribute name="id" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in seconds -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
+			  <xs:attribute name="java_class" type="xs:string" use="optional" />
 			</xs:complexType>
 		  </xs:element>
 				
