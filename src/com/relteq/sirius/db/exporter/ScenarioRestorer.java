@@ -395,6 +395,8 @@ public class ScenarioRestorer {
 		srp.setNodeId(id2str(db_srp.getNodeId()));
 		srp.setDt(db_srp.getDt());
 		srp.setStartTime(db_srp.getStartTime());
+		if (null != db_srp.getDestinationLinkId())
+			srp.setLinkIdDestination(id2str(db_srp.getDestinationLinkId()));
 
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);

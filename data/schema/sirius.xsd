@@ -542,6 +542,7 @@
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
+			  <xs:attribute name="link_id_destination" type="xs:string" use="optional" />
 			</xs:complexType>
 		  </xs:element>		  
 

@@ -629,7 +629,8 @@ public class ScenarioLoader {
 		Nodes db_node = nodes.get(srp.getNodeId());
 		db_srp.setNodeId(db_node.getId());
 		db_srp.setNetworkId(db_node.getNetworkId());
-		// TODO db_srp.setDestinationLinkId();
+		if (null != srp.getLinkIdDestination())
+			db_srp.setDestinationLinkId(getDBLinkId(srp.getLinkIdDestination()));
 		db_srp.setDt(srp.getDt());
 		db_srp.setStartTime(srp.getStartTime());
 		db_srp.save(conn);
