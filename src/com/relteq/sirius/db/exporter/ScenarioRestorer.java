@@ -324,7 +324,7 @@ public class ScenarioRestorer {
 			if (null == density) { // new link
 				density = factory.createDensity();
 				density.setLinkId(id2str(db_id.getLinkId()));
-				// TODO density.setNetworkId();
+				density.setLinkIdDestination(id2str(db_id.getDestinationLinkId()));
 				sb.setLength(0);
 			} else { // same link, different vehicle type
 				sb.append(":");
