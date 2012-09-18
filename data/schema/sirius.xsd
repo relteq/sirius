@@ -2,14 +2,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0.2">
 
   <!-- generic ................................................................... -->
-  
-  <xs:element name="position">	<!-- used by network, node, sensor -->
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="point" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+
+	<xs:complexType name="position">
+		<xs:sequence>
+			<xs:element ref="point" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+  <xs:element name="position" type="position"/>	<!-- used by network, node, sensor -->
   
 	  <xs:element name="point">
 		<xs:complexType>
@@ -34,13 +34,7 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="display_position">										<!-- used by sensor, event, controller -->
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="point" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+  <xs:element name="display_position" type="position"/>										<!-- used by sensor, event, controller -->
   
   <xs:element name="parameters">											<!-- used by sensor, controller, queue_controller -->
     <xs:complexType>

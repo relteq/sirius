@@ -250,7 +250,7 @@ public class ScenarioLoader {
 		Nodes db_node = new Nodes();
 		db_node.setNodeFamilies(db_nf);
 		db_node.setNetworks(db_network);
-		// TODO node.getPosition() -> db_node.setGeom();
+		db_node.setGeom(pos2str(node.getPosition()));
 		db_node.setGeom("");
 		db_node.setInSynch(node.isInSynch());
 
@@ -475,8 +475,7 @@ public class ScenarioLoader {
 		db_ds.setId(DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
 		db_ds.save(conn);
 		db_sensor.setDataSources(db_ds);
-		// TODO sensor.getDisplayPosition() -> db_sensor.setDisplayGeometry();
-		db_sensor.setDisplayGeometry("");
+		db_sensor.setDisplayGeometry(pos2str(sensor.getDisplayPosition()));
 		if (null != sensor.getLinkReference())
 			db_sensor.setLinkId(getDBLinkId(sensor.getLinkReference().getId()));
 		db_sensor.setLinkPosition(sensor.getLinkPosition());
@@ -885,7 +884,7 @@ public class ScenarioLoader {
 		db_cntr.setName(cntr.getName());
 		db_cntr.setDt(cntr.getDt());
 		db_cntr.setQueueControllers(save(cntr.getQueueController()));
-		// TODO cntr.getDisplayPosition() -> db_cntr.setDisplayGeometry()
+		db_cntr.setDisplayGeometry(pos2str(cntr.getDisplayPosition()));
 		db_cntr.save(conn);
 		save(cntr.getParameters(), db_cntr);
 		save(cntr.getTable(), db_cntr);
@@ -961,7 +960,7 @@ public class ScenarioLoader {
 		db_event.setTstamp(event.getTstamp());
 		db_event.setJavaClass(event.getJavaClass());
 		db_event.setDescription(event.getDescription());
-		// TODO event.getDisplayPosition() -> db_event.setDisplayGeometry();
+		db_event.setDisplayGeometry(pos2str(event.getDisplayPosition()));
 		db_event.setEnabled(event.isEnabled());
 		db_event.save(conn);
 		save(event.getParameters(), db_event);
@@ -1209,6 +1208,12 @@ public class ScenarioLoader {
 			db_elems.save(conn);
 		} else
 			logger.error("Object " + elem.getType() + " [id=" + elem.getId() + "] not found");
+	}
+
+	private static String pos2str(com.relteq.sirius.jaxb.Position position) {
+		if (null == position) return null;
+		// TODO method stub
+		return "";
 	}
 
 	protected static class Data1D {

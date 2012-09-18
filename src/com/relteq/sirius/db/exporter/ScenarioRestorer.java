@@ -177,7 +177,7 @@ public class ScenarioRestorer {
 		node.setRoadwayMarkers(restoreRoadwayMarkers(db_node));
 		node.setInputs(restoreInputs(db_node));
 		node.setOutputs(restoreOutputs(db_node));
-		// TODO db_node.getGeom() -> node.setPosition();
+		node.setPosition(restorePosition(db_node.getGeom()));
 		return node;
 	}
 
@@ -613,7 +613,7 @@ public class ScenarioRestorer {
 		sensor.setOriginalId(db_sensor.getOriginalId());
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
-		// TODO db_sensor.getDisplayGeometry() -> sensor.setDisplayPosition();
+		sensor.setDisplayPosition(restorePosition(db_sensor.getDisplayGeometry()));
 		if (null != db_sensor.getLinkId()) {
 			com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
 			lr.setId(id2str(db_sensor.getLinkId()));
@@ -686,7 +686,7 @@ public class ScenarioRestorer {
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE);
 		cntr.setJavaClass(db_cntr.getJavaClass());
-		// TODO db_cntr.getDisplayGeometry() -> cntr.setDisplayPosition();
+		cntr.setDisplayPosition(restorePosition(db_cntr.getDisplayGeometry()));
 		cntr.setTargetElements(restoreTargetElements(db_cntr));
 		cntr.setFeedbackElements(restoreFeedbackElements(db_cntr));
 		if (null != db_cntr.getQueueControllerId())
@@ -753,7 +753,7 @@ public class ScenarioRestorer {
 		event.setType(db_event.getType());
 		event.setJavaClass(db_event.getJavaClass());
 		event.setDescription(db_event.getDescription());
-		// TODO db_event.getDisplayGeometry() -> event.setDisplayPosition();
+		event.setDisplayPosition(restorePosition(db_event.getDisplayGeometry()));
 		event.setTargetElements(restoreTargetElements(db_event));
 		event.setParameters(restoreParameters(db_event));
 
@@ -964,6 +964,11 @@ public class ScenarioRestorer {
 		elem.setType(db_elem.getScenarioElementType());
 		// TODO elem.setUsage();
 		return elem;
+	}
+
+	private com.relteq.sirius.jaxb.Position restorePosition(String geometry) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
