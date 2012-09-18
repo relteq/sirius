@@ -764,25 +764,33 @@ public class ScenarioRestorer {
 		@SuppressWarnings("unchecked")
 		List<EventSplitRatios> db_esr_l = db_event.getEventSplitRatioss(crit);
 		if (!db_esr_l.isEmpty()) {
-			event.setSplitratioEvent(restoreSplitratioEvent(db_esr_l.get(0)));
-			if (1 < db_esr_l.size())
-				logger.warn("Found " + db_esr_l.size() + " splitratio events for event[id=" + db_event.getId() + "]");
+			com.relteq.sirius.jaxb.SplitratioEvent srevent = factory.createSplitratioEvent();
+			com.relteq.sirius.jaxb.Splitratio sr = null;
+			StringBuilder sb = new StringBuilder();
+			for (EventSplitRatios db_esr : db_esr_l) {
+				if (null != sr && !(sr.getLinkIn().equals(id2str(db_esr.getInLinkId())) && sr.getLinkOut().equals(id2str(db_esr.getOutLinkId())))) {
+					sr.setContent(sb.toString());
+					sb.setLength(0);
+					srevent.getSplitratio().add(sr);
+					sr = null;
+				}
+				if (null == sr) {
+					sr = factory.createSplitratio();
+					sr.setLinkIn(id2str(db_esr.getInLinkId()));
+					sr.setLinkOut(id2str(db_esr.getOutLinkId()));
+				} else
+					sb.append(':');
+				// TODO revise: check if there are missing vehicle types
+				sb.append(db_esr.getSplitRatio().toPlainString());
+			}
+			if (null != sr) {
+				sr.setContent(sb.toString());
+				srevent.getSplitratio().add(sr);
+			}
+			event.setSplitratioEvent(srevent);
 		}
 
 		return event;
-	}
-
-	private com.relteq.sirius.jaxb.SplitratioEvent restoreSplitratioEvent(EventSplitRatios db_esr) throws TorqueException {
-		com.relteq.sirius.jaxb.SplitratioEvent srevent = factory.createSplitratioEvent();
-		com.relteq.sirius.jaxb.VehicleType vtype = factory.createVehicleType();
-		vtype.setName(db_esr.getVehicleTypes().getName());
-		srevent.getContent().add(vtype);
-		com.relteq.sirius.jaxb.Splitratio splitratio = factory.createSplitratio();
-		splitratio.setLinkIn(id2str(db_esr.getInLinkId()));
-		splitratio.setLinkOut(id2str(db_esr.getOutLinkId()));
-		splitratio.setContent(db_esr.getSplitRatio().toPlainString());
-		srevent.getContent().add(splitratio);
-		return srevent;
 	}
 
 	private com.relteq.sirius.jaxb.DestinationNetworks restoreDestinationNetworks(Scenarios db_scenario) throws TorqueException {

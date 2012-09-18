@@ -977,21 +977,32 @@ public class ScenarioLoader {
 	 */
 	private void save(com.relteq.sirius.jaxb.SplitratioEvent srevent, Events db_event) throws TorqueException {
 		if (null == srevent) return;
-		EventSplitRatios db_esr = new EventSplitRatios();
-		db_esr.setEvents(db_event);
-		for (Object obj : srevent.getContent()) {
-			if (obj instanceof com.relteq.sirius.jaxb.VehicleType) {
-				for (VehicleTypes db_vt : vehicle_type)
-					if (db_vt.getName().equals(((com.relteq.sirius.jaxb.VehicleType) obj).getName()))
-						db_esr.setVehicleTypes(db_vt);
-			} else if (obj instanceof com.relteq.sirius.jaxb.Splitratio) {
-				com.relteq.sirius.jaxb.Splitratio sr = (com.relteq.sirius.jaxb.Splitratio) obj;
+		VehicleTypes[] db_vt = reorderVehicleTypes(srevent.getVehicleTypeOrder());
+		for (com.relteq.sirius.jaxb.Splitratio sr : srevent.getSplitratio())
+			save(sr, db_event, db_vt);
+	}
+
+	/**
+	 * Imports a split ratio of a split ratio event
+	 * @param sr a split ratio
+	 * @param db_event an imported event
+	 * @param db_vt vehicle type order
+	 * @throws TorqueException
+	 */
+	private void save(com.relteq.sirius.jaxb.Splitratio sr, Events db_event, VehicleTypes[] db_vt) throws TorqueException {
+		Data1D data1d = new Data1D(sr.getContent(), ":");
+		if (!data1d.isEmpty()) {
+			BigDecimal[] data = data1d.getData();
+			for (int i = 0; i < data.length; ++i) {
+				EventSplitRatios db_esr = new EventSplitRatios();
+				db_esr.setEvents(db_event);
 				db_esr.setInLinkId(getDBLinkId(sr.getLinkIn()));
 				db_esr.setOutLinkId(getDBLinkId(sr.getLinkOut()));
-				db_esr.setSplitRatio(new BigDecimal(sr.getContent()));
+				db_esr.setVehicleTypes(db_vt[i]);
+				db_esr.setSplitRatio(data[i]);
+				db_esr.save(conn);
 			}
 		}
-		db_esr.save(conn);
 	}
 
 	/**

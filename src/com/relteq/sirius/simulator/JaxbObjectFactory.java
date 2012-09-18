@@ -92,9 +92,4 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 		return new Parameters();
 	}
 
-	@Override
-	public com.relteq.sirius.jaxb.SplitratioEvent createSplitratioEvent() {
-		return new SplitratioEvent();
-	}
-
 }

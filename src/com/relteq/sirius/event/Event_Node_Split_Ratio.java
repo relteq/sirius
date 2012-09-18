@@ -1,7 +1,6 @@
 package com.relteq.sirius.event;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import com.relteq.sirius.simulator.ObjectFactory;
 import com.relteq.sirius.simulator.SiriusErrorLog;
@@ -14,10 +13,8 @@ import com.relteq.sirius.simulator.ScenarioElement;
 public class Event_Node_Split_Ratio extends Event {
 
 	protected boolean resetToNominal;			// if true, go back to nominal before applying changes
-	protected ArrayList<Double> splitrow;		// if not null, use this one, regardless of resetToNominal
-	protected int inputindex;
-	protected int vehicletypeindex; 			// index of vehicle type into global list
 	protected Node myNode;
+	protected java.util.List<SplitRatio> splitratios;
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -33,9 +30,12 @@ public class Event_Node_Split_Ratio extends Event {
 		if(myScenario==null)
 			return;
 		this.resetToNominal = false;
-		this.inputindex = node.getInputLinkIndex(inlink);
-		this.vehicletypeindex = myScenario.getVehicleTypeIndex(vehicletype);
-		this.splitrow = splits;
+		splitratios = new ArrayList<SplitRatio>(splits.size());
+		int input_index = node.getInputLinkIndex(inlink);
+		int vt_index = myScenario.getVehicleTypeIndex(vehicletype);
+		int output_index = 0;
+		for (Double split : splits)
+			splitratios.add(new SplitRatio(input_index, output_index++, vt_index, split));
 		this.targets = new ArrayList<ScenarioElement>();
 		this.targets.add(ObjectFactory.createScenarioElement(node));		
 	}
@@ -43,7 +43,7 @@ public class Event_Node_Split_Ratio extends Event {
 	// constructor for reset event with single node target
 	public Event_Node_Split_Ratio(Scenario myScenario,Node node) {
 		this.resetToNominal = true;
-		this.splitrow = null;
+		this.splitratios = null;
 		this.myType = Event.Type.node_split_ratio;
 		this.targets = new ArrayList<ScenarioElement>();
 		this.targets.add(ObjectFactory.createScenarioElement(node));	
@@ -80,12 +80,31 @@ public class Event_Node_Split_Ratio extends Event {
 		if(resetToNominal)		// nothing else to populate in this case
 			return;
 		
-		com.relteq.sirius.simulator.SplitratioEvent sre = (com.relteq.sirius.simulator.SplitratioEvent) jaxbe.getSplitratioEvent();
-		if(sre==null)
-			return;
-		inputindex = myNode.getInputLinkIndex(sre.getSplitratio().getLinkIn());
-		vehicletypeindex = myScenario.getVehicleTypeIndex(sre.getVehicleType().getName());
-		splitrow = readArray(sre.getSplitratio().getContent(),",");
+		com.relteq.sirius.jaxb.SplitratioEvent srevent = jaxbe.getSplitratioEvent();
+		if (srevent != null) {
+			int[] vt_index = null;
+			if (null == srevent.getVehicleTypeOrder()) {
+				vt_index = new int[myScenario.getNumVehicleTypes()];
+				for (int i = 0; i < vt_index.length; ++i)
+					vt_index[i] = i;
+			} else {
+				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleType().size()];
+				int i = 0;
+				for (com.relteq.sirius.jaxb.VehicleType vt : srevent.getVehicleTypeOrder().getVehicleType())
+					vt_index[i++] = myScenario.getVehicleTypeIndex(vt.getName());
+			}
+			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
+			for (com.relteq.sirius.jaxb.Splitratio sr : srevent.getSplitratio()) {
+				com.relteq.sirius.simulator.Double1DVector vector = new com.relteq.sirius.simulator.Double1DVector(sr.getContent(), ":");
+				if (!vector.isEmpty()) {
+					int input_index = myNode.getInputLinkIndex(sr.getLinkIn());
+					int output_index = myNode.getOutputLinkIndex(sr.getLinkOut());
+					for (int i = 0; i < vector.getLength().intValue(); ++i)
+						splitratios.add(new SplitRatio(input_index, output_index, vt_index[i], vector.get(i)));
+				}
+			}
+		}
+
 	}
 	
 	@Override
@@ -105,16 +124,14 @@ public class Event_Node_Split_Ratio extends Event {
 		
 		// check split ratio matrix
 		if(!resetToNominal){
-			if(splitrow==null)
-				SiriusErrorLog.addWarning("No split ratio rows for event id="+getId()+".");
-			if(myNode!=null){
-				if(splitrow.size()!=myNode.getnOut())
-					SiriusErrorLog.addWarning("Number of rows does not match number of outgoing links for event id="+getId()+".");
-				if(inputindex<0 || inputindex>=myNode.getnIn())
+			for (SplitRatio sr : splitratios) {
+				if (sr.getInputIndex() < 0 || sr.getInputIndex() >= myNode.getnIn())
 					SiriusErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
+				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
+					SiriusErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
+				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= myScenario.getNumVehicleTypes())
+					SiriusErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
 			}
-			if(vehicletypeindex<0 || vehicletypeindex>=myScenario.getNumVehicleTypes())
-				SiriusErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
 		}
 	}
 	
@@ -125,31 +142,7 @@ public class Event_Node_Split_Ratio extends Event {
 		if(resetToNominal)
 			revertNodeEventSplitRatio(myNode);
 		else
-			setNodeEventSplitRatio(myNode,inputindex,vehicletypeindex,splitrow);	
+			setNodeEventSplitRatio(myNode, splitratios);
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// private
-	/////////////////////////////////////////////////////////////////////
-
-    private ArrayList<Double> readArray(String str,String delim) {
-      	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
-			return null;
-    	}
-      	ArrayList<Double> data = new ArrayList<Double>();
-    	str.replaceAll("\\s","");    	
-		StringTokenizer slicesX = new StringTokenizer(str,delim);
-		while (slicesX.hasMoreTokens()) {			
-			try {
-				Double value = Double.parseDouble(slicesX.nextToken());
-				if(value>=0)
-					data.add(value);
-				else
-					data.add(Double.NaN);
-			} catch (NumberFormatException e) {
-				data.add(Double.NaN);
-			}
-		}
-		return data;
-    }
 }
