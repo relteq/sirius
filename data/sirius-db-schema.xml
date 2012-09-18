@@ -1071,9 +1071,15 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
+	<table name="tables" idMethod="native">
+		<column name="id" domain="ID" primaryKey="true"/>
+		<column name="parent_element_id" required="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
+		<column name="parent_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
+		<column name="name" required="true" domain="NAME_BUF" description="Table name"/>
+	</table>
+
 	<table name="tabular_data">
-		<column name="parent_element_id" primaryKey="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
+		<column name="table_id" primaryKey="true" domain="ID"/>
 		<column name="column_name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="row_number" primaryKey="true" type="INTEGER"/>
 		<column name="value" required="true" domain="VALUE_BUF"/>
@@ -1082,14 +1088,19 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="tables">
+			<reference local="table_id" foreign="id"/>
+		</foreign-key>
 	</table>
 
 	<table name="tabular_data_keys">
-		<column name="parent_element_id" primaryKey="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
+		<column name="table_id" primaryKey="true" domain="ID"/>
 		<column name="column_name" primaryKey="true" domain="NAME_BUF"/>
 		<column name="column_number" required="true" type="INTEGER"/>
 		<column name="is_key" required="true" domain="BOOL" description="Indicates if this column is a part of the key for finding table elements."/>
+		<foreign-key foreignTable="tables">
+			<reference local="table_id" foreign="id"/>
+		</foreign-key>
 	</table>
 
 	<table name="referenced_scenario_elements">

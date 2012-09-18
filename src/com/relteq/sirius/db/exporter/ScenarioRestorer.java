@@ -620,7 +620,12 @@ public class ScenarioRestorer {
 			sensor.setLinkReference(lr);
 		}
 		sensor.setParameters(restoreParameters(db_sensor));
-		sensor.setTable(restoreTable(db_sensor));
+		List<com.relteq.sirius.jaxb.Table> table_l = restoreTables(db_sensor);
+		if (null != table_l && !table_l.isEmpty()) {
+			sensor.setTable(table_l.get(0));
+			if (1 < table_l.size())
+				logger.warn("Sensor " + db_sensor.getId() + " has " + table_l.size() + " tables");
+		}
 		return sensor;
 	}
 
@@ -687,7 +692,12 @@ public class ScenarioRestorer {
 		if (null != db_cntr.getQueueControllerId())
 			cntr.setQueueController(restoreQueueController(db_cntr.getQueueControllers()));
 		cntr.setParameters(restoreParameters(db_cntr));
-		cntr.setTable(restoreTable(db_cntr));
+		List<com.relteq.sirius.jaxb.Table> table_l = restoreTables(db_cntr);
+		if (null != table_l && !table_l.isEmpty()) {
+			cntr.setTable(table_l.get(0));
+			if (1 < table_l.size())
+				logger.warn("Controller " + db_cntr.getId() + " has " + table_l.size() + " tables");
+		}
 		cntr.setActivationIntervals(restoreActivationIntervals(db_cntr));
 		// TODO cntr.setPlanSequence();
 		// TODO cntr.setPlanList();
@@ -853,9 +863,65 @@ public class ScenarioRestorer {
 		return param;
 	}
 
-	private com.relteq.sirius.jaxb.Table restoreTable(com.relteq.sirius.db.BaseObject db_obj) {
-		return null;
-		// TODO method stub
+	private List<com.relteq.sirius.jaxb.Table> restoreTables(com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(TablesPeer.PARENT_ELEMENT_ID, db_obj.getId());
+		crit.add(TablesPeer.PARENT_ELEMENT_TYPE, db_obj.getElementType());
+		@SuppressWarnings("unchecked")
+		List<Tables> db_table_l = TablesPeer.doSelect(crit);
+		List<com.relteq.sirius.jaxb.Table> table_l = new java.util.ArrayList<com.relteq.sirius.jaxb.Table>(db_table_l.size());
+		for (Tables db_table : db_table_l)
+			table_l.add(restoreTable(db_table));
+		return table_l;
+	}
+
+	private com.relteq.sirius.jaxb.Table restoreTable(Tables db_table) throws TorqueException {
+		com.relteq.sirius.jaxb.Table table = factory.createTable();
+		table.setName(db_table.getName());
+
+		Criteria crit = new Criteria();
+		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
+		@SuppressWarnings("unchecked")
+		List<TabularDataKeys> db_tdk_l = db_table.getTabularDataKeyss(crit);
+		com.relteq.sirius.jaxb.ColumnNames colnames = factory.createColumnNames();
+		for (TabularDataKeys db_tdk : db_tdk_l)
+			colnames.getColumnName().add(db_tdk.getColumnName());
+		table.getContent().add(colnames);
+
+		crit.clear();
+		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
+		crit.addJoin(TabularDataPeer.COLUMN_NAME, TabularDataKeysPeer.COLUMN_NAME);
+		crit.addAscendingOrderByColumn(TabularDataPeer.ROW_NUMBER);
+		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
+		@SuppressWarnings("unchecked")
+		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
+		com.relteq.sirius.jaxb.Row row = null;
+		Integer rownum = null;
+		java.util.Iterator<String> citer = null;
+		for (TabularData db_td : db_td_l) {
+			if (null != rownum && !rownum.equals(db_td.getRowNumber())) {
+				table.getContent().add(row);
+				row = null;
+			}
+			if (null == row) {
+				row = factory.createRow();
+				citer = colnames.getColumnName().iterator();
+			}
+			while (citer.hasNext()) {
+				String colname = citer.next();
+				if (colname.equals(db_td.getColumnName())) {
+					row.getColumn().add(db_td.getValue());
+					break;
+				} else {
+					row.getColumn().add(null);
+					logger.warn("Column " + colname + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
+				}
+			}
+		}
+		if (null != row)
+			table.getContent().add(row);
+
+		return table;
 	}
 
 	private com.relteq.sirius.jaxb.TargetElements restoreTargetElements(com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
