@@ -265,8 +265,7 @@ public class ScenarioRestorer {
 
 		link.setRoads(restoreRoads(db_link));
 		// TODO link.setDynamics();
-		// TODO revise: geometry -> shape
-		link.setShape(db_link.getGeom());
+		link.setShape(db_link.getGeom()); // TODO revise: geometry -> shape
 
 		LinkLanes db_llanes = LinkLanesPeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
 		link.setLanes(db_llanes.getLanes());

@@ -272,7 +272,6 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(com.relteq.sirius.jaxb.RoadwayMarkers markers, Nodes db_node) throws TorqueException {
-		// TODO revise the whole method
 		if (null == markers) return;
 		for (com.relteq.sirius.jaxb.Marker marker : markers.getMarker())
 			if (null == marker.getPostmile()) { // importing node name
@@ -321,9 +320,7 @@ public class ScenarioLoader {
 		db_link.setNetworks(db_network);
 		db_link.setBegNodeId(getDBNodeId(link.getBegin().getNodeId()));
 		db_link.setEndNodeId(getDBNodeId(link.getEnd().getNodeId()));
-		// TODO save link name, road name, description, type, model, display lane offset
-		// TODO revise: shape -> geometry
-		db_link.setGeom(null == link.getShape() ? "" : link.getShape());
+		db_link.setGeom(null == link.getShape() ? "" : link.getShape()); // TODO revise: shape -> geometry
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
 		db_link.setInSynch(link.isInSynch());
