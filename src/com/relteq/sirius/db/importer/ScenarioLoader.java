@@ -86,8 +86,6 @@ public class ScenarioLoader {
 		}
 	}
 
-	String units = null;
-
 	/**
 	 * Imports a scenario
 	 * @param scenario
@@ -96,15 +94,13 @@ public class ScenarioLoader {
 	 */
 	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException, SiriusException {
 		if (null == scenario) return null;
-		com.relteq.sirius.jaxb.VehicleTypes vtypes = null;
-		if (null != scenario.getSettings()) {
-			units = scenario.getSettings().getUnits();
-			vtypes = scenario.getSettings().getVehicleTypes();
-		}
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
+		com.relteq.sirius.jaxb.VehicleTypes vtypes = null;
+		if (null != scenario.getSettings())
+			vtypes = scenario.getSettings().getVehicleTypes();
 		db_scenario.setVehicleTypeSets(save(vtypes));
 		db_scenario.save(conn);
 		save(scenario.getNetworkList(), db_scenario);
