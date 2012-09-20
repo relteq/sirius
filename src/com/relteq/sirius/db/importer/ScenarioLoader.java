@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
@@ -14,6 +13,8 @@ import org.apache.torque.util.Transaction;
 
 import com.relteq.sirius.om.*;
 import com.relteq.sirius.simulator.SiriusException;
+import com.relteq.sirius.util.Data1D;
+import com.relteq.sirius.util.Data2D;
 
 /**
  * Imports a scenario
@@ -1207,66 +1208,6 @@ public class ScenarioLoader {
 		if (null == position) return null;
 		// TODO method stub
 		return "";
-	}
-
-	protected static class Data1D {
-		private BigDecimal[] data = null;
-
-		/**
-		 * @param str a serialized vector
-		 * @param delim a delimiter
-		 */
-		public Data1D(String str, String delim) {
-			if (null == str) logger.error("str == null");
-			else if (null == delim) logger.error("delim == null");
-			else {
-				StringTokenizer st = new StringTokenizer(str, delim);
-				data = new BigDecimal[st.countTokens()];
-				for (int i = 0; st.hasMoreTokens(); ++i)
-					data[i] = new BigDecimal(st.nextToken());
-			}
-		}
-
-		public boolean isEmpty() {
-			return null == data;
-		}
-
-		public BigDecimal[] getData() {
-			return data;
-		}
-	}
-
-	protected static class Data2D {
-		private BigDecimal[][] data = null;
-
-		/**
-		 * @param str a serialized matrix
-		 * @param delim delimiters, default: ',' for the 1st dimension, ':' for the second
-		 */
-		public Data2D(String str, String[] delim) {
-			if (null == delim) delim = new String[] {",", ":"};
-			if (null == str) logger.error("str == null");
-			else if (2 != delim.length) logger.error("delim.length != 2");
-			else {
-				str = str.replaceAll("\\s", "");
-				StringTokenizer st1 = new StringTokenizer(str, delim[0]);
-				data = new BigDecimal[st1.countTokens()][];
-				for (int i = 0; st1.hasMoreTokens(); ++i) {
-					StringTokenizer st2 = new StringTokenizer(st1.nextToken(), delim[1]);
-					data[i] = new BigDecimal[st2.countTokens()];
-					for (int j = 0; st2.hasMoreTokens(); ++j)
-						data[i][j] = new BigDecimal(st2.nextToken());
-				}
-			}
-		}
-
-		public boolean isEmpty() {
-			return null == data;
-		}
-
-		public BigDecimal[][] getData() {
-			return data;
-		}
 	}
 
 }
