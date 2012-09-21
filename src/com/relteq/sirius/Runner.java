@@ -84,6 +84,11 @@ public class Runner {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("version") || cmd.equals("v")) {
 				printVersion();
+			} else if (cmd.equals("convert_units") || cmd.equals("cu")) {
+				if (2 == arguments.length)
+					com.relteq.sirius.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
+				else
+					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
 			} else throw new InvalidCommandException(cmd);
 			if (SiriusErrorLog.haserror()) SiriusErrorLog.print();
 		} catch (InvalidUsageException exc) {
