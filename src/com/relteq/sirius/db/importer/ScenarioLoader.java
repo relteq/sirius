@@ -1113,35 +1113,27 @@ public class ScenarioLoader {
 		db_table.setParentElementType(db_obj.getElementType());
 		db_table.save(conn);
 
-		List<String> colname_l = null;
-		for (Object obj : table.getContent())
-			if (obj instanceof com.relteq.sirius.jaxb.ColumnNames) {
-				colname_l = ((com.relteq.sirius.jaxb.ColumnNames) obj).getColumnName();
-				int col = 0;
-				for (String colname : colname_l) {
-					TabularDataKeys db_tdk = new TabularDataKeys();
-					db_tdk.setTables(db_table);
-					db_tdk.setColumnName(colname);
-					db_tdk.setColumnNumber(Integer.valueOf(col++));
-					db_tdk.save(conn);
-				}
-				break;
+		int colnum = 0;
+		for (com.relteq.sirius.jaxb.ColumnName colname : table.getColumnNames().getColumnName()) {
+			TabularDataKeys db_tdk = new TabularDataKeys();
+			db_tdk.setTables(db_table);
+			db_tdk.setColumnName(colname.getValue());
+			db_tdk.setColumnNumber(Integer.valueOf(colnum++));
+			db_tdk.setIsKey(colname.isKey());
+			db_tdk.save(conn);
+		}
+		int rownum = 0;
+		for (com.relteq.sirius.jaxb.Row row : table.getRow()) {
+			java.util.Iterator<com.relteq.sirius.jaxb.ColumnName> citer = table.getColumnNames().getColumnName().iterator();
+			for (String elem : row.getColumn()) {
+				TabularData db_td = new TabularData();
+				db_td.setTables(db_table);
+				db_td.setColumnName(citer.next().getValue());
+				db_td.setRowNumber(Integer.valueOf(rownum));
+				db_td.setValue(elem);
+				db_td.save(conn);
 			}
-		if (null != colname_l) {
-			int row = 0;
-			for (Object obj : table.getContent())
-				if (obj instanceof com.relteq.sirius.jaxb.Row) {
-					java.util.Iterator<String> citer = colname_l.iterator();
-					for (String elem : ((com.relteq.sirius.jaxb.Row) obj).getColumn()) {
-						TabularData db_td = new TabularData();
-						db_td.setTables(db_table);
-						db_td.setColumnName(citer.next());
-						db_td.setRowNumber(Integer.valueOf(row));
-						db_td.setValue(elem);
-						db_td.save(conn);
-					}
-					++row;
-				}
+			++rownum;
 		}
 	}
 

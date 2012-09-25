@@ -893,8 +893,8 @@ public class ScenarioRestorer {
 		List<TabularDataKeys> db_tdk_l = db_table.getTabularDataKeyss(crit);
 		com.relteq.sirius.jaxb.ColumnNames colnames = factory.createColumnNames();
 		for (TabularDataKeys db_tdk : db_tdk_l)
-			colnames.getColumnName().add(db_tdk.getColumnName());
-		table.getContent().add(colnames);
+			colnames.getColumnName().add(restoreColumnName(db_tdk));
+		table.setColumnNames(colnames);
 
 		crit.clear();
 		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
@@ -905,10 +905,10 @@ public class ScenarioRestorer {
 		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
 		com.relteq.sirius.jaxb.Row row = null;
 		Integer rownum = null;
-		java.util.Iterator<String> citer = null;
+		java.util.Iterator<com.relteq.sirius.jaxb.ColumnName> citer = null;
 		for (TabularData db_td : db_td_l) {
 			if (null != rownum && !rownum.equals(db_td.getRowNumber())) {
-				table.getContent().add(row);
+				table.getRow().add(row);
 				row = null;
 			}
 			if (null == row) {
@@ -916,20 +916,27 @@ public class ScenarioRestorer {
 				citer = colnames.getColumnName().iterator();
 			}
 			while (citer.hasNext()) {
-				String colname = citer.next();
-				if (colname.equals(db_td.getColumnName())) {
+				com.relteq.sirius.jaxb.ColumnName colname = citer.next();
+				if (colname.getValue().equals(db_td.getColumnName())) {
 					row.getColumn().add(db_td.getValue());
 					break;
 				} else {
 					row.getColumn().add(null);
-					logger.warn("Column " + colname + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
+					logger.warn("Column " + colname.getValue() + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
 				}
 			}
 		}
 		if (null != row)
-			table.getContent().add(row);
+			table.getRow().add(row);
 
 		return table;
+	}
+
+	private com.relteq.sirius.jaxb.ColumnName restoreColumnName(TabularDataKeys db_tdk) {
+		com.relteq.sirius.jaxb.ColumnName colname = factory.createColumnName();
+		colname.setValue(db_tdk.getColumnName());
+		colname.setKey(db_tdk.getIsKey());
+		return colname;
 	}
 
 	private com.relteq.sirius.jaxb.TargetElements restoreTargetElements(com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
