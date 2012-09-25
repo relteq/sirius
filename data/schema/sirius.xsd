@@ -468,8 +468,16 @@
 			  </xs:attribute>
 			  <xs:attribute name="original_id" type="xs:string" use="optional" />
 			  <xs:attribute name="lane_number" type="xs:integer" use="optional" />
+			  <xs:attribute name="health_status" type="probability" use="required" />
 			</xs:complexType>
 		</xs:element>
+
+	<xs:simpleType name="probability">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
 
   <!-- InitialDensitySet ..................................................... -->
 

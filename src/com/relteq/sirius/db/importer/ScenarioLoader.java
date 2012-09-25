@@ -475,7 +475,7 @@ public class ScenarioLoader {
 		db_sensor.setLinkPosition(sensor.getLinkPosition());
 		if (null != sensor.getLaneNumber())
 			db_sensor.setLaneNumber(Integer.valueOf(sensor.getLaneNumber().intValue()));
-		// TODO db_sensor.setHealthStatus();
+		db_sensor.setHealthStatus(sensor.getHealthStatus());
 		db_sensor.save(conn);
 		save(sensor.getParameters(), db_sensor);
 		save(sensor.getTable(), db_sensor);

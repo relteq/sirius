@@ -612,6 +612,7 @@ public class ScenarioRestorer {
 		sensor.setOriginalId(db_sensor.getOriginalId());
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
+		sensor.setHealthStatus(db_sensor.getHealthStatus());
 		sensor.setDisplayPosition(restorePosition(db_sensor.getDisplayGeometry()));
 		if (null != db_sensor.getLinkId()) {
 			com.relteq.sirius.jaxb.LinkReference lr = factory.createLinkReference();
