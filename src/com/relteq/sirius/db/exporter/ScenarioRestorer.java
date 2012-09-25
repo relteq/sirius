@@ -961,7 +961,7 @@ public class ScenarioRestorer {
 		com.relteq.sirius.jaxb.ScenarioElement elem = factory.createScenarioElement();
 		elem.setId(id2str(db_elem.getScenarioElementId()));
 		elem.setType(db_elem.getScenarioElementType());
-		// TODO elem.setUsage();
+		elem.setUsage(db_elem.getUsage());
 		return elem;
 	}
 

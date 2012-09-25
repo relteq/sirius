@@ -1109,6 +1109,7 @@
 		<column name="type" primaryKey="true" type="VARCHAR" size="8" description="feedback or target"/>
 		<column name="scenario_element_id" primaryKey="true" domain="ID" description="Reference to the scenario element."/>
 		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
+		<column name="usage" required="false" type="VARCHAR" size="128"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>

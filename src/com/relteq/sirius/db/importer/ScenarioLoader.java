@@ -1181,6 +1181,7 @@ public class ScenarioLoader {
 		db_elems.setParentElementId(db_parent.getId());
 		db_elems.setParentElementType(db_parent.getElementType());
 		db_elems.setType(type);
+		db_elems.setUsage(elem.getUsage());
 		com.relteq.sirius.db.BaseObject db_ref = null;
 		if (elem.getType().equals("link")) {
 			if (null != links) db_ref = links.get(elem.getId());
