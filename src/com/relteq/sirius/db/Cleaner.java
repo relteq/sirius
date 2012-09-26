@@ -44,7 +44,7 @@ public class Cleaner {
 		BasePeer.executeStatement(statement, conn);
 	}
 
-	public static void clearProcessed(int scenario_id) throws SiriusException {
+	public static void clearProcessed(long scenario_id) throws SiriusException {
 		initDB();
 		Connection conn = null;
 		try {

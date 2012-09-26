@@ -224,6 +224,10 @@
 			<property name="torque.database" value="postgresql"/>
 			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
 		</ant>
+		<ant antfile="${torque.buildfile}" target="sql-all">
+			<property name="torque.database" value="oracle"/>
+			<property name="torque.sql.dir" value="${torque.output.dir}/sql/oracle"/>
+		</ant>
 		<touch file="${torque.output.dir}/sql/.done"/>
 	</target>
 

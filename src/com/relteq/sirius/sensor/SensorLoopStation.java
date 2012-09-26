@@ -3,6 +3,8 @@ package com.relteq.sirius.sensor;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.relteq.sirius.data.FiveMinuteData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusMath;
@@ -32,7 +34,9 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	    this.myType = Sensor.Type.static_point;
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
-	
+
+	private static Logger logger = Logger.getLogger(SensorLoopStation.class);
+
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////	
@@ -48,14 +52,22 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 					this.VDS = Integer.parseInt(param.getValue());
 			}
 		
-		if(jaxbs.getDataSources()!=null){
-			for(com.relteq.sirius.jaxb.DataSource datasource : jaxbs.getDataSources().getDataSource()){
-				try {
-					this._datasources.add(new DataSource(datasource.getUrl(),datasource.getFormat()));
-				} catch (Exception e) {
-					continue;
-				}
-			}
+		if (null != jaxbs.getTable()) {
+			if ("data_sources" == jaxbs.getTable().getName()) {
+				com.relteq.sirius.simulator.Table table = new com.relteq.sirius.simulator.Table(jaxbs.getTable());
+				final String[] colname = {"url", "format"};
+				int[] colnum = new int[2];
+				boolean colnotfound = false;
+				for (int i = 0; i < colname.length; ++i)
+					if (-1 == (colnum[i] = table.getColumnNo(colname[i]))) {
+						logger.warn("Column '" + colname[i] + "' not found");
+						colnotfound = true;
+					}
+				if (!colnotfound)
+					for (int i = 0; i < table.getNoRows(); ++i)
+						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));;
+			} else
+				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
 		}
 	}
 	

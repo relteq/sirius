@@ -38,7 +38,7 @@ public class Lister {
 		}
 	}
 
-	public static void listRuns(int scenario_id) throws SiriusException {
+	public static void listRuns(long scenario_id) throws SiriusException {
 		com.relteq.sirius.db.Service.ensureInit();
 		DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		try {
@@ -49,10 +49,10 @@ public class Lister {
 			List<SimulationRuns> db_run_l = db_scenario.getSimulationRunss(crit);
 			for (SimulationRuns db_sr : db_run_l) {
 				StringBuilder sb = new StringBuilder(String.format("%2d", db_sr.getRunNumber()));
-				if (null != db_sr.getStartTime()) {
-					sb.append("\t" + date_format.format(db_sr.getStartTime()));
-					if (null != db_sr.getEndTime())
-						sb.append(" -- " + date_format.format(db_sr.getEndTime()));
+				if (null != db_sr.getExecutionStartTime()) {
+					sb.append("\t" + date_format.format(db_sr.getExecutionStartTime()));
+					if (null != db_sr.getExecutionEndTime())
+						sb.append(" -- " + date_format.format(db_sr.getExecutionEndTime()));
 				}
 				System.out.println(sb.toString());
 			}

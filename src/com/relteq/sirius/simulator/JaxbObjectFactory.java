@@ -87,4 +87,9 @@ public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactor
 		return new Sensor();
 	}
 
+	@Override
+	public com.relteq.sirius.jaxb.Parameters createParameters() {
+		return new Parameters();
+	}
+
 }

@@ -48,16 +48,12 @@ public class Table {
 	
 	/** Constructors*/
 	public Table(com.relteq.sirius.jaxb.Table T1){	
-		 Rows = new ArrayList<ArrayList<String>>();
-		 ColumnNames=new ArrayList<String>();
-		 for (Object o: T1.getContent()){
-			 if (o instanceof  com.relteq.sirius.jaxb.Row){
-				Rows.add((ArrayList<String>) ((com.relteq.sirius.jaxb.Row) o).getColumn()); 
-			 }
-			 if (o instanceof  com.relteq.sirius.jaxb.ColumnNames){
-				ColumnNames.addAll(((com.relteq.sirius.jaxb.ColumnNames) o).getColumnName()); 				
-			 }
-		 }		
+		Rows = new ArrayList<ArrayList<String>>();
+		ColumnNames=new ArrayList<String>();
+		for (com.relteq.sirius.jaxb.Row row : T1.getRow())
+			Rows.add((ArrayList<String>) row.getColumn());
+		for (com.relteq.sirius.jaxb.ColumnName colname : T1.getColumnNames().getColumnName())
+			ColumnNames.add(colname.getValue());
 	}
 
 	public Table(ArrayList<String> columnNames,	ArrayList<ArrayList<String>> rows) {
