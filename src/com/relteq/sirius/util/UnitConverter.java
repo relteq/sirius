@@ -183,14 +183,12 @@ public class UnitConverter {
 		final String name = param.getName();
 		String value = param.getValue();
 		BigDecimal converted = null;
-		if (name.equals("capacity") || name.equals("capacity_drop"))
+		if (name.equals("capacity") || name.equals("capacity_drop") || name.endsWith("Flow"))
 			converted = convertFlow(new BigDecimal(value));
-		else if (name.equals("free_flow_speed") || name.equals("congestion_speed"))
+		else if (name.equals("free_flow_speed") || name.equals("congestion_speed") || name.startsWith("gain"))
 			converted = convertSpeed(new BigDecimal(value));
-		else if (name.equals("jam_density"))
+		else if (name.equals("jam_density") || name.equals("targetDensity"))
 			converted = convertDensity(new BigDecimal(value));
-		else if (name.startsWith("gain"))
-			converted = convertSpeed(new BigDecimal(value));
 		else return;
 		// TODO check if all the parameters are processed correctly
 		if (null != converted)
