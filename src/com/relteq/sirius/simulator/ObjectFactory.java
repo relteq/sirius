@@ -725,7 +725,6 @@ public final class ObjectFactory {
 			density.setContent(SiriusFormatter.csv(init_density[i],":"));			
 			ic.getDensity().add(density);
 		}
-		ic.setTstamp(new BigDecimal(tstamp));
 		
 		// populate extended properties
 		ic.populate(scenario);

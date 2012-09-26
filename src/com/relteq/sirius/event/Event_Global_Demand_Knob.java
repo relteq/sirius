@@ -29,9 +29,15 @@ public class Event_Global_Demand_Knob extends Event {
 	@Override
 	public void populate(Object jaxbobject) {
 		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		this.resetToNominal = jaxbe.isResetToNominal();
-		if(jaxbe.getKnob()!=null)
-			newknob = jaxbe.getKnob().getValue().doubleValue();
+		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		// reset_to_nominal
+		if (null != params && params.has("reset_to_nominal"))
+			this.resetToNominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
+		else
+			this.resetToNominal = false;
+		// knob
+		if (null != params && params.has("knob"))
+			newknob = Double.valueOf(params.get("knob"));
 		else 
 			newknob = Double.NaN;
 	}

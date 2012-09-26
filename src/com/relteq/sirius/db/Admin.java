@@ -2,12 +2,13 @@ package com.relteq.sirius.db;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
+import com.relteq.sirius.om.Projects;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 import com.relteq.sirius.simulator.SiriusException;
 
@@ -55,6 +56,19 @@ public class Admin {
 		exec.runStatements(new java.io.InputStreamReader(Admin.class.getClassLoader().getResourceAsStream(
 				"sql" + File.separator + params.getDriver() + File.separator + "sirius-db-schema.sql")),
 				System.err);
+		logger.info("Database tables created");
+
+		try {
+			Projects db_project = new Projects();
+			db_project.setId(Long.valueOf(0));
+			db_project.setName("default");
+			db_project.save();
+			logger.info("Project 'default' [id=1] created");
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		} catch (Exception exc) {
+			throw new SiriusException(exc);
+		}
 		logger.info("Database " + params.getDBName() + " initialized");
 	}
 
