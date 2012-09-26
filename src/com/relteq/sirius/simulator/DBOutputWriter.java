@@ -121,22 +121,19 @@ public class DBOutputWriter extends OutputWriterBase {
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		success = false;
-		boolean firststep = 0 == scenario.clock.getCurrentstep();
-		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
 		double min = Math.floor(time / 60);
 		double hrs = Math.floor(min / 60);
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
 		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
-		// output period, hr
-		double dt = scenario.getSimDtInSeconds() * outsteps / 3600.0d;
+		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.clock.getCurrentstep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
 
 		for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
 				Link _link = (Link) link;
 				try {
-					LinkDataTotal db_ldt = fill_total(_link, exportflows, invsteps, dt);
-					fill_detailed(_link, exportflows, invsteps, dt, db_ldt.getSpeed());
+					LinkDataTotal db_ldt = fill_total(_link, params);
+					fill_detailed(_link, params, db_ldt.getSpeed());
 				} catch (Exception exc) {
 					throw new SiriusException(exc);
 				} finally {
@@ -150,13 +147,11 @@ public class DBOutputWriter extends OutputWriterBase {
 	/**
 	 * Fills link_data_total table
 	 * @param link
-	 * @param exportflows
-	 * @param invsteps
-	 * @param dt
+	 * @param param output parameters
 	 * @return the stored row
 	 * @throws Exception
 	 */
-	private LinkDataTotal fill_total(Link link, boolean exportflows, double invsteps, double dt) throws Exception {
+	private LinkDataTotal fill_total(Link link, OutputParameters params) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
 		db_ldt.setNetworkId(str2id(link.myNetwork.getId()));
@@ -165,41 +160,45 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setAggregation("raw");
 		db_ldt.setType("mean");
 		db_ldt.setCellNumber(Integer.valueOf(0));
-		// mean density, veh
-		double density = SiriusMath.sum(link.cumulative_density[0]) * invsteps;
-		db_ldt.setDensity(new BigDecimal(density));
-		// free flow speed, mph
-		double ffspeed = link.getVfInMPH(0);
-		if (!Double.isNaN(ffspeed)) db_ldt.setFreeFlowSpeed(new BigDecimal(ffspeed));
-		if (exportflows) {
-			db_ldt.setInFlow(new BigDecimal(SiriusMath.sum(link.cumulative_inflow[0])));
-			// output flow, veh
-			double outflow = SiriusMath.sum(link.cumulative_outflow[0]);
-			db_ldt.setOutFlow(new BigDecimal(outflow));
-			// speed, mph
-			double speed = Double.NaN;
-			if (density <= 0)
-				speed = ffspeed;
-			else {
-				speed = outflow * link.getLengthInMiles() / (dt * density);
-				if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
-			}
-			if (!Double.isNaN(speed)) db_ldt.setSpeed(new BigDecimal(speed));
-		}
-		// congestion wave speed, mph
-		double cwspeed = link.getWInMPH(0);
-		if (!Double.isNaN(cwspeed)) db_ldt.setCongestionWaveSpeed(new BigDecimal(cwspeed));
-		// maximum flow, vph
-		double capacity = link.getCapacityInVPH(0);
-		if (!Double.isNaN(capacity)) db_ldt.setCapacity(new BigDecimal(capacity));
-		// jam density, vehicle per mile per lane
-		double jamdens = link.getDensityJamInVPMPL(0);
-		if (!Double.isNaN(jamdens)) db_ldt.setJamDensity(new BigDecimal(jamdens));
-		// capacity drop, vehicle per hour per lane
-		double capdrop = link.getCapacityDropInVPHPL(0);
-		if (!Double.isNaN(capdrop)) db_ldt.setCapacityDrop(new BigDecimal(capdrop));
+		// mean density, vehicles
+		double density = SiriusMath.sum(link.cumulative_density[0]) / params.getNsteps();
+		db_ldt.setDensity(BigDecimal.valueOf(density));
+
 		FundamentalDiagram fd = link.currentFD(0);
-		if (null != fd) db_ldt.setCriticalSpeed(fd.getCriticalSpeed());
+		if (null != fd) {
+			if (params.doExportFlows()) {
+				// input flow, vehicles
+				db_ldt.setInFlow(BigDecimal.valueOf(SiriusMath.sum(link.cumulative_inflow[0])));
+				// output flow, vehicles
+				double outflow = SiriusMath.sum(link.cumulative_outflow[0]);
+				db_ldt.setOutFlow(BigDecimal.valueOf(outflow));
+
+				// free flow speed, m/s
+				BigDecimal ffspeed = fd.getFreeFlowSpeed();
+				// speed, m/s
+				if (density <= 0)
+					db_ldt.setSpeed(ffspeed);
+				else {
+					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
+					if (null != ffspeed && speed > ffspeed.doubleValue())
+						db_ldt.setSpeed(ffspeed);
+					else if (!Double.isNaN(speed))
+						db_ldt.setSpeed(BigDecimal.valueOf(speed));
+				}
+			}
+			// free flow speed, m/s
+			db_ldt.setFreeFlowSpeed(fd.getFreeFlowSpeed());
+			// critical speed, m/s
+			db_ldt.setCriticalSpeed(fd.getCriticalSpeed());
+			// congestion wave speed, m/s
+			db_ldt.setCongestionWaveSpeed(fd.getCongestionSpeed());
+			// maximum flow, vehicles per second per lane
+			db_ldt.setCapacity(fd.getCapacity());
+			// jam density, vehicles per meter per lane
+			db_ldt.setJamDensity(fd.getJamDensity());
+			// capacity drop, vehicle per second per lane
+			db_ldt.setCapacityDrop(fd.getCapacityDrop());
+		}
 		db_ldt.save();
 		return db_ldt;
 	}
@@ -207,13 +206,11 @@ public class DBOutputWriter extends OutputWriterBase {
 	/**
 	 * Fills link_data_detailed table
 	 * @param link
-	 * @param exportflows
-	 * @param invsteps
-	 * @param dt
-	 * @param total_speed
+	 * @param params output parameters
+	 * @param total_speed speed for the cell as a whole, m/s
 	 * @throws Exception
 	 */
-	private void fill_detailed(Link link, boolean exportflows, double invsteps, double dt, BigDecimal total_speed) throws Exception {
+	private void fill_detailed(Link link, OutputParameters params, BigDecimal total_speed) throws Exception {
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
@@ -224,24 +221,52 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setAggregation("raw");
 			db_ldd.setType("mean");
 			db_ldd.setCellNumber(Integer.valueOf(0));
-			double density = link.cumulative_density[0][vt_ind] * invsteps;
+			// mean density, vehicles
+			double density = link.cumulative_density[0][vt_ind] / params.getNsteps();
 			db_ldd.setDensity(new BigDecimal(density));
-			if (exportflows) {
+			if (params.doExportFlows()) {
+				// input flow, vehicles
 				db_ldd.setInFlow(new BigDecimal(link.cumulative_inflow[0][vt_ind]));
+				// output flow, vehicles
 				double outflow = link.cumulative_outflow[0][vt_ind];
 				db_ldd.setOutFlow(new BigDecimal(outflow));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
-					// speed, mph
-					double speed = outflow * link.getLengthInMiles() / (dt * density);
-					// free flow speed, mph
-					double ffspeed = link.getVfInMPH(0);
-					if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
-					db_ldd.setSpeed(new BigDecimal(speed));
+					// speed, m/s
+					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
+					FundamentalDiagram fd = link.currentFD(0);
+					// free flow speed, m/s
+					BigDecimal ffspeed = null == fd ? null : fd.getFreeFlowSpeed();
+					if (null != ffspeed && speed > ffspeed.doubleValue())
+						db_ldd.setSpeed(ffspeed);
+					else if (!Double.isNaN(speed))
+						db_ldd.setSpeed(new BigDecimal(speed));
 				}
 			}
 			db_ldd.save();
+		}
+	}
+
+	private class OutputParameters {
+		boolean export_flows;
+		int nsteps;
+		double output_period; // sec
+
+		public OutputParameters(boolean export_flows, int nsteps, double output_period) {
+			this.export_flows = export_flows;
+			this.nsteps = nsteps;
+			this.output_period = output_period;
+		}
+
+		public boolean doExportFlows() {
+			return export_flows;
+		}
+		public int getNsteps() {
+			return nsteps;
+		}
+		public double getOutputPeriod() {
+			return output_period;
 		}
 	}
 
