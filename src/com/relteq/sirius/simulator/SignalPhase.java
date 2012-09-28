@@ -67,10 +67,10 @@ public class SignalPhase {
 	
 	protected final void populateFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Phase jaxbPhase){
 	
-		int numlinks = jaxbPhase.getLinks().getLinkReference().size();
+		int numlinks = jaxbPhase.getLinkReferences().getLinkReference().size();
 		this.targetlinks = new Link[numlinks];
 		for(int i=0;i<numlinks;i++){
-			com.relteq.sirius.jaxb.LinkReference linkref = jaxbPhase.getLinks().getLinkReference().get(i);
+			com.relteq.sirius.jaxb.LinkReference linkref = jaxbPhase.getLinkReferences().getLinkReference().get(i);
 			targetlinks[i] = myScenario.getLinkWithId(linkref.getId());
 		}
 		

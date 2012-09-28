@@ -67,6 +67,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected int numEnsemble;
+	double outdt;
 
 	// Model uncertainty
 	protected double std_dev_flow = 0.0d;	// [veh]
@@ -377,6 +378,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @throws SiriusException 
 	 */
 	public void run(Double timestart,Double timeend,double outdt,int numRepetitions,Properties owr_props) throws SiriusException{
+		this.outdt = outdt;
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
 		numEnsemble = 1;
 		run_internal(param,numRepetitions,true,false,owr_props);
@@ -409,6 +411,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @throws SiriusException 
 	 */
 	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
+		this.outdt = outdt;
 		RunParameters param = new RunParameters(timestart,timeend,outdt,simdtinseconds);
 		numEnsemble = 1;
 		return run_internal(param,1,false,true,null);
@@ -573,6 +576,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return Double.NaN;
 		else
 			return this.clock.getEndTime();
+	}
+
+	/** Output frequency
+	 * @return output time step, sec
+	 */
+	public double getOutputDt() {
+		return outdt;
 	}
 
 	/** Get a reference to a controller by its id.

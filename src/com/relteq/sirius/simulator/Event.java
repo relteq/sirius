@@ -190,17 +190,44 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(Node node,int inputindex,int vehicletypeindex,ArrayList<Double> splitrow) {
+	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
 		if(node==null)
 			return;
 		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		X.copydata(node.splitratio);
-		for(int j=0;j<node.getnOut();j++)
-			X.set(inputindex, j,vehicletypeindex,splitrow.get(j));
+		for (SplitRatio sr : splitratios)
+			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
 		if(!node.validateSplitRatioMatrix(X))
 			return;
 		node.setSplitratio(X);
 		node.hasactivesplitevent = true;
+	}
+
+	protected static class SplitRatio {
+		private int input_index;
+		private int output_index;
+		private int vehicle_type_index;
+		private Double value;
+
+		public SplitRatio(int input_index, int output_index, int vehicle_type_index, Double value) {
+			this.input_index = input_index;
+			this.output_index = output_index;
+			this.vehicle_type_index = vehicle_type_index;
+			this.value = value;
+		}
+
+		public int getInputIndex() {
+			return input_index;
+		}
+		public int getOutputIndex() {
+			return output_index;
+		}
+		public int getVehicleTypeIndex() {
+			return vehicle_type_index;
+		}
+		public Double getValue() {
+			return value;
+		}
 	}
 
 	protected void revertNodeEventSplitRatio(Node node) {

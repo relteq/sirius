@@ -42,7 +42,7 @@ public class Runner {
 				com.relteq.sirius.db.Lister.listScenarios();
 			} else if (cmd.equals("list_runs") || cmd.equals("lr")) {
 				if (1 == arguments.length)
-					com.relteq.sirius.db.Lister.listRuns(Integer.parseInt(arguments[0]));
+					com.relteq.sirius.db.Lister.listRuns(Long.parseLong(arguments[0], 10));
 				else
 					throw new InvalidUsageException("Usage: list_runs|lr scenario_id");
 			} else if (cmd.equals("load") || cmd.equals("l")) {
@@ -75,7 +75,7 @@ public class Runner {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
 				if (1 == arguments.length)
-					com.relteq.sirius.db.Cleaner.clearProcessed(Integer.parseInt(arguments[0]));
+					com.relteq.sirius.db.Cleaner.clearProcessed(Long.parseLong(arguments[0], 10));
 				else
 					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
@@ -84,6 +84,11 @@ public class Runner {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("version") || cmd.equals("v")) {
 				printVersion();
+			} else if (cmd.equals("convert_units") || cmd.equals("cu")) {
+				if (2 == arguments.length)
+					com.relteq.sirius.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
+				else
+					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
 			} else throw new InvalidCommandException(cmd);
 			if (SiriusErrorLog.haserror()) SiriusErrorLog.print();
 		} catch (InvalidUsageException exc) {

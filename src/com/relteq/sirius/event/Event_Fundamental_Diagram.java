@@ -51,8 +51,22 @@ public class Event_Fundamental_Diagram extends Event {
 	@Override
 	public void populate(Object jaxbobject) {
 		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		this.resetToNominal = jaxbe.isResetToNominal();
-		this.FD = jaxbe.getFundamentalDiagram();
+		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		// reset_to_nominal
+		if (null != params && params.has("reset_to_nominal"))
+			this.resetToNominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
+		else
+			this.resetToNominal = false;
+		// FD
+		if (null != params) {
+			this.FD = new com.relteq.sirius.jaxb.FundamentalDiagram();
+			if (params.has("capacity")) this.FD.setCapacity(new BigDecimal(params.get("capacity")));
+			if (params.has("capacity_drop")) this.FD.setCapacityDrop(new BigDecimal(params.get("capacity_drop")));
+			if (params.has("congestion_speed")) this.FD.setCongestionSpeed(new BigDecimal(params.get("congestion_speed")));
+			if (params.has("jam_density")) this.FD.setJamDensity(new BigDecimal(params.get("jam_density")));
+			if (params.has("free_flow_speed")) this.FD.setFreeFlowSpeed(new BigDecimal(params.get("free_flow_speed")));
+		} else
+			this.FD = null;
 	}
 	
 	@Override

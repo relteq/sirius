@@ -38,9 +38,15 @@ public class Event_Link_Lanes extends Event {
 	@Override
 	public void populate(Object jaxbobject) {
 		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		this.resetToNominal = jaxbe.isResetToNominal();
-		if(jaxbe.getLaneCountChange()!=null)
-			this.deltalanes = jaxbe.getLaneCountChange().getDelta().doubleValue();
+		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		// reset_to_nominal
+		if (null != params && params.has("reset_to_nominal"))
+			this.resetToNominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
+		else
+			this.resetToNominal = false;
+		// lane_count_change
+		if (null != params && params.has("lane_count_change"))
+			this.deltalanes = Double.valueOf(params.get("lane_count_change"));
 		else
 			this.deltalanes = 0.0;
 	}

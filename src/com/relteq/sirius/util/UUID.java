@@ -1,4 +1,4 @@
-package com.relteq.sirius.db.util;
+package com.relteq.sirius.util;
 
 public class UUID {
 	/**
