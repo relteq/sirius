@@ -262,7 +262,7 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="in_synch" type="xs:boolean" use="optional" default="true" />
+				  <xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				</xs:complexType>
 			  </xs:element>
 			  
@@ -339,7 +339,7 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
-				  <xs:attribute name="in_synch" type="xs:boolean" use="optional" default="true" />
+				  <xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				</xs:complexType>
 			  </xs:element>
 
