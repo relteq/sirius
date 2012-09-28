@@ -295,7 +295,7 @@ function str = var2str(s)
    dim = size(s);
    if (min(dim)<=1 || length(dim)>2) % if 1D or 3D array
      s=s(:); s=s.';            % convert to 1D array
-     str=num2str(s);           % convert array of numbers to string
+     str=num2str(s,'%f');           % convert array of numbers to string
    else                        % if a 2D array 
      s=mat2str(s);             % convert matrix to a string
      str=regexprep(s,';',';\n'); 
